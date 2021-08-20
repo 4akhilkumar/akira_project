@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # Added the created apps here with their path i.e., akira_apps
     'akira_apps.super_admin.apps.SuperAdminConfig',
