@@ -1,0 +1,470 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+{% load humanize %}
+
+<title>View Faculty Info.</title>
+
+<!-- <style>  
+
+{% if staff.gender == 'Male' %}
+
+:root {
+  --light_color: #e0f2f1;
+  --dark_color: #b2dfdb;
+}
+
+{% else %}
+
+:root {
+  --light_color: #e1f5fe;
+  --dark_color: #b3e5fc;
+}
+
+{% endif %}
+
+body {
+  background-color: var(--light_color);
+}
+
+.card {
+  box-shadow: 6px 6px 0px -2px var(--dark_color);
+  border-radius: 10px;
+}
+
+.card:hover {
+ transform: None;
+}
+
+.hidden{
+  display : none;
+}
+
+div.ex3 {
+  max-height: 315px;
+  overflow-y: auto;
+}
+
+@media only screen and (max-width: 992px) {
+  .custome_img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+div.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 138px;
+}
+
+label {
+  font-weight: 600;
+  margin: 0;
+  font-size: 18px;
+}
+
+input[type=text] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: solid 1px #00000045;
+  outline: none;
+}
+
+input[type=text]:focus {
+  border: solid 1px #000000e0;
+}
+
+input[type=submit] {
+  padding: 12px 20px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bffb8;
+  color: #FFF;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+input[type=submit]:hover {
+  background-color: #20c997;
+}
+
+.delete_ssp {
+  padding: 14px 20px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: none;
+  background-color: #fc3636d9;
+  color: #FFF;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+a.delete_ssp:hover {
+  color: #FFF;
+  text-decoration: none;
+}
+</style> -->
+
+<!-- <div class="modal fade" id="exampleModalCenterAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h1 style="font-family:system-ui; font-weight: 500; margin-bottom: 15px;">Add Your Social Profiles</h1>
+        <form action="" method="POST" style="text-align: start;">
+          {% csrf_token %}
+            <label for="LinkedIn" style="color: #0077b5;"><i class="fab fa-linkedin"></i> LinkedIn</label>
+            <input type="text" value="{{ i.linkedin }}" name="linkedin" id="id_linkedin" required placeholder="LinkedIn Profile">
+            <p></p>
+            <label for="GitHub" style="color: #1b1f23;"><i class="fab fa-github-square"></i> GitHub</label>
+            <input type="text" value="{{ i.github }}" name="github" id="id_github" required placeholder="GitHub Profile">
+            <p></p>
+            <label for="Orcid" style="color: #a5cd39;"><i class="fab fa-orcid"></i> <span style="color: #a6a8ab;">ORC</span><span style="color: #a5cd39;">iD</span></label>
+            <input type="text" value="{{ i.orcid }}" name="orcid" id="id_orcid" required placeholder="Orcid Profile">
+            <p></p>
+            <label for="Researcher" style="color: #40ba9b;"><i class="fab fa-researchgate"></i> Researcher</label>
+            <input type="text" value="{{ i.gscholar }}" name="gscholar" id="id_gscholar" required placeholder="Researcher Profile">
+            <p></p>
+            <label for="Gscholar" style="color: #77a9fa;"><i class="fab fa-google"></i> Gscholar</label>
+            <input type="text" value="{{ i.researcher }}" name="researcher" id="id_researcher" required placeholder="Gscholar Profile">
+            <p></p>
+            <label for="Microsoft Academic" style="color: #2d9fd9;"><i class="fab fa-microsoft"></i> Microsoft Academic</label>
+            <input type="text" value="{{ i.microsoft_academic }}" name="microsoft_academic" id="id_microsoft_academic" required placeholder="Microsoft Academic Profile">
+          <input type="submit"> 
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<!-- <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h1 style="font-family:system-ui; font-weight: 500; margin-bottom: 15px;">Add Your Social Profiles</h1>
+        <form action="#" method="POST" style="text-align: start;">
+          {% csrf_token %}
+          {% for i in ssp %}
+          <label for="LinkedIn" style="color: #0077b5;"><i class="fab fa-linkedin"></i> LinkedIn</label>
+          <input type="text" value="{{ i.linkedin }}" name="linkedin" id="id_linkedin" placeholder="LinkedIn Profile">
+          <input type="text" value="{{ i.id }}" name="ssp_id" id="id_ssp_id" hidden/>
+          <p></p>
+          <label for="GitHub" style="color: #1b1f23;"><i class="fab fa-github-square"></i> GitHub</label>
+          <input type="text" value="{{ i.github }}" name="github" id="id_github" placeholder="GitHub Profile">
+          <p></p>
+          <label for="Orcid" style="color: #a5cd39;"><i class="fab fa-orcid"></i> <span style="color: #a6a8ab;">ORC</span><span style="color: #a5cd39;">iD</span></label>
+          <input type="text" value="{{ i.orcid }}" name="orcid" id="id_orcid" required placeholder="Orcid Profile">
+          <p></p>
+          <label for="Researcher" style="color: #40ba9b;"><i class="fab fa-researchgate"></i> Researcher</label>
+          <input type="text" value="{{ i.gscholar }}" name="gscholar" id="id_gscholar" required placeholder="Researcher Profile">
+          <p></p>
+          <label for="Gscholar" style="color: #77a9fa;"><i class="fab fa-google"></i> Gscholar</label>
+          <input type="text" value="{{ i.researcher }}" name="researcher" id="id_researcher" required placeholder="Gscholar Profile">
+          <p></p>
+          <label for="Microsoft Academic" style="color: #2d9fd9;"><i class="fab fa-microsoft"></i> Microsoft Academic</label>
+          <input type="text" value="{{ i.microsoft_academic }}" name="microsoft_academic" id="id_microsoft_academic" required placeholder="Microsoft Academic Profile">
+          <input type="submit" value="Update">
+          {% for i in ssp %}                    
+            <a class="delete_ssp" href="{% url 'delete_social_profile_staff' i.id %}">Delete</a>
+          {% endfor %}
+          {% endfor %}
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="container" style="margin-top: 50px;">
+    <div class="main-body">  
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="sticky">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img class="custome_img" 
+                    
+                    {% if not staff.profile_pic.url %}
+                    src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
+                    {% else %}
+                    src="{{ staff.profile_pic.url }}"
+                    {% endif %}
+
+                    alt="staff Profile Pic" style="border-radius: 5px; border: 2px solid #bdbdbd;" width="180" height="180">
+                    <div class="mt-3">
+                      <h4>{% if staff.qualification == 'Ph.D' or staff.qualification == 'PH.D' %} Dr. {% else %} {% if staff.gender == 'Male' %} Mr. {% else %} Ms. {% endif %} {% endif %} {{staff.user.last_name}} {{staff.user.first_name}}</h4>
+                      <p class="text-secondary mb-1"> {{ staff.designation|title }} </p>
+                      <p class="text-muted font-size-sm"><span><a style="text-decoration: none; color: #6c757d!important;" href="https://www.google.com/maps/place/{{staff.city_name}}" rel="noreferrer" target="_blank"><i class="fas fa-map-marked-alt"></i> {{staff.city_name}} - {{staff.zip_code}}</a></span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Full Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{staff.user.first_name}} {{staff.user.last_name}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Username</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{staff.user.username}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        <a style="text-decoration: none; color: #6c757d!important;" aria-label="staff Email Address" href="mailto:{{staff.user.email}}">{{staff.user.email}}</a>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Gender</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ staff.gender }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Qualification</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ staff.qualification }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Branch</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ staff.branch }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Social Profile
+                        {% if request.user.id|add:"0" == staff.user.id|add:"0" %}
+                          {% if ssp.count == 0|add:"0" %}
+                          {% else %}                          
+                          {% for i in ssp %}
+                            &nbsp;<a href="" data-toggle="modal" data-target="#exampleModalCenter"><i class="far fa-edit"></i></a>
+                          {% endfor %}
+                          {% endif %}
+                        {% else %}
+                        {% endif %}
+                      </h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {% if ssp.count == 0|add:"0" %}
+                        Social Profiles Not Added Yet!
+                        {% if request.user.id|add:"0" == staff.user.id|add:"0" %}
+                        <a href="" data-toggle="modal" data-target="#exampleModalCenterAdd"><b>Add Now</b></a>
+                        {% endif %}
+                      {% else %}
+                        {% for i in ssp %}
+                        <a href="https://linkedin.com/in/{{ i.linkedin }}/" style="color: #0277bd; font-weight: 600;" aria-label="Student LinkedIn Profile Link" rel="noreferrer" target="_blank"><i class="fab fa-linkedin" style="font-size: 24px; color: #0077b5;"></i></a>
+                        |
+                        <a href="https://github.com/{{ i.github }}/" style="color: #1b1f23; font-weight: 600;" aria-label="Student Github Profile Link" rel="noreferrer" target="_blank"><i class="fab fa-github-square" style="font-size: 24px; color: #1b1f23;"></i> </a>
+                        |
+                        <a href="http://www.orcid.org/{{ i.orcid }}/" style="color: #a5cd39; font-weight: 600;" aria-label="staff Orcid Profile Link" rel="noreferrer" target="_blank"><i class="fab fa-orcid" style="font-size: 24px;"></i> </a>
+                        |
+                        <a href="http://www.researcherid.com/rid/{{ i.researcher }}/" style="color: #40ba9b; font-weight: 600;" aria-label="staff Researcher Profile Link" rel="noreferrer" target="_blank"><i class="fab fa-researchgate" style="font-size: 24px;"></i> </a>
+                        |
+                        <a href="https://scholar.google.co.in/citations?user={{ i.gscholar }}/" style="color: #77a9fa; font-weight: 600;" aria-label="staff Gscholar Profile Link" rel="noreferrer" target="_blank"><i class="fab fa-google" style="font-size: 24px;"></i> </a>
+                        |
+                        <a href="https://academic.microsoft.com/#/detail/{{ i.microsoft_academic }}/" style="color: #2d9fd9; font-weight: 600;" aria-label="staff Microsoft Academic Profile Link" rel="noreferrer" target="_blank"><i class="fab fa-microsoft" style="font-size: 24px;"></i> </a>
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Father Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ staff.father_name }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Father Occupation</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{staff.father_occ}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Father Ph.no</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <a style="text-decoration: none; color: #6c757d!important;" href="tel:Mobile : +91{{staff.father_phone}}">{{staff.father_phone}}</a>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Mother Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                        {{ staff.mother_name }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Mother Tounge</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ staff.mother_tounge }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Your DOB</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ staff.dob|date:"jS F, Y" }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Blood Group</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{ staff.blood_group }}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Your Ph.no</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <a style="text-decoration: none; color: #6c757d!important;" href="tel:Mobile : +91{{staff.phone}}">{{staff.phone}}</a>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Address</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <span><a style="text-decoration: none; color: #6c757d!important;" href="https://www.google.com/maps/place/{{staff.city_name}}" rel="noreferrer" target="_blank">{{ staff.dno_sn }}, {{ staff.city_name }}, {{staff.state_name}}, {{staff.country_name}} - {{staff.zip_code}}</a></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row gutters-sm" style="justify-content: start">
+                
+                <div class="card h-100" style="margin-bottom: 40px;">
+                  <div class="card-body">
+                    <h5 class="d-flex align-items-center mb-3"><i class="fas fa-flag-checkered"></i> &nbsp;Recent Login Activity</h5>
+                    <p>
+                      {% if staff.user.last_login == None %} Since <b>{{ staff.created_at }}</b> User Not Logged In Yet!
+                    </p>
+                      {% else %} 
+                    <p>
+                      {% if request.user.id|add:"0" == staff.user.id|add:"0" %}
+                      Your 
+                      {% else %}
+                      {{ staff.user.first_name }}'s
+                      {% endif %}
+                      recent login is 
+                      <b>{{ staff.user.last_login|naturaltime }}.</b> </p>
+                    <p>                      
+                      {% if request.user.id|add:"0" == staff.user.id|add:"0" %}
+                      Your 
+                      {% else %}
+                      {{ staff.user.first_name }}'s
+                      {% endif %}  
+                      have logged in on <b>{{ staff.user.last_login|date:"l, dS F, Y" }}</b> at <b>{{ staff.user.last_login|date:"H:i:s A" }}</b>
+                    </p>
+                    {% if request.user.id|add:"0" == staff.user.id|add:"0" %}
+                    <span style="color: #ec407a; cursor: pointer;" onclick="showhide()"><b>Check Complete Login Activity</b></span>
+                    <br><br>
+                    <div id="newpost" class="hidden">
+                      <div class="ex3">
+                      {% for i in sld %}
+                      <div style="margin: 0; padding: 0;">
+                       <div style="background-color: #b3e5fc; padding: 20px; border-radius: 10px; margin: 0;">
+                       <p style="margin: 0; padding: 0;">
+                        From <b>{{ i.user_ip_address }}</b>. In <b>{{ i.os_details }}</b> on 
+                        {% if i.browser_details == 'Chrome' %}
+                        <i class="fab fa-chrome"></i>
+                        {% elif i.browser_details == 'Opera' %}
+                        <i class="fab fa-opera"></i>
+                        {% elif i.browser_details == 'Firefox' %}
+                        <i class="fab fa-firefox-browser"></i>
+                        {% elif i.browser_details == 'ChromiumEdge' %}
+                        <i class="fab fa-edge"></i>
+                        {% elif i.browser_details == 'Microsoft Internet Explorer' %}
+                        <i class="fab fa-edge-legacy"></i>
+                        {% elif i.browser_details == 'Safari' %}
+                        <i class="fab fa-safari"></i>
+                        {% else %}
+                        <b>{{ i.browser_details }}</b>
+                        {% endif %}
+                      </p>
+                       <p style="margin: 0; padding: 0;">
+                       You have logged in on <b>{{ i.created_at|date:"l, dS F, Y" }}</b> at <b>{{ i.created_at|date:"H:i:s A" }}</b>
+                       </p>
+                      </div>
+                       <br>
+                       </div>
+                      {% endfor %}
+                      </div>
+                      </div>
+                      {% endif %}
+                    {% endif %}                  
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <script>
+      function showhide() {
+        var div = document.getElementById("newpost");
+        div.classList.toggle('hidden');
+      }
+    </script>
+
+{% endblock %}
