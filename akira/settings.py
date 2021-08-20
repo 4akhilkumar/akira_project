@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'akira_apps.faculty.apps.FacultyConfig',
     'akira_apps.student.apps.StudentConfig',
     'akira_apps.authentication.apps.AuthenticationConfig',
+    'akira_apps.academic_registration.apps.AcademicRegistrationConfig',
 ]
 
 MIDDLEWARE = [
