@@ -126,9 +126,3 @@ def verify_login(request, uid, current_time):
 def logoutUser(request):
     logout(request)
     return redirect('login')
-
-@login_required(login_url=settings.LOGIN_URL)
-def dashboard(request):
-    current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z %z")
-    # return render(request, 'authentication/dashboard.html')
-    return HttpResponse(current_time)
