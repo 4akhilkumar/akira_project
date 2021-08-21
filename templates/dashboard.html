@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="theme-color" content="#317EFB"/>
         <meta name="description" content="AkirA is a kind of Learning Mangement System which can be accessible in all your devices Android, iOS, and desktop devices.">
+        <meta http-equiv="Content-Security-Policy" content="script-src 'strict-dynamic' 'sha256-vvt4KWwuNr51XfE5m+hzeNEGhiOfZzG97ccfqGsPwvE=' 'nonce-{{rAnd0m123}}' 'unsafe-inline' http: https:; object-src 'none'; base-uri 'none';">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="{% static 'styles/dashboard.css' %}">
@@ -514,12 +515,12 @@
             </section>
         </main>
 
-        <script src="{% static 'js/dashboard.js' %}"></script>
+        <script nonce="{{rAnd0m123}}" src="{% static 'js/dashboard.js' %}"></script>
         
         {% for group_for in request.user.groups.all %}
             {% if group_for.name == 'Admin' %}
             {% elif group_for.name == 'Head of the Department' %}
-            <script>
+            <script nonce="{{rAnd0m123}}">
                 /*====================== Show Navbar 2.0 | Head of the Department ======================*/
                 let btn = document.querySelector("#navbar");
                 let btn2 = document.querySelector("#show_logout");
@@ -550,7 +551,7 @@
             {% elif group_for.name == 'Faculty' %}
             {% elif group_for.name == 'Counsellor' %}
             {% elif group_for.name == 'Student' %}
-            <script>
+            <script nonce="{{rAnd0m123}}">
                 /*====================== Show Navbar 2.0 | Student ======================*/
                 let btn = document.querySelector("#navbar");
                 let btn2 = document.querySelector("#show_logout");
