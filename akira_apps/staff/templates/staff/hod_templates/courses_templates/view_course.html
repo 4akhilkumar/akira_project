@@ -1,0 +1,35 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+{% load to_and %}
+{% load first_letter_word %}
+
+<title>{% block title %}{{ view_course }} - AkirA{% endblock %}</title>
+
+<div class="main">
+  <ul class="cards">
+
+    <li class="cards_item">
+      <div class="card">
+        <div class="card_image">
+            <h1 class="short_title">{{ view_course.course_name|first_letter_word }}</h1>
+        </div>
+        <div class="card_content">
+          <h2 class="card_title">{{ view_course.course_name}}</h2>
+          <p class="card_text_cc_name">Course Co-Ordinator: {% if view_course.faculty.gender == 'Male' %} Mr. {% else %} Ms. {% endif %} {{ view_course.faculty.user.last_name }} {{ view_course.faculty.user.first_name }}</p>                
+          <p class="card_text">
+            {{ view_course.course_desc|slice:"3:-4"|to_and|safe }}
+          </p>
+          <div class="card_buttons">
+            <button class="btn card_btn edit">Edit Info.</button>
+            <button class="btn card_btn delete">Delete Course</button>
+          </div>
+        </div>
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+{% endblock %}
