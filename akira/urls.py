@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('akira_apps.authentication.urls')),
     path('super_admin/', include('akira_apps.super_admin.urls')),
-    path('faculty/', include('akira_apps.faculty.urls')),
+    path('staff/', include('akira_apps.staff.urls')),
     path('student/', include('akira_apps.student.urls')),
     path('academic_registration/', include('akira_apps.academic_registration.urls')),
 
