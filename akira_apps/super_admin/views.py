@@ -4,12 +4,18 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from akira_apps.faculty.forms import CreateUserForm, StaffsForm
-from akira_apps.faculty.models import Staffs
+from akira_apps.staff.forms import CreateUserForm, StaffsForm
+from akira_apps.staff.models import Staffs
+
+import secrets
 
 @login_required(login_url=settings.LOGIN_URL)
 def super_admin_dashboard(request):
-    return render(request, 'super_admin/dashboard.html')
+    rAnd0m123 = secrets.token_urlsafe(16)
+    context = {
+        "rAnd0m123":rAnd0m123,
+    }
+    return render(request, 'super_admin/dashboard.html', context)
 
 @login_required(login_url=settings.LOGIN_URL)
 def add_staff(request):
