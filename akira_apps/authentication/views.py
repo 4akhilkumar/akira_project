@@ -8,12 +8,14 @@ from django.core import mail
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from . models import UserLoginDetails
-
 import datetime as pydt
 import socket
 import re
 import httpagentparser
+
+from . models import UserLoginDetails
+
+from akira_apps.staff.urls import *
 
 def user_login(request):
     current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -42,11 +44,21 @@ def user_login(request):
                         return redirect(request.GET.get('next'))
                     else:
                         return redirect('student_dashboard')
-                elif group == 'Faculty':
+                elif group == 'Staff':
                     if (request.GET.get('next')):
                         return redirect(request.GET.get('next'))
                     else: 
-                        return redirect('faculty_dashboard')
+                        return redirect('staff_dashboard')
+                elif group == 'Head of the Department':
+                    if (request.GET.get('next')):
+                        return redirect(request.GET.get('next'))
+                    else: 
+                        return redirect('hod_dashboard')
+                elif group == 'Course Co-Ordinator':
+                    if (request.GET.get('next')):
+                        return redirect(request.GET.get('next'))
+                    else: 
+                        return redirect('cc_dashboard')
                 else:
                     if (request.GET.get('next')):
                         return redirect(request.GET.get('next'))
