@@ -27,6 +27,22 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+CKEDITOR_CONFIGS = {
+'default': {
+    # 'toolbar': None, #You can change this based on your requirements.
+    'toolbar': [["Format", "Bold", "Italic", "Underline", "Strike"],
+                ['NumberedList', 'BulletedList', "Indent", "Outdent", 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                ["Image", "Table", "Link", "Unlink", "Anchor", "SectionLink", "Subscript", "Superscript"], 
+                ['Undo', 'Redo'], 
+                # ["Source"],
+                ["Maximize"],
+               ],
+    'width': 'auto',
+
+          },
+    }
 
 # Application definition
 
@@ -45,6 +61,9 @@ INSTALLED_APPS = [
     'akira_apps.student.apps.StudentConfig',
     'akira_apps.authentication.apps.AuthenticationConfig',
     'akira_apps.academic_registration.apps.AcademicRegistrationConfig',
+
+    'ckeditor',
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -130,10 +149,14 @@ LOGIN_URL = '/'
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'static'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 #SMTP Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
