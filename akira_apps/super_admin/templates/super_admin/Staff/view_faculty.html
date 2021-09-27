@@ -1,4 +1,4 @@
-{% extends 'dashboard.html' %}
+{% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
 
 {% block content %}
@@ -190,7 +190,7 @@ a.delete_ssp:hover {
                   <div class="d-flex flex-column align-items-center text-center">
                     <img class="custome_img" 
                     
-                    {% if not staff.profile_pic.url %}
+                    {% if not staff.profile_pic %}
                     src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
                     {% else %}
                     src="{{ staff.profile_pic.url }}"
