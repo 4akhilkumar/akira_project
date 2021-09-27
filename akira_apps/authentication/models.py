@@ -12,3 +12,6 @@ class UserLoginDetails(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.user, self.user_ip_address)
+
+    class Meta:
+        ordering = ['-created_at']
