@@ -5,8 +5,6 @@
 
 <title>{% block title %}Login Account - AkirA{% endblock %}</title>
 
-<link rel="stylesheet" href='{% static "styles/login.css" %}'>
-
 <div class="login">
     <div class="login__content">
         <div class="login__img">
@@ -19,14 +17,13 @@
 
                 <div class="login__box">
                     <i class="far fa-user login__icon"></i>
-                    <!-- minlength="8" -->
-                    <input type="text" name="username" value="190031153" id="id_username" autocomplete="off" placeholder="Username" class="login__input" required>
+                    <input type="text" name="username" value="hari.vege" id="id_username" autofocus autocapitalize="none" autocomplete="off" placeholder="Username" class="login__input" required>
                 </div>
 
                 <div class="login__box">
                     <i class="fas fa-lock login__icon"></i>
                     <!-- pattern="^(?=(.*[a-z]){3,})(?=(.*[A-Z]){2,})(?=(.*[0-9]){2,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$" -->
-                    <input type="password" name="password" value="ONCLaccount@21" id="id_password" placeholder="Password" class="login__input" required>
+                    <input type="password" name="password" value="AKIRAaccount@21" id="id_password" placeholder="Password" class="login__input" required>
                 </div>
 
                 <input type="text" name="user_ip_address" id="id_user_ip_address" hidden/>
