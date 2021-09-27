@@ -41,7 +41,7 @@ INSTALLED_APPS = [
 
     # Added the created apps here with their path i.e., akira_apps
     'akira_apps.super_admin.apps.SuperAdminConfig',
-    'akira_apps.faculty.apps.FacultyConfig',
+    'akira_apps.staff.apps.StaffConfig',
     'akira_apps.student.apps.StudentConfig',
     'akira_apps.authentication.apps.AuthenticationConfig',
     'akira_apps.academic_registration.apps.AcademicRegistrationConfig',
