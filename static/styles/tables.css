@@ -39,11 +39,6 @@ td:last-of-type, th:last-of-type {
     border-right: none;
 }
 
-a {
-    text-decoration: none;
-    color: #616161;
-}
-
 .external_link {
     transition-duration: 0.2s;
     font-size: 14px;
