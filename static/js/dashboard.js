@@ -28,14 +28,19 @@ linkColor.forEach(l => l.addEventListener('click', colorLink))
 /*====================== Dark Mode =====================*/
 // check for saved 'darkMode' in localStorage
 let darkMode = localStorage.getItem('darkMode'); 
-
 const darkModeToggle = document.querySelector('#dark-mode-toggle');
+
+// check for saved 'dark_mode' in localStorage
+let dark_mode = localStorage.getItem('darkMode'); 
+const themeToggle = document.querySelector('#theme');
 
 const enableDarkMode = () => {
 // 1. Add the class to the body
 document.body.classList.add('darkmode');
 // 2. Update darkMode in localStorage
 localStorage.setItem('darkMode', 'enabled');
+// 3. Update dark_mode in localStorage
+localStorage.setItem('dark_mode', 'enabled');
 }
 
 const disableDarkMode = () => {
@@ -43,6 +48,18 @@ const disableDarkMode = () => {
 document.body.classList.remove('darkmode');
 // 2. Update darkMode in localStorage 
 localStorage.setItem('darkMode', null);
+// 3. Update dark_mode in localStorage
+localStorage.setItem('dark_mode', null);
+}
+
+const enableDarkText = () => {
+  themeToggle.classList.add('darkmode-active');
+  themeToggle.classList.remove('lightmode-active');
+}
+
+const disableDarkText = () => {
+  themeToggle.classList.remove('darkmode-active');
+  themeToggle.classList.add('lightmode-active');
 }
 
 // If the user already visited and enabled darkMode
@@ -63,4 +80,25 @@ if (darkMode !== 'enabled') {
 } else {  
     disableDarkMode(); 
 }
+});
+
+if (dark_mode === 'enabled') {
+  enableDarkText();
+}
+else {
+  disableDarkText();
+}
+
+// When someone clicks the button
+themeToggle.addEventListener('click', () => {
+  // get their dark_mode setting
+  dark_mode = localStorage.getItem('dark_mode'); 
+  
+  // if it not current enabled, enable it
+  if (dark_mode !== 'enabled') {
+    enableDarkText();
+  // if it has been enabled, turn it off  
+  } else {  
+    disableDarkText(); 
+  }
 });
