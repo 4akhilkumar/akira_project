@@ -397,6 +397,14 @@ section {
   align-content: center;
 }
 
+.darkmode-active::before {
+  content: 'Light ';
+}
+
+.lightmode-active::before {
+  content: 'Dark ';
+}
+
 /* Manage Courses */
 
 .main {
