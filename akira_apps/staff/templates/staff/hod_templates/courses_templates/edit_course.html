@@ -6,22 +6,22 @@
 <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
 <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
 
-<form action="{% url 'save_created_course' %}" method="POST">
+<form action="{% url 'save_edit_course' course.id %}" method="POST">
     {% csrf_token %}
     <label for="id_course_code">Course Code</label> 
-    <input type="text" name="course_code" maxlength="100" value="ipsum lorem ipsum lorem ipsum lorem ipsum" required id="id_course_code">
+    <input type="text" name="course_code" maxlength="100" value="{{ course.course_code }}" required id="id_course_code">
     <br>
     <label for="id_course_name">Course Name</label>
-    <input type="text" name="course_name" maxlength="100" value="ipsum lorem ipsum lorem ipsum lorem ipsum" required id="id_course_name">
+    <input type="text" name="course_name" maxlength="100" value="{{ course.course_name }}" required id="id_course_name">
     <br>
     <label for="id_course_short_info">Course Short Info</label>
-    <textarea name="course_short_info" cols="40" rows="10" maxlength="500" required id="id_course_short_info">psum lorem ipsum lorem ipsum lorem ip</textarea>
+    <textarea name="course_short_info" cols="40" rows="10" maxlength="500" required id="id_course_short_info">{{ course.course_short_info }}</textarea>
     <br>
     <label for="id_course_wywl">What you will learn</label>
-    <textarea name="course_wywl" cols="40" rows="10" maxlength="500" required id="id_course_wywl">psum lorem ipsum lorem ipsum lorem ip</textarea>
+    <textarea name="course_wywl" cols="40" rows="10" maxlength="500" required id="id_course_wywl">{{ course.course_wywl }}</textarea>
     <br>
     <label for="id_course_sywg">Skill You Will Gain</label>
-    <textarea name="course_sywg" cols="40" rows="10" maxlength="500" required id="id_course_sywg">psum lorem ipsum lorem ipsum lorem ip</textarea>
+    <textarea name="course_sywg" cols="40" rows="10" maxlength="500" required id="id_course_sywg">{{ course.course_sywg }}</textarea>
     <br>
     <label for="id_course_desc">Course Description</label>
     <div class="django-ckeditor-widget" data-field-id="id_course_desc" style="display: inline-block;">
@@ -44,31 +44,32 @@
                                 &quot;filebrowserUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;filebrowserBrowseUrl&quot;: 
                                 &quot;/ckeditor/browse/&quot;, &quot;language&quot;: &quot;en-us&quot;}" 
                 data-external-plugin-resources="[]" data-id="id_course_desc" data-type="ckeditortype">
+        {{ course.course_desc }}
         </textarea>
     </div>
     <br>
     <label for="id_course_coordinator">Course Co-Ordinator</label>
     <select name="course_coordinator" id="id_course_coordinator">
         {% for i in course_coordinator_list %}
-        <option value="{{ i.id }}" selected> {{ i }} </option>
+        <option value="{{ i.id }}" {% if i.id == course.course_coordinator.id %} selected {% endif %}> {{ i }} </option>
         {% endfor %}
     </select>
     <br>
     <label for="id_branch">Branch</label>
-    <select name="branch" required id="id_branch">
+    <select name="branch" required id="id_branch">        
         {% for x,y in branch_list.fields.branch.choices %}
-            <option value="{{ x }}">{{ y }}</option>
+        <option value="{{ x }}" {% if x == course.branch %} selected {% endif %}>{{ y }}</option>
         {% endfor %}
     </select>
     <br>
     <label for="id_semester">Semester</label>
     <select name="semester" id="id_semester">
         {% for i in semester_list %}
-        <option value="{{ i.id }}" selected> {{ i }} </option>
+        <option value="{{ i.id }}" {% if i.id == course.semester.id %} selected {% endif %}> {{ i }} </option>
         {% endfor %}
     </select>
     <br>
-    <input type="submit">
+    <input type="submit" value="Update">
 </form>
 
 {% endblock %}

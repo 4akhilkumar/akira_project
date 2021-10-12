@@ -7,29 +7,66 @@
 
 <title>{% block title %}{{ view_course }} - AkirA{% endblock %}</title>
 
-<div class="main">
-  <ul class="cards">
+<style>
+.course_title::after {
+  content: '#{{ view_course.course_code }} #{{ view_course.course_name|first_letter_word }}';
+}
+</style>
 
-    <li class="cards_item">
-      <div class="card">
-        <div class="card_image">
-            <h1 class="short_title">{{ view_course.course_name|first_letter_word }}</h1>
-        </div>
-        <div class="card_content">
-          <h2 class="card_title">{{ view_course.course_name}}</h2>
-          <p class="card_text_cc_name">Course Co-Ordinator: {% if view_course.faculty.gender == 'Male' %} Mr. {% else %} Ms. {% endif %} {{ view_course.faculty.user.last_name }} {{ view_course.faculty.user.first_name }}</p>                
-          <p class="card_text">
-            {{ view_course.course_desc|slice:"3:-4"|to_and|safe }}
-          </p>
-          <div class="card_buttons">
-            <button class="btn card_btn edit">Edit Info.</button>
-            <button class="btn card_btn delete">Delete Course</button>
-          </div>
-        </div>
+<div class="course_info">
+  <div class="first_container">
+    <div class="course_title_and_dept">
+      <div class="course_title">
+        <h1>{{ view_course.course_name }}</h1>
       </div>
-    </li>
-
-  </ul>
+      <div class="course_offer_dept">
+        <h4>Course Offered by <br> {{ view_course.branch }} Department</h4>
+      </div>
+    </div>
+    <div class="course_short_desc">
+      <p>{{ view_course.course_short_info }}</p>
+    </div>
+    <div class="course_cc" onclick="document.location='{% url 'view_staff' view_course.course_coordinator.id %}'">
+      <div class="cc_img">
+        <img class="cc_profile_pic"
+        {% if not course_cc_profile_pic.profile_pic %}
+        src="{% get_static_prefix %}Default User Profile Photo/{{view_course.course_coordinator.first_name|capfirst|first}}.png" 
+        {% else %}
+        src="{{ course_cc_profile_pic.profile_pic.url }}"
+        {% endif %} 
+         alt="User Profile Picture"
+        >
+      </div>
+      <div class="cc_name">
+        <p>{{ view_course.course_coordinator.last_name }} {{ view_course.course_coordinator.first_name }}</p>
+      </div>
+    </div>
+    <div class="enroll_btn_option">
+      <button class="btn enroll enroll_btn">Enroll Now</button>
+      {% if "Administrator" or "Head of the Department" in group_list %}
+      <button class="btn edit enroll_btn" onclick="document.location='{% url 'edit_course' view_course.id %}'">Edit Info.</button>
+      <button class="btn delete enroll_btn" onclick="document.location='{% url 'delete_courses' view_course.id %}'">Delete Course</button>
+      {% endif %}
+    </div>
+    <div class="enroll_status">
+      <h4>1,129,254 already enrolled</h4>
+    </div>
+  </div>
+  <div class="second_container">
+    <div class="course_column1">
+      <div class="what_you_will_learn">
+        <h3 class="course_sub_heading">&nbsp; WHAT YOU WILL LEARN</h3>
+        <ol><h4>{{ view_course.course_wywl }}</h4></ol>
+      </div>
+      <div class="skills_you_will_gain">
+        <h3 class="course_sub_heading">&nbsp; SKILLS YOU WILL GAIN</h3>
+        <ol><h4>{{ view_course.course_sywg }}</h4></ol>
+      </div>
+      <div class="course_about">
+        <h3 class="course_description">&nbsp; Course Description</h3>
+        <ol><h4>{{ view_course.course_desc|slice:"3:-6"|to_and|safe }}</h4></ol>
+      </div>
+    </div>
+  </div>
 </div>
-
 {% endblock %}

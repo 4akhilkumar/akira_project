@@ -6,8 +6,10 @@ urlpatterns = [
     path('cc_dashboard/', views.cc_dashboard, name="cc_dashboard"),
     path('hod_dashboard/', views.hod_dashboard, name="hod_dashboard"),
     path('create_courses/', views.create_courses, name="create_courses"),
-    path('update_courses/', views.update_courses, name="update_courses"),
-    path('delete_courses/', views.delete_courses, name="delete_courses"),
+    path('save_created_course/', views.save_created_course, name="save_created_course"),
+    path('edit_course/<course_id>/', views.edit_course, name="edit_course"),
+    path('save_edit_course/<course_id>/', views.save_edit_course, name="save_edit_course"),
+    path('delete_courses/<course_id>/', views.delete_courses, name="delete_courses"),
     path('manage_courses/', views.manage_courses, name="manage_courses"),
     path('view_course/<course_id>/', views.view_courses, name="view_course"),
 ]

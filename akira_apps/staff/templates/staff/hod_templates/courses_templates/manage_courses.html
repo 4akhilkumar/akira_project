@@ -12,13 +12,12 @@
     <li class="cards_item">
       <div class="card create_course_card" onclick="document.location='{% url 'create_courses' %}'">
         <div class="card_image">
-          <!-- <img src="https://picsum.photos/500/300/?image=10"> -->
           <h1><i class="fa-solid fa-circle-plus"></i></h1>
         </div>
         <div class="card_content">
           <h2 class="create_card_title">Create a Course</h2>
           <p class="card_text">
-              Demo of pixel perfect pure CSS simple responsive card grid layout<br>
+            A course is a unit of teaching that typically lasts one academic term<br>
           </p>
         </div>
       </div>
@@ -31,18 +30,23 @@
     <li class="cards_item">
       <div class="card">
         <div class="card_image">
-            <h1 class="short_title">{{ i.course_name|first_letter_word }}</h1>
+            <h1 class="short_title">{{ i.course_name|first_letter_word }} <sub class="custom_sub">{{ i.course_code}}</sub> </h1>
         </div>
         <div class="card_content">
           <h2 class="card_title">{{ i.course_name}}</h2>
-          <p class="card_text_cc_name">Course Co-Ordinator: {% if i.faculty.gender == 'Male' %} Mr. {% else %} Ms. {% endif %} {{ i.faculty.user.last_name }} {{ i.faculty.user.first_name }}</p>                
+          <p class="card_text_cc_name">Course Co-Ordinator: {{ i.course_coordinator.last_name }} {{ i.course_coordinator.first_name }}</p>                
           <p class="card_text">
-            {{ i.course_desc|slice:"3:-4"|to_and|safe }}
+            {{ i.course_desc|slice:"3:-6"|to_and|safe }}
           </p>
           <div class="card_buttons">
             <button class="btn card_btn more" onclick="document.location='{% url 'view_course' i.id %}'">Read More</button>
-            <button class="btn card_btn edit">Edit Info.</button>
-            <button class="btn card_btn delete">Delete Course</button>
+            {% if "Administrator" or "Head of the Department" in group_list %}
+            <button class="btn card_btn edit" onclick="document.location='{% url 'edit_course' i.id %}'">Edit Info.</button>
+            <button class="btn card_btn delete" onclick="document.location='{% url 'delete_courses' i.id %}'">Delete Course</button>
+            {% else %}
+            <button class="btn card_btn enroll" onclick="document.location='{% url 'edit_course' i.id %}'">Enroll Now</button>
+            <button class="btn card_btn enroll" onclick="document.location='{% url 'edit_course' i.id %}'">25 Left</button>
+            {% endif %}
           </div>
         </div>
       </div>
