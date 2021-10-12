@@ -6,40 +6,45 @@
 <title>{% block title %}View Faculty - AkirA{% endblock %}</title>
 <link rel="stylesheet" href="{% static 'styles/tables.css' %}">
 
+{% if staffs %}
 <table>
-    <thead>
-      <tr>
-        <th>University ID</th>
-        <th>Full Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Gender</th>
-        <th>Deptarment</th>
-        <th>Designation</th>
-        <th>Address</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for staff in staffs %}
-      <tr>
-        <td>
-          {{ staff.user.username }}
-          <a href="{% url 'view_staff' staff.user.id %}" title="View profile"><i class="fas fa-external-link-alt external_link"></i></a>
-        </td>
-        <td>{{ staff.user.last_name|title }} {{ staff.user.first_name|title }}</td>
-        <td>{{ staff.user.email }} <a href="mailto:{{ staff.user.email }}"> <i class="fas fa-external-link-alt external_link"></i> </a></td>
-        <td>{{ staff.phone }} <a href="tel:Mobile : {{ staff.phone }}"> <i class="fas fa-external-link-alt external_link"></i> </a></td>
-        <td>{{ staff.gender }}</td>
-        <td>{{ staff.branch }}</td>
-        <td>{{ staff.designation }}</td>
-        <td>{{ staff.city_name }}</td>
-        {% comment %}
-        <a class="edit_button" href="{% url 'edit_staff' staff.user.id %}"><i class="fas fa-edit"></i> Edit</a> &nbsp; <br>
-        <a class="delete_button" href="{% url 'delete_staff' staff.user.id %}"><i class="fas fa-trash"></i> Delete</a>
-        {% endcomment %}
-      </tr>
-      {% endfor %}
-    </tbody>
+  <thead>
+    <tr>
+      <th>University ID</th>
+      <th>Full Name</th>
+      <th>Email</th>
+      <th>Gender</th>
+      <th>Medical Issue(s)</th>
+      <th>Deptarment</th>
+      <th>Designation</th>
+      <th>Address</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for staff in staffs %}
+    <tr>
+      <td>
+        {{ staff.user.username }}
+        <a href="{% url 'view_staff' staff.user.id %}" title="View profile"><i class="fas fa-external-link-alt external_link"></i></a>
+      </td>
+      <td>{{ staff.user.last_name|title }} {{ staff.user.first_name|title }}</td>
+      <td>{{ staff.user.email }} <a href="mailto:{{ staff.user.email }}"> <i class="fas fa-external-link-alt external_link"></i> </a></td>
+      <td>{{ staff.gender }}</td>
+      <td>{{ staff.current_medical_issue }}</td>
+      <td>{{ staff.branch }}</td>
+      <td>{{ staff.designation }}</td>
+      <td>{{ staff.city_name }}</td>
+      {% comment %}
+      <a class="edit_button" href="{% url 'edit_staff' staff.user.id %}"><i class="fas fa-edit"></i> Edit</a> &nbsp; <br>
+      <a class="delete_button" href="{% url 'delete_staff' staff.user.id %}"><i class="fas fa-trash"></i> Delete</a>
+      {% endcomment %}
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
+{% else %}
+<p>No Data Available</p>
+<a href="{% url 'add_staff' %}">Add Staff</a>
+{% endif %}
 
 {% endblock %}
