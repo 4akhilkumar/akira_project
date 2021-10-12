@@ -24,7 +24,7 @@
     <body>
         <header class="header">
             <div class="header__container">
-                <img id="dark-mode-toggle" src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="{{request.user.first_name}}" class="header__img">
+                <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" onclick="document.location='{% url 'my_profile' %}'" alt="{{request.user.first_name}}" class="header__img">
                 <a href="#" class="header__logo">
                     <img src="{% static 'images/Logo_AkirA.png' %}" width="125" height="auto" alt="AkirA Logo">
                 </a>
@@ -347,6 +347,10 @@
                                 <i class="far fa-bookmark nav__icon"></i>
                                 <span class="nav__name" id="show_saved">Saved</span>
                             </a>
+                            <a href="#" class="nav__link" id="dark-mode-toggle">
+                                <i class="fas fa-adjust nav__icon"></i>
+                                <span class="nav__name" id="theme">Theme</span>
+                            </a>
                         </div>
                     </div>
                     {% elif group_for.name == 'Faculty' %}
@@ -520,6 +524,10 @@
                             <a href="#" class="nav__link">
                                 <i class="far fa-bookmark nav__icon"></i>
                                 <span class="nav__name" id="show_saved">Saved</span>
+                            </a>
+                            <a href="#" class="nav__link" id="dark-mode-toggle">
+                                <i class="fas fa-adjust nav__icon"></i>
+                                <span class="nav__name" id="theme">Theme</span>
                             </a>
                         </div>
                     </div>
