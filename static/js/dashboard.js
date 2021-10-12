@@ -102,3 +102,30 @@ themeToggle.addEventListener('click', () => {
     disableDarkText(); 
   }
 });
+
+/* ======== Carousel ======== */
+var slideIndex = 0;
+carousel();
+
+function carousel() {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none"; 
+  }
+  slideIndex++;
+  if (slideIndex > x.length) {slideIndex = 1} 
+  x[slideIndex-1].style.display = "block"; 
+  setTimeout(carousel, 4000); 
+}
+
+/* ======= checkSemesterStatus ======= */
+function checkSemesterStatus() {
+  var checkBox = document.getElementById("id_semester_status");
+  let str = document.getElementById("semesterStatus").innerHTML; 
+  if (checkBox.checked == true){
+    document.getElementById("semesterStatus").innerHTML = str.replace("Disabled", "Active");
+  } else {
+    document.getElementById("semesterStatus").innerHTML = str.replace("Active", "Disabled");
+  }
+}
