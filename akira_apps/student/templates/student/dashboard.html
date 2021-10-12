@@ -3,90 +3,7 @@
 
 {% block content %}
 
-<script nonce="{{rAnd0m123}}" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <title>{% block title %}Student Dashboard - AkirA{% endblock %}</title>
-
-<style>
-  .main_section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .avatar {
-    border: 2px solid #757575;
-    border-radius: 50%;
-    height: 8rem;
-  }
-  
-  .section_1 {
-    padding-top: 1rem;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mySlides {
-    display:none;
-  }
-
-  .section_2 {
-    margin-top: 1rem;
-  }
-
-  .card {
-    padding: 16px;
-    border-radius: .4rem;
-    border: 2px solid #0000001f;
-    width: fit-content;
-    display: flex;
-    gap: .5rem;
-    flex-direction: row;
-    animation: fadeInAnimation ease 2s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-  }
-
-  @keyframes fadeInAnimation {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  h1,h2,h3,h4,h5,h6,p {
-    margin: 0;
-    padding: 0;
-  }
-
-  .row1 {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .row2 {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .container_image {
-    width: 100px;
-    object-fit: cover;
-  }
-
-  .container_image2 {
-    width: 200px;
-    object-fit: cover;
-  }
-
-  .custom_link {
-    color: #2196f3;
-    cursor: pointer;
-  }
-</style>
 
 <div class="main_section">
 
@@ -102,7 +19,7 @@
   <div class="section_2">
     <div class="mySlides">
 
-      <div class="card">
+      <div class="card_slides">
         <div class="row1">
           <p>Your AkirA Account is Secured. You can check your <span class="custom_link" onclick=""> Login Activity. </span> </p>
         </div>
@@ -111,7 +28,7 @@
         </div>
       </div>
 
-      <!-- <div class="card">
+      <!-- <div class="card_slides">
         <div class="row1">
           <p>We Found Unusual Login Activity in your AkirA Account. Please check your <span class="custom_link" onclick=""> Login Activity. </span> </p>
         </div>
@@ -124,7 +41,7 @@
 
     <div class="mySlides">
       
-      <div class="card">
+      <div class="card_slides">
 
         <div class="row1">
           <p>You Have New Notifications. Check Out <span class="custom_link" onclick=""> Here! </span> </p>
@@ -139,7 +56,7 @@
 
     <div class="mySlides">
       
-      <div class="card">
+      <div class="card_slides">
 
         <div class="row1">
           <p>New Sessions have been Uploaded. Check Out <span class="custom_link" onclick=""> Here! </span> </p>
@@ -154,15 +71,15 @@
 
     <div class="mySlides">
       
-      <div class="card">
+      <div class="card_slides">
 
         <div class="row1">
           <p>No Tasks are listed. Create <span class="custom_link" onclick=""> a Task. </span> </p>
         </div>
 
-        <!-- <div class="row1">
+        <div class="row1">
           <p>You have 21 Tasks. Check Out <span class="custom_link" onclick=""> Here! </span> </p>
-        </div> -->
+        </div>
 
         <div class="row2">
           <img class="container_image2" src="{% static 'images/task.webp' %}" alt="">
@@ -172,22 +89,5 @@
     </div>
 
 </div>
-
-<script nonce="{{rAnd0m123}}">
-  var slideIndex = 0;
-  carousel();
-  
-  function carousel() {
-    var i;
-    var x = document.getElementsByClassName("mySlides");
-    for (i = 0; i < x.length; i++) {
-      x[i].style.display = "none"; 
-    }
-    slideIndex++;
-    if (slideIndex > x.length) {slideIndex = 1} 
-    x[slideIndex-1].style.display = "block"; 
-    setTimeout(carousel, 4000); 
-  }
-</script>
 
 {% endblock %}

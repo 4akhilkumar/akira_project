@@ -48,7 +48,7 @@
         </div>
 
         <div class="row2">
-          <img class="container_image2" src="{% static 'images/messages.png' %}" alt="">
+          <img class="container_image2" src="{% static 'images/messages.webp' %}" alt="">
         </div>
       </div>
       
@@ -63,7 +63,7 @@
         </div>
 
         <div class="row2">
-          <img class="container_image2" src="{% static 'images/sessions.png' %}" alt="">
+          <img class="container_image2" src="{% static 'images/sessions.webp' %}" alt="">
         </div>
       </div>
       
@@ -89,22 +89,5 @@
     </div>
 
 </div>
-
-<script nonce="{{rAnd0m123}}">
-  var slideIndex = 0;
-  carousel();
-  
-  function carousel() {
-    var i;
-    var x = document.getElementsByClassName("mySlides");
-    for (i = 0; i < x.length; i++) {
-      x[i].style.display = "none"; 
-    }
-    slideIndex++;
-    if (slideIndex > x.length) {slideIndex = 1} 
-    x[slideIndex-1].style.display = "block"; 
-    setTimeout(carousel, 4000); 
-  }
-</script>
 
 {% endblock %}
