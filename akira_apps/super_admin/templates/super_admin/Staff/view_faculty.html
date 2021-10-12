@@ -214,6 +214,19 @@ a.delete_ssp:hover {
                     <div class="col-sm-3">
                       <h6 class="mb-0">Full Name</h6>
                     </div>
+
+                    <div class="user_role">
+                      <form action="{% url 'user_group' staff.user.id %}" method="POST">
+                        {% csrf_token %}
+                        <select name="group_name" id="">
+                          {% for i in group_list %}
+                          <option value="{{ i }}">{{ i }}</option>
+                          {% endfor %}
+                        </select>
+                        <input type="submit" value="submit">
+                      </form>
+                    </div>
+
                     <div class="col-sm-9 text-secondary">
                         {{staff.user.first_name}} {{staff.user.last_name}}
                     </div>
