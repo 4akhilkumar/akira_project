@@ -1,15 +1,66 @@
+from django.http import request
+from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
-from akira_apps.staff.forms import CreateUserForm, StaffsForm
+from akira_apps.staff.forms import StaffsForm
 from akira_apps.staff.models import Staffs
+from akira_apps.authentication.forms import CreateUserForm
 
 import secrets
 
+from akira_apps.super_admin.decorators import allowed_users
+
+def my_profile(request):
+    user = User.objects.get(id=request.user.id)
+    group = ', '.join(map(str, user.groups.all()))
+    list_groups = Group.objects.all()
+    context = {
+        "user":user,
+        "group":group,
+        "list_groups":list_groups,
+    }
+    return render(request, 'super_admin/my_profile.html', context)
+
+def save_my_profile(request):
+    if request.method == 'POST':
+        current_user = User.objects.get(id=request.user.id)
+        email = request.POST.get('email').lower()
+        first_name = request.POST.get('first_name').title()
+        last_name = request.POST.get('last_name').title()
+
+        try:
+            user = User.objects.get(id=current_user.id)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.save()
+            return redirect('my_profile')
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("Couldn't Make Your Request...!")
+
+@allowed_users(allowed_roles=['Administrator'])
+def assign_group(request):
+    if request.method == 'POST':
+        assigned_group = request.POST.getlist('group_name')
+        try:
+            for i in assigned_group:
+                my_group = Group.objects.get(name='%s' % str(i)) 
+                user = User.objects.get(id=request.user.id)
+                my_group.user_set.remove(user)
+            return redirect('my_profile')
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("Couldn't Make Your Request...!")
+
 @login_required(login_url=settings.LOGIN_URL)
+@allowed_users(allowed_roles=['Administrator'])
 def super_admin_dashboard(request):
     rAnd0m123 = secrets.token_urlsafe(16)
     context = {
@@ -45,7 +96,7 @@ def add_staff(request):
             
             user = authenticate(username = username, password = password)
 
-            group = Group.objects.get(name='Faculty')
+            group = Group.objects.get(name='Staff')
             user.groups.add(group)
             print("Faculty Registered Successfully.")
             return redirect('manage_staff')
@@ -70,8 +121,46 @@ def manage_staff(request):
 @login_required(login_url=settings.LOGIN_URL)
 def view_staff(request, staff_id):
     staff = Staffs.objects.get(user=staff_id)
+    group_list = Group.objects.all()
     context = {
         "staff": staff,
         "id": staff_id,
+        "group_list":group_list,
     }
     return render(request, "super_admin/Staff/view_faculty.html", context)
+
+@login_required(login_url=settings.LOGIN_URL)
+def user_group(request, staff_id):
+    if request.method == 'POST':
+        group_name = request.POST.get('group_name')
+        my_group = Group.objects.get(name='%s' % str(group_name))
+        user = User.objects.get(id=staff_id) 
+        my_group.user_set.add(user)
+        print("Group Done")
+        return redirect('manage_staff')
+    else:
+        return redirect('manage_staff')
+
+# group_name = 'Student'
+# my_group = Group.objects.get(name='%s' % str(group_name))
+# user = User.objects.get(id=6)
+# my_group.user_set.add(user)
+# print("Success")
+
+# group_name = 'Student'
+# group_name = 'Head of the Department'
+# group_name = 'Administrator'
+# my_group = Group.objects.get(name='%s' % str(group_name))
+# user = User.objects.get(id=2) 
+# my_group.user_set.remove(user)
+# print("Success")
+
+# user = User.objects.get(id=2) 
+# check = ', '.join(map(str, user.groups.all()))
+# print(check)
+
+new_group, created = Group.objects.get_or_create(name ='Administrator')
+new_group, created = Group.objects.get_or_create(name ='Course Co-Ordinator')
+new_group, created = Group.objects.get_or_create(name ='Head of the Department')
+new_group, created = Group.objects.get_or_create(name ='Staff')
+new_group, created = Group.objects.get_or_create(name ='Student')
