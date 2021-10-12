@@ -1,0 +1,34 @@
+username: {{ user.username }}
+<br>
+Name: {{ user.first_name }} {{ user.last_name }}
+<br>
+Email: {{ user.email }}
+<br>
+Group: {{ group }}
+
+<form action="{% url 'save_my_profile' %}" method="post">
+    {% csrf_token %}
+    <label for="First Name">First Name</label>
+    <input type="text" name="first_name" id="id_first_name">
+    <label for="Last Name">Last Name</label>
+    <input type="text" name="last_name" id="id_last_name">
+    <label for="Email">Email</label>
+    <input type="email" name="email" id="id_email">
+    <input type="submit">
+</form>
+
+<form action="{% url 'assign_group' %}" method="post">
+    {% csrf_token %}
+    <!-- <input list="group_name_list" id="id_group_name" name="group_name" />
+    <datalist id="group_name_list" multiple>
+        {% for i in list_groups %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </datalist> -->
+    <select name="group_name" id="id_group_name" multiple>
+        {% for i in list_groups %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit">
+</form>
