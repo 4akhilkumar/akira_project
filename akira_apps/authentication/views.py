@@ -13,10 +13,15 @@ import socket
 import re
 import httpagentparser
 
+from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
+
 from . models import UserLoginDetails
 
 from akira_apps.staff.urls import *
+from akira_apps.super_admin.urls import *
+from akira_apps.academic_registration.urls import *
 
+@unauthenticated_user
 def user_login(request):
     current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     error_message = ""
@@ -59,7 +64,7 @@ def user_login(request):
                         return redirect(request.GET.get('next'))
                     else: 
                         return redirect('cc_dashboard')
-                else:
+                elif group == 'Administrator':
                     if (request.GET.get('next')):
                         return redirect(request.GET.get('next'))
                     else:
@@ -135,6 +140,7 @@ def verify_login(request, uid, current_time):
             break
     return "Okay"
 
+@login_required(login_url=settings.LOGIN_URL)
 def logoutUser(request):
     logout(request)
     return redirect('login')
