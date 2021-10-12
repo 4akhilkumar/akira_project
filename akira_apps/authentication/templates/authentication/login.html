@@ -23,7 +23,7 @@
                 <div class="login__box">
                     <i class="fas fa-lock login__icon"></i>
                     <!-- pattern="^(?=(.*[a-z]){3,})(?=(.*[A-Z]){2,})(?=(.*[0-9]){2,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$" -->
-                    <input type="password" name="password" value="AKIRAaccount@21" id="id_password" placeholder="Password" class="login__input" required>
+                    <input type="password" name="password" value="AKIRAaccount@21" id="id_password" placeholder="Password" autocomplete="current-password" class="login__input" required>
                 </div>
 
                 <input type="text" name="user_ip_address" id="id_user_ip_address" hidden/>
@@ -38,5 +38,85 @@
 {{success_message}}
 
 <script src='{% static "js/login.js" %}'></script>
+<!-- <script src='{% static "js/aes.js" %}'></script> -->
+
+<!-- <script>
+$(document).ready(function() {
+    $('#login-in').submit(function(event) {
+        var username = $('#id_username').val()
+        var plain_password = $('#id_password').val()
+        var user_ip_address = $('#id_user_ip_address').val()
+
+        var random_key = "{{ rAnd0m123 }}";
+        var ctObj = CryptoJS.AES.encrypt(plain_password, random_key);
+        var encrypted_password = ctObj.toString();
+
+        console.log(username, encrypted_password)
+
+        $.ajax({
+            type : 'POST',
+            url  : '',
+            data :{
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'username': username,
+                'password': encrypted_password,
+                'user_ip_address': user_ip_address,
+            },
+            dataType : 'json',
+            encode   : true
+        })
+    });
+});
+</script> -->
 
 {% endblock %}
+
+<!-- <script>
+    $(document).ready(function() {
+        $('#example-form').submit(function(event) {
+            var text = $('#example-text-input').val();
+            var search = $('#example-search-input').val();
+            var email = $('#example-email-input').val();
+            var telephone = $('#example-tel-input').val();
+            $.ajax({
+                type : 'POST',
+                url  : 'ajax',
+                data :{
+                    'csrfmiddlewaretoken': '{{csrf_token}}',
+                    'text': text,
+                    'search': search,
+                    'email': email,
+                    'telephone': telephone,
+                },
+                dataType : 'json',
+                encode   : true
+            })
+            .done(function(data) {
+                $("#example-form").trigger("reset");
+                $.get('getajax', function(response){
+
+                })
+                .done(function(datas) {
+                    $("#myTable > tbody").prepend("<tr id='table-" +datas.id+ "'>\n\
+                            <td>"+ datas.text +"</td><td>"+ datas.search +"</td>\n\
+                            <td>"+ datas.email +"</td><td>"+ datas.telephone +"</td>\n\
+                            <td>" +datas.created_at+ "</td><td><a class='btn btn-sm btn-warning'><span class='fa fa-edit'></span>Edit</a>\n\
+                            <a class='btn btn-sm btn-danger delete' data-id='"+ datas.id + "'><span class='fa fa-trash'></span> Delete</a> </td></tr>");
+                })
+                .fail(function() {
+                    $("#fails" ).show();
+                })
+            });
+
+            event.preventDefault();
+        });
+        $(document).on('click','.delete',function(event) {
+            console.log('deleted');
+            var id = $(this).attr("data-id");
+            $.get('delete', {id:id}, function(response){
+                var tabrow = '#table-'+id;
+                $(tabrow).remove();
+            });
+        });
+    });
+</script> -->
