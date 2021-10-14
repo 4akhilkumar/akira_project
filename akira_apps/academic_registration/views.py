@@ -171,6 +171,7 @@ def save_created_semester(request):
             semester.save()
         except Exception as e:
             return HttpResponse(e)
+    return redirect('manage_semester')
 
 def edit_semester(request, semester_id):
     semesterForm = SemesterForm()
@@ -214,6 +215,9 @@ def delete_semester(request, semester_id):
         return HttpResponse(e)
 
 # all_section_room_list = SectionRooms.objects.all()
+# for i in all_section_room_list:
+#     sectionRoom = SectionRooms.objects.get(id=i.id)
+#     sectionRoom.delete()
 
 from itertools import chain
 def create_specialization(request):
