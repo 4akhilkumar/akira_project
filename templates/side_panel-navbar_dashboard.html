@@ -72,8 +72,12 @@
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Semester</a>
+                                        <a href="{% url 'manage_block' %}" class="nav__dropdown-item">Block</a>
+                                        <a href="{% url 'manage_section_room' %}" class="nav__dropdown-item">Section Rooms</a>
+                                        <a href="{% url 'manage_semester' %}" class="nav__dropdown-item">Semester</a>
                                         <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Courses</a>
+                                        <a href="{% url 'manage_specialization' %}" class="nav__dropdown-item">Specialization</a>
+                                        <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Time Table</a>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +92,6 @@
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
                                         <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Manage</a>
-                                        <a href="{% url 'add_staff' %}" class="nav__dropdown-item">Add Staff</a>
                                         <a href="#" class="nav__dropdown-item">Grievance</a>
                                     </div>
                                 </div>
@@ -104,7 +107,6 @@
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
                                         <a href="#" class="nav__dropdown-item">Manage</a>
-                                        <a href="#" class="nav__dropdown-item">Search</a>
                                         <a href="#" class="nav__dropdown-item">Grievance</a>
                                     </div>
                                 </div>
@@ -112,25 +114,7 @@
                         </div>
     
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
-
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="far fa-comment nav__icon"></i>
-                                    <span class="nav__name" id="show_messages">Messages</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Staffs</a>
-                                        <a href="#" class="nav__dropdown-item">Students</a>                                        
-                                        <a href="#" class="nav__dropdown-item">Others</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
-                                    </div>
-                                </div>
-                            </div>
-    
+                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>    
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
                                     <i class="far fa-bell nav__icon"></i>
@@ -142,14 +126,13 @@
                                     <div class="nav__dropdown-content">
                                         <a href="#" class="nav__dropdown-item">Publish</a>
                                         <a href="#" class="nav__dropdown-item">Program</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
                                     </div>
                                 </div>
                             </div>
 
                             <a href="#" class="nav__link">
-                                <i class="far fa-bookmark nav__icon"></i>
-                                <span class="nav__name" id="show_saved">Saved</span>
+                                <i class="fas fa-list nav__icon"></i>
+                                <span class="nav__name" id="show_todo_list">ToDo List</span>
                             </a>
                             <a href="#" class="nav__link" id="dark-mode-toggle">
                                 <i class="fas fa-adjust nav__icon"></i>
@@ -162,21 +145,62 @@
                         <div class="nav__items">
                             <h3 class="nav__subtitle" id="show_text1">Primary</h3>
     
-                            <a href="#" class="nav__link active">
+                            <a href="{% url 'cc_dashboard' %}" class="nav__link active">
                                 <i class="fas fa-th-large nav__icon"></i>
                                 <span class="nav__name" id="show_home">Dashboard</span>
                             </a>
 
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
-                                    <i class="fas fa-book nav__icon"></i>
-                                    <span class="nav__name">My Courses</span>
+                                    <i class="fas fa-school nav__icon"></i>
+                                    <span class="nav__name" id="show_academy">My Academy</span>
                                     <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
                                 </a>
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Manage</a>
+                                        <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Courses</a>
+                                        <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Faculty</a>
+                                        <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Students</a>
+                                        <a href="#" class="nav__dropdown-item">Time Table</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="nav__items">
+                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
+                            <a href="#" class="nav__link">
+                                <i class="fas fa-list nav__icon"></i>
+                                <span class="nav__name" id="show_todo_list">ToDo List</span>
+                            </a>
+                            <a href="#" class="nav__link" id="dark-mode-toggle">
+                                <i class="fas fa-adjust nav__icon"></i>
+                                <span class="nav__name" id="theme">Theme</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% elif group_for.name == 'Staff' %}
+                    <div class="nav__list">
+                        <div class="nav__items">
+                            <h3 class="nav__subtitle" id="show_text1">Primary</h3>
+
+                            <a href="{% url 'staff_dashboard' %}" class="nav__link active">
+                                <i class="fas fa-th-large nav__icon"></i>
+                                <span class="nav__name" id="show_home">Dashboard</span>
+                            </a>
+
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class="fas fa-school nav__icon"></i>
+                                    <span class="nav__name" id="show_academy">My Academy</span>
+                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Courses</a>
+                                        <a href="#" class="nav__dropdown-item">Time Table</a>
                                     </div>
                                 </div>
                             </div>
@@ -191,7 +215,6 @@
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
                                         <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Manage</a>
-                                        <a href="{% url 'add_staff' %}" class="nav__dropdown-item">Add Staff</a>
                                         <a href="#" class="nav__dropdown-item">Grievance</a>
                                     </div>
                                 </div>
@@ -206,8 +229,7 @@
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Manage</a>
-                                        <a href="#" class="nav__dropdown-item">Search</a>
+                                        <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Manage</a>
                                         <a href="#" class="nav__dropdown-item">Grievance</a>
                                     </div>
                                 </div>
@@ -219,17 +241,32 @@
 
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
-                                    <i class="far fa-comment nav__icon"></i>
-                                    <span class="nav__name" id="show_messages">Messages</span>
+                                    <i class="fas fa-record-vinyl nav__icon"></i>
+                                    <span class="nav__name" id="show_session">Sessions</span>
                                     <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
                                 </a>
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Staffs</a>
-                                        <a href="#" class="nav__dropdown-item">Students</a>                                        
-                                        <a href="#" class="nav__dropdown-item">Others</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
+                                        <a href="#" class="nav__dropdown-item">View Sessions</a>
+                                        <a href="#" class="nav__dropdown-item">Watch Later</a>
+                                        <a href="#" class="nav__dropdown-item">Liked Sessions</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="nav__dropdown">
+                                <a href="#" class="nav__link">
+                                    <i class="fas fa-book nav__icon"></i>
+                                    <span class="nav__name" id="show_library">Library</span>
+                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
+                                </a>
+
+                                <div class="nav__dropdown-collapse">
+                                    <div class="nav__dropdown-content">
+                                        <a href="#" class="nav__dropdown-item">E - Library</a>
+                                        <a href="#" class="nav__dropdown-item">Read Later</a>
+                                        <a href="#" class="nav__dropdown-item">Wishlist</a>
                                     </div>
                                 </div>
                             </div>
@@ -243,105 +280,19 @@
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Publish</a>
-                                        <a href="#" class="nav__dropdown-item">Program</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
+                                        <a href="#" class="nav__dropdown-item">Global</a>
+                                        <a href="#" class="nav__dropdown-item">Local</a>
                                     </div>
                                 </div>
                             </div>
 
                             <a href="#" class="nav__link">
-                                <i class="far fa-bookmark nav__icon"></i>
-                                <span class="nav__name" id="show_saved">Saved</span>
+                                <i class="fas fa-list nav__icon"></i>
+                                <span class="nav__name" id="show_todo_list">ToDo List</span>
                             </a>
                             <a href="#" class="nav__link" id="dark-mode-toggle">
                                 <i class="fas fa-adjust nav__icon"></i>
                                 <span class="nav__name" id="theme">Theme</span>
-                            </a>
-                        </div>
-                    </div>
-                    {% elif group_for.name == 'Faculty' %}
-                    <div class="nav__list">
-                        <div class="nav__items">
-                            <h3 class="nav__subtitle">Primary</h3>
-    
-                            <a href="#" class="nav__link active">
-                                <i class="fas fa-th-large nav__icon"></i>
-                                <span class="nav__name">Dashboard</span>
-                            </a>
-
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="fas fa-chalkboard-teacher nav__icon"></i>
-                                    <span class="nav__name">Staffs</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Manage</a>
-                                        <a href="{% url 'add_staff' %}" class="nav__dropdown-item">Add Staff</a>
-                                        <a href="#" class="nav__dropdown-item">Grievance</a>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="fas fa-user-graduate nav__icon"></i>
-                                    <span class="nav__name">Students</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Manage</a>
-                                        <a href="#" class="nav__dropdown-item">Search</a>
-                                        <a href="#" class="nav__dropdown-item">Grievance</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="nav__items">
-                            <h3 class="nav__subtitle">Secondary</h3>
-
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="far fa-comment nav__icon"></i>
-                                    <span class="nav__name">Messages</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Staffs</a>
-                                        <a href="#" class="nav__dropdown-item">Students</a>                                        
-                                        <a href="#" class="nav__dropdown-item">Others</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
-                                    </div>
-                                </div>
-                            </div>
-    
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="far fa-bell nav__icon"></i>
-                                    <span class="nav__name">Notifications</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Publish</a>
-                                        <a href="#" class="nav__dropdown-item">Program</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <a href="#" class="nav__link">
-                                <i class="far fa-bookmark nav__icon"></i>
-                                <span class="nav__name">Saved</span>
                             </a>
                         </div>
                     </div>
@@ -403,7 +354,6 @@
                                         <a href="#" class="nav__dropdown-item">Staffs</a>
                                         <a href="#" class="nav__dropdown-item">Students</a>                                        
                                         <a href="#" class="nav__dropdown-item">Others</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
                                     </div>
                                 </div>
                             </div>
@@ -417,16 +367,15 @@
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Publish</a>
-                                        <a href="#" class="nav__dropdown-item">Program</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
+                                        <a href="#" class="nav__dropdown-item">Global</a>
+                                        <a href="#" class="nav__dropdown-item">Local</a>
                                     </div>
                                 </div>
                             </div>
 
                             <a href="#" class="nav__link">
-                                <i class="far fa-bookmark nav__icon"></i>
-                                <span class="nav__name" id="show_saved">Saved</span>
+                                <i class="fas fa-list nav__icon"></i>
+                                <span class="nav__name" id="show_todo_list">ToDo List</span>
                             </a>
                             <a href="#" class="nav__link" id="dark-mode-toggle">
                                 <i class="fas fa-adjust nav__icon"></i>
@@ -454,23 +403,9 @@
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
                                         <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Courses</a>
+                                        <a href="{% url 'manage_specialization' %}" class="nav__dropdown-item">Specialization</a>
                                         <a href="#" class="nav__dropdown-item">Time Table</a>
                                         <a href="#" class="nav__dropdown-item">CGPA</a>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="fas fa-user nav__icon"></i>
-                                    <span class="nav__name" id="show_account">My Account</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Personal Info.</a>
-                                        <a href="#" class="nav__dropdown-item">Account info.</a>
                                     </div>
                                 </div>
                             </div>
@@ -522,7 +457,6 @@
                                     <div class="nav__dropdown-content">
                                         <a href="#" class="nav__dropdown-item">Global</a>
                                         <a href="#" class="nav__dropdown-item">Local</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
                                     </div>
                                 </div>
                             </div>
@@ -556,8 +490,12 @@
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="{% url 'create_semester' %}" class="nav__dropdown-item">Semester</a>
+                                        <a href="{% url 'manage_block' %}" class="nav__dropdown-item">Block</a>
+                                        <a href="{% url 'manage_section_room' %}" class="nav__dropdown-item">Section Rooms</a>
+                                        <a href="{% url 'manage_semester' %}" class="nav__dropdown-item">Semester</a>
                                         <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Courses</a>
+                                        <a href="{% url 'manage_specialization' %}" class="nav__dropdown-item">Specialization</a>
+                                        <a href="#" class="nav__dropdown-item">Time Table</a>
                                     </div>
                                 </div>
                             </div>
@@ -597,24 +535,6 @@
     
                         <div class="nav__items">
                             <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
-
-                            <div class="nav__dropdown">
-                                <a href="#" class="nav__link">
-                                    <i class="far fa-comment nav__icon"></i>
-                                    <span class="nav__name" id="show_messages">Messages</span>
-                                    <i class='fas fa-caret-down nav__icon nav__dropdown-icon'></i>
-                                </a>
-
-                                <div class="nav__dropdown-collapse">
-                                    <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Staffs</a>
-                                        <a href="#" class="nav__dropdown-item">Students</a>                                        
-                                        <a href="#" class="nav__dropdown-item">Others</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
-                                    </div>
-                                </div>
-                            </div>
-    
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
                                     <i class="far fa-bell nav__icon"></i>
@@ -624,16 +544,15 @@
 
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
-                                        <a href="#" class="nav__dropdown-item">Publish</a>
-                                        <a href="#" class="nav__dropdown-item">Program</a>
-                                        <a href="#" class="nav__dropdown-item">Blocked</a>
+                                        <a href="#" class="nav__dropdown-item">Global</a>
+                                        <a href="#" class="nav__dropdown-item">Local</a>
                                     </div>
                                 </div>
                             </div>
 
                             <a href="#" class="nav__link">
-                                <i class="far fa-bookmark nav__icon"></i>
-                                <span class="nav__name" id="show_saved">Saved</span>
+                                <i class="fas fa-list nav__icon"></i>
+                                <span class="nav__name" id="show_todo_list">ToDo List</span>
                             </a>
                             <a href="#" class="nav__link" id="dark-mode-toggle">
                                 <i class="fas fa-adjust nav__icon"></i>
