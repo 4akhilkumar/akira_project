@@ -3,6 +3,9 @@ from django.shortcuts import redirect, render
 from akira_apps.academic_registration.forms import SemesterForm
 
 from akira_apps.academic_registration.models import Semester
+from akira_apps.academic_registration.forms import BranchForm, SectionRoomForm, SemesterForm
+from akira_apps.academic_registration.models import Block, SectionRooms, Semester, Specialization, specialization_registration_staff, specialization_registration_student
+from akira_apps.staff.models import Staffs
 
 def create_block(request):
     formType = "Create Block"
@@ -60,6 +63,89 @@ def manage_block(request):
         "block_list":block_list,
     }
     return render(request, 'academic_registration/block/manage_block.html', context)
+
+def create_section_room(request):
+    block_name_list = Block.objects.all()
+    if len(block_name_list) == 0:
+        message = "First You Need To Create Block"
+        print(message)
+        return redirect('manage_block')
+    else:
+        sectionRoomForm = SectionRoomForm()
+        formType = "Create Section Room"
+        context = {
+            "sectionRoomForm":sectionRoomForm,
+            "block_name_list":block_name_list,
+            "formType":formType
+        }
+        return render(request, 'academic_registration/section_room/create_edit_section_room.html', context)
+
+def create_section_room_save(request):
+    if request.method == 'POST':
+        sectionName = request.POST.get('section_name')
+        roomNo = request.POST.get('room_no')
+        floorNo = request.POST.get('floor_no')
+        blockName = request.POST.get('block_name')
+        capacityRoom = request.POST.get('capacity_room')
+        blockName_id = Block.objects.get(id=blockName)
+        try:
+            sectionRoom = SectionRooms(section_name=sectionName, room_no=roomNo, floor=floorNo, block=blockName_id, capacity=capacityRoom)
+            sectionRoom.save()
+            return redirect('manage_section_room')
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("Couldn't Make Your Request Now...!")
+
+def edit_section_room(request, section_room_id):
+    sectionRoomForm = SectionRoomForm()
+    block_name_list = Block.objects.all()
+    section_room_list = SectionRooms.objects.all()
+    current_section_room = SectionRooms.objects.get(id=section_room_id)
+    context = {
+        "sectionRoomForm":sectionRoomForm,
+        "block_name_list":block_name_list,
+        "section_room_list":section_room_list,
+        "current_section_room":current_section_room,
+    }
+    return render(request, 'academic_registration/section_room/create_section_room.html', context)
+
+def edit_section_room_save(request, section_room_id):
+    if request.method == 'POST':
+        sectionName = request.POST.get('section_name')
+        roomNo = request.POST.get('room_no')
+        floorNo = request.POST.get('floor_no')
+        blockName = request.POST.get('block_name')
+        capacityRoom = request.POST.get('capacity_room')
+        blockName_id = Block.objects.get(id=blockName)
+        try:
+            sectionRoom = SectionRooms.objects.get(id=section_room_id)
+            sectionRoom.section_name=sectionName
+            sectionRoom.room_no=roomNo
+            sectionRoom.floor=floorNo
+            sectionRoom.block=blockName_id
+            sectionRoom.capacity=capacityRoom
+            sectionRoom.save()
+            return redirect('manage_section_room')
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("Couldn't Make Your Request Now...!")
+
+def delete_section_room(request, section_room_id):
+    try:
+        sectionRoom = SectionRooms.objects.get(id=section_room_id)
+        sectionRoom.delete()
+        return redirect('manage_section_room')
+    except Exception as e:
+        return HttpResponse(e)
+
+def manage_section_room(request):
+    section_room_list = SectionRooms.objects.all()
+    context = {
+        "section_room_list":section_room_list,
+    }
+    return render(request, 'academic_registration/section_room/manage_section_room.html', context)
 
     semesterForm = SemesterForm()
     context = {

@@ -11,4 +11,11 @@ urlpatterns = [
     path('edit_block_save/<block_id>/', views.edit_block_save, name='edit_block_save'),
     path('delete_block/<block_id>/', views.delete_block, name='delete_block'),
 
+    path('manage_section_room/', views.manage_section_room, name='manage_section_room'),
+    path('create_section_room/', views.create_section_room, name='create_section_room'),
+    path('create_section_room_save/', views.create_section_room_save, name='create_section_room_save'),
+    path('edit_section_room/<section_room_id>/', views.edit_section_room, name='edit_section_room'),
+    path('edit_section_room_save/<section_room_id>/', views.edit_section_room_save, name='edit_section_room_save'),
+    path('delete_section_room/<section_room_id>/', views.delete_section_room, name='delete_section_room'),
+
 ]

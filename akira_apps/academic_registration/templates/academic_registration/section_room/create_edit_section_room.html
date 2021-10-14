@@ -1,0 +1,39 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if formType == "Create Section Room" %}
+<form action="{% url 'create_section_room_save' %}" method="post">
+{% else %}
+<form action="{% url 'edit_section_room_save' current_section_room.id %}" method="post">
+{% endif %}
+
+    {% csrf_token %}
+    <label for="Section Name">Section Name</label>
+    <input type="text" name="section_name" id="id_section_name" value="{{ current_section_room.section_name }}">
+    <br>
+    <label for="Room No.">Room No.</label>
+    <input type="text" name="room_no" id="id_room_no" value="{{ current_section_room.room_no }}">
+    <br>
+    <label for="Floor Name">Floor Name</label>
+    <select name="floor_no" id="id_floor_no">
+        {% for x,y in sectionRoomForm.fields.floor.choices %}
+        <option value="{{ x }}" {% if current_section_room.floor == x %} selected {% endif %}>{{ y }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="Block Name">Block Name</label>
+    <select name="block_name" id="id_block_name">
+        {% for i in block_name_list %}
+        <option value="{{ i.id }}" {% if current_section_room.block.id == i.id %} selected {% endif %}>{{ i }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="Room Capacity">Room Capacity</label>
+    <input type="text" name="capacity_room" id="id_capacity_room" value="{{ current_section_room.capacity }}">
+    <br>
+    <input type="submit">
+</form>
+
+{% endblock %}
