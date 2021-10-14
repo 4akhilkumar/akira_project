@@ -19,6 +19,8 @@
   --card_bg-color: #FFF;
   --card_button-color: #FFF;
   --anchor-color: #0000EE;
+  --remaining_cil_route-anchor-color: #FFF;
+  --courseEnrolled-color: #424242;
 
   /*========== Font and typography ==========*/
   --body-font: 'Quicksand', sans-serif;
@@ -42,6 +44,18 @@
   }
 }
 
+@media screen and (max-width: 769px) {
+  :root {
+    --course-font-size: .813rem;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  :root {
+    --course-font-size: .813rem;
+  }
+}
+
 .darkmode {
   --first-color: #bb86fc;  
   --first-color-light: #424242;
@@ -56,6 +70,7 @@
   --card_bg-color: #42424278;
   --card_button-color: #FFF;
   --anchor-color: greenyellow;
+  --remaining_cil_route-anchor-color: greenyellow;
 }
 
 /*========== BASE ==========*/
@@ -65,16 +80,12 @@
 
 body {
   margin: var(--header-height) 0 0 0;
-  padding: 1rem 1rem 0;
+  /* padding: 1rem 1rem 0; */
   font-family: var(--body-font);
   font-size: var(--normal-font-size);
   background-color: var(--body-color);
   color: var(--text-color);
   
-}
-
-h3 {
-  margin: 0;
 }
 
 a {
@@ -161,7 +172,8 @@ img {
   position: fixed;
   top: 0;
   left: -100%;
-  height: 100vh;
+  /* height: 100vh; */
+  height: 100%;
   padding: 1rem 1rem 0;
   background-color: var(--container-color);
   box-shadow: 1px 0 0 rgba(22, 8, 43, 0.1);
@@ -208,6 +220,7 @@ img {
   text-transform: uppercase;
   letter-spacing: .1rem;
   color: var(--text-color-light);
+  margin: 0;
 }
 
 .nav__link {
@@ -311,7 +324,8 @@ img {
 
 @media screen and (min-width: 768px) {
   body {
-    padding: 1rem 3rem 0 6rem;
+    /* padding: 1rem 3rem 0 6rem; */
+    padding: 1rem 0.5rem 0 5rem;
   }
   .header {
     padding: 0 3rem 0 6rem;
@@ -413,7 +427,6 @@ section {
 }
 
 .btn {
-  color: var(--anchor-color);
   color: var(--text-color);
   padding: 0.8rem;
   font-size: 14px;
@@ -442,6 +455,62 @@ section {
   color: var(--card_button-color);
 }
 
+.enroll-course {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--card_button-color);  
+}
+
+.enroll-course:hover {
+  background-color: #76ea89;
+}
+
+.enroll:hover {
+  background-color: #76ea89;
+  color: var(--card_button-color);
+}
+
+.enrolled {
+  background-color: #424242;
+  color: var(--card_button-color);
+}
+
+.enrolled:hover {
+  background-color: #424242;
+  color: var(--card_button-color);
+}
+
+.course_enrolled {
+  color: var(--courseEnrolled-color);
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.course_enrolled:hover {
+  color: var(--card_button-color);
+}
+
+.course_vacancy {
+  border: 2px #1e88e5 solid;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink { 50% { border-color:#fff ; }  }
+
+.course_vacancy:hover {
+  background-color: #424242;
+  border: 2px #424242 solid;
+  color: var(--card_button-color);
+}
+
+.current_course_vacancy_status {
+  background-color: #1e88e5;
+  padding: 0.2rem;
+  border-radius: 0.2rem;
+  border: 2px #1e88e5 solid;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink { 50% { border-color:#fff ; }  }
+
 .edit:hover {
   background-color: #ffc107;
   color: var(--card_button-color);
@@ -458,6 +527,7 @@ section {
   list-style: none;
   margin: 0;
   padding: 0;
+  justify-content: center;
 }
 
 .cards_item {
@@ -467,6 +537,10 @@ section {
 
 .create_course_card {
   cursor: pointer;
+}
+
+.custom_sub {
+  font-size: 1rem;
 }
 
 @media (min-width: 40rem) {
@@ -481,6 +555,10 @@ section {
   }
 }
 
+ol {
+  margin-left: -1rem;
+}
+
 .card {
   background-color: var(--card_bg-color);
   border-radius: 0.25rem;
@@ -490,6 +568,7 @@ section {
   flex-direction: column;
   overflow: hidden;
   height: fit-content;
+  /* min-width: 18rem; */
 }
 
 .card_image {
@@ -624,7 +703,217 @@ section {
 .custom_link {
   color: var(--anchor-color);
   cursor: pointer;
-}}
+}
+
+.course_info {
+  display: flex;
+  flex-direction: column;
+}
+
+.first_container {
+  display: flex;
+  flex-direction: column;
+  min-height: 65vh;
+  justify-content: space-around;
+  color: #FFF;
+  /* background-image: linear-gradient(90deg, #012e61, #024794); */
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: #012E61;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='840' height='840' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23024794' stroke-width='2.8'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23024794'%3E%3Ccircle cx='769' cy='229' r='11'/%3E%3Ccircle cx='539' cy='269' r='11'/%3E%3Ccircle cx='603' cy='493' r='11'/%3E%3Ccircle cx='731' cy='737' r='11'/%3E%3Ccircle cx='520' cy='660' r='11'/%3E%3Ccircle cx='309' cy='538' r='11'/%3E%3Ccircle cx='295' cy='764' r='11'/%3E%3Ccircle cx='40' cy='599' r='11'/%3E%3Ccircle cx='102' cy='382' r='11'/%3E%3Ccircle cx='127' cy='80' r='11'/%3E%3Ccircle cx='370' cy='105' r='11'/%3E%3Ccircle cx='578' cy='42' r='11'/%3E%3Ccircle cx='237' cy='261' r='11'/%3E%3Ccircle cx='390' cy='382' r='11'/%3E%3C/g%3E%3C/svg%3E"); 
+  /* background-color: #330033;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='840' height='840' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23404' stroke-width='2.8'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23505'%3E%3Ccircle cx='769' cy='229' r='11'/%3E%3Ccircle cx='539' cy='269' r='11'/%3E%3Ccircle cx='603' cy='493' r='11'/%3E%3Ccircle cx='731' cy='737' r='11'/%3E%3Ccircle cx='520' cy='660' r='11'/%3E%3Ccircle cx='309' cy='538' r='11'/%3E%3Ccircle cx='295' cy='764' r='11'/%3E%3Ccircle cx='40' cy='599' r='11'/%3E%3Ccircle cx='102' cy='382' r='11'/%3E%3Ccircle cx='127' cy='80' r='11'/%3E%3Ccircle cx='370' cy='105' r='11'/%3E%3Ccircle cx='578' cy='42' r='11'/%3E%3Ccircle cx='237' cy='261' r='11'/%3E%3Ccircle cx='390' cy='382' r='11'/%3E%3C/g%3E%3C/svg%3E"); 
+  */
+}
+
+.course_title_and_dept {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 600px) {
+  .course_title_and_dept {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.course_title {
+  max-width: fit-content;
+  font-size: var(--course-font-size);
+}
+
+.course_offer_dept {
+  max-width: fit-content;
+  font-size: var(--course-font-size);
+  text-align: center;
+}
+
+.course_short_desc {
+  max-width: fit-content;
+  font-size: var(--course-font-size);
+}
+
+.course_cc {
+  max-width: fit-content;
+  display: flex;
+  font-size: var(--course-font-size);
+  align-items: center;
+  align-content: center;
+  gap: 0.5rem;
+}
+
+.cc_name:hover, .remaining_course_instructors:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: var(--anchor-color);
+}
+
+.remaining_cil_route {
+  color: var(--remaining_cil_route-anchor-color);
+}
+
+.cc_img {
+
+}
+
+.cc_profile_pic {
+  border-radius: 7rem;
+  height: 2.5rem;
+}
+
+.cc_name {
+
+}
+
+.enroll_btn_option {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.enroll_btn {
+  display: block;
+  font-size: var(--course-font-size);
+  padding: 1rem;
+  border-radius: 0.4rem;
+  border: none;
+  width: 20%;
+  cursor: pointer;
+  /* background-color: #FFF; */
+  color: #FFF;
+}
+
+@media screen and (max-width: 426px) {
+  .enroll_btn {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .enroll_btn {
+    width: 15%;
+  }
+}
+
+.enroll_form {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.select_section {
+  width: fit-content;
+  padding: 0.1rem;
+}
+
+.enroll_status {
+  max-width: fit-content;
+  font-size: var(--course-font-size);
+}
+
+.second_container {
+  display: flex;
+  flex-direction: row;
+  font-size: var(--course-font-size);
+  padding: 0rem 1rem;
+}
+
+@media screen and (max-width: 426px) {
+  .second_container {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.course_column1 {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--course-font-size);
+}
+
+.course_faculty_list {
+  font-size: var(--course-font-size);
+}
+
+.what_you_will_learn {
+  font-size: var(--course-font-size);
+}
+
+.skills_you_will_gain {
+  font-size: var(--course-font-size);
+}
+
+.course_about {
+  font-size: var(--course-font-size);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 16px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #606060;
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 9999px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc; 
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  border-radius: 9999px;
+}
+
+.course_instructors::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: "\f51c";
+}
+
+.course_sub_heading::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: "\f02e";
+}
+
+.course_description::before {
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  content: "\f0a1";
+}
+.course_instructors, .course_sub_heading, .course_description {
+  font-size: 1.4rem;
+}
+
+/* Semester */
 
 .flex-flex {
   display: flex;
