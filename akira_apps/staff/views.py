@@ -7,15 +7,14 @@ import pandas as pd
 
 from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
-from django.contrib.auth.forms import AuthenticationForm
 
-from akira_apps.academic_registration.forms import BranchForm, CourseForm
+from akira_apps.academic_registration.forms import BranchForm
 from akira_apps.super_admin.decorators import allowed_users
 from akira_apps.authentication.forms import CreateUserForm
-from akira_apps.academic_registration.models import Course, Semester
+from akira_apps.academic_registration.models import Course, SectionRooms, Semester, course_registration_staff
 from akira_apps.staff.models import Staffs
 from akira_apps.student.forms import StudentsForm
-from akira_apps.student.models import Students
+from akira_apps.student.models import Students, course_registration_student
 
 import secrets
 
@@ -25,7 +24,7 @@ def staff_dashboard(request):
     context = {
         "rAnd0m123":rAnd0m123,
     }
-    return render(request, 'staff/staff_dashboard.html', context)
+    return render(request, 'staff/faculty_dashboard.html', context)
 
 @allowed_users(allowed_roles=['Course Co-Ordinator'])
 def cc_dashboard(request):
@@ -51,7 +50,7 @@ def create_courses(request):
     elif Staffs.objects.all().count() == 0:
         return redirect('add_staff')
 
-    course_coordinator_list = User.objects.filter(groups__name='Administrator')
+    course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
     branch_list = BranchForm()
     semester_list = Semester.objects.all()
 
@@ -66,11 +65,11 @@ def create_courses(request):
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def save_created_course(request):
     if request.method == 'POST':
-        courseCode = request.POST.get('course_code')
-        courseName = request.POST.get('course_name')
-        courseShortInfo = request.POST.get('course_short_info')
-        courseWywl = request.POST.get('course_wywl')
-        courseSywg = request.POST.get('course_sywg')
+        courseCode = request.POST.get('course_code').strip()
+        courseName = request.POST.get('course_name').strip()
+        courseShortInfo = request.POST.get('course_short_info').strip()
+        courseWywl = request.POST.get('course_wywl').strip()
+        courseSywg = request.POST.get('course_sywg').strip()
         courseDesc = request.POST['course_desc']
         courseCoOrdinator = request.POST.get('course_coordinator')
         courseCoOrdinator_id = User.objects.get(id=courseCoOrdinator)
@@ -85,7 +84,7 @@ def save_created_course(request):
                             course_wywl=courseWywl, 
                             course_sywg=courseSywg, 
                             course_desc=courseDesc, 
-                            course_coordinator=courseCoOrdinator_id, 
+                            course_coordinator=courseCoOrdinator_id,
                             branch=branch_name, 
                             semester=semester_id)
             course.save()
@@ -99,7 +98,7 @@ def save_created_course(request):
 def edit_course(request, course_id):
     rAnd0m123 = secrets.token_urlsafe(16)
     course = Course.objects.get(id=course_id)
-    course_coordinator_list = User.objects.filter(groups__name='Administrator')
+    course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
     branch_list = BranchForm()
     semester_list = Semester.objects.all()
     context = {
@@ -114,11 +113,11 @@ def edit_course(request, course_id):
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def save_edit_course(request, course_id):
     if request.method == 'POST':
-        courseCode = request.POST.get('course_code')
-        courseName = request.POST.get('course_name')
-        courseShortInfo = request.POST.get('course_short_info')
-        courseWywl = request.POST.get('course_wywl')
-        courseSywg = request.POST.get('course_sywg')
+        courseCode = request.POST.get('course_code').strip()
+        courseName = request.POST.get('course_name').strip()
+        courseShortInfo = request.POST.get('course_short_info').strip()
+        courseWywl = request.POST.get('course_wywl').strip()
+        courseSywg = request.POST.get('course_sywg').strip()
         courseDesc = request.POST['course_desc']
         courseCoOrdinator = request.POST.get('course_coordinator')
         courseCoOrdinator_id = User.objects.get(id=courseCoOrdinator)
@@ -151,27 +150,108 @@ def delete_courses(request, course_id):
     return redirect('manage_courses')
 
 def manage_courses(request):
+    rAnd0m123 = secrets.token_urlsafe(16)
     list_courses = Course.objects.all()
     user = User.objects.get(id=request.user.id)
     group_list = ', '.join(map(str, user.groups.all()))
-    print(group_list)
-    rAnd0m123 = secrets.token_urlsafe(16)
+
+    staff_enrolled_course = course_registration_staff.objects.filter(staff = request.user.id)
+    course_id_list = []
+    for i in staff_enrolled_course:
+        course_object = course_registration_staff.objects.get(id=i.id, staff=request.user.id)
+        course_id = course_registration_staff.objects.get(id=course_object.id)
+        course_id_list.append(str(course_id.course.id))
+    course_id_list_str = ", ".join(course_id_list)
+
     context = {
         "rAnd0m123":rAnd0m123,
         "list_courses":list_courses,
-        "group_list":group_list
+        "group_list":group_list,
+        "course_id_list_str":course_id_list_str,
     }
     return render(request, 'staff/hod_templates/courses_templates/manage_courses.html', context)
 
-def view_courses(request, course_id):
-    view_course = Course.objects.get(id=course_id)
-    user = User.objects.get(id=request.user.id)
-    group_list = ', '.join(map(str, user.groups.all()))
+def view_course(request, course_id):
     rAnd0m123 = secrets.token_urlsafe(16)
+    course = Course.objects.get(id=course_id)
+    user = User.objects.get(id=request.user.id)
+    group_list = ', '.join(map(str, user.groups.all())) 
+
+    staff_enrolled_course = course_registration_staff.objects.filter(staff = request.user.id)
+    course_id_list = []
+    for i in staff_enrolled_course:
+        course_object = course_registration_staff.objects.get(id=i.id, staff=request.user.id)
+        course_id = course_registration_staff.objects.get(id=course_object.id)
+        course_id_list.append(str(course_id.course.id))
+    course_id_list_str = ", ".join(course_id_list)
+
+    student_enrolled_course = course_registration_student.objects.filter(student = request.user.id)
+    student_course_id_list = []
+    for i in student_enrolled_course:
+        course_object = course_registration_student.objects.get(id=i.id, student=request.user.id)
+        course_id = course_registration_student.objects.get(id=course_object.id)
+        student_course_id_list.append(str(course_id.course.id))
+    student_course_id_list_str = ", ".join(student_course_id_list)
+
+    # count_enrolled = course_registration_staff.objects.filter(course=course.id).count()
+
+    enrolled_staff = course_registration_staff.objects.filter(course=course.id)
+    staff_course_enrolled_list = []
+    for i in enrolled_staff:
+        staff_course_enrolled_list.append(i.staff)
+    
+    staff_course_enrolled_list_set = [i for n, i in enumerate(staff_course_enrolled_list) if i not in staff_course_enrolled_list[:n]]
+
+    enrolled_students = course_registration_student.objects.filter(course=course.id)
+    student_course_enrolled_list = []
+    for i in enrolled_students:
+        student_course_enrolled_list.append(i.student)
+    
+    section_list = SectionRooms.objects.all()
+
+    course_enrolled_staff = course_registration_staff.objects.filter(course=course.id, staff=request.user.id)
+    course_enrolled_section_list = []
+    for i in course_enrolled_staff:
+        course_enrolled_section_list.append(i.section)
+
+    course_enrolled_section_list_str = ', '.join(map(str, course_enrolled_section_list))
+
+    course_enrolled_student = course_registration_student.objects.filter(course=course.id, student=request.user.id)
+    student_course_enrolled_section_list = []
+    for i in course_enrolled_student:
+        student_course_enrolled_section_list.append(i.section)
+
+    student_course_enrolled_section_list_str = ', '.join(map(str, student_course_enrolled_section_list))
+
+    instructor_enrolled_section_list = []
+    for i in enrolled_staff:
+        instructor_enrolled_section_list.append(i.section)
+
+    # keys = []
+    # values = []
+    # dicts = {}
+    # for i in course_enrolled_staff:
+    #     keys.append(i.section)
+    #     values.append(i.section.section_name)
+    # for i in range(len(keys)):
+    #     dicts[keys[i]] = values[i]
+
     context = {
         "rAnd0m123":rAnd0m123,
-        "view_course":view_course,
-        "group_list":group_list
+        "view_course":course,
+        "group_list":group_list,
+        "course_id_list_str":course_id_list_str,
+        # "count_enrolled":count_enrolled,
+        "staff_course_enrolled_list_set":staff_course_enrolled_list_set,
+        "student_course_enrolled_list":student_course_enrolled_list,
+        "student_course_id_list_str":student_course_id_list_str,
+        "section_list":section_list,
+        "course_enrolled_section_list":course_enrolled_section_list,
+        "course_enrolled_section_list_str":course_enrolled_section_list_str,
+        "student_course_enrolled_section_list":student_course_enrolled_section_list,
+        "student_course_enrolled_section_list_str":student_course_enrolled_section_list_str,
+        "instructor_enrolled_section_list":instructor_enrolled_section_list,
+        # "dicts":dicts,
     }
     return render(request, 'staff/hod_templates/courses_templates/view_course.html', context)
 
@@ -271,3 +351,45 @@ def bulk_upload_students_save(request):
             "error_message":error_message
         }
         return redirect('manage_student', context)
+
+def staff_enroll_course(request, course_id):
+    current_staff = User.objects.get(id=request.user.id)
+    courseId = Course.objects.get(id=course_id)
+    sectionRoom = request.POST.get('section')
+    sectionRoom_Id = SectionRooms.objects.get(id=sectionRoom)
+    try:
+        enroll_course = course_registration_staff(staff = current_staff, course = courseId, section=sectionRoom_Id)
+        enroll_course.save()
+        return redirect('manage_courses')
+    except Exception as e:
+        return HttpResponse(e)
+
+def staff_unenroll_course(request, staff_enroll_course_id):
+    try:
+        unenrollCourse = course_registration_staff.objects.get(id=staff_enroll_course_id)
+        unenrollCourse.delete()
+        return redirect('manage_courses')
+    except Exception as e:
+        return HttpResponse(e)
+    
+def student_enroll_course(request, course_id):
+    current_student = User.objects.get(id=request.user.id)
+    courseId = Course.objects.get(id=course_id)
+    sectionRoom = request.POST.get('section')
+    sectionRoom_Id = SectionRooms.objects.get(id=sectionRoom)
+    try:
+        enroll_course = course_registration_student(student = current_student, course = courseId, section=sectionRoom_Id)
+        enroll_course.save()
+        return redirect('manage_courses')
+    except Exception as e:
+        return HttpResponse(e)
+
+# lst = course_registration_staff.objects.all()
+# for i in lst:
+#     unenrollCourse = course_registration_staff.objects.get(id=i.id)
+#     unenrollCourse.delete()
+
+# lst = course_registration_student.objects.all()
+# for i in lst:
+#     unenrollCourse = course_registration_student.objects.get(id=i.id)
+#     unenrollCourse.delete()
