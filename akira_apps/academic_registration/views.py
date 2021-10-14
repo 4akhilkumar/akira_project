@@ -4,8 +4,63 @@ from akira_apps.academic_registration.forms import SemesterForm
 
 from akira_apps.academic_registration.models import Semester
 
-# Create your views here.
-def create_semester(request):
+def create_block(request):
+    formType = "Create Block"
+    context = {
+        "formType":formType,
+    }
+    return render(request, 'academic_registration/block/create_edit_block.html', context)
+
+def create_block_save(request):
+    if request.method == 'POST':
+        blockName = request.POST.get('block_name').upper()
+        try:
+            block = Block(block_name=blockName)
+            block.save()
+            return redirect('manage_block')
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("Couldn't Make Your Request Now...!")
+
+def edit_block(request, block_id):
+    current_block = Block.objects.get(id=block_id)
+    formType = "Edit Block"
+    context = {
+        "current_block":current_block,
+        "formType":formType,
+    }
+    return render(request, 'academic_registration/block/create_edit_block.html', context)
+
+
+def edit_block_save(request, block_id):
+    if request.method == 'POST':
+        blockName = request.POST.get('block_name').upper()
+        try:
+            block = Block.objects.get(id=block_id)
+            block.block_name=blockName
+            block.save()
+            return redirect('manage_block')
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("Couldn't Make Your Request Now...!")
+
+def delete_block(request, block_id):
+    try:
+        current_block = Block.objects.get(id=block_id)
+        current_block.delete()
+        return redirect('manage_block')
+    except Exception as e:
+        return HttpResponse(e)
+
+def manage_block(request):
+    block_list = Block.objects.all()
+    context = {
+        "block_list":block_list,
+    }
+    return render(request, 'academic_registration/block/manage_block.html', context)
+
     semesterForm = SemesterForm()
     context = {
         "semesterForm":semesterForm,
