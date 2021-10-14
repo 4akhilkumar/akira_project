@@ -1,4 +1,5 @@
 from django import forms
+from django.db import models
 
 from akira_apps.academic_registration.models import BRANCH_CHOICES, Semester, Course
 
@@ -9,13 +10,20 @@ class SemesterForm(forms.Form):
     )
     model = Semester
     mode = forms.ChoiceField(choices = SEM_MODE)
-    fields = ['mode', 'branch', 'start_year', 'end_year']
+    fields = ['mode']
 
 class BranchForm(forms.Form):
     branch = forms.ChoiceField(choices = BRANCH_CHOICES)
     fields = ['branch']
 
-class CourseForm(forms.ModelForm):
-    class Meta:
-        model = Course
-        fields = "__all__"
+class SectionRoomForm(forms.Form):
+    class Floor(models.TextChoices):
+        Ground = 'Ground'
+        First = 'First'
+        Second = 'Second'
+        Third = 'Third'
+        Fourth = 'Fourth'
+        Fifth = 'Fifth'
+        Sixth = 'Sixth'
+    floor = forms.ChoiceField(choices = Floor.choices)
+    fields = ['floor']
