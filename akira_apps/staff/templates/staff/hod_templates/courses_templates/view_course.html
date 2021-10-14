@@ -47,7 +47,7 @@
 
           {% comment %}
           <!-- {% if view_course.id|stringformat:"s" in course_id_list_str %}
-            <button class="btn course_enrolled enroll_btn" disabled>Course Enrolled</button>
+            <button class="btn course_specialization_button course_enrolled enroll_btn" disabled>Course Enrolled</button>
           {% else %}
             <form action="{% url 'staff_enroll_course' view_course.id %}" method="post" class="enroll_form">
               {% csrf_token %}
@@ -56,7 +56,7 @@
                 <option value="{{ i.id }}">{{ i }}</option>
                 {% endfor %}
               </select>
-              <button class="btn enroll-course" type="submit">Enroll Now</button>
+              <button class="btn course_specialization_button enroll-course" type="submit">Enroll Now</button>
             </form>
           {% endif %} -->
           {% endcomment %}
@@ -68,16 +68,16 @@
               <option value="{{ i.id }}">{{ i }}</option>
               {% endfor %}
             </select>
-            <button class="btn enroll-course" type="submit">Enroll Now</button>
+            <button class="btn course_specialization_button enroll-course" type="submit">Enroll Now</button>
           </form>
       {% else %}
 
         {% if view_course.id|stringformat:"s" in student_course_id_list_str %}
-          <button class="btn course_enrolled enroll_btn" disabled>Course Enrolled</button>
+          <button class="btn course_specialization_button enroll_btn" disabled>Course Enrolled</button>
           {% else %}
             {% if "Student" == group_list %}
             {% if staff_course_enrolled_list_set|length == 0 or None in instructor_enrolled_section_list %}
-            <button class="btn course_enrolled enroll_btn" disabled>Enroll Unavailable</button>
+            <button class="btn course_specialization_button enroll_btn" disabled>Enroll Unavailable</button>
             {% else %}
             <form action="{% url 'student_enroll_course' view_course.id %}" method="post" class="enroll_form">
               {% csrf_token %}
@@ -86,7 +86,7 @@
                 <option value="{{ i.id }}">{{ i }}</option>
                 {% endfor %}
               </select>
-              <button class="btn enroll-course" type="submit">Enroll Now</button>
+              <button class="btn course_specialization_button enroll-course" type="submit">Enroll Now</button>
             </form>
             {% endif %}
             {% endif %}
@@ -99,13 +99,13 @@
           <option value="{{ i.id }}">{{ i }}</option>
           {% endfor %}
         </select>
-        <button class="btn enroll-course" type="submit">Enroll Now</button>
+        <button class="btn course_specialization_button enroll-course" type="submit">Enroll Now</button>
       </form> -->
       {% endif %}
 
       {% if "Administrator" == group_list or "Head of the Department" == group_list %}
-      <button class="btn edit enroll_btn" onclick="document.location='{% url 'edit_course' view_course.id %}'">Edit Info.</button>
-      <button class="btn delete enroll_btn" onclick="document.location='{% url 'delete_courses' view_course.id %}'">Delete Course</button>
+      <button class="btn course_specialization_button edit enroll_btn" onclick="document.location='{% url 'edit_course' view_course.id %}'">Edit Info.</button>
+      <button class="btn course_specialization_button delete enroll_btn" onclick="document.location='{% url 'delete_courses' view_course.id %}'">Delete Course</button>
       {% endif %}
     </div>
     <div class="enroll_status">

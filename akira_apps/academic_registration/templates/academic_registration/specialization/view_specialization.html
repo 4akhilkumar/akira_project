@@ -45,23 +45,23 @@
       
       {% if "Staff" == group_list or "Course Co-Ordinator" == group_list or "Head of the Department" == group_list %}
         {% if view_specialization.id|stringformat:"s" in staff_specialization_id_list_str %}
-        <button class="btn course_enrolled enroll_btn" disabled>Spec. Enrolled</button>
+        <button class="btn course_specialization_button course_enrolled enroll_btn" disabled>Spec. Enrolled</button>
         {% else %}
-        <button class="btn enroll enroll_btn" onclick="document.location='{% url 'staff_enroll_specialization' view_specialization.id %}'">Enroll Spec.</button>
+        <button class="btn course_specialization_button enroll-course enroll_btn" onclick="document.location='{% url 'staff_enroll_specialization' view_specialization.id %}'">Enroll Spec.</button>
         {% endif %}
       {% else %}
         {% if view_specialization.id|stringformat:"s" in student_specialization_id_list_str %}
-          <button class="btn course_enrolled enroll_btn" disabled>Spec. Enrolled</button>
-          <button class="btn delete enroll_btn" onclick="document.location='{% url 'student_unenroll_specialization' view_specialization.id %}'">Un-Enroll Spec.</button>
+          <button class="btn course_specialization_button course_enrolled enroll_btn" disabled>Spec. Enrolled</button>
+          <button class="btn course_specialization_button delete enroll_btn" onclick="document.location='{% url 'student_unenroll_specialization' view_specialization.id %}'">Un-Enroll Spec.</button>
         {% else %}
             {% if "Student" == group_list %}
                 {% if staff_specialization_enrolled_list_set|length == 0 %}
-                <button class="btn course_enrolled enroll_btn" disabled>Enroll Unavailable</button>
+                <button class="btn course_specialization_button course_enrolled enroll_btn" disabled>Enroll Unavailable</button>
                 {% else %}
                 {% if view_specialization.capacity == 0 %}
-                <button class="btn course_enrolled enroll_btn" disabled>Spec. Full</button>
+                <button class="btn course_specialization_button course_enrolled enroll_btn" disabled>Spec. Full</button>
                 {% else %}
-                <button class="btn enroll enroll_btn" onclick="document.location='{% url 'student_enroll_specialization' view_specialization.id %}'">Enroll Spec.</button>
+                <button class="btn course_specialization_button enroll-course enroll_btn" onclick="document.location='{% url 'student_enroll_specialization' view_specialization.id %}'">Enroll Spec.</button>
                 {% endif %}
                 {% endif %}
             {% endif %}
@@ -69,8 +69,8 @@
       {% endif %}
 
       {% if "Administrator" == group_list or "Head of the Department" == group_list %}
-      <button class="btn edit enroll_btn" onclick="document.location='{% url 'edit_specialization' view_specialization.id %}'">Edit Info.</button>
-      <button class="btn delete enroll_btn" onclick="document.location='{% url 'delete_specialization' view_specialization.id %}'">Delete Spec.</button>
+      <button class="btn course_specialization_button edit enroll_btn" onclick="document.location='{% url 'edit_specialization' view_specialization.id %}'">Edit Info.</button>
+      <button class="btn course_specialization_button delete enroll_btn" onclick="document.location='{% url 'delete_specialization' view_specialization.id %}'">Delete Spec.</button>
       {% endif %}
     </div>
     <div class="enroll_status">
