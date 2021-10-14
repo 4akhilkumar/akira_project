@@ -42,12 +42,12 @@
             {{ i.specialization_desc|slice:"3:-6"|to_and|cut:"<p>"|cut:"</p>"|safe }}
           </p>
           <div class="card_buttons">
-            <button class="btn card_btn more" onclick="document.location='{% url 'view_specialization' i.id %}'">Read More</button>
+            <button class="btn more" onclick="document.location='{% url 'view_specialization' i.id %}'">Know More</button>
             {% if "Administrator" == group_list or "Head of the Department" == group_list %}
-            <button class="btn card_btn edit" onclick="document.location='{% url 'edit_specialization' i.id %}'">Edit Info.</button>
-            <button class="btn card_btn delete" onclick="document.location='{% url 'delete_specialization' i.id %}'">Delete Spec.</button>
+            <button class="btn edit" onclick="document.location='{% url 'edit_specialization' i.id %}'">Edit Info.</button>
+            <button class="btn delete" onclick="document.location='{% url 'delete_specialization' i.id %}'">Delete Spec.</button>
             {% else %}
-            <button class="btn card_btn course_vacancy" onclick="document.location='#'">{{ i.capacity }} Left</button>
+            <button class="btn course_vacancy" onclick="document.location='#'">{{ i.capacity }} Left</button>
             {% endif %}
           </div>
         </div>

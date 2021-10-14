@@ -56,7 +56,6 @@
                     {% if group_for.name == 'Head of the Department' %}
                     <div class="nav__list">
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text1">Primary</h3>
 
                             <a href="{% url 'hod_dashboard' %}" class="nav__link active">
                                 <i class="fas fa-th-large nav__icon"></i>
@@ -113,8 +112,7 @@
                             </div>
                         </div>
     
-                        <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>    
+                        <div class="nav__items">    
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
                                     <i class="far fa-bell nav__icon"></i>
@@ -143,7 +141,6 @@
                     {% elif group_for.name == 'Course Co-Ordinator' %}
                     <div class="nav__list">
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text1">Primary</h3>
     
                             <a href="{% url 'cc_dashboard' %}" class="nav__link active">
                                 <i class="fas fa-th-large nav__icon"></i>
@@ -160,6 +157,7 @@
                                 <div class="nav__dropdown-collapse">
                                     <div class="nav__dropdown-content">
                                         <a href="{% url 'manage_courses' %}" class="nav__dropdown-item">Courses</a>
+                                        <a href="{% url 'manage_specialization' %}" class="nav__dropdown-item">Specialization</a>
                                         <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Faculty</a>
                                         <a href="{% url 'manage_staff' %}" class="nav__dropdown-item">Students</a>
                                         <a href="#" class="nav__dropdown-item">Time Table</a>
@@ -169,7 +167,6 @@
                         </div>
     
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
                             <a href="#" class="nav__link">
                                 <i class="fas fa-list nav__icon"></i>
                                 <span class="nav__name" id="show_todo_list">ToDo List</span>
@@ -183,7 +180,6 @@
                     {% elif group_for.name == 'Staff' %}
                     <div class="nav__list">
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text1">Primary</h3>
 
                             <a href="{% url 'staff_dashboard' %}" class="nav__link active">
                                 <i class="fas fa-th-large nav__icon"></i>
@@ -237,7 +233,6 @@
                         </div>
     
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
 
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
@@ -386,7 +381,6 @@
                     {% elif group_for.name == 'Student' %}
                     <div class="nav__list">
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text1">Primary</h3>
 
                             <a href="{% url 'student_dashboard' %}" class="nav__link active">
                                 <i class="fas fa-th-large nav__icon"></i>
@@ -412,7 +406,6 @@
                         </div>
     
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
 
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
@@ -474,7 +467,6 @@
                     {% elif group_for.name == 'Administrator' %}
                     <div class="nav__list">
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text1">Primary</h3>
     
                             <a href="{% url 'super_admin_dashboard' %}" class="nav__link active">
                                 <i class="fas fa-th-large nav__icon"></i>
@@ -534,7 +526,6 @@
                         </div>
     
                         <div class="nav__items">
-                            <h3 class="nav__subtitle" id="show_text2">Secondary</h3>
                             <div class="nav__dropdown">
                                 <a href="#" class="nav__link">
                                     <i class="far fa-bell nav__icon"></i>
