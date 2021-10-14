@@ -2,8 +2,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('create_semester/', views.create_semester, name='create_semester'),
+    path('manage_semester/', views.manage_semester, name='manage_semester'),
     path('save_created_semester/', views.save_created_semester, name='save_created_semester'),
+    path('edit_semester/<semester_id>', views.edit_semester, name='edit_semester'),
+    path('save_edit_semester/<semester_id>', views.save_edit_semester, name='save_edit_semester'),
+    path('delete_semester/<semester_id>', views.delete_semester, name='delete_semester'),
+
     path('manage_block/', views.manage_block, name='manage_block'),
     path('create_block/', views.create_block, name='create_block'),
     path('create_block_save/', views.create_block_save, name='create_block_save'),

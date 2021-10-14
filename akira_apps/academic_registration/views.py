@@ -1,8 +1,7 @@
+from django.contrib.auth.models import User
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from akira_apps.academic_registration.forms import SemesterForm
 
-from akira_apps.academic_registration.models import Semester
 from akira_apps.academic_registration.forms import BranchForm, SectionRoomForm, SemesterForm
 from akira_apps.academic_registration.models import Block, SectionRooms, Semester, Specialization, specialization_registration_staff, specialization_registration_student
 from akira_apps.staff.models import Staffs
@@ -147,11 +146,16 @@ def manage_section_room(request):
     }
     return render(request, 'academic_registration/section_room/manage_section_room.html', context)
 
+def manage_semester(request):
     semesterForm = SemesterForm()
+    semester_list = Semester.objects.all()
+    typeform = "create"
     context = {
         "semesterForm":semesterForm,
+        "semester_list":semester_list,
+        "typeform":typeform
     }
-    return render(request, 'academic_registration/Semester/create_semester.html', context)
+    return render(request, 'academic_registration/semester/manage_semester.html', context)
 
 def save_created_semester(request):
     if request.method == 'POST':
@@ -167,4 +171,46 @@ def save_created_semester(request):
             semester.save()
         except Exception as e:
             return HttpResponse(e)
-    return redirect('create_semester')
+
+def edit_semester(request, semester_id):
+    semesterForm = SemesterForm()
+    semester_data = Semester.objects.get(id=semester_id)
+    semester_list = Semester.objects.all()
+    typeform = "edit"
+    context = {
+        "semesterForm":semesterForm,
+        "semester_data":semester_data,
+        "semester_list":semester_list,
+        "typeform":typeform
+    }
+    return render(request, 'academic_registration/semester/manage_semester.html', context)
+
+def save_edit_semester(request, semester_id):
+    if request.method == 'POST':
+        semesterMode = request.POST.get('mode')
+        startYear = request.POST.get('start_year')
+        endYear = request.POST.get('end_year')
+        if request.POST.get('semester_status') == 'on':
+            semesterStatus = True
+        else:
+            semesterStatus = False
+        try:
+            semester = Semester.objects.get(id=semester_id)
+            semester.mode=semesterMode
+            semester.start_year=startYear
+            semester.end_year=endYear
+            semester.is_active=semesterStatus
+            semester.save()
+        except Exception as e:
+            return HttpResponse(e)
+    return redirect('manage_semester')
+
+def delete_semester(request, semester_id):
+    try:
+        semester = Semester.objects.get(id=semester_id)
+        semester.delete()
+        return redirect('manage_semester')
+    except Exception as e:
+        return HttpResponse(e)
+
+# all_section_room_list = SectionRooms.objects.all()
