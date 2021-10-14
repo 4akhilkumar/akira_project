@@ -141,17 +141,20 @@ def user_group(request, staff_id):
     else:
         return redirect('manage_staff')
 
+
 # group_name = 'Student'
+# group_name = 'Staff'
+# group_name = 'Head of the Department'
+# group_name = 'Administrator'
+# group_name = 'Course Co-Ordinator'
 # my_group = Group.objects.get(name='%s' % str(group_name))
-# user = User.objects.get(id=6)
+# user = User.objects.get(id=5)
 # my_group.user_set.add(user)
 # print("Success")
 
-# group_name = 'Student'
-# group_name = 'Head of the Department'
-# group_name = 'Administrator'
+# group_name = 'Staff'
 # my_group = Group.objects.get(name='%s' % str(group_name))
-# user = User.objects.get(id=2) 
+# user = User.objects.get(id=3) 
 # my_group.user_set.remove(user)
 # print("Success")
 
