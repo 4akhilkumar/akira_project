@@ -1,0 +1,71 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+{% if formType == "Create Specialization" %}
+<form action="{% url 'create_specialization_save' %}" method="POST">
+{% else %}
+<form action="{% url 'edit_specialization_save' specialization.id %}" method="POST">
+{% endif %}
+
+    {% csrf_token %}
+    <label for="id_specialization_name">Specialization Name</label>
+    <input type="text" name="specialization_name" maxlength="100" id="id_specialization_name" value="{{ specialization.specialization_name }}" required>
+    <br>
+    <label for="id_specialization_short_info">specialization Short Info</label>
+    <textarea name="specialization_short_info" cols="40" rows="10" maxlength="500" id="id_specialization_short_info" required>{{ specialization.specialization_short_info }}</textarea>
+    <br>
+    <label for="id_specialization_wywl">What you will learn</label>
+    <textarea name="specialization_wywl" cols="40" rows="10" maxlength="500" id="id_specialization_wywl" required>{{ specialization.specialization_wywl }}</textarea>
+    <br>
+    <label for="id_specialization_sywg">Skill You Will Gain</label>
+    <textarea name="specialization_sywg" cols="40" rows="10" maxlength="500" id="id_specialization_sywg" required>{{ specialization.specialization_sywg }}</textarea>
+    <br>
+    <label for="id_specialization_desc">Specialization Description</label>
+    <div class="django-ckeditor-widget" data-field-id="id_specialization_desc" style="display: inline-block;">
+        <textarea cols="40" id="id_specialization_desc" name="specialization_desc" rows="10" data-processed="0" 
+                data-config="{&quot;skin&quot;: &quot;moono-lisa&quot;, &quot;toolbar_Basic&quot;: 
+                                [[&quot;Source&quot;, &quot;-&quot;, &quot;Bold&quot;, &quot;Italic&quot;]], 
+                                &quot;toolbar_Full&quot;: [[&quot;Styles&quot;, &quot;Format&quot;, &quot;Bold&quot;, 
+                                &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;SpellChecker&quot;, 
+                                &quot;Undo&quot;, &quot;Redo&quot;], [&quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;], 
+                                [&quot;Image&quot;, &quot;Flash&quot;, &quot;Table&quot;, &quot;HorizontalRule&quot;], 
+                                [&quot;TextColor&quot;, &quot;BGColor&quot;], [&quot;Smiley&quot;, &quot;SpecialChar&quot;], 
+                                [&quot;Source&quot;]], &quot;toolbar&quot;: [[&quot;Format&quot;, &quot;Bold&quot;, 
+                                &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;], [&quot;NumberedList&quot;, 
+                                &quot;BulletedList&quot;, &quot;Indent&quot;, &quot;Outdent&quot;, &quot;JustifyLeft&quot;, 
+                                &quot;JustifyCenter&quot;, &quot;JustifyRight&quot;, &quot;JustifyBlock&quot;], 
+                                [&quot;Image&quot;, &quot;Table&quot;, &quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;, 
+                                &quot;SectionLink&quot;, &quot;Subscript&quot;, &quot;Superscript&quot;], [&quot;Undo&quot;, 
+                                &quot;Redo&quot;], [&quot;Maximize&quot;]], &quot;height&quot;: 291, &quot;width&quot;: 
+                                &quot;auto&quot;, &quot;filebrowserWindowWidth&quot;: 940, &quot;filebrowserWindowHeight&quot;: 725, 
+                                &quot;filebrowserUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;filebrowserBrowseUrl&quot;: 
+                                &quot;/ckeditor/browse/&quot;, &quot;language&quot;: &quot;en-us&quot;}" 
+                data-external-plugin-resources="[]" data-id="id_specialization_desc" data-type="ckeditortype" required>{{ specialization.specialization_desc }}</textarea>
+    </div>
+    <br>
+    <label for="id_faculty">Faculty</label>
+    <select name="faculty" id="id_faculty" required>
+        {% for i in faculty_list %}
+        <option value="{{ i.id }}" {% if i.id == specialization.facuty.id %} selected {% endif %}> {{ i.last_name }} {{ i.first_name }} </option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="id_branch">Branch</label>
+    <select name="branch" id="id_branch" required>
+        {% for x,y in branchForm.fields.branch.choices %}
+            <option value="{{ x }}" {% if specialization.branch == x %} selected {% endif %} >{{ y }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="id_specCapacity">Specialization Name</label>
+    <input type="number" name="specCapacity" id="id_specCapacity" value="{{ specialization.capacity }}" required>
+    <br>
+    <input type="submit">
+</form>
+
+{% endblock %}
