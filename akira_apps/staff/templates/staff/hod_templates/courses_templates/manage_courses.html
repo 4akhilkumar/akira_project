@@ -8,6 +8,7 @@
 <title>{% block title %}Manage Courses - AkirA{% endblock %}</title>
 
 <div class="main">
+  {% if "Administrator" == group_list or "Head of the Department" == group_list %}
   <ul class="cards">
     <li class="cards_item">
       <div class="card create_course_card" onclick="document.location='{% url 'create_courses' %}'">
@@ -23,9 +24,9 @@
       </div>
     </li>
   </ul>
+  {% endif %}
 
   <ul class="cards">
-
     {% for i in list_courses %}
     <li class="cards_item">
       <div class="card">
@@ -36,23 +37,34 @@
           <h2 class="card_title">{{ i.course_name}}</h2>
           <p class="card_text_cc_name">Course Co-Ordinator: {{ i.course_coordinator.last_name }} {{ i.course_coordinator.first_name }}</p>                
           <p class="card_text">
-            {{ i.course_desc|slice:"3:-6"|to_and|safe }}
+            {{ i.course_desc|slice:"3:-6"|to_and|cut:"<p>"|cut:"</p>"|safe }}
           </p>
           <div class="card_buttons">
             <button class="btn card_btn more" onclick="document.location='{% url 'view_course' i.id %}'">Read More</button>
-            {% if "Administrator" or "Head of the Department" in group_list %}
+            {% if "Administrator" == group_list or "Head of the Department" == group_list %}
             <button class="btn card_btn edit" onclick="document.location='{% url 'edit_course' i.id %}'">Edit Info.</button>
             <button class="btn card_btn delete" onclick="document.location='{% url 'delete_courses' i.id %}'">Delete Course</button>
             {% else %}
-            <button class="btn card_btn enroll" onclick="document.location='{% url 'edit_course' i.id %}'">Enroll Now</button>
-            <button class="btn card_btn enroll" onclick="document.location='{% url 'edit_course' i.id %}'">25 Left</button>
+
+            <!-- {% if "Staff" == group_list or "Course Co-Ordinator" == group_list or "Head of the Department" == group_list %}
+            
+              {% if i.id|stringformat:"s" in course_id_list_str %}
+                <button class="btn card_btn enrolled" disabled>Course Enrolled</button>
+              {% else %}
+                <button class="btn card_btn enroll" onclick="document.location='{% url 'staff_enroll_course' i.id %}'">Enroll Now</button>
+              {% endif %}
+            
+            {% else %}
+            <button class="btn card_btn enroll" onclick="document.location='{% url 'staff_enroll_course' i.id %}'">Enroll Now</button>
+            {% endif %} -->
+
+            <button class="btn card_btn course_vacancy" onclick="document.location='#'">25 Left</button>
             {% endif %}
           </div>
         </div>
       </div>
     </li>
     {% endfor %}
-
   </ul>
 </div>
 
