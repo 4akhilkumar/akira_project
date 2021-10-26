@@ -107,7 +107,7 @@ def edit_section_room(request, section_room_id):
         "section_room_list":section_room_list,
         "current_section_room":current_section_room,
     }
-    return render(request, 'academic_registration/section_room/create_section_room.html', context)
+    return render(request, 'academic_registration/section_room/create_edit_section_room.html', context)
 
 def edit_section_room_save(request, section_room_id):
     if request.method == 'POST':
