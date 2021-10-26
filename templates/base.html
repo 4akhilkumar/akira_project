@@ -29,8 +29,7 @@
             {% if request.user.is_authenticated %}
             <button onclick="location.href='{% url 'logout' %}'"><i class="fas fa-sign-out-alt"></i> Logout</button>
             {% else %}
-                {% if request.path == '/' %}
-                {% else %}
+                {% if not request.path == '/' %}
                 <button><i class="fas fa-sign-in-alt"></i> Login</button>
                 {% endif %}
             {% endif %}
