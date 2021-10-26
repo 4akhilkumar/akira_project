@@ -28,51 +28,70 @@ def user_login(request):
     success_message = ""
     if request.method == 'POST':
         username = request.POST.get('username')
-        password = request.POST.get('password')
-        user_ip_address = request.POST.get('user_ip_address')
 
-        if len(user_ip_address) > 0:
-            user = authenticate(request, username=username, password=password)
-            
-            if user is not None:
-                login(request, user)
-                success_message = "Login Successfull"
+        ASCII_Username = []
+        for i in range(len(username)):
+            ASCII_Username.append(ord(username[i]))
+        ASCII_Username_Sum = sum(ASCII_Username)
 
-                save_login_details(request, username, user_ip_address)
-                verify_login(request, username, current_time)
+        encrypted_username = ""
+        for i in range(len(username)):
+            encrypted_username += chr(ord(username[i]) + ASCII_Username_Sum)
 
-                group = None
-                if request.user.groups.exists():
-                    group = request.user.groups.all()[0].name
-                if group == 'Student':
-                    if (request.GET.get('next')):
-                        return redirect(request.GET.get('next'))
-                    else:
-                        return redirect('student_dashboard')
-                elif group == 'Staff':
-                    if (request.GET.get('next')):
-                        return redirect(request.GET.get('next'))
-                    else: 
-                        return redirect('staff_dashboard')
-                elif group == 'Head of the Department':
-                    if (request.GET.get('next')):
-                        return redirect(request.GET.get('next'))
-                    else: 
-                        return redirect('hod_dashboard')
-                elif group == 'Course Co-Ordinator':
-                    if (request.GET.get('next')):
-                        return redirect(request.GET.get('next'))
-                    else: 
-                        return redirect('cc_dashboard')
-                elif group == 'Administrator':
-                    if (request.GET.get('next')):
-                        return redirect(request.GET.get('next'))
-                    else:
-                        return redirect('super_admin_dashboard')
+        encrypted_password = request.POST.get('encrypted_password')
+
+        password = ""
+        de_key_length = len(encrypted_password) - len(username)
+        for i in range(de_key_length):
+            password += chr(ord(encrypted_password[i]) - ASCII_Username_Sum)
+
+        user_ip_address = "request.POST.get('user_ip_address')"
+
+        if encrypted_username in encrypted_password:
+            if len(user_ip_address) > 0:
+                user = authenticate(request, username=username, password=password)
+                
+                if user is not None:
+                    login(request, user)
+                    success_message = "Login Successfull"
+
+                    save_login_details(request, username, user_ip_address)
+                    verify_login(request, username, current_time)
+
+                    group = None
+                    if request.user.groups.exists():
+                        group = request.user.groups.all()[0].name
+                    if group == 'Student':
+                        if (request.GET.get('next')):
+                            return redirect(request.GET.get('next'))
+                        else:
+                            return redirect('student_dashboard')
+                    elif group == 'Staff':
+                        if (request.GET.get('next')):
+                            return redirect(request.GET.get('next'))
+                        else: 
+                            return redirect('staff_dashboard')
+                    elif group == 'Head of the Department':
+                        if (request.GET.get('next')):
+                            return redirect(request.GET.get('next'))
+                        else: 
+                            return redirect('hod_dashboard')
+                    elif group == 'Course Co-Ordinator':
+                        if (request.GET.get('next')):
+                            return redirect(request.GET.get('next'))
+                        else: 
+                            return redirect('cc_dashboard')
+                    elif group == 'Administrator':
+                        if (request.GET.get('next')):
+                            return redirect(request.GET.get('next'))
+                        else:
+                            return redirect('super_admin_dashboard')
+                else:
+                    error_message = "Username or Password is Incorrect!"
             else:
-                error_message = "Username or Password is Incorrect!"
+                error_message = "Check Your Internet Connection!"
         else:
-            error_message = "Check Your Internet Connection!"
+            error_message = "Connection is NOT Secured!"
     context = {
         "error_message":error_message,
         "success_message":success_message,
