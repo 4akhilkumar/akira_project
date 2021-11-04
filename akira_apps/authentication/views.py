@@ -21,6 +21,8 @@ import datetime as pydt
 import socket
 import re
 import httpagentparser
+import json
+import requests
 
 from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
 
@@ -32,82 +34,137 @@ from akira_apps.academic_registration.urls import *
 
 @unauthenticated_user
 def user_login(request):
-    current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    error_message = ""
-    success_message = ""
-    if request.method == 'POST':
-        username = request.POST.get('username')
+    BLOCKED_IPS = []
+    get_black_list_ip = User_IP_B_List.objects.all()
+    for i in get_black_list_ip:
+        BLOCKED_IPS.append(i.black_list)
 
-        ASCII_Username = []
-        for i in range(len(username)):
-            ASCII_Username.append(ord(username[i]))
-        ASCII_Username_Sum = sum(ASCII_Username)
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    if ip in BLOCKED_IPS:
+        return http.HttpResponseForbidden('<h1>Forbidden</h1>')
+    else:
+        current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        error_message = ""
+        success_message = ""
+        if request.method == 'POST':
+            username = request.POST.get('username')
 
-        encrypted_username = ""
-        for i in range(len(username)):
-            encrypted_username += chr(ord(username[i]) + ASCII_Username_Sum)
+            ASCII_Username = []
+            for i in range(len(username)):
+                ASCII_Username.append(ord(username[i]))
+            ASCII_Username_Sum = sum(ASCII_Username)
 
-        encrypted_password = request.POST.get('encrypted_password')
+            encrypted_username = ""
+            for i in range(len(username)):
+                encrypted_username += chr(ord(username[i]) + ASCII_Username_Sum)
 
-        password = ""
-        de_key_length = len(encrypted_password) - len(username)
-        for i in range(de_key_length):
-            password += chr(ord(encrypted_password[i]) - ASCII_Username_Sum)
+            encrypted_password = request.POST.get('encrypted_password')
 
-        user_ip_address = "request.POST.get('user_ip_address')"
+            password = ""
+            de_key_length = len(encrypted_password) - len(username)
+            for i in range(de_key_length):
+                password += chr(ord(encrypted_password[i]) - ASCII_Username_Sum)
 
-        if encrypted_username in encrypted_password:
-            if len(user_ip_address) > 0:
-                user = authenticate(request, username=username, password=password)
-                
-                if user is not None:
-                    login(request, user)
-                    success_message = "Login Successfull"
+            user_ip_address = ip
 
-                    save_login_details(request, username, user_ip_address)
-                    verify_login(request, username, current_time)
+            captcha_token=request.POST.get("g-recaptcha-response")
+            cap_url="https://www.google.com/recaptcha/api/siteverify"
+            cap_secret="6LfmDxMdAAAAAI9NEfnM3BUqHfF-zAMLLJOwSRw8"
+            cap_data={"secret":cap_secret,"response":captcha_token}
+            cap_server_response=requests.post(url=cap_url,data=cap_data)
+            cap_json=json.loads(cap_server_response.text)
 
-                    group = None
-                    if request.user.groups.exists():
-                        group = request.user.groups.all()[0].name
-                    if group == 'Student':
-                        if (request.GET.get('next')):
-                            return redirect(request.GET.get('next'))
+            existing_user_records = User.objects.all()
+            list_existing_user_records = []
+            for i in existing_user_records:
+                list_existing_user_records.append(i.username)
+            
+            if cap_json['success']==True:
+                if username in list_existing_user_records:
+                    user = User.objects.get(username = username)
+                    if user.is_active == True:
+                        if encrypted_username in encrypted_password:
+                            user = authenticate(request, username=username, password=password)
+                            
+                            if user is not None:
+                                login(request, user)
+                                attempt = ""
+                                if success_message:
+                                    attempt = "Success"
+
+                                save_login_details(request, username, user_ip_address, attempt)
+                                length_UserLoginDetails = UserLoginDetails.objects.all().count()
+                                if length_UserLoginDetails > 2:
+                                    verify_login(request, username, current_time)
+
+                                group = None
+                                if request.user.groups.exists():
+                                    group = request.user.groups.all()[0].name
+                                if group == 'Student':
+                                    if (request.GET.get('next')):
+                                        return redirect(request.GET.get('next'))
+                                    else:
+                                        return redirect('student_dashboard')
+                                elif group == 'Staff':
+                                    if (request.GET.get('next')):
+                                        return redirect(request.GET.get('next'))
+                                    else: 
+                                        return redirect('staff_dashboard')
+                                elif group == 'Head of the Department':
+                                    if (request.GET.get('next')):
+                                        return redirect(request.GET.get('next'))
+                                    else: 
+                                        return redirect('hod_dashboard')
+                                elif group == 'Course Co-Ordinator':
+                                    if (request.GET.get('next')):
+                                        return redirect(request.GET.get('next'))
+                                    else: 
+                                        return redirect('cc_dashboard')
+                                elif group == 'Administrator':
+                                    if (request.GET.get('next')):
+                                        return redirect(request.GET.get('next'))
+                                    else:
+                                        return redirect('super_admin_dashboard')
+                            else:
+                                messages.warning(request, 'Username or Password is Incorrect!')
+                                attempt = "Failed"
+                                list_users = User.objects.all()
+                                LIST_USERS = []
+                                for i in list_users:
+                                    LIST_USERS.append(i.username)
+                                if username in LIST_USERS or cap_json['success']==False:
+                                    save_login_details(request, username, user_ip_address, attempt)
+                                    detect_spam_login(request, username, user_ip_address)
+                                return redirect('login')
                         else:
-                            return redirect('student_dashboard')
-                    elif group == 'Staff':
-                        if (request.GET.get('next')):
-                            return redirect(request.GET.get('next'))
-                        else: 
-                            return redirect('staff_dashboard')
-                    elif group == 'Head of the Department':
-                        if (request.GET.get('next')):
-                            return redirect(request.GET.get('next'))
-                        else: 
-                            return redirect('hod_dashboard')
-                    elif group == 'Course Co-Ordinator':
-                        if (request.GET.get('next')):
-                            return redirect(request.GET.get('next'))
-                        else: 
-                            return redirect('cc_dashboard')
-                    elif group == 'Administrator':
-                        if (request.GET.get('next')):
-                            return redirect(request.GET.get('next'))
-                        else:
-                            return redirect('super_admin_dashboard')
+                            messages.warning(request, 'Connection is NOT Secured!')
+                            return redirect('login')
+                    else:
+                        messages.warning(request, 'You account has been disabled temporarily')
+                        return redirect('login')
                 else:
-                    error_message = "Username or Password is Incorrect!"
+                    messages.error(request, 'No Such Account Exist!')
+                    return redirect('login')
             else:
-                error_message = "Check Your Internet Connection!"
-        else:
-            error_message = "Connection is NOT Secured!"
-    context = {
-        "error_message":error_message,
-        "success_message":success_message,
-    }
-    return render(request, 'authentication/login.html', context)
+                messages.warning(request, 'Invalid Captcha Try Again!')
+                attempt = "Failed"
+                if username in list_existing_user_records:
+                    save_login_details(request, username, user_ip_address, attempt)
+                    detect_spam_login(request, username, user_ip_address)
+                else:
+                    save_login_details(request, None, user_ip_address, attempt)
+                return redirect('login')
+        context = {
+            "error_message":error_message,
+            "success_message":success_message,
+        }
+        return render(request, 'authentication/login.html', context)
 
-def save_login_details(request, user_name, user_ip_address):
+def save_login_details(request, user_name, user_ip_address, attempt):
     user_agent = request.META['HTTP_USER_AGENT']
     browser = httpagentparser.detect(user_agent)
     if not browser:
@@ -117,13 +174,16 @@ def save_login_details(request, user_name, user_ip_address):
 
     res = re.findall(r'\(.*?\)', user_agent)
     OS_Details = res[0][1:-1]
-    uid = User.objects.get(username=user_name)
-
-    try:
-        sld = UserLoginDetails(user_ip_address=user_ip_address, user=uid, os_details=OS_Details, browser_details=browser)
+    if user_name == None:
+        sld = UserLoginDetails(user_ip_address=user_ip_address, os_details=OS_Details, browser_details=browser, attempt=attempt)
         sld.save()
-    except Exception as e:
-        return e
+    else:
+        uid = User.objects.get(username=user_name)
+        try:
+            sld = UserLoginDetails(user_ip_address=user_ip_address, user=uid, os_details=OS_Details, browser_details=browser, attempt=attempt)
+            sld.save()
+        except Exception as e:
+            return e
 
 def verify_login(request, uid, current_time):
     current_uld = UserLoginDetails.objects.filter(user__username = uid)
