@@ -3,10 +3,19 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
 from django.conf import settings
-from django.core.mail import BadHeaderError, send_mail
+from django.core.mail import BadHeaderError, send_mail, EmailMessage
 from django.core import mail
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django import http
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text  
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib import messages
+
+from akira_apps.authentication.token import account_activation_token
+
+from django.contrib.auth import get_user_model
 
 import datetime as pydt
 import socket
@@ -15,7 +24,7 @@ import httpagentparser
 
 from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
 
-from . models import UserLoginDetails
+from . models import UserLoginDetails, User_IP_B_List
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
@@ -141,6 +150,9 @@ def verify_login(request, uid, current_time):
             count += 1
         if browser_details in list_current_uld_bd:
             count += 1
+        save_current_uld_status = UserLoginDetails.objects.get(id=last_current_uld[0].id)
+        save_current_uld_status.status = count
+        save_current_uld_status.save()
         if(count<3):
             context = {
                 "first_name":request.user.first_name,
@@ -152,14 +164,65 @@ def verify_login(request, uid, current_time):
             }
             template = render_to_string('authentication/login_alert_email.html', context)
             try:
-                # print("Mail Sent!") 
                 send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [request.user.email], html_message=template)
             except Exception as e:
                 print(e)
             break
-    return "Okay"
+    return "verify_login"
+
+def detect_spam_login(request, uid, spam_user_ip_address):
+    twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
+    check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+    if check_failed_login_attempts > 4:
+        user = User.objects.get(username = uid)
+        block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
+        block_ip.save()
+        user.is_active = False
+        user.save()
+        current_site = get_current_site(request)  
+        mail_subject = 'Re-Activate Your AkirA Account'
+        message = render_to_string('authentication/acc_active_email.html', {
+            'user': user,  
+            'domain': current_site.domain,  
+            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+            'token':account_activation_token.make_token(user),
+        })
+        current_user = User.objects.get(username = uid)
+        to_email = current_user.email
+        email = EmailMessage(mail_subject, message, to=[to_email])
+        email.send()
+        print("Reset Password Mail Sent!")
+        return http.HttpResponseForbidden('<h1>Forbidden</h1>')
+
+def activate(request, uidb64, token):
+    User = get_user_model()  
+    try:  
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)  
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token): 
+        user.is_active = True
+        user.save()
+        return HttpResponse('Thank you for Re-Activating your account. Now you can login your account.')
+    else:  
+        return HttpResponse('Activation link is invalid!')
 
 @login_required(login_url=settings.LOGIN_URL)
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
+# lst = UserLoginDetails.objects.all()
+# for i in lst:
+#     delete_all_records = UserLoginDetails.objects.get(id=i.id)
+#     delete_all_records.delete()
+
+# lst = User_IP_B_List.objects.all()
+# for i in lst:
+#     delete_all_records = User_IP_B_List.objects.get(id=i.id)
+#     delete_all_records.delete()
+
+# user = User.objects.get(username = 'hari.vege')
+# user.is_active = True  
+# user.save()
