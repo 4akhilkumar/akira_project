@@ -15,3 +15,9 @@ class UserLoginDetails(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+class User_IP_B_List(models.Model):
+    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
+    login_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    black_list = models.GenericIPAddressField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
