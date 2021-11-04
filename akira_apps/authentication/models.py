@@ -8,6 +8,8 @@ class UserLoginDetails(models.Model):
     user_ip_address = models.CharField(max_length=100)
     os_details = models.CharField(max_length=100)
     browser_details = models.CharField(max_length=100)
+    status = models.IntegerField(blank=True, null=True)
+    attempt = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
