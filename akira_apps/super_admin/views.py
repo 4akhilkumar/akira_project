@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from akira_apps.authentication.models import UserLoginDetails
 
 from akira_apps.staff.forms import StaffsForm
 from akira_apps.staff.models import Staffs
@@ -121,11 +122,13 @@ def manage_staff(request):
 @login_required(login_url=settings.LOGIN_URL)
 def view_staff(request, staff_id):
     staff = Staffs.objects.get(user=staff_id)
-    group_list = Group.objects.all()
+    user = User.objects.get(id=staff_id) 
+    current_user_group = ', '.join(map(str, user.groups.all()))
+    userLoginDetails = UserLoginDetails.objects.filter(user=staff_id)
     context = {
         "staff": staff,
-        "id": staff_id,
-        "group_list":group_list,
+        "current_user_group":current_user_group,
+        "userLoginDetails":userLoginDetails
     }
     return render(request, "super_admin/Staff/view_faculty.html", context)
 
