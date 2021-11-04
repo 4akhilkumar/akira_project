@@ -362,7 +362,10 @@ def staff_enroll_course(request, course_id):
         enroll_course.save()
         return redirect('manage_courses')
     except Exception as e:
-        return HttpResponse(e)
+        if str(e) == "UNIQUE constraint failed: academic_registration_course_registration_staff.course_id, academic_registration_course_registration_staff.section_id":
+            return HttpResponse("Your enroll for this course to this section is already done by you.")
+        else:
+            return HttpResponse(e)
 
 def staff_unenroll_course(request, staff_enroll_course_id):
     try:
@@ -382,7 +385,10 @@ def student_enroll_course(request, course_id):
         enroll_course.save()
         return redirect('manage_courses')
     except Exception as e:
-        return HttpResponse(e)
+        if str(e) == "UNIQUE constraint failed: student_course_registration_student.course_id, student_course_registration_student.section_id":
+            return HttpResponse("Your enroll for this course is already done by you.")
+        else:
+            return HttpResponse(e)
 
 # lst = course_registration_staff.objects.all()
 # for i in lst:
