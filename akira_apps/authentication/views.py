@@ -60,7 +60,16 @@ def user_login(request):
             for i in range(len(username)):
                 encrypted_username += chr(ord(username[i]) + ASCII_Username_Sum)
 
-            encrypted_password = request.POST.get('encrypted_password')
+            ep = request.POST.get('encrypted_password')
+
+            List1 = list(ep)
+            List2 = list(encrypted_username)
+            check =  any(item in List1 for item in List2)
+
+            l_rot = 0
+            r_rot = len(username)
+            temp = (l_rot - r_rot) % len(ep) 
+            encrypted_password = ep[temp : ] + ep[ : temp]
 
             password = ""
             de_key_length = len(encrypted_password) - len(username)
@@ -85,7 +94,7 @@ def user_login(request):
                 if username in list_existing_user_records:
                     user = User.objects.get(username = username)
                     if user.is_active == True:
-                        if encrypted_username in encrypted_password:
+                        if check is True:
                             user = authenticate(request, username=username, password=password)
                             
                             if user is not None:
