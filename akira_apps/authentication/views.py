@@ -12,9 +12,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 
 from akira_apps.authentication.token import account_activation_token
+
+from django.contrib.auth import get_user_model
 
 import datetime as pydt
 import socket
@@ -145,6 +146,7 @@ def user_login(request):
                         detect_spam_login(request, username, user_ip_address)
                     else:
                         save_login_details(request, None, user_ip_address, "Failed")
+                        detect_spam_login(request, None, user_ip_address)
                     return redirect('login')
             else:
                 messages.warning(request, 'Invalid Captcha try again!')
@@ -153,6 +155,7 @@ def user_login(request):
                     detect_spam_login(request, username, user_ip_address)
                 else:
                     save_login_details(request, None, user_ip_address, "Failed")
+                    detect_spam_login(request, None, user_ip_address)
                 return redirect('login')
         return render(request, 'authentication/login.html')
 
@@ -224,31 +227,37 @@ def verify_login(request, uid, current_time):
 
 def detect_spam_login(request, uid, spam_user_ip_address):
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
-    check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
-    if check_failed_login_attempts == 3:
-        messages.info(request, 'It seems to be you have forgotten your password!')
-        messages.info(request, 'So, Please reset your password')
-        return redirect('login')
-    elif check_failed_login_attempts > 4:
-        user = User.objects.get(username = uid)
-        block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
-        block_ip.save()
-        user.is_active = False
-        user.save()
-        current_site = get_current_site(request)  
-        mail_subject = 'Re-Activate Your AkirA Account'
-        message = render_to_string('authentication/acc_active_email.html', {
-            'user': user,  
-            'domain': current_site.domain,  
-            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-            'token':account_activation_token.make_token(user),
-        })
-        current_user = User.objects.get(username = uid)
-        to_email = current_user.email
-        email = EmailMessage(mail_subject, message, to=[to_email])
-        email.send()
-        messages.warning(request, "Please Check Your EMail Inbox")
-        return http.HttpResponseForbidden('<h1>Forbidden</h1>')
+    if uid == None:
+        check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+        if check_failed_login_attempts > 5:
+            block_ip = User_IP_B_List(black_list=spam_user_ip_address)
+            block_ip.save()
+    elif uid != None:
+        check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+        if check_failed_login_attempts == 3:
+            messages.info(request, 'It seems to be you have forgotten your password!')
+            messages.info(request, 'So, Please reset your password')
+            return redirect('login')
+        elif check_failed_login_attempts > 4:
+            user = User.objects.get(username = uid)
+            block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
+            block_ip.save()
+            user.is_active = False
+            user.save()
+            current_site = get_current_site(request)  
+            mail_subject = 'Re-Activate Your AkirA Account'
+            message = render_to_string('authentication/acc_active_email.html', {
+                'user': user,  
+                'domain': current_site.domain,  
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                'token':account_activation_token.make_token(user),
+            })
+            current_user = User.objects.get(username = uid)
+            to_email = current_user.email
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
+            messages.warning(request, "Please Check Your EMail Inbox")
+            return http.HttpResponseForbidden('<h1>Forbidden</h1>')
 
 def activate(request, uidb64, token):
     User = get_user_model()  
