@@ -48,8 +48,6 @@ def user_login(request):
         return http.HttpResponseForbidden('<h1>Forbidden</h1>')
     else:
         current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        error_message = ""
-        success_message = ""
         if request.method == 'POST':
             username = request.POST.get('username')
 
@@ -92,11 +90,7 @@ def user_login(request):
                             
                             if user is not None:
                                 login(request, user)
-                                attempt = ""
-                                if success_message:
-                                    attempt = "Success"
-
-                                save_login_details(request, username, user_ip_address, attempt)
+                                save_login_details(request, username, user_ip_address, "Success")
                                 length_UserLoginDetails = UserLoginDetails.objects.all().count()
                                 if length_UserLoginDetails > 2:
                                     verify_login(request, username, current_time)
@@ -131,38 +125,37 @@ def user_login(request):
                                         return redirect('super_admin_dashboard')
                             else:
                                 messages.warning(request, 'Username or Password is Incorrect!')
-                                attempt = "Failed"
                                 list_users = User.objects.all()
                                 LIST_USERS = []
                                 for i in list_users:
                                     LIST_USERS.append(i.username)
                                 if username in LIST_USERS or cap_json['success']==False:
-                                    save_login_details(request, username, user_ip_address, attempt)
+                                    save_login_details(request, username, user_ip_address, "Failed")
                                     detect_spam_login(request, username, user_ip_address)
                                 return redirect('login')
                         else:
-                            messages.warning(request, 'Connection is NOT Secured!')
+                            messages.error(request, 'Connection is NOT secured!')
                             return redirect('login')
                     else:
                         messages.warning(request, 'You account has been disabled temporarily')
                         return redirect('login')
                 else:
-                    messages.error(request, 'No Such Account Exist!')
+                    messages.error(request, 'No such account exist!')
+                    if username in list_existing_user_records:
+                        save_login_details(request, username, user_ip_address, "Failed")
+                        detect_spam_login(request, username, user_ip_address)
+                    else:
+                        save_login_details(request, None, user_ip_address, "Failed")
                     return redirect('login')
             else:
-                messages.warning(request, 'Invalid Captcha Try Again!')
-                attempt = "Failed"
+                messages.warning(request, 'Invalid Captcha try again!')
                 if username in list_existing_user_records:
-                    save_login_details(request, username, user_ip_address, attempt)
+                    save_login_details(request, username, user_ip_address, "Failed")
                     detect_spam_login(request, username, user_ip_address)
                 else:
-                    save_login_details(request, None, user_ip_address, attempt)
+                    save_login_details(request, None, user_ip_address, "Failed")
                 return redirect('login')
-        context = {
-            "error_message":error_message,
-            "success_message":success_message,
-        }
-        return render(request, 'authentication/login.html', context)
+        return render(request, 'authentication/login.html')
 
 def save_login_details(request, user_name, user_ip_address, attempt):
     user_agent = request.META['HTTP_USER_AGENT']
@@ -226,14 +219,18 @@ def verify_login(request, uid, current_time):
             try:
                 send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [request.user.email], html_message=template)
             except Exception as e:
-                print(e)
+                messages.warning(request, e)
             break
     return "verify_login"
 
 def detect_spam_login(request, uid, spam_user_ip_address):
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
     check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
-    if check_failed_login_attempts > 4:
+    if check_failed_login_attempts == 3:
+        messages.info(request, 'It seems to be you have forgotten your password!')
+        messages.info(request, 'So, Please reset your password')
+        return redirect('login')
+    elif check_failed_login_attempts > 4:
         user = User.objects.get(username = uid)
         block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
         block_ip.save()
@@ -251,7 +248,7 @@ def detect_spam_login(request, uid, spam_user_ip_address):
         to_email = current_user.email
         email = EmailMessage(mail_subject, message, to=[to_email])
         email.send()
-        print("Reset Password Mail Sent!")
+        messages.warning(request, "Please Check Your EMail Inbox")
         return http.HttpResponseForbidden('<h1>Forbidden</h1>')
 
 def activate(request, uidb64, token):
