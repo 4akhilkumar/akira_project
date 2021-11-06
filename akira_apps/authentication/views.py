@@ -137,7 +137,7 @@ def user_login(request):
                             messages.error(request, 'Connection is NOT secured!')
                             return redirect('login')
                     else:
-                        messages.warning(request, 'You account has been disabled temporarily')
+                        messages.info(request, 'You account has been disabled temporarily')
                         return redirect('login')
                 else:
                     messages.error(request, 'No such account exist!')
