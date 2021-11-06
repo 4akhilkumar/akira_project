@@ -37,5 +37,34 @@
       })
     </script>
 
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == "error" or message.tags == "info" %}
+    <script>
+      function showNotification() {
+        const notification = new Notification("{{message.tags|title}}", {
+          body: "{{message}}",
+          icon: "{% static "images/AkirA_Logo.png" %}"
+        });
+        notification.onclick = (e) => {
+          window.location.href = "/";
+        };
+      }
+  
+      if(Notification.permission === "granted"){
+        showNotification();
+      } 
+      else if(Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            showNotification();
+          }
+        });
+      }
+    </script>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
 </body>
 </html>
