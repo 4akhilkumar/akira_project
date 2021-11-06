@@ -120,6 +120,12 @@ body {
 .button:active {
   background-color: var(--purple-800);
 }
+
+button:disabled, button[disabled] {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
 .link {
   color: var(--purple-600);
   font-weight: 500;

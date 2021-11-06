@@ -22,3 +22,17 @@ function toggleClass(element, className) {
         element.classList.add(className);
     }
 }
+
+const submitButton = document.querySelector('.app-login-button');
+submitButton.disabled = true
+function isEmpty() {
+    let username = document.getElementById('id_username').value;
+    let password = document.getElementById('id_password').value;
+
+    if (username.length > 7 && password.length > 7) {
+        submitButton.disabled = false;
+    }
+    else {
+        submitButton.disabled = true;
+    }
+}
