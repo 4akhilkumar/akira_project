@@ -12,10 +12,9 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 
 from akira_apps.authentication.token import account_activation_token
-
-from django.contrib.auth import get_user_model
 
 import datetime as pydt
 import socket
@@ -281,5 +280,5 @@ def logoutUser(request):
 #     delete_all_records.delete()
 
 # user = User.objects.get(username = 'hari.vege')
-# user.is_active = True  
+# user.is_active = True
 # user.save()
