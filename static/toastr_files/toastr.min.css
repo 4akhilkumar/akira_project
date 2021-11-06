@@ -149,7 +149,7 @@ button.toast-close-button{
 }
 
 #toast-container>.toast-error::before {
-    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f071";
+    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f7ba";
 }
 
 #toast-container>.toast-success::before {
@@ -157,7 +157,7 @@ button.toast-close-button{
 }
 
 #toast-container > .toast-warning::before {
-    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f06a";
+    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f071";
 }
 #toast-container.toast-bottom-center>div,#toast-container.toast-top-center>div{
     width:300px;
