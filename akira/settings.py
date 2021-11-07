@@ -75,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'akira_apps.authentication.middleware.filter_ip_middleware.FilterIPMiddleware',
+    'akira_apps.authentication.middleware.reCaptcha_middleware.RecaptchaMiddleware',
 ]
 
 ROOT_URLCONF = 'akira.urls'
@@ -189,3 +190,7 @@ SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_AGE = 14400
 SESSION_IDLE_TIMEOUT = 14400
 PASSWORD_RESET_TIMEOUT_DAYS = 0.00694444
+
+RECAPTCHA_PUBLIC_KEY = '6LdTmRsdAAAAAFjva2l8ETU7TaOm51F_dUOATtrS'
+RECAPTCHA_PRIVATE_KEY = '6LdTmRsdAAAAAB4XdaPi5nDi8YOkjESgUvMd_RNc'
+RECAPTCHA_REQUIRED_SCORE = 0.80
