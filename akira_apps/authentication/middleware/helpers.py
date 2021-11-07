@@ -40,13 +40,10 @@ def verify_recaptcha(request):
                 float(result['score']) > settings.RECAPTCHA_REQUIRED_SCORE:
             return None
         elif result['success'] == False:
-            print(False)
             sld = UserLoginDetails(user_ip_address=spam_user_ip_address, os_details=OS_Details, browser_details=browser, attempt="Failed")
             sld.save()
-            print(spam_user_ip_address)
             twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
             check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", created_at__gte=twenty_four_hrs).count()
-            print(check_failed_login_attempts)
             if check_failed_login_attempts > 5:
                 block_ip = User_IP_B_List(black_list=spam_user_ip_address)
                 block_ip.save()
@@ -54,7 +51,6 @@ def verify_recaptcha(request):
             get_black_list_ip = User_IP_B_List.objects.all()
             for i in get_black_list_ip:
                 BLOCKED_IPS.append(i.black_list)
-            print(BLOCKED_IPS)
             if spam_user_ip_address in BLOCKED_IPS:
                 return http.HttpResponseForbidden('<h1>Forbidden</h1>')
         respond = render_to_string('G_Recaptcha/ReCaptcha_error.html')
