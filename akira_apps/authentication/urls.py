@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import activate
+from .views import activate, confirm
 from django.contrib.auth import views as auth_views
 from akira_apps import authentication
 
@@ -8,6 +8,11 @@ from akira_apps import authentication
 urlpatterns = [
     path('', views.user_login, name = 'login'),
     path('logout/', views.logoutUser, name="logout"),
+
+    path('verify_its_you/<username>/', views.verify_its_you, name="verify_its_you"),
+    
+    path('verify_user_by_email/<username>/', views.verify_user_by_email, name="verify_user_by_email"),
+    path('confirm/<uidb64>/<token>/', confirm, name='confirm'),
     
     path('activate/<uidb64>/<token>/', activate, name='activate'),
     

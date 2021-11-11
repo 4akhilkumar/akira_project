@@ -26,7 +26,7 @@ import requests
 
 from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
 
-from . models import UserLoginDetails, User_IP_B_List
+from . models import UserLoginDetails, User_IP_B_List, UserVerificationStatus
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
@@ -59,6 +59,10 @@ def user_login(request):
             encrypted_username = ""
             for i in range(len(username)):
                 encrypted_username += chr(ord(username[i]) + ASCII_Username_Sum)
+
+            custom_encrypted_username = ""
+            for i in range(len(username)):
+                custom_encrypted_username += chr(ord(username[i]) + 468)
 
             ep = request.POST.get('encrypted_password')
 
@@ -93,61 +97,75 @@ def user_login(request):
             if cap_json['success']==True:
                 if username in list_existing_user_records:
                     user = User.objects.get(username = username)
-                    if user.is_active == True:
-                        if check is True:
-                            user = authenticate(request, username=username, password=password)
-                            
-                            if user is not None:
-                                login(request, user)
-                                save_login_details(request, username, user_ip_address, "Success")
-                                length_UserLoginDetails = UserLoginDetails.objects.all().count()
-                                if length_UserLoginDetails > 2:
-                                    verify_login(request, username, current_time)
-
-                                group = None
-                                if request.user.groups.exists():
-                                    group = request.user.groups.all()[0].name
-                                if group == 'Student':
-                                    if (request.GET.get('next')):
-                                        return redirect(request.GET.get('next'))
+                    current_userverificationstatus_have_to_verify_count = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").count()
+                    current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").order_by('-created_at')
+                    if (not current_userverificationstatus) or (current_userverificationstatus_have_to_verify_count == 0) or (current_userverificationstatus[0].status == "Verified"):
+                        if user.is_active == True:
+                            if check is True:
+                                user = authenticate(request, username=username, password=password)
+                                if user is not None:
+                                    save_login_details(request, username, user_ip_address, "Success")
+                                    length_UserLoginDetails = UserLoginDetails.objects.filter(user__username=username).count()
+                                    if length_UserLoginDetails > 2:
+                                        verify_login(request, username, current_time, user)
+                                    
+                                    last_current_uld = UserLoginDetails.objects.filter(user__username = username).order_by('-created_at')[0]
+                                    if ((length_UserLoginDetails > 2) and (last_current_uld.status != None)) and ((last_current_uld.status == 14) or (last_current_uld.status >= 4 and last_current_uld.status <= 12)):
+                                        login(request, user)
+                                        group = None
+                                        if request.user.groups.exists():
+                                            group = request.user.groups.all()[0].name
+                                        if group == 'Student':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else:
+                                                return redirect('student_dashboard')
+                                        elif group == 'Staff':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else: 
+                                                return redirect('staff_dashboard')
+                                        elif group == 'Head of the Department':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else: 
+                                                return redirect('hod_dashboard')
+                                        elif group == 'Course Co-Ordinator':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else: 
+                                                return redirect('cc_dashboard')
+                                        elif group == 'Administrator':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else:
+                                                return redirect('super_admin_dashboard')
                                     else:
-                                        return redirect('student_dashboard')
-                                elif group == 'Staff':
-                                    if (request.GET.get('next')):
-                                        return redirect(request.GET.get('next'))
-                                    else: 
-                                        return redirect('staff_dashboard')
-                                elif group == 'Head of the Department':
-                                    if (request.GET.get('next')):
-                                        return redirect(request.GET.get('next'))
-                                    else: 
-                                        return redirect('hod_dashboard')
-                                elif group == 'Course Co-Ordinator':
-                                    if (request.GET.get('next')):
-                                        return redirect(request.GET.get('next'))
-                                    else: 
-                                        return redirect('cc_dashboard')
-                                elif group == 'Administrator':
-                                    if (request.GET.get('next')):
-                                        return redirect(request.GET.get('next'))
-                                    else:
-                                        return redirect('super_admin_dashboard')
+                                        user = User.objects.get(username = username)
+                                        user.is_active = False
+                                        user.save()
+                                        userverificationstatus = UserVerificationStatus(user=user, status="Have to Verify")
+                                        userverificationstatus.save()
+                                        return redirect('verify_its_you', username=custom_encrypted_username)
+                                else:
+                                    messages.warning(request, 'Username or Password is Incorrect!')
+                                    list_users = User.objects.all()
+                                    LIST_USERS = []
+                                    for i in list_users:
+                                        LIST_USERS.append(i.username)
+                                    if username in LIST_USERS or cap_json['success']==False:
+                                        save_login_details(request, username, user_ip_address, "Failed")
+                                        detect_spam_login(request, username, user_ip_address)
+                                    return redirect('login')
                             else:
-                                messages.warning(request, 'Username or Password is Incorrect!')
-                                list_users = User.objects.all()
-                                LIST_USERS = []
-                                for i in list_users:
-                                    LIST_USERS.append(i.username)
-                                if username in LIST_USERS or cap_json['success']==False:
-                                    save_login_details(request, username, user_ip_address, "Failed")
-                                    detect_spam_login(request, username, user_ip_address)
+                                messages.error(request, 'Connection is NOT secured!')
                                 return redirect('login')
                         else:
-                            messages.error(request, 'Connection is NOT secured!')
+                            messages.info(request, 'You account has been disabled temporarily')
                             return redirect('login')
                     else:
-                        messages.info(request, 'You account has been disabled temporarily')
-                        return redirect('login')
+                        messages.info(request, "Please Confirm It's You!")
+                        return redirect('verify_its_you', username=custom_encrypted_username)
                 else:
                     messages.error(request, 'No such account exist!')
                     if username in list_existing_user_records:
@@ -189,10 +207,10 @@ def save_login_details(request, user_name, user_ip_address, attempt):
         except Exception as e:
             return e
 
-def verify_login(request, uid, current_time):
+def verify_login(request, uid, current_time, user):
     current_uld = UserLoginDetails.objects.filter(user__username = uid)
     last_current_uld = UserLoginDetails.objects.filter(user__username = uid).order_by('-created_at')
-
+    current_user = User.objects.get(username=uid)
     list_current_uld_ipa = []
     list_current_uld_osd = []
     list_current_uld_bd = []
@@ -209,18 +227,19 @@ def verify_login(request, uid, current_time):
     for i in range(len(current_uld)-1):
         count = 0
         if user_ip_address in list_current_uld_ipa:
-            count += 1
+            count += 8
         if os_details in list_current_uld_osd:
-            count += 1
+            count += 4
         if browser_details in list_current_uld_bd:
-            count += 1
+            count += 2
         save_current_uld_status = UserLoginDetails.objects.get(id=last_current_uld[0].id)
         save_current_uld_status.status = count
         save_current_uld_status.save()
-        if(count<3):
+        if(count>=4 and count<=12):
+            login(request, user)
             context = {
-                "first_name":request.user.first_name,
-                "email":request.user.email,
+                "first_name":current_user.first_name,
+                "email":current_user.email,
                 "user_ip_address":user_ip_address,
                 "os_details":os_details,
                 "browser_details":browser_details,
@@ -228,11 +247,64 @@ def verify_login(request, uid, current_time):
             }
             template = render_to_string('authentication/login_alert_email.html', context)
             try:
-                send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [request.user.email], html_message=template)
+                send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
             except Exception as e:
                 messages.warning(request, e)
             break
-    return "verify_login"
+    return None
+
+def verify_its_you(request, username):
+    custom_decrypted_username = ""
+    for i in range(len(username)):
+        custom_decrypted_username += chr(ord(username[i]) - 468)
+
+    current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
+    if (current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified"):
+        return redirect('login')
+    else:
+        context = {
+            "username":username,
+        }
+        return render(request, 'authentication/verify_its_you.html', context)
+
+def verify_user_by_email(request, username):
+    custom_decrypted_username = ""
+    for i in range(len(username)):
+        custom_decrypted_username += chr(ord(username[i]) - 468)
+    user = User.objects.get(username = custom_decrypted_username)
+    current_site = get_current_site(request)
+    mail_subject = "Verify It's You! - AkirA"
+    message = render_to_string('authentication/user_confirmation_email.html', {
+        'user': user,  
+        'domain': current_site.domain,  
+        'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+        'token':account_activation_token.make_token(user),
+    })
+    current_user = User.objects.get(username = custom_decrypted_username)
+    to_email = current_user.email
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+    messages.warning(request, "Please Check Your EMail Inbox")
+    return redirect('login')
+
+def confirm(request, uidb64, token):
+    User = get_user_model()  
+    try:  
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)  
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token): 
+        user.is_active = True
+        user.save()
+        current_userverificationstatus = UserVerificationStatus.objects.filter(user=user, status="Have to Verify").order_by('-created_at')[0]
+        userverificationstatus = UserVerificationStatus.objects.get(id=current_userverificationstatus.id)
+        userverificationstatus.status="Verified"
+        userverificationstatus.save()
+        return HttpResponse("Thank you for confirming that's you. Now you can login your account.")
+    else:  
+        return HttpResponse('Confirmation link is invalid!')
 
 def detect_spam_login(request, uid, spam_user_ip_address):
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
@@ -297,6 +369,41 @@ def logoutUser(request):
 #     delete_all_records = User_IP_B_List.objects.get(id=i.id)
 #     delete_all_records.delete()
 
-# user = User.objects.get(username = 'hari.vege')
+# lst = UserVerificationStatus.objects.filter(status="Verified")
+# for i in lst:
+#     delete_all_records = UserVerificationStatus.objects.get(id=i.id)
+#     delete_all_records.delete()
+
+# user = User.objects.get(username = '4akhi')
 # user.is_active = True
 # user.save()
+
+# import json
+# import requests
+# ip = '117.207.250.185'
+# r = requests.get('https://ipinfo.io/%s/geo' % ip)
+# st = (r.content).decode("utf-8")
+# res = json.loads(st)
+# print(res['city'])
+# print(res['region'])
+# print(res['country'])
+
+# custom_encrypted_username = ""
+# user="4akhi"
+# for i in range(len(user)):
+#     custom_encrypted_username += chr(ord(user[i]) + 468)
+# print(custom_encrypted_username)
+
+# custom_decrypted_username = ""
+# username=custom_encrypted_username
+# for i in range(len(username)):
+#     custom_decrypted_username += chr(ord(username[i]) - 468)
+# print(custom_decrypted_username)
+
+# username = 'hari.vege'
+# current_userverificationstatus_have_to_verify_count = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").count()
+# current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").order_by('-created_at')
+# if (not current_userverificationstatus) or (current_userverificationstatus_have_to_verify_count == 0) or (current_userverificationstatus[0].status == "Verified"):
+#     print("login")
+# else:
+#     print("Confirm")

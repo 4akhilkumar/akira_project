@@ -1,0 +1,5 @@
+{% load i18n %}{% autoescape off %}
+Hi {{ user.username }},
+Please click on the link to confirm it's you!
+https://{{ domain }}{% url 'confirm' uidb64=uid token=token %}
+{% endautoescape %}

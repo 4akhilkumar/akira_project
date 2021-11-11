@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify, It's You!</title>
+</head>
+<body>
+    <p>This device isn't recognized. For your secuirty AkirA wants to make sure it's really you.</p>
+    <p>Try another way to sign in.</p>
+    <a href="#">Use Face ID to login</a>
+    <br>
+    
+    <a href="{% url 'verify_user_by_email' username %}">Get a verfication link to your registered email.</a>
+    <br>
+    <a href="#">Use your back-up code to login</a>
+    <br>
+    <a href="#">Get help</a>
+</body>
+</html>
