@@ -18,15 +18,15 @@
 
         <script nonce="{{rAnd0m123}}" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-        <link rel="apple-touch-icon" href='{% static "images/AkirA_Logo.png" %}'>
-        <link rel="shortcut icon" href='{% static "images/AkirA_Logo.png" %}' type="image/x-icon">
+        <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+        <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     </head>
     <body>
         <header class="header">
             <div class="header__container">
                 <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" onclick="document.location='{% url 'my_profile' %}'" alt="{{request.user.first_name}}" class="header__img">
                 <a href="#" class="header__logo">
-                    <img src="{% static 'images/Logo_AkirA.png' %}" width="125" height="auto" alt="AkirA Logo">
+                    <img src="{% static 'images/AkirA_V2.0.png' %}" width="125" height="auto" alt="AkirA Logo">
                 </a>
     
                 <div class="header__search">
@@ -46,10 +46,8 @@
             <nav class="nav__container">
                 <div>
                     <a href="#" class="nav__link nav__logo">
-                        <i class='fas fa-bars nav__icon' id="hide_icon"></i>
-                        <span class="nav__logo-name" id="show_AkirA_Logo">
-                            <img src="{% static 'images/Logo_AkirA V2.0.png' %}" width="70" height="auto" alt="AkirA Logo">
-                        </span>
+                        <i class="fas fa-shield-alt nav__icon"></i>
+                        <span class="nav__logo-name"> AkirA</span>
                     </a>
 
                 {% for group_for in request.user.groups.all %}
