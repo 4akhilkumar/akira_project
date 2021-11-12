@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http.response import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
@@ -23,10 +23,11 @@ import re
 import httpagentparser
 import json
 import requests
+import secrets
 
 from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
 
-from . models import UserLoginDetails, User_IP_B_List, UserVerificationStatus
+from . models import User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, UserLoginDetails, User_IP_B_List, UserVerificationStatus
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
@@ -269,21 +270,27 @@ def verify_user_by_email(request, username):
     custom_decrypted_username = ""
     for i in range(len(username)):
         custom_decrypted_username += chr(ord(username[i]) - 468)
-    user = User.objects.get(username = custom_decrypted_username)
-    current_site = get_current_site(request)
-    mail_subject = "Verify It's You! - AkirA"
-    message = render_to_string('authentication/user_confirmation_email.html', {
-        'user': user,  
-        'domain': current_site.domain,  
-        'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-        'token':account_activation_token.make_token(user),
-    })
-    current_user = User.objects.get(username = custom_decrypted_username)
-    to_email = current_user.email
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    email.send()
-    messages.warning(request, "Please Check Your EMail Inbox")
-    return redirect('login')
+
+    current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
+    if (current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified"):
+        return redirect('login')
+    else:
+        user = User.objects.get(username = custom_decrypted_username)
+        current_site = get_current_site(request)
+        mail_subject = "Verify It's You! - AkirA"
+        message = render_to_string('authentication/user_confirmation_email.html', {
+            'user': user,  
+            'domain': current_site.domain,  
+            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+            'token':account_activation_token.make_token(user),
+        })
+        current_user = User.objects.get(username = custom_decrypted_username)
+        to_email = current_user.email
+        email = EmailMessage(mail_subject, message, to=[to_email])
+        email.send()
+        messages.warning(request, "Please Check Your EMail Inbox")
+        return redirect('login')
 
 def confirm(request, uidb64, token):
     User = get_user_model()  
@@ -295,12 +302,16 @@ def confirm(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token): 
         user.is_active = True
         user.save()
-        current_userverificationstatus = UserVerificationStatus.objects.filter(user=user, status="Have to Verify").order_by('-created_at')[0]
-        userverificationstatus = UserVerificationStatus.objects.get(id=current_userverificationstatus.id)
-        userverificationstatus.status="Verified"
-        userverificationstatus.save()
-        messages.success(request, "Thank you for confirming that's you.")
-        return redirect('login')
+        try:
+            current_userverificationstatus = UserVerificationStatus.objects.filter(user=user, status="Have to Verify").order_by('-created_at')[0]
+            userverificationstatus = UserVerificationStatus.objects.get(id=current_userverificationstatus.id)
+            userverificationstatus.status="Verified"
+            userverificationstatus.save()
+            messages.success(request, "Thank you for confirming that's you.")
+            return redirect('login')
+        except Exception as e:
+            messages.info(request, 'You have been confirmed already!')
+            return redirect('login')
     else:  
         messages.warning(request, "Confirmation link is invalid!")
         return redirect('login')
@@ -352,6 +363,130 @@ def activate(request, uidb64, token):
         return HttpResponse('Thank you for Re-Activating your account. Now you can login your account.')
     else:  
         return HttpResponse('Activation link is invalid!')
+
+@login_required(login_url=settings.LOGIN_URL)
+def account_settings(request):
+    username = request.user
+    try:
+        backup_codes = User_BackUp_Codes.objects.get(user=username)
+    except User_BackUp_Codes.DoesNotExist:
+        backup_codes = None
+    if backup_codes == None:
+        backup_codes_status = 0
+    else:
+        backup_codes_status = 1
+    context = {
+        "backup_codes_status":backup_codes_status,
+    }
+    return render(request, 'authentication/account_settings.html', context)
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def generate_backup_codes(request):
+    username = request.user
+    try:
+        backup_codes = User_BackUp_Codes.objects.get(user=username)
+    except User_BackUp_Codes.DoesNotExist:
+        backup_codes = None
+    if backup_codes == None:
+        list_codes = secrets.token_urlsafe(45)
+        split_str = re.findall('.{1,6}', str(list_codes))
+        join_hash = '#'.join(split_str)
+        userbackupcodes = User_BackUp_Codes(user = username,backup_codes = join_hash)
+        userbackupcodes.save()
+        return redirect('account_settings')
+    else:
+        return HttpResponse("Already Backup Codes Exists")
+    
+@login_required(login_url=settings.LOGIN_URL)
+def download_backup_codes(request):
+    username = request.user
+    try:
+        backup_codes = User_BackUp_Codes.objects.get(user=username)
+    except User_BackUp_Codes.DoesNotExist:
+        backup_codes = None
+    if backup_codes != None:
+        response = HttpResponse(content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(username) + ' - AkirA Account' + '.txt'
+        current_user_backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes_with_hash = current_user_backup_codes.backup_codes
+        splitup_backup_codes = backup_codes_with_hash.split('#')
+        align_backup_code = []
+        for i in splitup_backup_codes:
+            align_backup_code.append(f'{i}\n')
+        response.writelines(align_backup_code)
+        return response
+    else:
+        return HttpResponse("No BackUp Codes to Download")
+
+@login_required(login_url=settings.LOGIN_URL)
+def delete_existing_backup_codes(request):
+    username = request.user
+    try:
+        backup_codes = User_BackUp_Codes.objects.get(user=username)
+    except User_BackUp_Codes.DoesNotExist:
+        backup_codes = None
+    if backup_codes == None:
+        return HttpResponse("No Back Up Codes to Delete.")
+    else:
+        backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes.delete()
+    return redirect('account_settings')
+
+def verify_user_by_backup_codes(request, username):
+    custom_decrypted_username = ""
+    for i in range(len(username)):
+        custom_decrypted_username += chr(ord(username[i]) - 468)
+
+    current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
+    if (current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified"):
+        return redirect('login')
+    else:
+        user = User.objects.get(username = custom_decrypted_username)
+        if request.method == 'POST':
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+            user_confirm = 0
+            backup_code = request.POST.get('backup_code')
+            current_user_backup_codes = User_BackUp_Codes.objects.get(user=user)
+            backup_codes_with_hash = current_user_backup_codes.backup_codes
+            splitup_backup_codes = backup_codes_with_hash.split('#')
+            align_backup_code = []
+            for i in splitup_backup_codes:
+                align_backup_code.append(i)
+            if backup_code in align_backup_code:
+                user_confirm = 1
+                align_backup_code.remove(backup_code)
+                join_hash = '#'.join(align_backup_code)
+                userbackupcodes = User_BackUp_Codes.objects.get(id=current_user_backup_codes.id)
+                userbackupcodes.backup_codes = join_hash
+                userbackupcodes.save()
+                user = User.objects.get(username = user.username)
+                user.is_active = True
+                user.save()
+                update_attempt_success = User_BackUp_Codes_Login_Attempts(user = user, attempt = user_confirm, status = "Success")
+                update_attempt_success.save()
+                current_userverificationstatus = UserVerificationStatus.objects.filter(user=user, status="Have to Verify").order_by('-created_at')[0]
+                userverificationstatus = UserVerificationStatus.objects.get(id=current_userverificationstatus.id)
+                userverificationstatus.status="Verified"
+                userverificationstatus.save()
+                return redirect('login')
+            else:
+                user_confirm = 2
+                update_attempt_failed = User_BackUp_Codes_Login_Attempts(user = user, attempt = user_confirm, status = "Failed")
+                update_attempt_failed.save()
+                backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
+                if backup_code_attempt_status_count > 2:
+                    block_ip = User_IP_B_List(black_list=ip)
+                    block_ip.save()
+                else:
+                    return redirect('verify_user_by_backup_codes', username=username)
+        else:
+            return render(request, 'authentication/enter_backup_code.html')
 
 @login_required(login_url=settings.LOGIN_URL)
 def logoutUser(request):
@@ -412,3 +547,18 @@ def logoutUser(request):
 #     print("Login")
 # else:
 #     print("confirm")
+
+# username = 'hari.vege'
+# list_codes = secrets.token_urlsafe(45)
+# print(list_codes)
+# print(len(list_codes))
+# split_str = re.findall('.{1,6}', str(list_codes))
+# print(split_str)
+# join_hash = '#'.join(split_str)
+# print(join_hash)
+# split_hash = join_hash.split('#')
+# print(split_hash)
+
+# backUpCode = User_BackUp_Codes.objects.all()
+# User_BackUp_Codes.objects.all().delete()
+# backUpCode = User_BackUp_Codes.objects.all()

@@ -14,7 +14,7 @@
     
     <a href="{% url 'verify_user_by_email' username %}">Get a verfication link to your registered email.</a>
     <br>
-    <a href="#">Use your back-up code to login</a>
+    <a href="{% url 'verify_user_by_backup_codes' username %}">Use your back-up code to login</a>
     <br>
     <a href="#">Get help</a>
 </body>
