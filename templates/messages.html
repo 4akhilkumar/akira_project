@@ -39,7 +39,7 @@
 
     {% if messages %}
     {% for message in messages %}
-    {% if message.tags == "error" or message.tags == "info" %}
+    {% if message.tags == "error" %}
     <script>
       function showNotification() {
         const notification = new Notification("{{message.tags|title}}", {
