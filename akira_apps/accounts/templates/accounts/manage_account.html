@@ -1,0 +1,326 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block sidebar-menu %}
+<ul>
+  <li>
+    {% for group_for in request.user.groups.all %}
+    {% if group_for.name == 'Head of the Department' %}
+    <a href="{% url 'hod_dashboard' %}">
+    {% elif group_for.name == 'Course Co-Ordinator' %}
+    <a href="{% url 'cc_dashboard' %}"></a>
+    {% elif group_for.name == 'Staff' %}
+    <a href="#"></a>
+    {% elif group_for.name == 'Counsellor' %}
+    <a href="#"></a>
+    {% elif group_for.name == 'Student' %}
+    <a href="{% url 'student_dashboard' %}"></a>
+    {% elif group_for.name == 'Administrator' %}
+    <a href="{% url 'super_admin_dashboard' %}"></a>
+    {% endif %}
+    {% endfor %}
+        <span class="fas fa-th-large"></span>
+        <span>Dashboard</span>
+    </a>
+  </li>
+  <li>
+      <a href="">
+          <span class="fas fa-school"></span>
+          <span>Academic</span>
+      </a>
+  </li>
+  <li>
+      <a href="">
+          <span class="fas fa-chalkboard-teacher"></span>
+          <span>Faculty</span>
+      </a>
+  </li>
+  <li>
+      <a href="">
+          <span class="fas fa-user-graduate"></span>
+          <span>Students</span>
+      </a>
+  </li>
+  <li>
+      <a href="{% url 'account_settings' %}" class="active">
+          <span class="fas fa-user-cog"></span>
+          <span>Account</span>
+      </a>
+  </li>
+  <li>
+    <a href="{% url 'account_settings' %}">
+        <span class="far fa-id-card"></span>
+        <span>Personal Info</span>
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'logout' %}">
+        <span class="fas fa-sign-out-alt"></span>
+        <span>Logout</span>
+    </a>
+  </li>
+</ul>
+{% endblock %}
+
+{% block manage-account %}
+<div class="security">
+    <div class="security-title">
+        <h2><i class="fas fa-shield-alt"></i> Security</h2>
+        <p>Settings and recommendations to help you keep your account secure</p>
+    </div>
+    <div class="security-summary">
+        <div class="first-container-grid">
+            <div class="account-secuirty-status">
+                <div class="account-status-summary">
+                    <div class="security-status-text">
+                        <h4>Your account is protected</h4>
+                        <p>The Security Checkup checked your account and found no recommended actions.
+                        {% if current_user_2fa_status == 1 %} 
+                        With 2-Step Verification, you’ll protect your account with both your password and your email</p>
+                        {% else %}
+                        </p><p>Add an additional layer of security? <b class="learn-2fa-text">Enable 2FA</b></p>
+                        {% endif %}
+                    </div>
+                    <div class="security-status-image">
+                        <picture>
+                            <source media="(min-width:1040px)" srcset="{% static 'images/securitycheckup_scene_green.png' %}">
+                            <img src="{% static 'images/securitycheckup_green.webp' %}" alt="Flowers" style="width:auto;">
+                        </picture>
+                    </div>
+                </div>
+                <div class="security-status-details">
+                    <button onClick='window.location="#Login_activity"' class="see-details">See details</button>
+                    {% if current_user_2fa_status == 1 %}
+                    <button onClick='window.location="#for-2fa"' class="setup-2fa">Check 2FA</button>
+                    {% else %}
+                    <button onClick='window.location="#for-2fa"' class="setup-2fa">Setup 2FA</button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="recent-security-activity">
+                <h4>Recent security activity</h4>
+                <p>{% if get_failed_attempt_in_a_month %}
+                    <b>{{ get_failed_attempt_in_a_month|apnumber|capfirst }}</b>
+                    {% else %}
+                    No 
+                    {% endif %}
+                    security activity or alert{{ get_failed_attempt_in_a_month|pluralize }} in the last 28 days</p>
+                <hr>
+                <div class="see-login-details-button">
+                    <button onclick='window.location="#login-attempts"' class="see-login-details">See Login Details</button>
+                </div>
+            </div>
+            <div class="ways-we-can-verify-its-you" id="for-2fa">
+                <div class="wwcviy-title-image">
+                    <div class="wwcviy-title-subtitle">
+                        <h4>Ways we can verify it's you</h4>
+                        <p>These can be used to make sure it's really you signing in or to reach you if there's suspicious activity in your account</p>
+                    </div>
+                    <div class="wwcviy-image">
+                        <img src="{% static 'images/recovery_scene.png' %}" alt="">
+                    </div>
+                </div>
+                <div class="recovery-email">
+                    <h4>Recovery email</h4>
+                    <p>{{ request.user.email }}</p>
+                </div>
+                <hr>
+                <div class="recovery-phone">
+                    <h4>Recovery phone</h4>
+                    <p>09291494989</p>
+                </div>
+                <hr>
+                <div class="two-step-verfication">
+                    <h4>2-Step Verfication</h4>
+                    <div class="twofa-status">
+                        <label class="switch">
+                            <input type="checkbox" data-href="{% url 'status_2fa' %}" 
+                            {% if current_user_2fa_status == 1 %} checked {% endif %}
+                            name="checkbox_backup_code"
+                            id="id_checkbox_backup_code">
+                            <span class="slider round"></span>
+                        </label>
+                        {% if current_user_2fa_status == 1 %}
+                        <span class="twofa-text-status">ON</span>
+                        {% else %}
+                        <span class="twofa-text-status">OFF</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if current_user_2fa_status == 1 %}
+                <hr>
+                <div class="recovery-email">
+                    <h4>Backup Codes</h4>
+                    <p>These printable one-off passcodes allow you to sign in when away from your phone, like when you’re travelling.</p>
+                    {% if backup_codes_status == 0 %}
+                    <a href="{% url 'generate_backup_codes' %}" class="get-backup-codes">Get Backup Codes</a>
+                    {% else %}
+                    <div class="show-delete-backup-codes">
+                        <a href="{% url 'download_backup_codes' %}" class="get-backup-codes text-success"><i class="fas fa-file-download"></i> Download Backup Codes</a>
+                        <a href="{% url 'delete_existing_backup_codes' %}" class="get-backup-codes text-danger"><i class="fas fa-trash"></i> Delete Existing Back Up Codes</a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="grid-graph-section">
+        <div class="graph-card">
+            <h3 class="section-head" id="Login_activity">Login activity</h3>
+            <div class="graph-content">
+                <div class="graph-head">
+                    <div class="icons-wrapper">
+                        <div class="icon">
+                            <span class="fas fa-user-times text-danger"></span>
+                        </div>
+                        <div class="icon">
+                            <span class="fas fa-user-check text-success"></span>
+                        </div>
+                    </div>
+                    <div class="graph-select">
+                        <p>{{current_month}}</p>
+                    </div>
+                </div>
+                <div class="graph-board">
+                    <canvas id="loginActivityChart" width="100%" height="50px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="user-login-details" id="login-attempts">
+        <h4>Login attempts</h4>
+        <p>Help us to serve you better in securing your account. 
+            {% if get_failed_login_attempts_count %}
+            Please confirm the authentication which was done by you.
+            {% endif %}
+        </p>
+        {% if get_failed_login_attempts_count %}
+        <div class="outer-container">
+            {% for i in get_failed_login_attempts %}
+            <div class="each-login-details">
+                <div class="device-icon-login-details">
+                    <div class="device-icon">
+                        {% if "Windows" in i.os_details %}
+                        <span class="fab fa-windows"></span>
+                        {% elif "iPhone" in i.os_details or "Macintosh" in i.os_details %}
+                        <span class="fab fa-apple"></span>
+                        {% elif "Ubuntu" in i.os_details %}
+                        <span class="fab fa-ubuntu"></span>
+                        {% elif "Android" in i.os_details %}
+                        <span class="fab fa-android"></span>
+                        {% elif "CrOS" in i.os_details %}
+                        <span class="fab fa-chrome"></span>
+                        {% else %}
+                        <span class="fas fa-exclamation-circle"></span>
+                        {% endif %}
+                    </div>
+                    <div class="device-platform_ip_addr-location-time">
+                        <div class="platform-name">
+                            <h4>{{ i.os_details }} - {{ i.user_ip_address }}</h4>
+                        </div>
+                        <div class="location_name">
+                            <p>Andhra Pradesh, India</p>
+                        </div>
+                        <div class="time-date">
+                            <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-attempt-action">
+                    {% if i.user_confirm == "YES" %}
+                    <button class="confirmed-button"><span class="fas fa-check-circle"></span> Confirmed</button>
+                    {% elif i.user_confirm == "NO" %}
+                    <button class="suspicious-button"><span class="fas fa-exclamation-circle"></span> Suspicious Login</button>
+                    {% else %}
+                    <button class="true-button" onclick="window.location='{% url 'agree_login_attempt' i.id %}'"><span class="fas fa-check"></span> It was me</button>
+                    <button class="false-button" onclick="window.location='{% url 'deny_login_attempt' i.id %}'"><span class="fas fa-exclamation-triangle"></span> It wasn't me</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Hurray! No security activity or alerts in the last 28 days. Everything is Safe&#44 Secure &amp; Clean</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block chart-js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
+<script>
+    let ctx = document.querySelector('#loginActivityChart');
+    Chart.defaults.color = "#FFFFFF";
+    let revChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: {{get_dates|safe}},
+            datasets: [
+                {
+                    label: "Success",
+                    borderColor: "#0F9D58",
+                    borderWidth: "3",
+                    backgroundColor: "#0f9d5833",
+                    data: {{success_attempts_date}},
+                },
+                {
+                    label: "Failed",
+                    borderColor: "#DB4437",
+                    borderWidth: "3",
+                    backgroundColor: "#db443733",
+                    data: {{failed_attempts_date}},
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                intersect: false,
+                node: "index",
+            }
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('input[name="checkbox_backup_code"]').click(function(){
+            var this_ = $(this)
+            var status_2fa = this_.attr("data-href")
+            if($(this).prop("checked") == true){
+                $.ajax({
+                    url: status_2fa,
+                    method: "GET",
+                    data: {},
+                    success: function(data) {
+                        window.location.reload();
+                    }, error: function(error) {
+                        console.log('Here2');
+                    }
+                });
+            }
+            else if($(this).prop("checked") == false){
+                $.ajax({
+                    url: status_2fa,
+                    method: "GET",
+                    data: {},
+                    success: function(data) {
+                        window.location.reload();
+                    }, error: function(error) {
+                        console.log('Here4');
+                    }
+                });
+            }
+        });
+    });
+    $(document).ready(function() {
+        $('input[name="toggle-checkbox"]').click(function(){
+            if($(this).prop("checked") == false){
+                window.location.reload();
+            }
+        });
+    });
+</script>
+{% endblock %}
