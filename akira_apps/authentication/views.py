@@ -12,6 +12,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
+from akira_apps.accounts.models import TwoFactorAuth
 
 from akira_apps.authentication.token import account_activation_token
 
@@ -51,6 +52,18 @@ def user_login(request):
         current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if request.method == 'POST':
             username = request.POST.get('username')
+
+            try:
+                status_2fa = TwoFactorAuth.objects.get(user__username=username)
+            except TwoFactorAuth.DoesNotExist:
+                status_2fa = None
+            current_user_2fa_status = 0
+            if (status_2fa != None) and (status_2fa.twofa == 0):
+                current_user_2fa_status = 0
+            elif (status_2fa != None) and (status_2fa.twofa == 1):
+                current_user_2fa_status = 1
+            else:
+                current_user_2fa_status = 0
 
             ASCII_Username = []
             for i in range(len(username)):
@@ -109,7 +122,7 @@ def user_login(request):
                                 
                                 current_userverificationstatus_have_to_verify_count = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").count()
                                 current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").order_by('-created_at')
-                                if (not current_userverificationstatus) or (current_userverificationstatus_have_to_verify_count == 0) or (current_userverificationstatus[0].status == "Verified"):
+                                if (current_user_2fa_status == 0) and ((not current_userverificationstatus) or (current_userverificationstatus_have_to_verify_count == 0) or (current_userverificationstatus[0].status == "Verified")):
                                     login(request, user)
                                     group = None
                                     if request.user.groups.exists():
@@ -139,6 +152,8 @@ def user_login(request):
                                             return redirect(request.GET.get('next'))
                                         else:
                                             return redirect('super_admin_dashboard')
+                                elif current_user_2fa_status == 1:
+                                    return redirect('verify_its_you', username=custom_encrypted_username)
                                 else:
                                     return redirect('verify_its_you', username=custom_encrypted_username)
                             else:
@@ -156,7 +171,7 @@ def user_login(request):
                             return redirect('login')
                     else:
                         messages.info(request, 'You account has been disabled temporarily')
-                        return redirect('login')
+                        return redirect('verify_its_you', username=custom_encrypted_username)
                 else:
                     messages.error(request, 'No such account exist!')
                     if username in list_existing_user_records:
@@ -255,10 +270,27 @@ def verify_its_you(request, username):
     custom_decrypted_username = ""
     for i in range(len(username)):
         custom_decrypted_username += chr(ord(username[i]) - 468)
-
-    current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    try:
+        status_2fa = TwoFactorAuth.objects.get(user__username=custom_decrypted_username)
+    except TwoFactorAuth.DoesNotExist:
+        status_2fa = None
+    current_user_2fa_status = 0
+    if (status_2fa != None) and (status_2fa.twofa == 0):
+        current_user_2fa_status = 0
+    elif (status_2fa != None) and (status_2fa.twofa == 1):
+        current_user_2fa_status = 1
+    else:
+        current_user_2fa_status = 0
+    try:
+        uvs = UserVerificationStatus.objects.get(user__username=custom_decrypted_username)
+    except UserVerificationStatus.DoesNotExist:
+        uvs = None
+    if uvs != None:
+        current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    else:
+        current_userverificationstatus = 842
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
-    if (current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified"):
+    if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
     else:
         context = {
@@ -271,9 +303,20 @@ def verify_user_by_email(request, username):
     for i in range(len(username)):
         custom_decrypted_username += chr(ord(username[i]) - 468)
 
+    try:
+        status_2fa = TwoFactorAuth.objects.get(user__username=custom_decrypted_username)
+    except TwoFactorAuth.DoesNotExist:
+        status_2fa = None
+    current_user_2fa_status = 0
+    if (status_2fa != None) and (status_2fa.twofa == 0):
+        current_user_2fa_status = 0
+    elif (status_2fa != None) and (status_2fa.twofa == 1):
+        current_user_2fa_status = 1
+    else:
+        current_user_2fa_status = 0
     current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
-    if (current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified"):
+    if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
     else:
         user = User.objects.get(username = custom_decrypted_username)
@@ -364,83 +407,24 @@ def activate(request, uidb64, token):
     else:  
         return HttpResponse('Activation link is invalid!')
 
-@login_required(login_url=settings.LOGIN_URL)
-def account_settings(request):
-    username = request.user
-    try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
-    except User_BackUp_Codes.DoesNotExist:
-        backup_codes = None
-    if backup_codes == None:
-        backup_codes_status = 0
-    else:
-        backup_codes_status = 1
-    context = {
-        "backup_codes_status":backup_codes_status,
-    }
-    return render(request, 'authentication/account_settings.html', context)
-
-
-@login_required(login_url=settings.LOGIN_URL)
-def generate_backup_codes(request):
-    username = request.user
-    try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
-    except User_BackUp_Codes.DoesNotExist:
-        backup_codes = None
-    if backup_codes == None:
-        list_codes = secrets.token_urlsafe(45)
-        split_str = re.findall('.{1,6}', str(list_codes))
-        join_hash = '#'.join(split_str)
-        userbackupcodes = User_BackUp_Codes(user = username,backup_codes = join_hash)
-        userbackupcodes.save()
-        return redirect('account_settings')
-    else:
-        return HttpResponse("Already Backup Codes Exists")
-    
-@login_required(login_url=settings.LOGIN_URL)
-def download_backup_codes(request):
-    username = request.user
-    try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
-    except User_BackUp_Codes.DoesNotExist:
-        backup_codes = None
-    if backup_codes != None:
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(username) + ' - AkirA Account' + '.txt'
-        current_user_backup_codes = User_BackUp_Codes.objects.get(user=username)
-        backup_codes_with_hash = current_user_backup_codes.backup_codes
-        splitup_backup_codes = backup_codes_with_hash.split('#')
-        align_backup_code = []
-        for i in splitup_backup_codes:
-            align_backup_code.append(f'{i}\n')
-        response.writelines(align_backup_code)
-        return response
-    else:
-        return HttpResponse("No BackUp Codes to Download")
-
-@login_required(login_url=settings.LOGIN_URL)
-def delete_existing_backup_codes(request):
-    username = request.user
-    try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
-    except User_BackUp_Codes.DoesNotExist:
-        backup_codes = None
-    if backup_codes == None:
-        return HttpResponse("No Back Up Codes to Delete.")
-    else:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
-        backup_codes.delete()
-    return redirect('account_settings')
-
 def verify_user_by_backup_codes(request, username):
     custom_decrypted_username = ""
     for i in range(len(username)):
         custom_decrypted_username += chr(ord(username[i]) - 468)
-
+    try:
+        status_2fa = TwoFactorAuth.objects.get(user__username=custom_decrypted_username)
+    except TwoFactorAuth.DoesNotExist:
+        status_2fa = None
+    current_user_2fa_status = 0
+    if (status_2fa != None) and (status_2fa.twofa == 0):
+        current_user_2fa_status = 0
+    elif (status_2fa != None) and (status_2fa.twofa == 1):
+        current_user_2fa_status = 1
+    else:
+        current_user_2fa_status = 0
     current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
-    if (current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified"):
+    if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
     else:
         user = User.objects.get(username = custom_decrypted_username)
@@ -468,8 +452,18 @@ def verify_user_by_backup_codes(request, username):
                 user = User.objects.get(username = user.username)
                 user.is_active = True
                 user.save()
-                update_attempt_success = User_BackUp_Codes_Login_Attempts(user = user, attempt = user_confirm, status = "Success")
-                update_attempt_success.save()
+                try:
+                    user_backup_code_la = User_BackUp_Codes_Login_Attempts.objects.get(user__username=custom_decrypted_username)
+                except User_BackUp_Codes_Login_Attempts.DoesNotExist:
+                    user_backup_code_la = None
+                if user_backup_code_la == None:
+                    create_attempt_success = User_BackUp_Codes_Login_Attempts(user = user, attempt = user_confirm, status = "Success")
+                    create_attempt_success.save()
+                else:
+                    get_user_bcla = User_BackUp_Codes_Login_Attempts.objects.get(user__username=custom_decrypted_username)
+                    get_user_bcla.attempt = user_confirm
+                    get_user_bcla.status = "Success"
+                    get_user_bcla.save()
                 current_userverificationstatus = UserVerificationStatus.objects.filter(user=user, status="Have to Verify").order_by('-created_at')[0]
                 userverificationstatus = UserVerificationStatus.objects.get(id=current_userverificationstatus.id)
                 userverificationstatus.status="Verified"
@@ -562,3 +556,7 @@ def logoutUser(request):
 # backUpCode = User_BackUp_Codes.objects.all()
 # User_BackUp_Codes.objects.all().delete()
 # backUpCode = User_BackUp_Codes.objects.all()
+
+# twoauth = TwoFactorAuth.objects.all()
+# TwoFactorAuth.objects.all().delete()
+# twoauth = TwoFactorAuth.objects.all()
