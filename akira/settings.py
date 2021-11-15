@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'akira_apps.student.apps.StudentConfig',
     'akira_apps.authentication.apps.AuthenticationConfig',
     'akira_apps.academic_registration.apps.AcademicRegistrationConfig',
+    'akira_apps.accounts.apps.AccountsConfig',
 
     'ckeditor',
     'ckeditor_uploader',
