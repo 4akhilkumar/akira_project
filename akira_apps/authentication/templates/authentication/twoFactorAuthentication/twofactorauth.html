@@ -11,8 +11,11 @@
     <p>Choose the below options to login to your account</p>   
     <a href="{% url 'twofa_verify_user_by_email' encrypted_username %}">Get a confirm link to your registered email.</a>
     <br>
+    {% if checkUserBackupCode != None %}
     <a href="{% url 'twofa_verify_user_by_backup_codes' encrypted_username %}">Use your back-up code to login</a>
-    <br>
+    {% else %}
+    <p>No Backup Codes</p>
+    {% endif %}
     <a href="#">Get help</a>
 </body>
 </html>

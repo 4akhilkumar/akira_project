@@ -495,6 +495,11 @@ def twofa_verify_its_you(request, username):
     custom_decrypted_username = ""
     for i in range(len(username)):
         custom_decrypted_username += chr(ord(username[i]) - 468)
+
+    try:
+        checkUserBackupCode = User_BackUp_Codes.objects.get(user__username = custom_decrypted_username)
+    except User_BackUp_Codes.DoesNotExist:
+        checkUserBackupCode = None
     
     user = User.objects.get(username=custom_decrypted_username)
     first_name = user.first_name
@@ -502,6 +507,7 @@ def twofa_verify_its_you(request, username):
         "username":user,
         "encrypted_username":username,
         "first_name":first_name,
+        "checkUserBackupCode":checkUserBackupCode,
     }
     return render(request, 'authentication/twoFactorAuthentication/twofactorauth.html', context)
 
