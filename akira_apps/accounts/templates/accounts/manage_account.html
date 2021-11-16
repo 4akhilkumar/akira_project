@@ -9,15 +9,15 @@
     {% if group_for.name == 'Head of the Department' %}
     <a href="{% url 'hod_dashboard' %}">
     {% elif group_for.name == 'Course Co-Ordinator' %}
-    <a href="{% url 'cc_dashboard' %}"></a>
+    <a href="{% url 'cc_dashboard' %}">
     {% elif group_for.name == 'Staff' %}
     <a href="#"></a>
     {% elif group_for.name == 'Counsellor' %}
     <a href="#"></a>
     {% elif group_for.name == 'Student' %}
-    <a href="{% url 'student_dashboard' %}"></a>
+    <a href="{% url 'student_dashboard' %}">
     {% elif group_for.name == 'Administrator' %}
-    <a href="{% url 'super_admin_dashboard' %}"></a>
+    <a href="{% url 'super_admin_dashboard' %}">
     {% endif %}
     {% endfor %}
         <span class="fas fa-th-large"></span>
@@ -108,7 +108,11 @@
                     security activity or alert{{ get_failed_attempt_in_a_month|pluralize }} in the last 28 days</p>
                 <hr>
                 <div class="see-login-details-button">
-                    <button onclick='window.location="#login-attempts"' class="see-login-details">See Login Details</button>
+                    {% if get_failed_attempt_in_a_month %}
+                    <button onclick='window.location="#login-attempts"' class="see-login-details">See Login Detail</button>
+                    {% else %}
+                    <button onclick='window.location="#login-attempts"' class="see-login-details-clear">See Login Details</button>
+                    {% endif %}
                 </div>
             </div>
             <div class="ways-we-can-verify-its-you" id="for-2fa">
@@ -232,7 +236,7 @@
                     {% if i.user_confirm == "YES" %}
                     <button class="confirmed-button"><span class="fas fa-check-circle"></span> Confirmed</button>
                     {% elif i.user_confirm == "NO" %}
-                    <button class="suspicious-button"><span class="fas fa-exclamation-circle"></span> Suspicious Login</button>
+                    <button class="suspicious-button"><span class="fas fa-exclamation-circle"></span> Suspicious</button>
                     {% else %}
                     <button class="true-button" onclick="window.location='{% url 'agree_login_attempt' i.id %}'"><span class="fas fa-check"></span> It was me</button>
                     <button class="false-button" onclick="window.location='{% url 'deny_login_attempt' i.id %}'"><span class="fas fa-exclamation-triangle"></span> It wasn't me</button>
@@ -252,7 +256,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
 <script>
     let ctx = document.querySelector('#loginActivityChart');
-    Chart.defaults.color = "#FFFFFF";
+    Chart.defaults.color = "#696969";
     let revChart = new Chart(ctx, {
         type: "line",
         data: {
