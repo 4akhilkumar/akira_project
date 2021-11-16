@@ -23,16 +23,26 @@ function toggleClass(element, className) {
     }
 }
 
-const submitButton = document.querySelector('.app-login-button');
-submitButton.disabled = true
-function isEmpty() {
-    let username = document.getElementById('id_username').value;
-    let password = document.getElementById('id_password').value;
+$(".toggle-password").click(function() {
+    $(this).toggleClass("fa-eye-slash");
+    input = $(this).parent().find("input");
+    if (input.attr("type") == "password") {
+        input.attr("type", "text");
+    } else {
+        input.attr("type", "password");
+    }
+});
 
-    if (username.length > 7 && password.length > 7) {
-        submitButton.disabled = false;
-    }
-    else {
-        submitButton.disabled = true;
-    }
-}
+// const submitButton = document.querySelector('.app-login-button');
+// submitButton.disabled = true
+// function isEmpty() {
+//     let username = document.getElementById('id_username').value;
+//     let password = document.getElementById('id_password').value;
+
+//     if (username.length > 7 && password.length > 7) {
+//         submitButton.disabled = false;
+//     }
+//     else {
+//         submitButton.disabled = true;
+//     }
+// }

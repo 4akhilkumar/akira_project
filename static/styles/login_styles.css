@@ -224,3 +224,12 @@ button:disabled, button[disabled] {
     background-position: 100%; 
   }
 }
+
+.toggle-password {
+  float: right;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: var(--grey-400);
+}
