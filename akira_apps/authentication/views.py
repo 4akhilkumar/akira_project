@@ -130,7 +130,7 @@ def user_login(request):
                                     if (current_userlogindetailsObject != None) and (current_userlogindetailsObject_count > 0):
                                         current_userlogindetailsObject = UserLoginDetails.objects.filter(user__username=username, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
                                         get_current_userlogindetailsObject_Id = UserLoginDetails.objects.get(id=current_userlogindetailsObject.id)
-                                        get_current_userlogindetailsObject_Id.user_confirm = "Success"
+                                        get_current_userlogindetailsObject_Id.attempt = "Success"
                                         get_current_userlogindetailsObject_Id.save()
                                     
                                     try:
@@ -457,8 +457,6 @@ def verify_user_by_backup_codes(request, username):
         uvs = None
     if uvs != None:
         current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
-    else:
-        current_userverificationstatus = 842
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
     if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
@@ -668,9 +666,25 @@ def logoutUser(request):
 #     delete_all_records = UserVerificationStatus.objects.get(id=i.id)
 #     delete_all_records.delete()
 
+# user = User.objects.get(username = '4akhi')
+# user.is_active = True
+# user.save()
+
 # user = User.objects.get(username = 'hari.vege')
 # user.is_active = True
 # user.save()
+
+# backUpCode = User_BackUp_Codes.objects.all()
+# User_BackUp_Codes.objects.all().delete()
+# backUpCode = User_BackUp_Codes.objects.all()
+
+# twoauth = TwoFactorAuth.objects.all()
+# TwoFactorAuth.objects.all().delete()
+# twoauth = TwoFactorAuth.objects.all()
+
+# twoauth = User_BackUp_Codes_Login_Attempts.objects.all()
+# User_BackUp_Codes_Login_Attempts.objects.all().delete()
+# twoauth = User_BackUp_Codes_Login_Attempts.objects.all()
 
 # import json
 # import requests
@@ -713,15 +727,3 @@ def logoutUser(request):
 # print(join_hash)
 # split_hash = join_hash.split('#')
 # print(split_hash)
-
-# backUpCode = User_BackUp_Codes.objects.all()
-# User_BackUp_Codes.objects.all().delete()
-# backUpCode = User_BackUp_Codes.objects.all()
-
-# twoauth = TwoFactorAuth.objects.all()
-# TwoFactorAuth.objects.all().delete()
-# twoauth = TwoFactorAuth.objects.all()
-
-# twoauth = User_BackUp_Codes_Login_Attempts.objects.all()
-# User_BackUp_Codes_Login_Attempts.objects.all().delete()
-# twoauth = User_BackUp_Codes_Login_Attempts.objects.all()
