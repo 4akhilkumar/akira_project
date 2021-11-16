@@ -30,6 +30,8 @@
           <span>Academic</span>
       </a>
   </li>
+  {% for group_for in request.user.groups.all %}
+  {% if group_for.name == 'Head of the Department' or group_for.name == 'Administrator' %}
   <li>
       <a href="">
           <span class="fas fa-chalkboard-teacher"></span>
@@ -42,6 +44,8 @@
           <span>Students</span>
       </a>
   </li>
+  {% endif %}
+  {% endfor %}
   <li>
       <a href="{% url 'account_settings' %}" class="active">
           <span class="fas fa-user-cog"></span>
