@@ -10,7 +10,7 @@ import datetime as pydt
 import datetime
 
 from akira_apps.accounts.models import TwoFactorAuth
-from akira_apps.authentication.models import User_BackUp_Codes, UserLoginDetails
+from akira_apps.authentication.models import User_BackUp_Codes, User_IP_B_List, UserLoginDetails
 
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
@@ -211,10 +211,13 @@ def agree_login_attempt(request, login_attempt_id):
 def deny_login_attempt(request, login_attempt_id):
     current_user = request.user
     update_login_confirm = UserLoginDetails.objects.get(id=login_attempt_id)
+    spam_ip_address = update_login_confirm.user_ip_address
     if current_user == update_login_confirm.user:
         update_login_confirm.user_confirm = "NO"
         update_login_confirm.save()
         messages.success(request, "Login Activity Confirmed!")
+        block_ip = User_IP_B_List(black_list=spam_ip_address)
+        block_ip.save()
         return redirect('account_settings')
     else:
         messages.warning(request, "Access Denied!")
