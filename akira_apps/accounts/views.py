@@ -41,9 +41,8 @@ def account_settings(request):
     start_month = pydt.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     nxt_mnth = start_month.replace(day=28) + datetime.timedelta(days=4)
     res = nxt_mnth - datetime.timedelta(days=nxt_mnth.day)
-    end_month = pydt.datetime.now().replace(day=res.day, hour=0, minute=0, second=0, microsecond=0)
-
-    get_success_attempt = UserLoginDetails.objects.filter(user = username, attempt = 'Success', created_at__range=(start_month,end_month))
+    end_month = pydt.datetime.now().replace(day=res.day, hour=23, minute=59, second=59, microsecond=0)
+    get_attempt = UserLoginDetails.objects.filter(user = username, created_at__range=(start_month,end_month))
 
     def ordinal(n):
         s = ('th', 'st', 'nd', 'rd') + ('th',)*10
@@ -54,7 +53,7 @@ def account_settings(request):
             return f'{n}{s[v]}'
 
     get_dates = []
-    for i in get_success_attempt:
+    for i in get_attempt:
         get_dates.append(i.created_at.strftime("%d"))
     
     removed_duplicate_date = list(sorted(set(get_dates)))
