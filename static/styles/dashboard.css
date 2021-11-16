@@ -9,6 +9,7 @@
   --card-color: #FFF;
   --large-text-color: #4b5876;
   --normal-text-color: #666;
+  --close-menu-icon: #616161;
   --brand-color: #7c3aed;
   --icons-color: #396aff;
   --color-main: #396aff;
@@ -28,6 +29,7 @@
   --large-text-color: #eae9eb;
   --normal-text-color: #b0aeb2;
   --bars-color: #dfdfdf;
+  --close-menu-icon: #dfdfdf;
   --brand-color: greenyellow;
   --icons-color: #e2e1e2;
   --color-main: #00e1fb;
@@ -129,7 +131,7 @@ a {
 
 .brand .pointer-cursor{
   font-size: 1.8rem;
-  color: #616161;
+  color: var(--close-menu-icon);
 }
 
 .brand .first-box-in-brand {
