@@ -13,7 +13,7 @@ class UserLoginDetails(models.Model):
     browser_details = models.CharField(max_length=100)
     status = models.IntegerField(blank=True, null=True)
     attempt = models.CharField(max_length=100)
-    user_confirm = models.CharField(max_length=100, blank=True, null=True)
+    user_confirm = models.CharField(max_length=100, blank=True, null=True, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
