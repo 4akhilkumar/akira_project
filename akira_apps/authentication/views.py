@@ -115,7 +115,7 @@ def user_login(request):
                             if user is not None:
                                 save_login_details(request, username, user_ip_address, "Not Confirmed Yet!")
                                 length_UserLoginDetails = UserLoginDetails.objects.filter(user__username=username).count()
-                                if length_UserLoginDetails > 0:
+                                if length_UserLoginDetails > 6:
                                     verify_login(request, username, current_time, user)
                                 
                                 current_userverificationstatus_have_to_verify_count = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").count()
