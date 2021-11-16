@@ -1,5 +1,5 @@
 {% load i18n %}{% autoescape off %}
 Hi {{ user.username }},
-Please click on the link to confirm it's you!
+Please click on the link to confirm it's you! <b>Don't Share the Link to Anyone.</b>
 https://{{ domain }}{% url 'confirm' uidb64=uid token=token %}
 {% endautoescape %}
