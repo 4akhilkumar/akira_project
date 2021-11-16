@@ -625,6 +625,12 @@ def twofa_verify_user_by_backup_codes(request, username):
                     get_user_bcla.attempt = user_confirm
                     get_user_bcla.status = "Success"
                     get_user_bcla.save()
+                getCurrentLoginObjectCount = UserLoginDetails.objects.filter(user__username = user, attempt = "Not Confirmed Yet!").count()
+                if getCurrentLoginObjectCount > 0:
+                    getCurrentLogin = UserLoginDetails.objects.filter(user__username = user, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                    UpdateCurrentLoginAttepmt = UserLoginDetails.objects.get(id=getCurrentLogin.id)
+                    UpdateCurrentLoginAttepmt.attempt = "Success"
+                    UpdateCurrentLoginAttepmt.save()
                 login(request, user)
                 return redirect('login')
             else:
