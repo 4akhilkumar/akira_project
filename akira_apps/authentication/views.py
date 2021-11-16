@@ -123,19 +123,23 @@ def user_login(request):
                                 if (current_user_2fa_status == 0) and ((not current_userverificationstatus) or (current_userverificationstatus_have_to_verify_count == 0) or (current_userverificationstatus[0].status == "Verified")):
                                     login(request, user)
                                     try:
-                                        current_userlogindetailsObject = UserLoginDetails.objects.filter(user__username=username, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
+                                        current_userlogindetailsObject = UserLoginDetails.objects.get(user__username=username)
+                                        current_userlogindetailsObject_count = UserLoginDetails.objects.filter(user__username=username, attempt="Not Confirmed Yet!").count()
                                     except UserLoginDetails.DoesNotExist:
                                         current_userlogindetailsObject = None
-                                    if current_userlogindetailsObject != None:
+                                    if (current_userlogindetailsObject != None) and (current_userlogindetailsObject_count > 0):
+                                        current_userlogindetailsObject = UserLoginDetails.objects.filter(user__username=username, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
                                         get_current_userlogindetailsObject_Id = UserLoginDetails.objects.get(id=current_userlogindetailsObject.id)
                                         get_current_userlogindetailsObject_Id.user_confirm = "Success"
                                         get_current_userlogindetailsObject_Id.save()
                                     
                                     try:
-                                        userverificationstatusObject = UserVerificationStatus.objects.filter(user__username=username, status=0).order_by('-created_at')[0]
+                                        userverificationstatusObject = UserVerificationStatus.objects.get(user__username=username)
                                     except UserVerificationStatus.DoesNotExist:
                                         userverificationstatusObject = None
+                                    print(userverificationstatusObject)
                                     if userverificationstatusObject != None:
+                                        userverificationstatusObject = UserVerificationStatus.objects.filter(user__username=username, status=0).order_by('-created_at')[0]
                                         get_userverificationstatusObject_Id = UserVerificationStatus.objects.get(id=userverificationstatusObject.id)
                                         get_userverificationstatusObject_Id.status = "Verified"
                                         get_userverificationstatusObject_Id.save()
@@ -262,10 +266,11 @@ def verify_login(request, uid, current_time, user):
         if(count>=4 and count<=12):
             login(request, user)
             try:
-                userlogindetailsObject = UserLoginDetails.objects.filter(user__username=user, attempt="Not Confirmed Yet!")
+                userlogindetailsObject = UserLoginDetails.objects.get(user__username=user)
+                userlogindetailsObject_count = UserLoginDetails.objects.filter(user__username=user, attempt="Not Confirmed Yet!").count()
             except UserLoginDetails.DoesNotExist:
                 userlogindetailsObject = None
-            if userlogindetailsObject != None:
+            if (userlogindetailsObject != None) and (userlogindetailsObject_count > 0):
                 get_attempt_ncy = UserLoginDetails.objects.filter(user__username=user, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
                 update_attempt_ncy = UserLoginDetails.objects.get(id=get_attempt_ncy.id)
                 update_attempt_ncy.attempt = "Success"
@@ -583,8 +588,6 @@ def twofa_verify_user_by_backup_codes(request, username):
         uvs = None
     if uvs != None:
         current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
-    else:
-        current_userverificationstatus = 842
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
     if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
