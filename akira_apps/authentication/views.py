@@ -19,12 +19,10 @@ from akira_apps.authentication.token import account_activation_token
 from django.contrib.auth import get_user_model
 
 import datetime as pydt
-import socket
 import re
 import httpagentparser
 import json
 import requests
-import secrets
 
 from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
 
@@ -115,15 +113,33 @@ def user_login(request):
                         if check is True:
                             user = authenticate(request, username=username, password=password)
                             if user is not None:
-                                save_login_details(request, username, user_ip_address, "Success")
+                                save_login_details(request, username, user_ip_address, "Not Confirmed Yet!")
                                 length_UserLoginDetails = UserLoginDetails.objects.filter(user__username=username).count()
-                                if length_UserLoginDetails > 2:
+                                if length_UserLoginDetails > 0:
                                     verify_login(request, username, current_time, user)
                                 
                                 current_userverificationstatus_have_to_verify_count = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").count()
                                 current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=username, status="Have to Verify").order_by('-created_at')
                                 if (current_user_2fa_status == 0) and ((not current_userverificationstatus) or (current_userverificationstatus_have_to_verify_count == 0) or (current_userverificationstatus[0].status == "Verified")):
                                     login(request, user)
+                                    try:
+                                        current_userlogindetailsObject = UserLoginDetails.objects.filter(user__username=username, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
+                                    except UserLoginDetails.DoesNotExist:
+                                        current_userlogindetailsObject = None
+                                    if current_userlogindetailsObject != None:
+                                        get_current_userlogindetailsObject_Id = UserLoginDetails.objects.get(id=current_userlogindetailsObject.id)
+                                        get_current_userlogindetailsObject_Id.user_confirm = "Success"
+                                        get_current_userlogindetailsObject_Id.save()
+                                    
+                                    try:
+                                        userverificationstatusObject = UserVerificationStatus.objects.filter(user__username=username, status=0).order_by('-created_at')[0]
+                                    except UserVerificationStatus.DoesNotExist:
+                                        userverificationstatusObject = None
+                                    if userverificationstatusObject != None:
+                                        get_userverificationstatusObject_Id = UserVerificationStatus.objects.get(id=userverificationstatusObject.id)
+                                        get_userverificationstatusObject_Id.status = "Verified"
+                                        get_userverificationstatusObject_Id.save()
+                                    
                                     group = None
                                     if request.user.groups.exists():
                                         group = request.user.groups.all()[0].name
@@ -153,7 +169,9 @@ def user_login(request):
                                         else:
                                             return redirect('super_admin_dashboard')
                                 elif current_user_2fa_status == 1:
-                                    return redirect('verify_its_you', username=custom_encrypted_username)
+                                    user.is_active == False
+                                    user.save()
+                                    return redirect('twofa_verify_its_you', username=custom_encrypted_username)
                                 else:
                                     return redirect('verify_its_you', username=custom_encrypted_username)
                             else:
@@ -162,7 +180,7 @@ def user_login(request):
                                 LIST_USERS = []
                                 for i in list_users:
                                     LIST_USERS.append(i.username)
-                                if username in LIST_USERS or cap_json['success']==False:
+                                if username in LIST_USERS:
                                     save_login_details(request, username, user_ip_address, "Failed")
                                     detect_spam_login(request, username, user_ip_address)
                                 return redirect('login')
@@ -243,6 +261,15 @@ def verify_login(request, uid, current_time, user):
         save_current_uld_status.save()
         if(count>=4 and count<=12):
             login(request, user)
+            try:
+                userlogindetailsObject = UserLoginDetails.objects.filter(user__username=user, attempt="Not Confirmed Yet!")
+            except UserLoginDetails.DoesNotExist:
+                userlogindetailsObject = None
+            if userlogindetailsObject != None:
+                get_attempt_ncy = UserLoginDetails.objects.filter(user__username=user, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
+                update_attempt_ncy = UserLoginDetails.objects.get(id=get_attempt_ncy.id)
+                update_attempt_ncy.attempt = "Success"
+                update_attempt_ncy.save()
             context = {
                 "first_name":current_user.first_name,
                 "email":current_user.email,
@@ -287,8 +314,6 @@ def verify_its_you(request, username):
         uvs = None
     if uvs != None:
         current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
-    else:
-        current_userverificationstatus = 842
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
     if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
@@ -363,7 +388,7 @@ def detect_spam_login(request, uid, spam_user_ip_address):
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
     if uid == None:
         check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", created_at__gte=twenty_four_hrs).count()
-        if check_failed_login_attempts > 5:
+        if check_failed_login_attempts > 4:
             block_ip = User_IP_B_List(black_list=spam_user_ip_address)
             block_ip.save()
     elif uid != None:
@@ -372,7 +397,7 @@ def detect_spam_login(request, uid, spam_user_ip_address):
             messages.info(request, 'It seems to be you have forgotten your password!')
             messages.info(request, 'So, Please reset your password')
             return redirect('login')
-        elif check_failed_login_attempts > 4:
+        elif check_failed_login_attempts > 5:
             user = User.objects.get(username = uid)
             block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
             block_ip.save()
@@ -390,7 +415,7 @@ def detect_spam_login(request, uid, spam_user_ip_address):
             to_email = current_user.email
             email = EmailMessage(mail_subject, message, to=[to_email])
             email.send()
-            messages.warning(request, "Please Check Your EMail Inbox")
+            messages.warning(request, "Please Check Your Email Inbox")
             return http.HttpResponseForbidden('<h1>Forbidden</h1>')
 
 def activate(request, uidb64, token):
@@ -422,7 +447,144 @@ def verify_user_by_backup_codes(request, username):
         current_user_2fa_status = 1
     else:
         current_user_2fa_status = 0
-    current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    try:
+        uvs = UserVerificationStatus.objects.get(user__username=custom_decrypted_username)
+    except UserVerificationStatus.DoesNotExist:
+        uvs = None
+    if uvs != None:
+        current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    else:
+        current_userverificationstatus = 842
+    current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
+    if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
+        return redirect('login')
+    else:
+        user = User.objects.get(username = custom_decrypted_username)
+        if request.method == 'POST':
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+            user_confirm = 0
+            backup_code = request.POST.get('backup_code')
+            current_user_backup_codes = User_BackUp_Codes.objects.get(user=user)
+            backup_codes_with_hash = current_user_backup_codes.backup_codes
+            splitup_backup_codes = backup_codes_with_hash.split('#')
+            align_backup_code = []
+            for i in splitup_backup_codes:
+                align_backup_code.append(i)
+            if backup_code in align_backup_code:
+                user_confirm = 1
+                align_backup_code.remove(backup_code)
+                join_hash = '#'.join(align_backup_code)
+                userbackupcodes = User_BackUp_Codes.objects.get(id=current_user_backup_codes.id)
+                userbackupcodes.backup_codes = join_hash
+                userbackupcodes.save()
+                user = User.objects.get(username = user.username)
+                user.is_active = True
+                user.save()
+                login(request, user)
+                return redirect('login')
+            else:
+                user_confirm = 2
+                update_attempt_failed = User_BackUp_Codes_Login_Attempts(user = user, attempt = user_confirm, status = "Failed")
+                update_attempt_failed.save()
+                backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
+                if backup_code_attempt_status_count > 4:
+                    block_ip = User_IP_B_List(black_list=ip)
+                    block_ip.save()
+                else:
+                    return redirect('verify_user_by_backup_codes', username=username)
+        else:
+            return render(request, 'authentication/enter_backup_code.html')
+
+def twofa_verify_its_you(request, username):
+    custom_decrypted_username = ""
+    for i in range(len(username)):
+        custom_decrypted_username += chr(ord(username[i]) - 468)
+    
+    user = User.objects.get(username=custom_decrypted_username)
+    first_name = user.first_name
+    context = {
+        "username":user,
+        "encrypted_username":username,
+        "first_name":first_name,
+    }
+    return render(request, 'authentication/twofactorauth.html', context)
+
+def twofa_verify_user_by_email(request, username):
+    custom_decrypted_username = ""
+    for i in range(len(username)):
+        custom_decrypted_username += chr(ord(username[i]) - 468)
+
+    user = User.objects.get(username = custom_decrypted_username)
+    current_site = get_current_site(request)
+    mail_subject = "2FA Link via Email - AkirA"
+    message = render_to_string('authentication/two_fac_auth_email.html', {
+        'user': user,  
+        'domain': current_site.domain,  
+        'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+        'token':account_activation_token.make_token(user),
+    })
+    current_user = User.objects.get(username = custom_decrypted_username)
+    to_email = current_user.email
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+    messages.warning(request, "Please Check Your Email Inbox")
+    return redirect('login')
+
+def twofacauth(request, uidb64, token):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    User = get_user_model()
+    try:  
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)  
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        get_user_ip_address = UserLoginDetails.objects.filter(user__username=user).order_by('-created_at')[0]
+        if str(ip) == str(get_user_ip_address.user_ip_address):
+            login(request, user)
+            return redirect('login')
+        else:
+            user.is_active = False
+            user.save()
+            messages.warning(request, "You don't have access!")
+            return redirect('login')
+    else:
+        return HttpResponse('Link Expired!')
+
+def twofa_verify_user_by_backup_codes(request, username):
+    custom_decrypted_username = ""
+    for i in range(len(username)):
+        custom_decrypted_username += chr(ord(username[i]) - 468)
+    try:
+        status_2fa = TwoFactorAuth.objects.get(user__username=custom_decrypted_username)
+    except TwoFactorAuth.DoesNotExist:
+        status_2fa = None
+    current_user_2fa_status = 0
+    if (status_2fa != None) and (status_2fa.twofa == 0):
+        current_user_2fa_status = 0
+    elif (status_2fa != None) and (status_2fa.twofa == 1):
+        current_user_2fa_status = 1
+    else:
+        current_user_2fa_status = 0
+    try:
+        uvs = UserVerificationStatus.objects.get(user__username=custom_decrypted_username)
+    except UserVerificationStatus.DoesNotExist:
+        uvs = None
+    if uvs != None:
+        current_userverificationstatus = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).order_by('-created_at')[0]
+    else:
+        current_userverificationstatus = 842
     current_userverificationstatus_count = UserVerificationStatus.objects.filter(user__username=custom_decrypted_username).count()
     if (current_user_2fa_status == 0) and ((current_userverificationstatus_count == 0) or (current_userverificationstatus_count > 0 and current_userverificationstatus.status == "Verified")):
         return redirect('login')
@@ -464,17 +626,14 @@ def verify_user_by_backup_codes(request, username):
                     get_user_bcla.attempt = user_confirm
                     get_user_bcla.status = "Success"
                     get_user_bcla.save()
-                current_userverificationstatus = UserVerificationStatus.objects.filter(user=user, status="Have to Verify").order_by('-created_at')[0]
-                userverificationstatus = UserVerificationStatus.objects.get(id=current_userverificationstatus.id)
-                userverificationstatus.status="Verified"
-                userverificationstatus.save()
+                login(request, user)
                 return redirect('login')
             else:
                 user_confirm = 2
                 update_attempt_failed = User_BackUp_Codes_Login_Attempts(user = user, attempt = user_confirm, status = "Failed")
                 update_attempt_failed.save()
                 backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
-                if backup_code_attempt_status_count > 2:
+                if backup_code_attempt_status_count > 4:
                     block_ip = User_IP_B_List(black_list=ip)
                     block_ip.save()
                 else:
@@ -560,3 +719,7 @@ def logoutUser(request):
 # twoauth = TwoFactorAuth.objects.all()
 # TwoFactorAuth.objects.all().delete()
 # twoauth = TwoFactorAuth.objects.all()
+
+# twoauth = User_BackUp_Codes_Login_Attempts.objects.all()
+# User_BackUp_Codes_Login_Attempts.objects.all().delete()
+# twoauth = User_BackUp_Codes_Login_Attempts.objects.all()
