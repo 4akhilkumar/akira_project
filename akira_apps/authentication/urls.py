@@ -12,7 +12,7 @@ urlpatterns = [
     path('verify_its_you/<username>/', views.verify_its_you, name="verify_its_you"),
     
     path('verify_user_by_email/<username>/', views.verify_user_by_email, name="verify_user_by_email"),
-    path('verify_user_by_backup_codes/<username>/', views.verify_user_by_backup_codes, name="verify_user_by_backup_codes"),
+    path('verify_user_by_backup_codes/<en_username>/', views.verify_user_by_backup_codes, name="verify_user_by_backup_codes"),
     path('confirm/<uidb64>/<token>/', confirm, name='confirm'),
     
     path('activate/<uidb64>/<token>/', activate, name='activate'),
