@@ -8,13 +8,14 @@
 </head>
 <body>
     <p>This device isn't recognized. For your secuirty AkirA wants to make sure it's really you.</p>
-    <p>Try another way to sign in.</p>
-    <a href="#">Use Face ID to login</a>
-    <br>
-    
+    <p>Try another way to sign in.</p>   
     <a href="{% url 'verify_user_by_email' username %}">Get a verfication link to your registered email.</a>
     <br>
+    {% if checkUserBackupCode != None %}
     <a href="{% url 'verify_user_by_backup_codes' username %}">Use your back-up code to login</a>
+    {% else %}
+    <p>No Backup Codes</p>
+    {% endif %}
     <br>
     <a href="#">Get help</a>
 </body>
