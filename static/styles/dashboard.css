@@ -727,15 +727,24 @@ main {
 .security-status-details button, .see-login-details-button button {
   outline: none;
   border: none;
-  background: var(--security-button-color);
   cursor: pointer;
   padding: .6rem;
   letter-spacing: .01785714em;
   font-size: .875rem;
   font-weight: 500;
   line-height: 1.25rem;
-  color: var(--color-main);
+
   border-radius: .4rem;
+}
+
+.see-login-details {
+  background: #f4b40033;
+  color: #F4B400;
+}
+
+.see-login-details-clear, .see-details, .setup-2fa {
+  background: var(--security-button-color);
+  color: var(--color-main);
 }
 
 .recent-security-activity p {
