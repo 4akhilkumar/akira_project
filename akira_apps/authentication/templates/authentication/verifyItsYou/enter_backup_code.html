@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href='{% static "styles/verify_its_you_styles.css" %}'>
+    <link rel="stylesheet" href='{% static "styles/backup_codes_styles.css" %}'>
 
     <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
     <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
@@ -24,7 +24,6 @@
     <title>Verify It's You! - AkirA</title>
 </head>
 <body>
-	{% include 'messages.html' %}
     <div class="two-step-verification-main-container">
         <div class="form-first-sub-container">
             <div class="brand-name-akira">
@@ -34,50 +33,29 @@
                 <h1>Verify It's You!</h1>
             </div>
             <div class="about-two-step-verification">
-                <p>This extra step shows that it’s really you trying to sign in</p>
+                <p>This extra step shows that it's you trying to sign in</p>
             </div>
             <div class="current-user-username">
-                <h4><span class="fa-solid fa-user"></span> &nbsp;{{custom_decrypted_username}}</h4>
+                <h4><span class="fa-solid fa-user"></span> &nbsp;{{ custom_decrypted_username }}</h4>
             </div>
         </div>
         <div class="form-second-sub-container">
             <div class="two-step-verification-title-two">
-                <h4>Verify It's You! And ways to sign in</h4>
+                <h4>Verify It's You!</h4>
             </div>
-            <div class="using_link_via_email">
-                <div class="icon-link-email">
-                    <span class="fa-solid fa-link"></span>
-                </div>
-                <div class="text-link-email" onclick="document.location='{% url 'verify_user_by_email' username %}'">
-                    <p> Get a verification link at your registered email</p>
-                </div>
+            <div class="two-step-verification-code-source">
+                <p>Use a code from your <strong>Backup Codes</strong></p>
             </div>
-            <div class="using_backup_code">
-                {% if checkUserBackupCode != None %}
-                <div class="icon-backup-code">
-                    <span class="fa-solid fa-key"></span>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="two-step-enter-code">
+                    <input type="text" name="backup_code" id="id_backup_code" placeholder="Enter Code" maxlength="6" required>
                 </div>
-                <div class="text-backup-code" onclick="document.location='{% url 'verify_user_by_backup_codes' username %}'">
-                    <p> Use one code from your Backup Codes</p>
+                <div class="two-step-other-choice-next-buttons">
+                    <a href="{% url 'verify_its_you' en_username %}">Try another way</a>
+                    <button type="submit">Next</button>
                 </div>
-                {% else %}
-                <div class="icon-backup-code">
-                    <span class="fa-solid fa-text-slash"></span>
-                </div>
-                <div class="text-no-backup-code">
-                    <p> You don't have any backup codes</p>
-                </div>
-                {% endif %}
-            </div>
-            <div class="using_get_help" onclick="document.location='#'">
-                <div class="icon-get-help">
-                    <span class="fa-solid fa-circle-question"></span>
-                </div>
-                <div class="text-get-help">
-                    <p>Get help</p>
-                    <small>For security reasons, this may take 3-5 working days</small>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 </body>

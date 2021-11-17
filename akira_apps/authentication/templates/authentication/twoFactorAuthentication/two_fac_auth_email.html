@@ -1,5 +1,5 @@
 {% load i18n %}{% autoescape off %}
 Hi {{ user.username }},
 Please click on the link to login!
-http://{{ domain }}{% url 'twofacauth' uidb64=uid token=token %}
+http://{{ domain }}{% url 'twofacauth_email' uidb64=uid token=token %}
 {% endautoescape %}
