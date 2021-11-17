@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import activate, confirm, twofacauth
+from .views import activate, confirm, twofacauth_email
 from django.contrib.auth import views as auth_views
 from akira_apps import authentication
 
@@ -19,7 +19,7 @@ urlpatterns = [
 
     path('twofa_verify_its_you/<username>/', views.twofa_verify_its_you, name="twofa_verify_its_you"),
     path('twofa_verify_user_by_email/<username>/', views.twofa_verify_user_by_email, name="twofa_verify_user_by_email"),
-    path('twofacauth/<uidb64>/<token>/', twofacauth, name='twofacauth'),
+    path('twofacauth_email/<uidb64>/<token>/', twofacauth_email, name='twofacauth_email'),
     path('twofa_verify_user_by_backup_codes/<username>/', views.twofa_verify_user_by_backup_codes, name="twofa_verify_user_by_backup_codes"),
     
     path('reset_password/',
@@ -36,4 +36,7 @@ urlpatterns = [
     path('reset_password_complete/',
         auth_views.PasswordResetCompleteView.as_view(template_name="authentication/password_reset/password_reset_complete.html"),
         name="password_reset_complete"),
+
+    # path('bulk_userLoginDetails_Form/', views.bulk_userLoginDetails_Form, name='bulk_userLoginDetails_Form'),
+    # path('bulk_userLoginDetails_save/', views.bulk_userLoginDetails_save, name='bulk_userLoginDetails_save'),
 ]
