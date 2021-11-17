@@ -1,0 +1,153 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    --text-size-h1: 1.4rem;
+    --text-size-h4: 1rem;
+    --text-size-h4-second: 1.1rem;
+    --text-size-p: 1.1rem;
+    --text-size-p-second: 1.02rem;
+    --input-text-size: 1rem;
+    --anchor-tag-text-size: 1rem;
+    --current-user-username-padding: .4rem .8rem;
+}
+
+@media only screen and (max-width: 426px) {
+    :root {
+        --text-size-h1: 1.2rem;
+        --text-size-h4: 1rem;
+        --text-size-h4-second: 1rem;
+        --text-size-p: 1rem;
+        --text-size-p-second: 1rem;
+        --input-text-size: 1rem;
+        --anchor-tag-text-size: .9rem;
+        --current-user-username-padding: .3rem .8rem;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 5vh;
+}
+
+.akira {
+    background-image: linear-gradient(to right, #4285F4, #DB4437, #F4B400, #0F9D58);
+    -webkit-background-clip: text; 
+    background-clip: text; 
+    color: transparent;
+    background-size: 300%;
+    background-position: -100%;  
+    animation: animatedText 5s infinite alternate-reverse;
+}
+
+@keyframes animatedText{
+    to{
+        background-position: 100%; 
+    }
+}
+
+.two-step-verification-main-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    max-width: fit-content;
+    max-height: calc(100vh - 10%);
+    padding: 3rem;
+    margin: 1rem;
+    box-shadow: 0px 0px 2px -1px #000;
+    border-radius: .4rem;
+}
+
+.form-first-sub-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.brand-name-akira h1 {
+    font-weight: 500;
+    margin: .8rem 0 0 0;
+}
+
+.two-step-verification-title h1 {
+    font-size: var(--text-size-h1);
+    font-weight: 500;
+    margin: .8rem 0 1rem 0;
+    white-space: nowrap;
+    color: #202124;
+}
+
+.about-two-step-verification {
+    max-width: 25rem;
+}
+
+.about-two-step-verification p {
+    font-size: var(--text-size-p);
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    margin: 0;
+    padding: 0;
+    color: #202124;
+    word-break: break-word;
+    word-wrap: break-word;
+}
+
+.current-user-username {
+    margin: 1rem 0;
+}
+
+.current-user-username h4 {
+    font-size: var(--text-size-h4);
+    font-weight: 500;
+    padding: var(--current-user-username-padding);
+    border: 1px solid #bdbdbd;
+    border-radius: 2rem;
+    margin: 0;
+    color: #202124;
+}
+
+.two-step-verification-title-two h4 {
+    font-size: var(--text-size-h4-second);
+    margin: .8rem 0;
+    color: #202124;
+    font-weight: 500;
+    word-break: break-word;
+    word-wrap: break-word;
+}
+
+.using_link_via_email, .using_backup_code, .using_get_help {
+    display: flex;
+    border-bottom: 1px solid #00000038;
+    align-items: center;
+    column-gap: .8rem;
+    cursor: pointer;
+}
+
+.using_link_via_email span, .using_backup_code span, .using_get_help span {
+    background: #90caf9;
+    padding: .4rem;
+    border-radius: .2rem;
+}
+
+.using_link_via_email p, .using_backup_code p, .using_get_help p {
+    word-break: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+.using_get_help {
+    padding: .6rem 0;
+}
+
+.text-get-help p {
+    margin: 0;
+}
