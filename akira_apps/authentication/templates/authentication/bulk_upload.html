@@ -1,0 +1,8 @@
+<form method="post" action="{% url 'bulk_userLoginDetails_save' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="studentfile" id="id_studentfile" required hidden/>
+    <label for="id_studentfile">Upload Bulk Student Records</label>
+    <br>
+    <span id="file-chosen"> No File Chosen </span>
+    <button type="submit">Submit</button>
+</form>
