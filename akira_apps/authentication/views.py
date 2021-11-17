@@ -23,6 +23,8 @@ import re
 import httpagentparser
 import json
 import requests
+import io
+import pandas as pd
 
 from akira_apps.super_admin.decorators import unauthenticated_user, allowed_users
 
@@ -315,6 +317,7 @@ def verify_its_you(request, username):
         context = {
             "username":username,
             "checkUserBackupCode":checkUserBackupCode,
+            "custom_decrypted_username":custom_decrypted_username,
         }
         return render(request, 'authentication/verifyItsYou/verify_its_you.html', context)
 
@@ -368,54 +371,6 @@ def confirm(request, uidb64, token):
         logout(request)
         messages.warning(request, "Link has been expired!")
         return redirect('login')
-
-def detect_spam_login(request, uid, spam_user_ip_address):
-    twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
-    if uid == None:
-        check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", created_at__gte=twenty_four_hrs).count()
-        if check_failed_login_attempts > 4:
-            block_ip = User_IP_B_List(black_list=spam_user_ip_address)
-            block_ip.save()
-    elif uid != None:
-        check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
-        if check_failed_login_attempts == 3:
-            messages.info(request, 'It seems to be you have forgotten your password!')
-            messages.info(request, 'So, Please reset your password')
-            return redirect('login')
-        elif check_failed_login_attempts > 5:
-            user = User.objects.get(username = uid)
-            block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
-            block_ip.save()
-            user.is_active = False
-            user.save()
-            current_site = get_current_site(request)  
-            mail_subject = 'Re-Activate Your AkirA Account'
-            message = render_to_string('authentication/acc_active_email.html', {
-                'user': user,  
-                'domain': current_site.domain,  
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-                'token':account_activation_token.make_token(user),
-            })
-            current_user = User.objects.get(username = uid)
-            to_email = current_user.email
-            email = EmailMessage(mail_subject, message, to=[to_email])
-            email.send()
-            messages.warning(request, "Please Check Your Email Inbox")
-            return http.HttpResponseForbidden('<h1>Forbidden</h1>')
-
-def activate(request, uidb64, token):
-    User = get_user_model()  
-    try:  
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)  
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token): 
-        user.is_active = True
-        user.save()
-        return HttpResponse('Thank you for Re-Activating your account. Now you can login your account.')
-    else:  
-        return HttpResponse('Activation link is invalid!')
 
 def verify_user_by_backup_codes(request, en_username):
     custom_decrypted_username = ""
@@ -487,9 +442,62 @@ def verify_user_by_backup_codes(request, en_username):
                     else:
                         return redirect('verify_user_by_backup_codes', username=en_username)
             else:
-                return render(request, 'authentication/enter_backup_code.html')
+                context = {
+                    "custom_decrypted_username":custom_decrypted_username,
+                    "en_username":en_username,
+                }
+                return render(request, 'authentication/verifyItsYou/enter_backup_code.html', context)
     else:
+        messages.warning(request, "You don't have backup codes")
         return redirect('verify_its_you', username=en_username)
+
+def detect_spam_login(request, uid, spam_user_ip_address):
+    twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
+    if uid == None:
+        check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+        if check_failed_login_attempts > 4:
+            block_ip = User_IP_B_List(black_list=spam_user_ip_address)
+            block_ip.save()
+    elif uid != None:
+        check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+        if check_failed_login_attempts == 3:
+            messages.info(request, 'It seems to be you have forgotten your password!')
+            messages.info(request, 'So, Please reset your password')
+            return redirect('login')
+        elif check_failed_login_attempts > 5:
+            user = User.objects.get(username = uid)
+            block_ip = User_IP_B_List(black_list=spam_user_ip_address, login_user = user)
+            block_ip.save()
+            user.is_active = False
+            user.save()
+            current_site = get_current_site(request)  
+            mail_subject = 'Re-Activate Your AkirA Account'
+            message = render_to_string('authentication/acc_active_email.html', {
+                'user': user,  
+                'domain': current_site.domain,  
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                'token':account_activation_token.make_token(user),
+            })
+            current_user = User.objects.get(username = uid)
+            to_email = current_user.email
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
+            messages.warning(request, "Please Check Your Email Inbox")
+            return http.HttpResponseForbidden('<h1>Forbidden</h1>')
+
+def activate(request, uidb64, token):
+    User = get_user_model()  
+    try:  
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)  
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token): 
+        user.is_active = True
+        user.save()
+        return HttpResponse('Thank you for Re-Activating your account. Now you can login your account.')
+    else:  
+        return HttpResponse('Activation link is invalid!')
 
 def twofa_verify_its_you(request, username):
     custom_decrypted_username = ""
@@ -500,39 +508,56 @@ def twofa_verify_its_you(request, username):
         checkUserBackupCode = User_BackUp_Codes.objects.get(user__username = custom_decrypted_username)
     except User_BackUp_Codes.DoesNotExist:
         checkUserBackupCode = None
+
+    try:
+        status_2fa = TwoFactorAuth.objects.get(user__username=custom_decrypted_username)
+    except TwoFactorAuth.DoesNotExist:
+        status_2fa = None
     
-    user = User.objects.get(username=custom_decrypted_username)
-    first_name = user.first_name
-    context = {
-        "username":user,
-        "encrypted_username":username,
-        "first_name":first_name,
-        "checkUserBackupCode":checkUserBackupCode,
-    }
-    return render(request, 'authentication/twoFactorAuthentication/twofactorauth.html', context)
+    if (status_2fa != None) and status_2fa.twofa == True:
+        user = User.objects.get(username=custom_decrypted_username)
+        first_name = user.first_name
+        context = {
+            "username":user,
+            "encrypted_username":username,
+            "first_name":first_name,
+            "checkUserBackupCode":checkUserBackupCode,
+        }
+        return render(request, 'authentication/twoFactorAuthentication/twofactorauth.html', context)
+    else:
+        messages.warning(request, "You haven't enabled 2FA!")
+        return redirect('login')
 
 def twofa_verify_user_by_email(request, username):
     custom_decrypted_username = ""
     for i in range(len(username)):
         custom_decrypted_username += chr(ord(username[i]) - 468)
 
-    user = User.objects.get(username = custom_decrypted_username)
-    current_site = get_current_site(request)
-    mail_subject = "2FA Link via Email - AkirA"
-    message = render_to_string('authentication/twoFactorAuthentication/two_fac_auth_email.html', {
-        'user': user,  
-        'domain': current_site.domain,  
-        'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-        'token':account_activation_token.make_token(user),
-    })
-    current_user = User.objects.get(username = custom_decrypted_username)
-    to_email = current_user.email
-    email = EmailMessage(mail_subject, message, to=[to_email])
-    email.send()
-    messages.warning(request, "Please Check Your Email Inbox")
-    return redirect('login')
+    try:
+        status_2fa = TwoFactorAuth.objects.get(user__username=custom_decrypted_username)
+    except TwoFactorAuth.DoesNotExist:
+        status_2fa = None
+    if (status_2fa != None) and status_2fa.twofa == True:
+        user = User.objects.get(username = custom_decrypted_username)
+        current_site = get_current_site(request)
+        mail_subject = "2FA Link via Email - AkirA"
+        message = render_to_string('authentication/twoFactorAuthentication/two_fac_auth_email.html', {
+            'user': user,  
+            'domain': current_site.domain,  
+            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+            'token':account_activation_token.make_token(user),
+        })
+        current_user = User.objects.get(username = custom_decrypted_username)
+        to_email = current_user.email
+        email = EmailMessage(mail_subject, message, to=[to_email])
+        email.send()
+        messages.info(request, "Please Check Your Email Inbox")
+        return redirect('login')
+    else:
+        messages.warning(request, "You haven't enabled 2FA!")
+        return redirect('login')
 
-def twofacauth(request, uidb64, token):
+def twofacauth_email(request, uidb64, token):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -648,9 +673,13 @@ def twofa_verify_user_by_backup_codes(request, username):
                     block_ip = User_IP_B_List(black_list=ip)
                     block_ip.save()
                 else:
-                    return redirect('verify_user_by_backup_codes', username=username)
+                    return redirect('twofa_verify_user_by_backup_codes', username=username)
         else:
-            return render(request, 'authentication/enter_backup_code.html')
+            context = {
+                "custom_decrypted_username":custom_decrypted_username,
+                "encrypted_username":username,
+            }
+            return render(request, 'authentication/twoFactorAuthentication/two_fac_enter_backup_code.html', context)
 
 @login_required(login_url=settings.LOGIN_URL)
 def logoutUser(request):
@@ -682,7 +711,7 @@ def logoutUser(request):
 # user.save()
 
 # user = User.objects.get(username = 'hari.vege')
-# user.is_active = True
+# user.is_active = False
 # user.save()
 
 # backUpCode = User_BackUp_Codes.objects.all()
@@ -738,3 +767,35 @@ def logoutUser(request):
 # print(join_hash)
 # split_hash = join_hash.split('#')
 # print(split_hash)
+
+# def bulk_userLoginDetails_Form(request):
+#     return render(request, 'authentication/bulk_upload.html')
+
+# def bulk_userLoginDetails_save(request):
+#     if request.method == 'POST':
+#         paramFile = io.TextIOWrapper(request.FILES['studentfile'].file)
+#         data = pd.read_csv(paramFile)
+#         # data.drop_duplicates(subset ="Username", keep = 'first', inplace = True)
+#         try:
+#             for index, row in data.iterrows():
+#                 existUser = User.objects.get(username=row['user'])
+
+#                 userLoginDetailsObject = UserLoginDetails.objects.bulk_create([
+#                     UserLoginDetails(
+#                         user = existUser,
+#                         user_ip_address=row['user_ip_address'],
+#                         os_details=row['os_details'],
+#                         browser_details=row['browser_details'],
+#                         status=row['status'],
+#                         attempt=row['attempt'],
+#                         user_confirm=row['user_confirm'],
+#                         created_at=row['created_at'],
+#                     )
+#                 ])
+#         except Exception as e:
+#             print(e)
+#         messages.success(request, "Successfully.")
+#         return redirect('login')
+#     else:
+#         messages.error(request, "!")
+#         return redirect('login')
