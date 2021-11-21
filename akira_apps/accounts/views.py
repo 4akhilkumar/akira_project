@@ -10,7 +10,7 @@ import datetime as pydt
 import datetime
 
 from akira_apps.accounts.models import TwoFactorAuth
-from akira_apps.authentication.models import User_BackUp_Codes, User_IP_B_List, UserLoginDetails
+from akira_apps.authentication.models import User_BackUp_Codes, User_IP_S_List, UserLoginDetails
 
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
@@ -78,9 +78,9 @@ def account_settings(request):
         attempt_on_that_date = UserLoginDetails.objects.filter(user__username = username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
         failed_attempts_date.append(attempt_on_that_date)
 
-    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = 'Failed')
-    get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = 'Failed', user_confirm = 'Pending', created_at__range=(start_month,end_month)).count()
-    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = 'Failed').count()
+    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed")
+    get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = "Failed", user_confirm = 'Pending', created_at__range=(start_month,end_month)).count()
+    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").count()
         
     context = {
         "backup_codes_status":backup_codes_status,
@@ -216,17 +216,23 @@ def deny_login_attempt(request, login_attempt_id):
         update_login_confirm.user_confirm = "NO"
         update_login_confirm.save()
         messages.success(request, "Login Activity Confirmed!")
-        block_ip = User_IP_B_List(black_list=spam_ip_address)
-        block_ip.save()
+        # suspicious_ip = User_IP_S_List(suspicious_list=spam_ip_address)
+        # suspicious_ip.save()
         return redirect('account_settings')
     else:
         messages.warning(request, "Access Denied!")
         return redirect('account_settings')
 
 # backUpCode = TwoFactorAuth.objects.all()
-# TwoFactorAuth.objects.all().delete()
-# backUpCode = TwoFactorAuth.objects.all()
+# User_IP_S_List.objects.all().delete()
+# backUpCode = User_IP_S_List.objects.all()
 # print(backUpCode)
+
+# getUserLoginDetails = UserLoginDetails.objects.filter(user=None)
+# getUserLoginDetails.delete()
+
+# getUserLoginDetails = UserLoginDetails.objects.get(id="189a459b-8d2d-4cc0-bc3c-273a47fcf76a")
+# getUserLoginDetails.delete()
 
 # current_user = '4akhi'
 
