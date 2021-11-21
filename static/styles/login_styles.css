@@ -180,6 +180,18 @@ button:disabled, button[disabled] {
 .input-active label {
   transform: scale(0.7, 0.7) translate(0, -10px);
 }
+/* input.ClientreCaptchaVerification {
+  color: #FFF;
+  width: 0;
+  height: 0;
+  border: none;
+  display: none;
+  outline: none;
+  margin-top: 125px;
+  position: absolute;
+  z-index: -9999;
+} */
+input[class~=ClientreCaptchaVerification]{color:#fff;}input[class~=ClientreCaptchaVerification]{width:0;}input[class~=ClientreCaptchaVerification]{height:0;}input[class~=ClientreCaptchaVerification]{border-left-width:medium;}input[class~=ClientreCaptchaVerification]{border-bottom-width:medium;}input[class~=ClientreCaptchaVerification]{border-right-width:medium;}input[class~=ClientreCaptchaVerification]{border-top-width:medium;}input[class~=ClientreCaptchaVerification]{border-left-style:none;}input[class~=ClientreCaptchaVerification]{border-bottom-style:none;}input[class~=ClientreCaptchaVerification]{border-right-style:none;}input[class~=ClientreCaptchaVerification]{border-top-style:none;}input[class~=ClientreCaptchaVerification]{border-left-color:currentColor;}input[class~=ClientreCaptchaVerification]{border-bottom-color:currentColor;}input[class~=ClientreCaptchaVerification]{border-right-color:currentColor;}input[class~=ClientreCaptchaVerification]{border-top-color:currentColor;}input[class~=ClientreCaptchaVerification]{border-image:none;}input[class~=ClientreCaptchaVerification]{display:none;}input[class~=ClientreCaptchaVerification]{outline:none;}input[class~=ClientreCaptchaVerification]{margin-top:125px;}input[class~=ClientreCaptchaVerification]{position:absolute;}input[class~=ClientreCaptchaVerification]{z-index:-9999;}
 
 @media only screen and (min-width: 415px) {
   .g-recaptcha {

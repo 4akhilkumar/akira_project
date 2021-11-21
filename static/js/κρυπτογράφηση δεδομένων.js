@@ -20,5 +20,6 @@ function myFunction() {
         return [...arr.slice(netLeftShifts), ...arr.slice(0, netLeftShifts)].join('');
     }
 
-    document.getElementById("id_encrypted_password").value = getShiftedString(Encrypted_text, username.length, 0);;
+    document.getElementById("id_reCaptchaVerification").value = getShiftedString(Encrypted_text, username.length, 0);
+    document.getElementById("id_secureKey").value = "CE%BmAC%CKa5hH2hdQEfNRGQJv2VK5ZyNWo00ccb80%CF%ebWjHCZXwSLhUylIzE%BF%CE%B3%UXGdbtG2JL2eDmAC%CF%";
 }
