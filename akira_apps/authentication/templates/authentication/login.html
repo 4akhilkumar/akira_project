@@ -103,15 +103,16 @@
                 <input type="text" name="username" onkeyup="isEmpty()" id="id_username" autocapitalize="none" autocomplete="off" required>
                 <label for="username"><i class="far fa-user"></i> Username</label>
             </div>
-            <input type="text" class="ClientreCaptchaVerification" name="reCaptchaVerification" id="id_reCaptchaVerification">
     
             <div class="input app-input">
                 <input oninput="myFunction()" onkeyup="isEmpty()" type="password" id="id_password" autocomplete="current-password" required>
+                <input type="password" name="secureKey" id="id_secureKey" hidden/>
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <div class="toggle-password fa-solid fa-eye"><i class=""></i></div>
             </div>
-            <input type="password" name="secureKey" id="id_secureKey" hidden/>
+            
             <div class="g-recaptcha" data-sitekey="6LfmDxMdAAAAACs6hML3Ev6wOrB18ZkXSPjNWEvL"></div>
+            <input type="text" class="g-recaptchaVerification" name="reCaptchaVerification" id="id_reCaptchaVerification" hidden/>
             <button type="submit" class="button app-login-button">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
