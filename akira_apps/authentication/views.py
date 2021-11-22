@@ -63,15 +63,16 @@ def user_login(request):
                 custom_encrypted_username += chr(ord(username[i]) + 468)
 
             ep = request.POST.get('reCaptchaVerification')
+            afterRAN = re.sub('[0-9a-zA-Z]+', '', ep)
 
-            List1 = list(ep)
+            List1 = list(afterRAN)
             List2 = list(encrypted_username)
             checkKeyEncrypted =  any(item in List1 for item in List2)
 
             l_rot = 0
             r_rot = len(username)
-            temp = (l_rot - r_rot) % len(ep) 
-            encrypted_password = ep[temp : ] + ep[ : temp]
+            temp = (l_rot - r_rot) % len(afterRAN) 
+            encrypted_password = afterRAN[temp : ] + afterRAN[ : temp]
 
             password = ""
             de_key_length = len(encrypted_password) - len(username)

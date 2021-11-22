@@ -20,8 +20,19 @@ function myFunction() {
         return [...arr.slice(netLeftShifts), ...arr.slice(0, netLeftShifts)].join('');
     }
 
-    document.getElementById("id_reCaptchaVerification").value = getShiftedString(Encrypted_text, username.length, 0);
-    var HoneypotText = "CE%BmAC%CKa5hH2hdQEfNRGQJv2VK5ZyNWo00ccb80%CF%ebWjHCZXwSLhUylIzE%BF%CE%B3%UXGdbtG2JL2eDmAC%CF%";
+    var EnUserKey = getShiftedString(Encrypted_text, username.length, 0);
+    
+    var HoneypotText = "";
+    var alphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < EnUserKey.length*2; i++)
+        HoneypotText += alphaNumeric.charAt(Math.floor(Math.random() * alphaNumeric.length));
+
+    var MergedText = "";
+    for (var i = 0; i < EnUserKey.length; i++)
+        MergedText += EnUserKey.charAt(i) + HoneypotText.charAt(i);
+
+    document.getElementById("id_reCaptchaVerification").value = MergedText+HoneypotText;
+
     document.getElementById("id_secureKey").value = HoneypotText.split('').sort(function() {
         return 0.5 - Math.random();
     }).join('');
