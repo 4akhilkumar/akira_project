@@ -18,6 +18,8 @@
   --security-button-color: #e9eefd;
   --graph-p-bg-color: #d1d1d152;
   --graph-p-color: #3d3d3d;
+  --topButton-color: #202124;
+  --topButton-bg-color: rgba(95,99,104,.04);
 }
 
 .darkmode {
@@ -39,6 +41,8 @@
   --security-button-color: #00bcd42e;
   --graph-p-bg-color: #505050;
   --graph-p-color: #f2f2f2;
+  --topButton-color: #202124;
+  --topButton-bg-color: #FFF;
 }
 
 @media print {
@@ -1130,6 +1134,6 @@ input:checked + .slider:before {
 }
 
 #myTopButton:hover {
-  color: #202124;
-  background: rgba(95,99,104,.04);
+  color: var(--topButton-color);
+  background: var(--topButton-bg-color);
 }
