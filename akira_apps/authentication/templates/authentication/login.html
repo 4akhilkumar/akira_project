@@ -19,8 +19,6 @@
     <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
     <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
@@ -37,6 +35,7 @@
                 <div class="header-image-particle header-image-particle-1"></div>
                 <div class="header-image-particle header-image-particle-2"></div>
                 <div class="header-image-particle header-image-particle-3"></div>
+                {% comment %}
                 <!-- <svg viewBox="0 0 1000 1100">
                     <g transform="translate(0.000000,1080.000000) scale(0.100000,-0.100000)">
                     <path d="M5345 10620 c-67 -14 -91 -26 -233 -124 -351 -240 -774 -437 -1277
@@ -63,7 +62,9 @@
                     </g>
                 </svg> -->
                 <!-- aria-hidden="true" focusable="false" data-prefix="fas" data-icon="shield-blank" class="svg-inline--fa fa-shield-blank" role="img" xmlns="http://www.w3.org/2000/svg" -->
+                {% endcomment %}
                 <svg viewBox="0 0 512 512">
+                    {% comment %}
                     <!-- <defs>  
                         <linearGradient id="logo-gradient" x1="50%" y1="0%" x2="50%" y2="100%">
                             <stop offset="0%" stop-color="#7A5FFF">
@@ -74,6 +75,7 @@
                             </stop>
                         </linearGradient>
                     </defs> -->
+                    {% endcomment %}
                     <defs>
                         <linearGradient id="logo-gradient" x1="50%" y1="0%" x2="75%" y2="100%" >
                             <stop offset="0%" stop-color="#F79533">
