@@ -764,7 +764,6 @@ main {
   font-size: .875rem;
   font-weight: 500;
   line-height: 1.25rem;
-
   border-radius: .4rem;
 }
 
@@ -943,6 +942,10 @@ input:checked + .slider:before {
   row-gap: 2rem;
 }
 
+.show-details-login-info {
+  display: none;
+}
+
 .each-login-details {
   display: flex;
   align-items: center;
@@ -1032,6 +1035,27 @@ input:checked + .slider:before {
 .confirmed-button {
   background: #0f9d5833;
   color: #12d576;
+}
+
+#loadMore {
+  display: flex;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  padding: .6rem;
+  letter-spacing: .01785714em;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  border-radius: .4rem;
+  align-items: center;
+  column-gap: .4rem;
+  width: fit-content;
+}
+
+.loadMore-button {
+  background: #4285f433;
+  color: #77aaff;
 }
 
 @media only screen and (max-width: 378px) {

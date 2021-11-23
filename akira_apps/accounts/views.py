@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
@@ -78,9 +79,11 @@ def account_settings(request):
         attempt_on_that_date = UserLoginDetails.objects.filter(user__username = username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
         failed_attempts_date.append(attempt_on_that_date)
 
-    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed")
+    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").order_by('-created_at')
     get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = "Failed", user_confirm = 'Pending', created_at__range=(start_month,end_month)).count()
     get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").count()
+    get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[0]
+    get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[1]
         
     context = {
         "backup_codes_status":backup_codes_status,
@@ -92,6 +95,8 @@ def account_settings(request):
         "get_failed_login_attempts":get_failed_login_attempts,
         "get_failed_attempt_in_a_month":get_failed_attempt_in_a_month,
         "get_failed_login_attempts_count":get_failed_login_attempts_count,
+        "get_currentLoginInfo":get_currentLoginInfo,
+        "get_PreviousLoginInfo":get_PreviousLoginInfo,
     }
     return render(request, 'accounts/manage_account.html', context)
 
