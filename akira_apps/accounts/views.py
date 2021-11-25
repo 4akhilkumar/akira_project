@@ -83,8 +83,11 @@ def account_settings(request):
     get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = "Failed", user_confirm = 'Pending', created_at__range=(start_month,end_month)).count()
     get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").count()
     get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[0]
-    get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[1]
-        
+    if UserLoginDetails.objects.filter(user__username = username).count() > 2:
+        get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[1]
+    else:
+        get_PreviousLoginInfo = 0
+
     context = {
         "backup_codes_status":backup_codes_status,
         "current_user_2fa_status":current_user_2fa_status,
@@ -221,8 +224,8 @@ def deny_login_attempt(request, login_attempt_id):
         update_login_confirm.user_confirm = "NO"
         update_login_confirm.save()
         messages.success(request, "Login Activity Confirmed!")
-        # suspicious_ip = User_IP_S_List(suspicious_list=spam_ip_address)
-        # suspicious_ip.save()
+        suspicious_ip = User_IP_S_List(suspicious_list=spam_ip_address)
+        suspicious_ip.save()
         return redirect('account_settings')
     else:
         messages.warning(request, "Access Denied!")
