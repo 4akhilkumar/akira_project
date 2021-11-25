@@ -233,6 +233,7 @@
                     <button class="confirmed-button"><span class="fas fa-check-circle"></span> This Device</button>
                 </div>
             </div>
+            {% if get_PreviousLoginInfo %}
             <div class="each-login-details">
                 <div class="device-icon-login-details">
                     <div class="device-icon">
@@ -263,6 +264,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
     <div class="user-login-details" id="login-attempts">
