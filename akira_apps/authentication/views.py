@@ -126,7 +126,7 @@ def user_login(request):
                                         return redirect('twofa_verify_its_you', username=custom_encrypted_username)
                                     else:
                                         return redirect('login')
-                                elif dataset_UserLoginDetails > 0 and dataset_UserLoginDetails < 6:
+                                elif dataset_UserLoginDetails > 0 and dataset_UserLoginDetails <= 6:
                                     current_userFailedAttempts_count = UserLoginDetails.objects.filter(user__username=username, attempt="Failed").count()
                                     current_userFailedAttempts = UserLoginDetails.objects.filter(user__username=username, attempt="Failed").order_by('-created_at')
                                     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
@@ -171,8 +171,12 @@ def user_login(request):
                                         user.save()
                                         return redirect('twofa_verify_its_you', username=custom_encrypted_username)
                                     else:
+                                        user.is_active = False
+                                        user.save()
                                         return redirect('verify_its_you', username=custom_encrypted_username)
                                 else:
+                                    user.is_active = False
+                                    user.save()
                                     return redirect('verify_its_you', username=custom_encrypted_username)
                             else:
                                 messages.warning(request, 'Username or Password is Incorrect!')
