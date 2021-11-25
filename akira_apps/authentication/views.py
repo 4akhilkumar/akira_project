@@ -24,7 +24,7 @@ import requests
 
 from akira_apps.super_admin.decorators import unauthenticated_user
 
-from . models import User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, UserLoginDetails, User_IP_B_List
+from . models import User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, User_IP_S_List, UserLoginDetails, User_IP_B_List
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
@@ -106,6 +106,12 @@ def user_login(request):
                         current_user_2fa_status = 1
                     else:
                         current_user_2fa_status = 0
+                    getSuspiciousIPAddress = User_IP_S_List.objects.all()
+                    for i in getSuspiciousIPAddress:
+                        if i.suspicious_list == user_ip_address:
+                            user.is_active = False
+                            user.save()
+                            save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", "User login from suspicious IP Address")
                     if user.is_active == True:
                         if checkKeyEncrypted is True:
                             user = authenticate(request, username=username, password=password)
