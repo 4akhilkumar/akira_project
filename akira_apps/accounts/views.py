@@ -26,6 +26,9 @@ def account_settings(request):
         backup_codes_status = 0
     else:
         backup_codes_status = 1
+        checkBackupCodesLength = len(backup_codes.backup_codes)
+        if checkBackupCodesLength == 0:
+            return redirect('delete_existing_backup_codes')
 
     try:
         status_2fa = TwoFactorAuth.objects.get(user=username)
