@@ -114,6 +114,15 @@
     </div>
 
     <script src="{% static 'js/dashboard.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('input[name="toggle-checkbox"]').click(function(){
+                if($(this).prop("checked") == false){
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
     {% block chart-js %}{% endblock %}
 </body>
 </html>
