@@ -1,0 +1,12 @@
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+    {{staff_form.as_p}}
+    <select name="designation-group" id="id_designation-group" required>
+        <option value="">Choose Designation</option>
+        {% for i in list_groups %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit">
+</form>
