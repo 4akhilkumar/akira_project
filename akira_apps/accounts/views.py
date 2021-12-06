@@ -82,7 +82,7 @@ def account_settings(request):
         attempt_on_that_date = UserLoginDetails.objects.filter(user__username = username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
         failed_attempts_date.append(attempt_on_that_date)
 
-    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").order_by('-created_at')
+    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed", score__lte = 15).order_by('-created_at')
     get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = "Failed", user_confirm = 'Pending', created_at__range=(start_month,end_month)).count()
     get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").count()
     get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[0]
