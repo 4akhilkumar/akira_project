@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 import uuid
 
-from akira_apps.academic_registration.models import Course, SectionRooms
+from akira_apps.academic_registration.models import Course
 from akira_apps.staff.models import BLOOD_GROUP_CHOICES, GENDER_CHOICES
 
 class Students(models.Model):
@@ -27,11 +27,11 @@ class Students(models.Model):
     class Meta:
         ordering = ["created_at"]
 
-class course_registration_student(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    student = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
-    section = models.ForeignKey(SectionRooms, on_delete=models.SET_NULL, blank=True, null=True)
+# class course_registration_student(models.Model):
+#     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+#     student = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
+#     course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
+#     section = models.ForeignKey(SectionRooms, on_delete=models.SET_NULL, blank=True, null=True)
 
-    class Meta:
-        unique_together = ('course','section')
+#     class Meta:
+#         unique_together = ('course','section')
