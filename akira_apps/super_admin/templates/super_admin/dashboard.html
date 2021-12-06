@@ -1,10 +1,12 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
+{% load user_group %}
+{% load numerize_value %}
 
 {% block sidebar-menu %}
 <ul>
   <li>
-    <a href="{% url 'super_admin_dashboard' %}" class="active">
+    <a href="{% url 'login' %}" class="active">
         <span class="fas fa-th-large"></span>
         <span>Dashboard</span>
     </a>
@@ -16,7 +18,7 @@
       </a>
   </li>
   <li>
-      <a href="">
+      <a href="{% url 'manage_staff' %}">
           <span class="fas fa-chalkboard-teacher"></span>
           <span>Faculty</span>
       </a>
@@ -58,7 +60,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Faculty</h4>
-          <h1>1.4K</h1>
+          <h1>{{ listFaculty|length|numerize_value }} <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -67,25 +69,25 @@
     </div>
     <div class="analytic-info">
         <h4>Total Students</h4>
-        <h1>4.4K</h1>
+        <h1>{{ listStudents|length|numerize_value }} <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
     </div>
   </div>
   <div class="analytic">
       <div class="analytic-icon">
-          <span class="fas fa-user-circle"></span>
+          <span class="fas fa-book"></span>
       </div>
       <div class="analytic-info">
-          <h4>Subscribers</h4>
-          <h1>1.4K <small class="text-success">12%</small></h1>
+          <h4>Total Courses</h4>
+          <h1>48 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fas fa-user-graduate"></span>
+        <span class="fas fa-swatchbook"></span>
     </div>
     <div class="analytic-info">
-        <h4>Watch Time (hrs)</h4>
-        <h1>20.8K <small class="text-danger">5%</small></h1>
+        <h4>Specializations</h4>
+        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
 </div>
@@ -98,7 +100,7 @@
         <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="">
         <div class="rev-info">
             <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-            <h1><small>Designation</small></h1>
+            <h1><small>{{ request.user|user_group }}</small></h1>
         </div>
         <div class="rev-sum">
             <h4>Total income</h4>
