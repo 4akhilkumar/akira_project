@@ -29,6 +29,7 @@ urlpatterns = [
     path('staff/', include('akira_apps.staff.urls')),
     path('student/', include('akira_apps.student.urls')),
     path('academic_registration/', include('akira_apps.academic_registration.urls')),
+    path('academic/', include('akira_apps.academic.urls')),
     path('accounts/', include('akira_apps.accounts.urls')),
 
     # path('ckeditor/', include('ckeditor_uploader.urls')),
