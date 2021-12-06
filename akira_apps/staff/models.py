@@ -75,46 +75,13 @@ class Staff(models.Model):
     class Meta:
         ordering = ["created_at"]
 
-class Course_Sessions(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    staff = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
-    name = models.CharField(max_length=50)
-    thumbnail = models.ImageField(null=True, blank=True, upload_to='Course_Sessions/%s/' % str(name))
-    description = RichTextUploadingField()
-    video_file = models.FileField(upload_to='Course_Sessions/', null=True, blank=True, default="False")
-    reference_info = RichTextUploadingField()
-    hash_tags = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-class CourseOutcome(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
-
-class CourseSession(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
-    course_outcome = models.ForeignKey(CourseOutcome, on_delete=models.SET_NULL, blank=True, null=True)
-
-class CourseALMS(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
-    course_outcome = models.ForeignKey(CourseOutcome, on_delete=models.SET_NULL, blank=True, null=True)
-    course_session = models.ForeignKey(CourseSession, on_delete=models.SET_NULL, blank=True, null=True)
-
-class ALMSubmission(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
-    course_outcome = models.ForeignKey(CourseOutcome, on_delete=models.SET_NULL, blank=True, null=True)
-    course_session = models.ForeignKey(CourseSession, on_delete=models.SET_NULL, blank=True, null=True)
-    # course_alm = models.ForeignKey(ALM, on_delete=models.SET_NULL, blank=True, null=True)
-    student = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
-    answer = models.FileField(upload_to='%s/ALM_Submissions/' % str(course))
-
-class ALM(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    course = models.ForeignKey(Course, on_delete=models.SET_NULL, blank=True, null=True)
-    course_outcome = models.ForeignKey(CourseOutcome, on_delete=models.SET_NULL, blank=True, null=True)
-    course_session = models.ForeignKey(CourseSession, on_delete=models.SET_NULL, blank=True, null=True)
-    staff = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
-    course_session = models.ForeignKey(ALMSubmission, on_delete=models.SET_NULL, blank=True, null=True)
-    question = RichTextUploadingField()
+# class CourseSessions(models.Model):
+#     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+#     staff = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
+#     name = models.CharField(max_length=50)
+#     thumbnail = models.ImageField(null=True, blank=True, upload_to='Course_Sessions/%s/' % str(name))
+#     description = RichTextUploadingField()
+#     video_file = models.FileField(upload_to='Course_Sessions/', null=True, blank=True, default="False")
+#     reference_info = RichTextUploadingField()
+#     hash_tags = models.CharField(max_length=50)
+#     created_at = models.DateTimeField(auto_now_add=True)
