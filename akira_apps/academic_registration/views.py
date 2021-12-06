@@ -3,8 +3,8 @@ from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 
 from akira_apps.academic_registration.forms import BranchForm, SectionRoomForm, SemesterForm
-from akira_apps.academic_registration.models import Block, SectionRooms, Semester, Specialization, specialization_registration_staff, specialization_registration_student
-from akira_apps.staff.models import Staffs
+from akira_apps.academic_registration.models import Semester #, Specialization, specialization_registration_staff, specialization_registration_student, Block, SectionRooms, 
+from akira_apps.staff.models import Staff
 
 def create_block(request):
     formType = "Create Block"
@@ -222,7 +222,7 @@ def delete_semester(request, semester_id):
 from itertools import chain
 def create_specialization(request):
     branchForm = BranchForm()
-    if Staffs.objects.all().count() == 0:
+    if Staff.objects.all().count() == 0:
         return redirect('add_staff')
 
     hod_list = User.objects.filter(groups__name='Head of the Department')
