@@ -722,35 +722,3 @@ def logoutUser(request):
 # print(res['city'])
 # print(res['region'])
 # print(res['country'])
-
-# def bulk_userLoginDetails_Form(request):
-#     return render(request, 'authentication/bulk_upload.html')
-
-# def bulk_userLoginDetails_save(request):
-#     if request.method == 'POST':
-#         paramFile = io.TextIOWrapper(request.FILES['studentfile'].file)
-#         data = pd.read_csv(paramFile)
-#         # data.drop_duplicates(subset ="Username", keep = 'first', inplace = True)
-#         try:
-#             for index, row in data.iterrows():
-#                 existUser = User.objects.get(username=row['user'])
-
-#                 userLoginDetailsObject = UserLoginDetails.objects.bulk_create([
-#                     UserLoginDetails(
-#                         user = existUser,
-#                         user_ip_address=row['user_ip_address'],
-#                         os_details=row['os_details'],
-#                         browser_details=row['browser_details'],
-#                         status=row['status'],
-#                         attempt=row['attempt'],
-#                         user_confirm=row['user_confirm'],
-#                         created_at=row['created_at'],
-#                     )
-#                 ])
-#         except Exception as e:
-#             print(e)
-#         messages.success(request, "Successfully.")
-#         return redirect('login')
-#     else:
-#         messages.error(request, "!")
-#         return redirect('login')
