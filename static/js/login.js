@@ -46,3 +46,8 @@ $(".toggle-password").click(function() {
 //         submitButton.disabled = true;
 //     }
 // }
+
+$('.app-login-button').click(function() {
+    $(this).attr('disabled', true);
+    $(this).closest('form').submit();
+});
