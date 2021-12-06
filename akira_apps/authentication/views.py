@@ -146,7 +146,7 @@ def user_login(request):
                                                 return redirect(request.GET.get('next'))
                                             else:
                                                 return redirect('student_dashboard')
-                                        elif group == 'Staff':
+                                        elif group == 'Assistant Professor' or group == 'Associate Professor' or group == 'Professor':
                                             if (request.GET.get('next')):
                                                 return redirect(request.GET.get('next'))
                                             else: 
