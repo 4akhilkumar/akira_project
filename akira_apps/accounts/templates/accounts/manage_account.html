@@ -1,6 +1,7 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
 {% load humanize %}
+{% load ip_location %}
 
 {% block sidebar-menu %}
 <ul>
@@ -33,7 +34,7 @@
   {% for group_for in request.user.groups.all %}
   {% if group_for.name == 'Head of the Department' or group_for.name == 'Administrator' %}
   <li>
-      <a href="">
+      <a href="{% url 'manage_staff' %}">
           <span class="fas fa-chalkboard-teacher"></span>
           <span>Faculty</span>
       </a>
@@ -222,7 +223,7 @@
                             <h4>{{ get_currentLoginInfo.os_details }} - {{ get_currentLoginInfo.user_ip_address }}</h4>
                         </div>
                         <div class="location_name">
-                            <p>Andhra Pradesh, India</p>
+                            <p>{{ get_currentLoginInfo.user_ip_address|ip_location }}</p>
                         </div>
                         <div class="time-date">
                             <p>{{ get_currentLoginInfo.created_at|date:"h:i A" }} &#183; {{ get_currentLoginInfo.created_at|date:"d M" }}</p>
@@ -256,7 +257,7 @@
                             <h4>{{ get_PreviousLoginInfo.os_details }} - {{ get_PreviousLoginInfo.user_ip_address }}</h4>
                         </div>
                         <div class="location_name">
-                            <p>Andhra Pradesh, India</p>
+                            <p>{{ get_PreviousLoginInfo.user_ip_address|ip_location }}</p>
                         </div>
                         <div class="time-date">
                             <p>{{ get_PreviousLoginInfo.created_at|date:"h:i A" }} &#183; {{ get_PreviousLoginInfo.created_at|date:"d M" }}</p>
@@ -300,7 +301,7 @@
                                 <h4>{{ i.os_details }} - {{ i.user_ip_address }}</h4>
                             </div>
                             <div class="location_name">
-                                <p>Andhra Pradesh, India</p>
+                                <p>{{ i.user_ip_address|ip_location }}</p>
                             </div>
                             <div class="time-date">
                                 <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
