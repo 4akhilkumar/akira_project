@@ -9,6 +9,7 @@ import re
 import secrets
 import datetime as pydt
 import datetime
+import httpagentparser
 
 from akira_apps.accounts.models import TwoFactorAuth
 from akira_apps.authentication.models import User_BackUp_Codes, User_IP_S_List, UserLoginDetails
@@ -84,12 +85,34 @@ def account_settings(request):
 
     get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed", score__lte = 15).order_by('-created_at')
     get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = "Failed", user_confirm = 'Pending', created_at__range=(start_month,end_month)).count()
-    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed").count()
+    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed", score__lte = 15).count()
     get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[0]
+    
+    user_agent = request.META['HTTP_USER_AGENT']
+    browser = httpagentparser.detect(user_agent)
+    if not browser:
+        browser = user_agent.split('/')[0]
+    else:
+        browser = browser['browser']['name']
+    res = re.findall(r'\(.*?\)', user_agent)
+    OS_Details = res[0][1:-1]
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    
     if UserLoginDetails.objects.filter(user__username = username).count() > 2:
         get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[1]
     else:
         get_PreviousLoginInfo = 0
+    
+    if get_currentLoginInfo.user_ip_address == ip and \
+        get_currentLoginInfo.browser_details == browser and \
+        get_currentLoginInfo.os_details == OS_Details:
+        thisDeviceCurrent = True
+    else:
+        thisDeviceCurrent = False
 
     context = {
         "backup_codes_status":backup_codes_status,
@@ -103,6 +126,7 @@ def account_settings(request):
         "get_failed_login_attempts_count":get_failed_login_attempts_count,
         "get_currentLoginInfo":get_currentLoginInfo,
         "get_PreviousLoginInfo":get_PreviousLoginInfo,
+        "thisDeviceCurrent":thisDeviceCurrent,
     }
     return render(request, 'accounts/manage_account.html', context)
 

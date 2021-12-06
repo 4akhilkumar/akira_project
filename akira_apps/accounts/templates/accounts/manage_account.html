@@ -230,9 +230,11 @@
                         </div>
                     </div>
                 </div>
+                {% if thisDeviceCurrent == True %}
                 <div class="login-attempt-action">
                     <button class="confirmed-button"><span class="fas fa-check-circle"></span> This Device</button>
                 </div>
+                {% endif %}
             </div>
             {% if get_PreviousLoginInfo %}
             <div class="each-login-details">
