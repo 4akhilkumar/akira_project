@@ -39,9 +39,22 @@ MOTHER_TOUNGE_CHOICES = [
     ("Punjabi","Punjabi"),
 ]
 
-class Staffs(models.Model):
+class Staff(models.Model):
+    BRANCH_CHOICES = [
+        ("","Branch Name"),
+        ("Computer Science and Engineering","Computer Science and Engineering"),
+        ("Aerospace/aeronautical Engineering","Aerospace/aeronautical Engineering"),
+        ("Chemical Engineering","Chemical Engineering"),
+        ("Civil Engineering","Civil Engineering"),
+        ("Electronics and Communications Engineering","Electronics and Communications Engineering"),
+        ("Electrical and Electronics Engineering","Electrical and Electronics Engineering"),
+        ("Petroleum Engineering","Petroleum Engineering"),
+        ("Bio Technology","Bio Technology"),
+        ("Mechanical Engineering","Mechanical Engineering"),
+    ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, unique=True, on_delete = models.CASCADE)
+    name_prefix = models.CharField(max_length = 10, blank = True, null = True)
     gender = models.CharField(max_length=14, choices = GENDER_CHOICES, default=1)
     date_of_birth = models.DateField(default='1975-01-01')
     door_no = models.CharField(max_length=100, default="A-BCD, On Earth")
@@ -52,6 +65,8 @@ class Staffs(models.Model):
     profile_pic = models.ImageField(null=True, blank=True, upload_to='staffs/')
     current_medical_issue = models.TextField(max_length=50)
     blood_group = models.CharField(max_length=18, choices = BLOOD_GROUP_CHOICES, default=1)
+    branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
