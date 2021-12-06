@@ -11,14 +11,14 @@ from django.shortcuts import redirect, render
 from akira_apps.academic_registration.forms import BranchForm
 from akira_apps.super_admin.decorators import allowed_users
 from akira_apps.authentication.forms import CreateUserForm
-from akira_apps.academic_registration.models import Course, SectionRooms, Semester, course_registration_staff
-from akira_apps.staff.models import Staffs
+from akira_apps.academic_registration.models import Course, Semester #course_registration_staff, SectionRooms
+from akira_apps.staff.models import Staff
 from akira_apps.student.forms import StudentsForm
-from akira_apps.student.models import Students, course_registration_student
+from akira_apps.student.models import Students#, course_registration_student
 
 import secrets
 
-@allowed_users(allowed_roles=['Staff'])
+@allowed_users(allowed_roles=['Assistant Professor', 'Associate Professor', 'Professor'])
 def staff_dashboard(request):
     rAnd0m123 = secrets.token_urlsafe(16)
     context = {
@@ -47,7 +47,7 @@ def create_courses(request):
     rAnd0m123 = secrets.token_urlsafe(16)
     if Semester.objects.all().count() == 0:
         return redirect('create_semester')
-    elif Staffs.objects.all().count() == 0:
+    elif Staff.objects.all().count() == 0:
         return redirect('add_staff')
 
     course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
