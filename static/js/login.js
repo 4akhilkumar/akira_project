@@ -49,5 +49,6 @@ $(".toggle-password").click(function() {
 
 $('.app-login-button').click(function() {
     $(this).attr('disabled', true);
+    $(this).html('<i class="fas fa-spinner fa-spin"></i>');
     $(this).closest('form').submit();
 });
