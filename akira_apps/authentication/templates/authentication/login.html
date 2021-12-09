@@ -102,20 +102,18 @@
         <form action="" method="POST">
             {% csrf_token %}
             <div class="input app-input">
-                <input type="text" name="username" onkeyup="isEmpty()" id="id_username" autocapitalize="none" autocomplete="off" required>
+                <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" onkeyup="isEmpty()" required>
                 <label for="username"><i class="far fa-user"></i> Username</label>
             </div>
     
             <div class="input app-input">
-                <input oninput="myFunction()" onkeyup="isEmpty()" type="password" id="id_password" autocomplete="current-password" required>
-                <input type="password" id="id_secureKey" hidden/>
+                <input type="password" name="password" id="id_password" autocomplete="current-password" onkeyup="isEmpty()" required>
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <div class="toggle-password fa-solid fa-eye"><i class=""></i></div>
             </div>
             
-            <div class="g-recaptcha" data-sitekey="6LfmDxMdAAAAACs6hML3Ev6wOrB18ZkXSPjNWEvL"></div>
-            <input type="text" class="g-recaptchaVerification" name="reCaptchaVerification" id="id_reCaptchaVerification" hidden/>
-            <button type="submit" class="button app-login-button">
+            <div class="g-recaptcha" data-sitekey="6LfmDxMdAAAAACs6hML3Ev6wOrB18ZkXSPjNWEvL" data-callback="enablebutton"></div>
+            <button type="submit" class="button app-login-button" id="id_submit">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
         </form>

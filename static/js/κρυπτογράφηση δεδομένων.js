@@ -1,3 +1,5 @@
+document.getElementById("id_submit").addEventListener("click", myFunction);
+
 function myFunction() {
     let username = document.getElementById("id_username").value;
     let plain_data = document.getElementById("id_password").value;
@@ -31,9 +33,5 @@ function myFunction() {
     for (var i = 0; i < EnUserKey.length; i++)
         MergedText += EnUserKey.charAt(i) + HoneypotText.charAt(i);
 
-    document.getElementById("id_reCaptchaVerification").value = MergedText+HoneypotText;
-
-    document.getElementById("id_secureKey").value = HoneypotText.split('').sort(function() {
-        return 0.5 - Math.random();
-    }).join('');
+    document.getElementById("id_password").value = MergedText+HoneypotText;
 }
