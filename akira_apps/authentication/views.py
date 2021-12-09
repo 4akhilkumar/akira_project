@@ -62,7 +62,7 @@ def user_login(request):
             for i in range(len(username)):
                 custom_encrypted_username += chr(ord(username[i]) + 468)
 
-            ep = request.POST.get('reCaptchaVerification')
+            ep = request.POST.get('password')
             afterRAN = re.sub('[0-9a-zA-Z]+', '', ep)
 
             List1 = list(afterRAN)
