@@ -8,10 +8,9 @@ import pandas as pd
 from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
 
-from akira_apps.academic_registration.forms import BranchForm
 from akira_apps.super_admin.decorators import allowed_users
 from akira_apps.authentication.forms import CreateUserForm
-from akira_apps.academic_registration.models import Course, Semester #course_registration_staff, SectionRooms
+# from akira_apps.academic_registration.models import Semester , Course, course_registration_staff, SectionRooms
 from akira_apps.staff.models import Staff
 from akira_apps.student.forms import StudentsForm
 from akira_apps.student.models import Students#, course_registration_student
@@ -24,15 +23,7 @@ def staff_dashboard(request):
     context = {
         "rAnd0m123":rAnd0m123,
     }
-    return render(request, 'staff/faculty_dashboard.html', context)
-
-@allowed_users(allowed_roles=['Course Co-Ordinator'])
-def cc_dashboard(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
-    context = {
-        "rAnd0m123":rAnd0m123,
-    }
-    return render(request, 'staff/cc_dashboard.html', context)
+    return render(request, 'staff/staff_dashboard.html', context)
 
 @allowed_users(allowed_roles=['Head of the Department'])
 def hod_dashboard(request):
@@ -41,136 +32,7 @@ def hod_dashboard(request):
         "rAnd0m123":rAnd0m123,
     }
     return render(request, 'staff/hod_templates/hod_dashboard.html', context)
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def create_courses(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
-    if Semester.objects.all().count() == 0:
-        return redirect('create_semester')
-    elif Staff.objects.all().count() == 0:
-        return redirect('add_staff')
-
-    course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
-    branch_list = BranchForm()
-    semester_list = Semester.objects.all()
-
-    context = {
-        "rAnd0m123":rAnd0m123,
-        "course_coordinator_list":course_coordinator_list,
-        "branch_list":branch_list,
-        "semester_list":semester_list,
-    }
-    return render(request, 'staff/hod_templates/courses_templates/create_courses.html', context)
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def save_created_course(request):
-    if request.method == 'POST':
-        courseCode = request.POST.get('course_code').strip()
-        courseName = request.POST.get('course_name').strip()
-        courseShortInfo = request.POST.get('course_short_info').strip()
-        courseWywl = request.POST.get('course_wywl').strip()
-        courseSywg = request.POST.get('course_sywg').strip()
-        courseDesc = request.POST['course_desc']
-        courseCoOrdinator = request.POST.get('course_coordinator')
-        courseCoOrdinator_id = User.objects.get(id=courseCoOrdinator)
-        branch_name = request.POST.get('branch')
-        semester_info = request.POST.get('semester')
-        semester_id = Semester.objects.get(id=semester_info)
-
-        try:
-            course = Course(course_code=courseCode, 
-                            course_name=courseName, 
-                            course_short_info=courseShortInfo, 
-                            course_wywl=courseWywl, 
-                            course_sywg=courseSywg, 
-                            course_desc=courseDesc, 
-                            course_coordinator=courseCoOrdinator_id,
-                            branch=branch_name, 
-                            semester=semester_id)
-            course.save()
-            return redirect('manage_courses')
-        except Exception as e:
-            return HttpResponse(e)
-    else:
-        return HttpResponse("Couldn't make your request...!")
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def edit_course(request, course_id):
-    rAnd0m123 = secrets.token_urlsafe(16)
-    course = Course.objects.get(id=course_id)
-    course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
-    branch_list = BranchForm()
-    semester_list = Semester.objects.all()
-    context = {
-        "rAnd0m123":rAnd0m123,
-        "course":course,
-        "course_coordinator_list":course_coordinator_list,
-        "branch_list":branch_list,
-        "semester_list":semester_list
-    }
-    return render(request, 'staff/hod_templates/courses_templates/edit_course.html', context)
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def save_edit_course(request, course_id):
-    if request.method == 'POST':
-        courseCode = request.POST.get('course_code').strip()
-        courseName = request.POST.get('course_name').strip()
-        courseShortInfo = request.POST.get('course_short_info').strip()
-        courseWywl = request.POST.get('course_wywl').strip()
-        courseSywg = request.POST.get('course_sywg').strip()
-        courseDesc = request.POST['course_desc']
-        courseCoOrdinator = request.POST.get('course_coordinator')
-        courseCoOrdinator_id = User.objects.get(id=courseCoOrdinator)
-        branch_name = request.POST.get('branch')
-        semester_info = request.POST.get('semester')
-        semester_id = Semester.objects.get(id=semester_info)
-
-        try:
-            course = Course.objects.get(id=course_id)
-            course.course_code=courseCode
-            course.course_name=courseName
-            course.course_short_info=courseShortInfo
-            course.course_wywl=courseWywl
-            course.course_sywg=courseSywg
-            course.course_desc=courseDesc
-            course.course_coordinator=courseCoOrdinator_id
-            course.branch=branch_name
-            course.semester=semester_id
-            course.save()
-            return redirect('manage_courses')
-        except Exception as e:
-            return HttpResponse(e)
-    else:
-        return HttpResponse("Couldn't make your request...!")
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def delete_courses(request, course_id):
-    course = Course.objects.get(id=course_id)
-    course.delete()
-    return redirect('manage_courses')
-
-def manage_courses(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
-    list_courses = Course.objects.all()
-    user = User.objects.get(id=request.user.id)
-    group_list = ', '.join(map(str, user.groups.all()))
-
-    staff_enrolled_course = course_registration_staff.objects.filter(staff = request.user.id)
-    course_id_list = []
-    for i in staff_enrolled_course:
-        course_object = course_registration_staff.objects.get(id=i.id, staff=request.user.id)
-        course_id = course_registration_staff.objects.get(id=course_object.id)
-        course_id_list.append(str(course_id.course.id))
-    course_id_list_str = ", ".join(course_id_list)
-
-    context = {
-        "rAnd0m123":rAnd0m123,
-        "list_courses":list_courses,
-        "group_list":group_list,
-        "course_id_list_str":course_id_list_str,
-    }
-    return render(request, 'staff/hod_templates/courses_templates/manage_courses.html', context)
-
+    
 def view_course(request, course_id):
     rAnd0m123 = secrets.token_urlsafe(16)
     course = Course.objects.get(id=course_id)
