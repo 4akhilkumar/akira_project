@@ -14,7 +14,6 @@ import httpagentparser
 from akira_apps.accounts.models import TwoFactorAuth
 from akira_apps.authentication.models import User_BackUp_Codes, User_IP_S_List, UserLoginDetails
 
-# Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
     username = request.user 

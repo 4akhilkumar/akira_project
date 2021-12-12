@@ -722,13 +722,3 @@ def logoutUser(request):
         return redirect('login')
     else:
         return redirect('login')
-
-# import json
-# import requests
-# ip = '117.207.250.185'
-# r = requests.get('https://ipinfo.io/%s/geo' % ip)
-# st = (r.content).decode("utf-8")
-# res = json.loads(st)
-# print(res['city'])
-# print(res['region'])
-# print(res['country'])
