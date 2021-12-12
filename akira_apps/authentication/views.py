@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django import http
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text  
@@ -146,7 +146,17 @@ def user_login(request):
                                                 return redirect(request.GET.get('next'))
                                             else:
                                                 return redirect('student_dashboard')
-                                        elif group == 'Assistant Professor' or group == 'Associate Professor' or group == 'Professor':
+                                        elif group == 'Assistant Professor':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else: 
+                                                return redirect('staff_dashboard')
+                                        elif group == 'Associate Professor':
+                                            if (request.GET.get('next')):
+                                                return redirect(request.GET.get('next'))
+                                            else: 
+                                                return redirect('staff_dashboard')
+                                        elif group == 'Professor':
                                             if (request.GET.get('next')):
                                                 return redirect(request.GET.get('next'))
                                             else: 
