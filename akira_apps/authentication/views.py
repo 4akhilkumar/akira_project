@@ -170,7 +170,7 @@ def user_login(request):
                                             if (request.GET.get('next')):
                                                 return redirect(request.GET.get('next'))
                                             else: 
-                                                return redirect('cc_dashboard')
+                                                return redirect('staff_dashboard')
                                         elif group == 'Administrator':
                                             if (request.GET.get('next')):
                                                 return redirect(request.GET.get('next'))
