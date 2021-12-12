@@ -2,47 +2,6 @@
 {% load static %}
 {% load user_group %}
 
-{% block sidebar-menu %}
-<ul>
-  <li>
-    <a href="{% url 'hod_dashboard' %}" class="active">
-        <span class="fas fa-th-large"></span>
-        <span>Dashboard</span>
-    </a>
-  </li>
-  <li>
-      <a href="">
-          <span class="fas fa-school"></span>
-          <span>Academic</span>
-      </a>
-  </li>
-  <li>
-      <a href="{% url 'manage_staff' %}">
-          <span class="fas fa-chalkboard-teacher"></span>
-          <span>Faculty</span>
-      </a>
-  </li>
-  <li>
-      <a href="">
-          <span class="fas fa-user-graduate"></span>
-          <span>Students</span>
-      </a>
-  </li>
-  <li>
-    <a href="{% url 'account_settings' %}">
-        <span class="fas fa-user-cog"></span>
-        <span>Account</span>
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'logout' %}">
-        <span class="fas fa-sign-out-alt"></span>
-        <span>Logout</span>
-    </a>
-  </li>
-</ul>
-{% endblock %}
-
 {% block analytics-text %}
 <h1>Analytics</h1>
 <p>Display analytics about your Academy <span class="fas fa-chart-line"></span> </p>

@@ -4,50 +4,9 @@
 
 {% block content %}
 
-{% block sidebar-menu %}
-<ul>
-  <li>
-    <a href="{% url 'login' %}">
-        <span class="fas fa-th-large"></span>
-        <span>Dashboard</span>
-    </a>
-  </li>
-  <li>
-      <a href="">
-          <span class="fas fa-school"></span>
-          <span>Academic</span>
-      </a>
-  </li>
-  <li>
-      <a href="{% url 'manage_staff' %}" class="active">
-          <span class="fas fa-chalkboard-teacher"></span>
-          <span>Faculty</span>
-      </a>
-  </li>
-  <li>
-      <a href="">
-          <span class="fas fa-user-graduate"></span>
-          <span>Students</span>
-      </a>
-  </li>
-  <li>
-    <a href="{% url 'account_settings' %}">
-        <span class="fas fa-user-cog"></span>
-        <span>Account</span>
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'logout' %}">
-        <span class="fas fa-sign-out-alt"></span>
-        <span>Logout</span>
-    </a>
-  </li>
-</ul>
-{% endblock %}
-
 {% block analytics-text %}
-<h1>Analytics</h1>
-<p>Display analytics about your Faculty <span class="fas fa-chart-line"></span> </p>
+<h1>Manage Staff</h1>
+<p>Display analytics about your Staff <span class="fas fa-chart-line"></span> </p>
 {% endblock %}
 
 {% block analytic-overview %}
@@ -79,7 +38,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Courses</h4>
-          <h1>48 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h1>{{ courses|length }} <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -88,7 +47,7 @@
     </div>
     <div class="analytic-info">
         <h4>Specializations</h4>
-        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+        <h1>0 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
 </div>
@@ -174,9 +133,6 @@
   </div>
   {% endfor %}
 </div>
-{% else %}
-<p>No Data Available</p>
-<a href="{% url 'add_staff' %}">Add Staff</a>
 {% endif %}
 <script>
 var modal = document.getElementById("myModal");

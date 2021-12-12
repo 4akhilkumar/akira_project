@@ -3,47 +3,6 @@
 {% block content %}
 {% load humanize %}
 
-{% block sidebar-menu %}
-<ul>
-  <li>
-    <a href="{% url 'login' %}">
-        <span class="fas fa-th-large"></span>
-        <span>Dashboard</span>
-    </a>
-  </li>
-  <li>
-      <a href="">
-          <span class="fas fa-school"></span>
-          <span>Academic</span>
-      </a>
-  </li>
-  <li>
-      <a href="{% url 'manage_staff' %}" class="active">
-          <span class="fas fa-chalkboard-teacher"></span>
-          <span>Faculty</span>
-      </a>
-  </li>
-  <li>
-      <a href="">
-          <span class="fas fa-user-graduate"></span>
-          <span>Students</span>
-      </a>
-  </li>
-  <li>
-    <a href="{% url 'account_settings' %}">
-        <span class="fas fa-user-cog"></span>
-        <span>Account</span>
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'logout' %}">
-        <span class="fas fa-sign-out-alt"></span>
-        <span>Logout</span>
-    </a>
-  </li>
-</ul>
-{% endblock %}
-
 {% block view-faculty %}
 <title>View Faculty Info.</title>
 
