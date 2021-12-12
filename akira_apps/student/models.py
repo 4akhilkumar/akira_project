@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 
 import uuid
 
-from akira_apps.academic_registration.models import Course
 from akira_apps.staff.models import BLOOD_GROUP_CHOICES, GENDER_CHOICES
 
 class Students(models.Model):
