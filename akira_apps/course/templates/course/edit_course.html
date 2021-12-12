@@ -1,0 +1,76 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+<form action="{% url 'save_edit_course' course.id %}" method="POST">
+    {% csrf_token %}
+    <label for="id_course_code">Course Code</label> 
+    <input type="text" name="course_code" maxlength="100" value="{{ course.course_code }}" id="id_course_code" required>
+    <br>
+    <label for="id_course_name">Course Name</label>
+    <input type="text" name="course_name" maxlength="100" value="{{ course.course_name }}" id="id_course_name" required>
+    <br>
+    <label for="id_course_short_info">Course Short Info</label>
+    <textarea name="course_short_info" cols="40" rows="10" maxlength="500" id="id_course_short_info" required>{{ course.course_short_info }}</textarea>
+    <br>
+    <label for="id_course_wywl">What you will learn</label>
+    <textarea name="course_wywl" cols="40" rows="10" maxlength="500" id="id_course_wywl" required>{{ course.course_wywl }}</textarea>
+    <br>
+    <label for="id_course_sywg">Skill You Will Gain</label>
+    <textarea name="course_sywg" cols="40" rows="10" maxlength="500" id="id_course_sywg" required>{{ course.course_sywg }}</textarea>
+    <br>
+    <label for="id_course_desc">Course Description</label>
+    <div class="django-ckeditor-widget" data-field-id="id_course_desc" style="display: inline-block;">
+        <textarea cols="40" id="id_course_desc" name="course_desc" rows="10" data-processed="0" 
+                data-config="{&quot;skin&quot;: &quot;moono-lisa&quot;, &quot;toolbar_Basic&quot;: 
+                                [[&quot;Source&quot;, &quot;-&quot;, &quot;Bold&quot;, &quot;Italic&quot;]], 
+                                &quot;toolbar_Full&quot;: [[&quot;Styles&quot;, &quot;Format&quot;, &quot;Bold&quot;, 
+                                &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;SpellChecker&quot;, 
+                                &quot;Undo&quot;, &quot;Redo&quot;], [&quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;], 
+                                [&quot;Image&quot;, &quot;Flash&quot;, &quot;Table&quot;, &quot;HorizontalRule&quot;], 
+                                [&quot;TextColor&quot;, &quot;BGColor&quot;], [&quot;Smiley&quot;, &quot;SpecialChar&quot;], 
+                                [&quot;Source&quot;]], &quot;toolbar&quot;: [[&quot;Format&quot;, &quot;Bold&quot;, 
+                                &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;], [&quot;NumberedList&quot;, 
+                                &quot;BulletedList&quot;, &quot;Indent&quot;, &quot;Outdent&quot;, &quot;JustifyLeft&quot;, 
+                                &quot;JustifyCenter&quot;, &quot;JustifyRight&quot;, &quot;JustifyBlock&quot;], 
+                                [&quot;Image&quot;, &quot;Table&quot;, &quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;, 
+                                &quot;SectionLink&quot;, &quot;Subscript&quot;, &quot;Superscript&quot;], [&quot;Undo&quot;, 
+                                &quot;Redo&quot;], [&quot;Maximize&quot;]], &quot;height&quot;: 291, &quot;width&quot;: 
+                                &quot;auto&quot;, &quot;filebrowserWindowWidth&quot;: 940, &quot;filebrowserWindowHeight&quot;: 725, 
+                                &quot;filebrowserUploadUrl&quot;: &quot;/ckeditor/upload/&quot;, &quot;filebrowserBrowseUrl&quot;: 
+                                &quot;/ckeditor/browse/&quot;, &quot;language&quot;: &quot;en-us&quot;}" 
+                data-external-plugin-resources="[]" data-id="id_course_desc" data-type="ckeditortype" required>
+        {{ course.course_desc }}
+        </textarea>
+    </div>
+    <br>
+    <label for="id_course_coordinator">Course Co-Ordinator</label>
+    <select name="course_coordinator" id="id_course_coordinator" required>
+        {% for i in course_coordinator_list %}
+        <option value="{{ i.id }}" {% if i.id == course.course_coordinator.id %} selected {% endif %}> {{ i }} </option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="id_branch">Branch</label>
+    <select name="branch" id="id_branch" required>        
+        {% for x,y in branch_list.fields.branch.choices %}
+        <option value="{{ x }}" {% if x == course.branch %} selected {% endif %}>{{ y }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="id_semester">Semester</label>
+    <select name="semester" id="id_semester" required>
+        {% for i in semester_list %}
+        <option value="{{ i.id }}" {% if i.id == course.semester.id %} selected {% endif %}> {{ i }} </option>
+        {% endfor %}
+    </select>
+    <br>
+    <input type="submit" value="Update">
+    <a href="{% url 'manage_courses' %}">Back</a>
+</form>
+
+{% endblock %}

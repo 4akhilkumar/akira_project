@@ -1,0 +1,92 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load user_group %}
+{% load first_letter_word %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Manage Courses</h1>
+<p>Display analytics about your Courses <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-chalkboard-teacher"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Faculty</h4>
+          <h1>486 <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-user-graduate"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Total Students</h4>
+        <h1>1.4K <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-book"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Courses</h4>
+          <h1>48 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Specializations</h4>
+        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block manage-courses %}
+<div class="course-container">
+  <ul class="courses">
+    <li class="courses_item">
+      <div class="course" onclick="document.location='{% url 'create_course' %}'">
+        <div class="course_image">
+            <span class="fa-solid fa-circle-plus"></span>
+        </div>
+        <div class="course_content">
+          <h2 class="course_title">Create a Course</h2>
+          <p class="course_text">A course is a unit of teaching that typically lasts one academic term</p>
+        </div>
+      </div>
+    </li>
+    {% for i in list_all_courses %}
+    <li class="courses_item">
+      <div class="course">
+        <div class="course_image">
+          <h1 class="course-short_title">{{ i.course_name|first_letter_word }} <sub class="custom_sub">{{ i.course_code }}</sub> </h1>
+        </div>
+        <div class="course_content">
+          <h2 class="course_title">{{ i.course_name }}</h2>
+          <p class="course_text">{{ i.course_desc }}</p>
+          <div class="course-buttons">
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.course_code %}'" >Read More</button>
+            <button class="enrollCoursebtn course_btn">Enroll</button>
+          </div>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% endblock %}
