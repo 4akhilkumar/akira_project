@@ -12,7 +12,17 @@ def unauthenticated_user(view_func):
                     return redirect(request.GET.get('next'))
                 else:
                     return redirect('student_dashboard')
-            elif group == 'Staff':
+            elif group == 'Assistant Professor':
+                if (request.GET.get('next')):
+                    return redirect(request.GET.get('next'))
+                else: 
+                    return redirect('staff_dashboard')
+            elif group == 'Associate Professor':
+                if (request.GET.get('next')):
+                    return redirect(request.GET.get('next'))
+                else: 
+                    return redirect('staff_dashboard')
+            elif group == 'Professor':
                 if (request.GET.get('next')):
                     return redirect(request.GET.get('next'))
                 else: 
