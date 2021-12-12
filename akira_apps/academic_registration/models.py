@@ -6,20 +6,6 @@ import uuid
 
 from ckeditor_uploader.fields import RichTextUploadingField
 
-class Semester(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    MODE = [
-        ('ODD','ODD'),
-        ('EVEN','EVEN'),
-    ]
-    mode = models.CharField(max_length = 4, choices = MODE, default = 1)
-    start_year = models.DateField()
-    end_year = models.DateField()
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return '%s %s' % (self.mode, self.start_year.year)
-
 BRANCH_CHOICES = [
     ("","Branch Name"),
     ("Computer Science and Engineering","Computer Science and Engineering"),
@@ -70,20 +56,20 @@ BRANCH_CHOICES = [
 #     class Meta:
 #         unique_together = ('student','specialization')
 
-class Course(models.Model):
-    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    course_code = models.CharField(max_length = 100, unique = True)
-    course_name = models.CharField(max_length = 100, unique = True)
-    course_short_info = models.TextField(max_length = 500, default="Start your path to a career in project management. No degree or experience is required.")
-    course_wywl = models.TextField(max_length = 500, default="WHAT YOU WILL LEARN")
-    course_sywg = models.TextField(max_length = 500, default="SKILLS YOU WILL GAIN")
-    course_desc = RichTextUploadingField()
-    course_coordinator = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
-    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, blank=True, null=True)
+# class Course(models.Model):
+#     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+#     course_code = models.CharField(max_length = 100, unique = True)
+#     course_name = models.CharField(max_length = 100, unique = True)
+#     course_short_info = models.TextField(max_length = 500, default="Start your path to a career in project management. No degree or experience is required.")
+#     course_wywl = models.TextField(max_length = 500, default="WHAT YOU WILL LEARN")
+#     course_sywg = models.TextField(max_length = 500, default="SKILLS YOU WILL GAIN")
+#     course_desc = RichTextUploadingField()
+#     course_coordinator = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+#     branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
+#     semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, blank=True, null=True)
 
-    def __str__(self):
-        return '%s - %s' % (self.course_code, self.course_name)
+#     def __str__(self):
+#         return '%s - %s' % (self.course_code, self.course_name)
 
 # class course_registration_staff(models.Model):
 #     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
@@ -93,11 +79,3 @@ class Course(models.Model):
 
 #     class Meta:
 #         unique_together = ('course','section')
-
-
-# updateUser = User.objects.get(username = '4akhi')
-# updateUser.first_name = 'Sai Akhil Kumar Reddy'
-# updateUser.last_name = 'N'
-# updateUser.save()
-# listUser = User.objects.all()
-# print(listUser)
