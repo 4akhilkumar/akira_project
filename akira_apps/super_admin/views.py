@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from akira_apps.authentication.models import UserLoginDetails
+from akira_apps.course.models import Course
 
 from akira_apps.staff.forms import StaffsForm
 from akira_apps.staff.models import Staff
@@ -127,9 +128,11 @@ def add_staff(request):
 def manage_staff(request):
     staffs = Staff.objects.all()
     doctorial_faculty = Staff.objects.filter(name_prefix='Dr')
+    courses = Course.objects.all()
     context = {
         "staffs":staffs,
         "doctorial_faculty":doctorial_faculty,
+        "courses":courses,
     }
     return render(request, 'super_admin/Staff/manage_faculty.html', context)
 
@@ -191,6 +194,7 @@ def assign_user_group(request, staff_username):
     else:
         return redirect('manage_staff')
 
+@login_required(login_url=settings.LOGIN_URL)
 def bulk_upload_staffs_save(request):
     if request.method == 'POST':
         staff_from_db = User.objects.all()
@@ -255,22 +259,6 @@ def staff_info_csv(request):
                         i.name_prefix, i.gender, i.date_of_birth,
                         i.blood_group, i.door_no, i.zip_code, i.city_name, 
                         i.state_name, i.country_name, i.branch, i.current_medical_issue, ', '.join(map(str, i.user.groups.all()))])
-    return response
-
-def uld_info_csv(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=UserLoginDetails' + \
-        str(pydt.datetime.now()) + '.csv'
-
-    writer = csv.writer(response)
-    writer.writerow(['user', 'user_ip_address', 'os_details', 'browser_details', 
-                    'score', 'attempt', 'user_confirm', 'created_at'])
-    
-    uld = UserLoginDetails.objects.all()
-
-    for i in uld:
-        writer.writerow([i.user, i.user_ip_address, i.os_details, i.browser_details,
-                        i.score, i.attempt, i.user_confirm, i.created_at])
     return response
 
 # group_name = 'Student'
