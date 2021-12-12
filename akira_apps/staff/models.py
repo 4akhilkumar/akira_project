@@ -3,8 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 
-from akira_apps.academic_registration.models import Course
-
 GENDER_CHOICES = [
     ("", "Select Gender"),
     ("Male", "Male"),
