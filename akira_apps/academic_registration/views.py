@@ -2,8 +2,7 @@ from django.contrib.auth.models import User
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 
-from akira_apps.academic_registration.forms import BranchForm, SectionRoomForm, SemesterForm
-from akira_apps.academic_registration.models import Semester #, Specialization, specialization_registration_staff, specialization_registration_student, Block, SectionRooms, 
+from akira_apps.academic_registration.forms import SectionRoomForm
 from akira_apps.staff.models import Staff
 
 def create_block(request):
