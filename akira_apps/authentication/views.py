@@ -469,8 +469,8 @@ def verify_user_by_backup_codes(request, en_username):
                     update_attempt_failed.save()
                     backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
                     if backup_code_attempt_status_count > 4:
-                        block_ip = User_IP_B_List(black_list=ip)
-                        block_ip.save()
+                        suspicious_ip = User_IP_S_List(suspicious_list=ip)
+                        suspicious_ip.save()
                     else:
                         return redirect('verify_user_by_backup_codes', username=en_username)
             else:
