@@ -31,6 +31,7 @@ urlpatterns = [
     path('academic_registration/', include('akira_apps.academic_registration.urls')),
     path('academic/', include('akira_apps.academic.urls')),
     path('accounts/', include('akira_apps.accounts.urls')),
+    path('course/', include('akira_apps.course.urls')),
 
     # path('ckeditor/', include('ckeditor_uploader.urls')),
     path('ckeditor/upload/', login_required(ckeditor_views.upload), name='ckeditor_upload'),
