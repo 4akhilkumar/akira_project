@@ -118,7 +118,7 @@ def user_login(request):
                             if user is not None:
                                 save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
                                 dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username=username).count()
-                                if dataset_UserLoginDetails > 6:
+                                if dataset_UserLoginDetails > 2:
                                     verify_login(request, username, current_time, user)
                                     if current_user_2fa_status == 1:
                                         user.is_active = False
