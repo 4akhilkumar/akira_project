@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_group %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +70,74 @@
             </div>
 
             <div class="sidebar-menu">
-                {% block sidebar-menu %}{% endblock %}
+                <ul>
+                    <li>
+                        <a href="{% url 'login' %}"
+                        {% if "dashboard" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fas fa-th-large"></span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    {% if request.user|user_group == "Administrator" or request.user|user_group == "Head of the Department" %}
+                    <li>
+                        <a href="{% url 'manage_academic' %}"
+                        {% if "manage_academic" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fas fa-school"></span>
+                            <span>Academic</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'manage_courses' %}"
+                        {% if "manage_courses" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fas fa-book"></span>
+                            <span>Courses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'manage_staff' %}"
+                        {% if "manage_staff" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fas fa-chalkboard-teacher"></span>
+                            <span>Faculty</span>
+                        </a>
+                    </li>
+                    {% if request.user|user_group != "Student" %}
+                    <li>
+                        <a href="">
+                            <span class="fas fa-user-graduate"></span>
+                            <span>Students</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{% url 'account_settings' %}"
+                        {% if "account_settings" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fas fa-user-cog"></span>
+                            <span>Account</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'logout' %}">
+                            <span class="fas fa-sign-out-alt"></span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
 
             <div class="sidebar-card">
@@ -104,6 +172,9 @@
 
         <main>
             {% block analytic-overview %}{% endblock %}
+            {% block academic %} {% endblock %}
+            {% block manage-courses %} {% endblock %}
+            {% block create-course %} {% endblock %}
             {% block manage-faculty %} {% endblock %}
             {% block manage-account %} {% endblock %}
             {% block view-faculty %} {% endblock %}
