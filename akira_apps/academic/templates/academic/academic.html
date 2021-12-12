@@ -1,0 +1,210 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load user_group %}
+{% load block_components %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Analytics</h1>
+<p>Display analytics about your Academy <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fa-solid fa-building"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Blocks</h4>
+          <h1>{{ blocks|length }}</h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fa-solid fa-person-booth"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Total Rooms</h4>
+        <h1>{{ rooms|length }}</h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fa-solid fa-calendar-day"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Current Semester</h4>
+          <h1>{{ activeSemesterMode }}</h1>
+      </div>
+  </div>
+  {% comment %}
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Lorem Ipsum</h4>
+        <h1>0</h1>
+    </div>
+  </div>
+  {% endcomment %}
+</div>
+{% endblock %}
+
+{% block academic %}
+
+<div class="list-all-blocks-info">
+  {% for i in blocks %}
+  <div class="block-info-card"
+    style="--card-top-color: #14c66fab;"
+  >
+    <div class="block-infos">
+      <div class="block-name">
+        <h2>{{ i.block_name }}</h2>
+        <h4>
+            <span class="block-component-span">
+                <span class="fa-solid fa-layer-group"></span> {{ i.block_name|block_floors }} Floor{{ i.block_name|block_floors|pluralize }}
+            </span>
+            <span class="block-component-span">
+                <span class="fa-solid fa-person-booth"></span> {{ i.block_name|block_rooms }} Room{{ i.block_name|block_rooms|pluralize }}
+            </span>
+            <span class="block-component-span">
+                <i class="fa-solid fa-couch"></i> {{ i.block_name|block_waiting_halls }} Waiting Hall{{ i.block_name|block_waiting_halls|pluralize }} 
+            </span>
+        </h4>
+      </div>
+      <ul class="block-stats">
+        <li>
+          <h3>{{ i.block_name|block_lab_rooms }}</h3>
+          <h4> <span class="fa-solid fa-flask"></span> Lab{{ i.block_name|block_lab_rooms|pluralize }}</h4>
+        </li>
+        <li>
+          <h3>{{ i.block_name|block_staff_rooms }}</h3>
+          <h4> <span class="fa-solid fa-chalkboard-user"></span> Staff Room{{ i.block_name|block_staff_rooms|pluralize }}</h4>
+        </li>
+      </ul>
+      <ul class="block-stats">
+        <li>
+          <h3>{{ i.block_name|block_class_rooms }}</h3>
+          <h4> <span class="fa-solid fa-user-graduate"></span> Class Room{{ i.block_name|block_class_rooms|pluralize }}</h4>
+        </li>
+        <li>
+          <h3>{{ i.block_name|block_meeting_halls }}</h3>
+          <h4> <span class="fa-solid fa-handshake"></span> Meeting Hall{{ i.block_name|block_meeting_halls|pluralize }}</h4>
+        </li>
+      </ul>
+      <div class="block-links">
+        <button class="block-contact">Contact</button>
+        <button class="block-delete" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<h2 class="blocks-list">Blocks Lists</h2>
+<h4 class="create-block">
+    <form action="{% url 'create_block_save' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="block_name" id="id_block_name" placeholder="Block Name" required>
+        <input type="submit" value="submit">
+    </form>
+    {% for i in blocks %}
+    {{ i.block_name }} | <a href="">Edit</a> | <a href="{% url 'delete_block' i.id %}">Delete</a>
+    <br>
+    {% empty %}
+    No Blocks
+    {% endfor %}
+</h4>
+<hr>
+
+<h2 class="floors-list">Floors Lists</h2>
+<h4 class="create-floor">
+    <form action="{% url 'create_floor_save' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="floor_name" id="id_floor_name" placeholder="Floor Name" required>
+        <select name="block_id" id="id_block_id">
+            {% for i in blocks %}
+            <option value="{{ i.id }}">{{ i.block_name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="submit">
+    </form>
+    {% for i in floors %}
+    {{ i.floor_name }} {{ i.block }} | <a href="">Edit</a> | <a href="{% url 'delete_floor' i.id %}">Delete</a>
+    <br>
+    {% empty %}
+    No Floors
+    {% endfor %}
+</h4>
+
+<hr>
+
+<h2 class="rooms-list">Rooms Lists</h2>
+<h4 class="create-room">
+    <form action="{% url 'create_room_save' %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="room_name" id="id_room_name" placeholder="Room Name/No." required>
+        <select name="block_id" id="id_block_id" required>
+            {% for i in blocks %}
+            <option value="{{ i.id }}">{{ i.block_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="floor_id" id="id_floor_id" required>
+            {% for i in floors %}
+            <option value="{{ i.id }}">{{ i.floor_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="room_type" id="id_room_type">
+            {% for x,y in roomTypeForm.fields.roomTypeForm.choices %}
+            <option value="{{ x }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="capacity" id="id_capacity" placeholder="Room Capacity" required>
+        <input type="submit" name="submit">
+    </form>
+    {% for i in rooms %}
+    {{ i.room_name }} {{ i.block }} {{ i.floor }} {{ i.type }} {{ i.capacity }} | <a href="">Edit</a> | <a href="{% url 'delete_room' i.id %}">Delete</a>
+    {% endfor %}
+</h4>
+
+<hr>
+
+<h2 class="semester-lists">Semester Lists</h2>
+<h4 class="create-semester">
+    <form action="{% url 'create_semester_save' %}" method="POST">
+        {% csrf_token %}
+        <label for="">Semester Mode</label>
+        <select name="semester_mode" id="id_semester_mode">
+            {% for x,y in semesterModeForm.fields.semesterModeForm.choices %}
+            <option value="{{ x }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <label for="">Semester Start Year</label>
+        <input type="date" name="semester_start_year" id="id_semester_start_year">
+        <label for="">Semester End year</label>
+        <input type="date" name="semester_end_year" id="id_semester_end_year">
+        <label for="">Semester Status</label>
+        <input type="checkbox" name="semester_is_active" id="id_semester_is_active">
+        <input type="submit" value="Create Semester">
+    </form>
+    {% for i in semesters %}
+        {{ i.mode }}
+        {{ i.start_year }}
+        {{ i.end_year }}
+        {{ i.is_active }}
+        <a href="{% url 'fetch_semester' i.id %}">Edit</a>
+        <a href="{% url 'delete_semester' i.id %}">Delete</a>
+        <br>
+    {% empty %}
+        No semester found
+    {% endfor %}
+</h4>
+{% endblock %}
+
+{% endblock %}
