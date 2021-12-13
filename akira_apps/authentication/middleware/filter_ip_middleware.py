@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
 from django import http
 
 from akira_apps.authentication.models import User_IP_B_List
@@ -23,7 +21,6 @@ class FilterIPMiddleware:
             ip = request.META.get('REMOTE_ADDR')
             
         if ip in BLOCKED_IPS:
-            # raise PermissionDenied
-            return http.HttpResponseForbidden('<h1>Forbidden</h1>')
+            return http.HttpResponseForbidden('IP Blocked')
 
         return self.get_response(request)

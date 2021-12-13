@@ -10,10 +10,6 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
-
-from akira_apps.accounts.models import TwoFactorAuth
-from akira_apps.authentication.token import account_activation_token
-
 from django.contrib.auth import get_user_model
 
 import datetime as pydt
@@ -23,8 +19,9 @@ import json
 import requests
 
 from akira_apps.super_admin.decorators import unauthenticated_user
-
-from . models import User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, User_IP_S_List, UserLoginDetails, User_IP_B_List
+from akira_apps.accounts.models import TwoFactorAuth
+from akira_apps.authentication.token import account_activation_token
+from . models import (User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, User_IP_S_List, UserLoginDetails, User_IP_B_List)
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
@@ -43,7 +40,7 @@ def user_login(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     if ip in BLOCKED_IPS:
-        return http.HttpResponseForbidden('<h1>Forbidden</h1>')
+        return http.HttpResponseForbidden('IP Blocked')
     else:
         current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if request.method == 'POST':
