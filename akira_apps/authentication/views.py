@@ -192,6 +192,12 @@ def user_login(request):
                                 return redirect('login')
                         else:
                             messages.warning(request, 'Connection is NOT secured!')
+                            if checkUserExists:
+                                save_login_details(request, username, user_ip_address, "Failed", "Connection is NOT secured")
+                                detect_spam_login(request, username, user_ip_address)
+                            else:
+                                save_login_details(request, None, user_ip_address, "Failed", "Connection is NOT secured")
+                                detect_spam_login(request, None, user_ip_address)
                             return redirect('login')
                     else:
                         messages.info(request, 'You account has been disabled temporarily')
@@ -486,12 +492,12 @@ def verify_user_by_backup_codes(request, en_username):
 def detect_spam_login(request, uid, spam_user_ip_address):
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
     if uid == None:
-        check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+        check_failed_login_attempts = UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt="Failed", reason="Connection is NOT secured", created_at__gte=twenty_four_hrs).count()
         if check_failed_login_attempts > 4:
             block_ip = User_IP_B_List(black_list=spam_user_ip_address)
             block_ip.save()
     elif uid != None:
-        check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", created_at__gte=twenty_four_hrs).count()
+        check_failed_login_attempts = UserLoginDetails.objects.filter(user__username = uid, attempt="Failed", reason="Connection is NOT secured", created_at__gte=twenty_four_hrs).count()
         if check_failed_login_attempts == 3:
             messages.info(request, 'It seems to be you have forgotten your password!')
             messages.info(request, 'So, Please reset your password')
