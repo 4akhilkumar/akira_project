@@ -83,7 +83,7 @@ def user_login(request):
 
             captcha_token=request.POST.get("g-recaptcha-response")
             cap_url="https://www.google.com/recaptcha/api/siteverify"
-            cap_secret="6LfmDxMdAAAAAI9NEfnM3BUqHfF-zAMLLJOwSRw8"
+            cap_secret=settings.GOOGLE_RECAPTCHA_SECRET_KEY
             cap_data={"secret":cap_secret,"response":captcha_token}
             cap_server_response=requests.post(url=cap_url,data=cap_data)
             cap_json=json.loads(cap_server_response.text)
@@ -213,7 +213,10 @@ def user_login(request):
                     save_login_details(request, None, user_ip_address, "Failed", "Invalid Captcha try again!")
                     detect_spam_login(request, None, user_ip_address)
                 return redirect('login')
-        return render(request, 'authentication/login.html')
+        context = {
+            "GOOGLE_RECAPTCHA_PUBLIC_KEY":settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
+        }
+        return render(request, 'authentication/login.html', context)
 
 def save_login_details(request, user_name, user_ip_address, attempt, reason):
     user_agent = request.META['HTTP_USER_AGENT']
