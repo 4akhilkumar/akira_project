@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
-from akira_apps.staff.views import view_course
+from django.contrib import messages
 
 from akira_apps.super_admin.decorators import allowed_users
 from akira_apps.academic.models import (Semester)
@@ -10,17 +10,19 @@ from akira_apps.authentication.models import (User_IP_B_List)
 from akira_apps.course.models import (Course)
 
 def manage_courses(request):
-    list_all_courses = Course.objects.all()
+    courses = Course.objects.all()
     context = {
-        "list_all_courses":list_all_courses,
+        "courses":courses,
     }
     return render(request, 'course/manage_courses.html', context)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_course(request):
     if Semester.objects.all().count() == 0:
-        return redirect('manage_semester')
+        messages.info(request, 'Please create a semester first')
+        return redirect('manage_academic')
     elif Staff.objects.all().count() == 0:
+        messages.info(request, 'Please create a staff first')
         return redirect('add_staff')
 
     course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
@@ -57,7 +59,6 @@ def create_course_save(request):
             course_coordinator=courseCC,
             branch=courseBranch,
             semester=courseSemester)
-        createCourse.save()
         return redirect('manage_courses')
 
 def view_course(request, course_code):

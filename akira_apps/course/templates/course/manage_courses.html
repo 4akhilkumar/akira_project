@@ -1,6 +1,5 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
-{% load user_group %}
 {% load first_letter_word %}
 
 {% block content %}
@@ -39,7 +38,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Courses</h4>
-          <h1>48 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h1>{{ courses|length }} <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -68,7 +67,7 @@
         </div>
       </div>
     </li>
-    {% for i in list_all_courses %}
+    {% for i in courses %}
     <li class="courses_item">
       <div class="course">
         <div class="course_image">
