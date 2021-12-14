@@ -237,7 +237,7 @@ def save_login_details(request, user_name, user_ip_address, attempt, reason):
     else:
         uid = User.objects.get(username=user_name)
         try:
-            sld = UserLoginDetails(user_ip_address=user_ip_address, user=uid, os_details=OS_Details, browser_details=browser, attempt=attempt)
+            sld = UserLoginDetails(user_ip_address=user_ip_address, user=uid, os_details=OS_Details, browser_details=browser, attempt=attempt, reason=reason)
             sld.save()
         except Exception as e:
             return e
