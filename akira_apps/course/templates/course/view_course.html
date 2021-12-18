@@ -1,17 +1,44 @@
-{{ course.course_code }}
-<br>
-{{ course.course_name }}
-<br>
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load first_letter_word %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>{{ course.course_code }}</h1>
+<p>{{ course.course_name }} ({{ course.course_name|first_letter_word }})</p>
+{% endblock %}
+
+{% block view-course %}
+<h4>Course Short Info</h4>
 {{ course.course_short_info }}
 <br>
+<h4>What you will learn</h4>
 {{ course.course_wywl }}
 <br>
+<h4>Skills you will gain</h4>
 {{ course.course_sywg }}
 <br>
+<h4>Course Desciption</h4>
 {{ course.course_desc }}
 <br>
+<h4>Course Co-Ordinator</h4>
 {{ course.course_coordinator }}
 <br>
+<h4>Course Offered by </h4>
 {{ course.branch }}
 <br>
+<h4>Course Duration</h4>
 {{ course.semester }}
+<br>
+<h4>Course Files</h4>
+{% for i in courseFilesObjs %}
+<a href="{{ i.course_files.url }}" download="{{ i.course_files.name|slice:'13:' }}">{{ i.course_files.name|slice:"13:" }}</a>
+<br>
+{% endfor %}
+<br>
+<h4>Action</h4>
+<a href="{% url 'delete_course' course.id %}">Delete Course</a>
+{% endblock %}
+
+{% endblock %}
