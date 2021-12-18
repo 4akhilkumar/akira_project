@@ -305,7 +305,6 @@ def staff_info_csv(request):
 
 
 # new_group, created = Group.objects.get_or_create(name ='Administrator')
-# new_group, created = Group.objects.get_or_create(name ='Course Co-Ordinator')
 # new_group, created = Group.objects.get_or_create(name ='Head of the Department')
 # new_group, created = Group.objects.get_or_create(name ='Professor')
 # new_group, created = Group.objects.get_or_create(name ='Associate Professor')
