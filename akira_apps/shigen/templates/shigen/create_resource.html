@@ -1,0 +1,20 @@
+<form action="{% url 'create_resource_save' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="Name">Name</label>
+    <input type="text" name="name" id="id_name">
+    <label for="Thumbnail">Thumbnail</label>
+    <input type="file" name="thumbnail" id="id_thumbnail">
+    <br>
+    <label for="Description">Description</label>
+    <textarea name="description" id="id_description" cols="30" rows="10"></textarea>
+    <br>
+    <label for="Video File">Video File</label>
+    <input type="file" name="video_file" id="video_file">
+    <br>
+    <label for="References">References</label>
+    <textarea name="reference_info" id="id_reference_info" cols="30" rows="10"></textarea>
+    <br>
+    <label for="Hash tags">Hash tags</label>
+    <textarea name="hash_tags" id="id_hash_tags" cols="30" rows="10"></textarea>
+    <input type="submit">
+</form>
