@@ -1,0 +1,100 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load user_group %}
+
+{% block content %}
+
+{% block view-resource %}
+
+{% block custom-video-css %}{% endblock %}
+
+<link rel="stylesheet" href="{% static 'styles/custom_video_editor.css' %}">
+
+{% if not resource %}
+<div class="search-box-container" id="gotosearch-box">
+  <form method="post" action="" class="form-elements">
+    {% csrf_token %}
+    <input type="text" name="search-resource" id="search-bar" placeholder="Search resource" autocomplete="off" required>
+    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+<section>
+  <div class="video-container">
+    <div id="id_video_player">
+        <video src="{{ fetched_resource.video_file.url }}" id="main-video"></video>
+        <div class="progressAreaTime">0:00</div>
+        <div class="controls">
+            <div class="progress-area">
+                <div class="progress-bar">
+                    <span></span>
+                </div>
+            </div>
+            <div class="controls-list">
+                <div class="controls-left">
+                    <span class="video-icon" id="fast-rewind-icon">
+                        <i class="material-icons fast-rewind">replay_10</i>
+                    </span>
+                    <span class="video-icon">
+                        <i class="material-icons play_pause">play_arrow</i>
+                    </span>
+                    <span class="video-icon" id="fast-forward-icon">
+                        <i class="material-icons fast-forward">forward_10</i>
+                    </span>
+                    <span class="video-icon" id="volume-icon">
+                        <i class="material-icons volume">volume_up</i>
+                        <input type="range" min="0" max="100" class="volume_range">
+                    </span>
+                    <div class="timer">
+                        <span class="current">0:00</span> / <span class="duration">0:00</span>
+                    </div>
+                </div>
+                <div class="controls-right">
+                    <span class="video-icon" id="auto-play-icon">
+                        <i class="material-icons auto-play"></i>
+                    </span>
+                    <span class="video-icon" id="settingsBtn-icon">
+                        <i class="material-icons settingsBtn">settings</i>
+                    </span>
+                    <span class="video-icon" id="picture_in_picutre-icon">
+                        <i class="material-icons picture_in_picutre">picture_in_picture_alt</i>
+                    </span>
+                    <span class="video-icon" id="fullscreen-icon">
+                        <i class="material-icons fullscreen">fullscreen</i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="settings">
+            <div class="playback">
+                <span>Playback Speed</span>
+                <ul>
+                    <li data-speed="0.25">0.25</li>
+                    <li data-speed="0.5">0.5</li>
+                    <li data-speed="0.75">0.75</li>
+                    <li data-speed="1" class="active">Normal</li>
+                    <li data-speed="1.25">1.25</li>
+                    <li data-speed="1.5">1.5</li>
+                    <li data-speed="1.75">1.75</li>
+                    <li data-speed="2">2</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+
+<script src="{% static 'js/custom_video_editor.js' %}"></script>
+<script>
+$(document).ready(function () {
+    $('html, body').animate({
+        scrollTop: $('#gotosearch-box').offset().top
+    }, 'slow');
+});
+</script>
+
+{% endblock %}
+
+{% endblock %}
