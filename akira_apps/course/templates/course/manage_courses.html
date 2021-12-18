@@ -19,8 +19,8 @@
           <span class="fas fa-chalkboard-teacher"></span>
       </div>
       <div class="analytic-info">
-          <h4>Total Faculty</h4>
-          <h1>486 <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h4>Most Reg. Course</h4>
+          <h1>--</h1>
       </div>
   </div>
   <div class="analytic">
@@ -28,8 +28,8 @@
         <span class="fas fa-user-graduate"></span>
     </div>
     <div class="analytic-info">
-        <h4>Total Students</h4>
-        <h1>1.4K <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+        <h4>Least Reg. Course</h4>
+        <h1>--</h1>
     </div>
   </div>
   <div class="analytic">
@@ -38,7 +38,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Courses</h4>
-          <h1>{{ courses|length }} <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h1>{{ courses|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -47,7 +47,7 @@
     </div>
     <div class="analytic-info">
         <h4>Specializations</h4>
-        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+        <h1>-- <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
 </div>
@@ -59,7 +59,7 @@
     <li class="courses_item">
       <div class="course" onclick="document.location='{% url 'create_course' %}'">
         <div class="course_image">
-            <span class="fa-solid fa-circle-plus"></span>
+          <span class="fa-solid fa-circle-plus"></span>
         </div>
         <div class="course_content">
           <h2 class="course_title">Create a Course</h2>
@@ -80,7 +80,7 @@
             <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.course_code %}'" >Read More</button>
             <button class="enrollCoursebtn course_btn">Enroll</button>
           </div>
-        </div>
+        </div>  
       </div>
     </li>
     {% endfor %}
