@@ -1,4 +1,3 @@
-from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
@@ -64,7 +63,6 @@ class Staff(models.Model):
     current_medical_issue = models.TextField(max_length=50)
     blood_group = models.CharField(max_length=18, choices = BLOOD_GROUP_CHOICES, default=1)
     branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -72,14 +70,3 @@ class Staff(models.Model):
     
     class Meta:
         ordering = ["created_at"]
-
-# class CourseSessions(models.Model):
-#     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-#     staff = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
-#     name = models.CharField(max_length=50)
-#     thumbnail = models.ImageField(null=True, blank=True, upload_to='Course_Sessions/%s/' % str(name))
-#     description = RichTextUploadingField()
-#     video_file = models.FileField(upload_to='Course_Sessions/', null=True, blank=True, default="False")
-#     reference_info = RichTextUploadingField()
-#     hash_tags = models.CharField(max_length=50)
-#     created_at = models.DateTimeField(auto_now_add=True)
