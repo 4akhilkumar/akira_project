@@ -11,11 +11,14 @@
     <meta name="description" content="AkirA is a kind of Learning Mangement System which can be accessible in all your devices Android, iOS, and desktop devices.">
 
     <link rel="stylesheet" href="{% static 'styles/dashboard.css' %}">
+    {% block custom-video-css %}{% endblock %}
     
     <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
     <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
     <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
     <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
@@ -103,6 +106,18 @@
                             <span>Courses</span>
                         </a>
                     </li>
+                    {% if "manage_course" in request.path or "resource" in request.path %}
+                    <li>
+                        <a href="{% url 'manage_resources' %}"
+                        {% if "resource" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fa-solid fa-box-archive"></span>
+                            <span>Resource</span>
+                        </a>
+                    </li>
+                    {% endif %}
                     <li>
                         <a href="{% url 'manage_staff' %}"
                         {% if "manage_staff" in request.path %}
@@ -175,6 +190,9 @@
             {% block academic %} {% endblock %}
             {% block manage-courses %} {% endblock %}
             {% block create-course %} {% endblock %}
+            {% block view-course %} {% endblock %}
+            {% block manage-resource %} {% endblock %}
+            {% block view-resource %} {% endblock %}
             {% block manage-faculty %} {% endblock %}
             {% block manage-account %} {% endblock %}
             {% block view-faculty %} {% endblock %}
@@ -189,6 +207,7 @@
     </div>
 
     <script src="{% static 'js/dashboard.js' %}"></script>
+    {% block custom_video_editor_js %}{% endblock %}
     <script>
         $(document).ready(function() {
             $('input[name="toggle-checkbox"]').click(function(){
