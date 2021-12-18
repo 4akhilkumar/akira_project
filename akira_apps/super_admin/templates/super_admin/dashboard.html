@@ -18,8 +18,8 @@
           <span class="fas fa-chalkboard-teacher"></span>
       </div>
       <div class="analytic-info">
-          <h4>Total Faculty</h4>
-          <h1>{{ listFaculty|length|numerize_value }} <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h4>Total Staff</h4>
+          <h1>{{ listFaculty|length|numerize_value }} <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -28,7 +28,7 @@
     </div>
     <div class="analytic-info">
         <h4>Total Students</h4>
-        <h1>{{ listStudents|length|numerize_value }} <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+        <h1>{{ listStudents|length|numerize_value }} <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
     </div>
   </div>
   <div class="analytic">
@@ -37,7 +37,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Courses</h4>
-          <h1>48 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h1>{{ listCourses|length|numerize_value }} <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -46,7 +46,7 @@
     </div>
     <div class="analytic-info">
         <h4>Specializations</h4>
-        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+        <h1>0 <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
 </div>
@@ -81,7 +81,7 @@
             </div>
             <div class="graph-select">
                 <select name="" id="">
-                    <option value="">September</option>
+                    <option value="">December</option>
                 </select>
             </div>
         </div>
@@ -95,16 +95,15 @@
 {% block chart-js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
 <script>
-    // Chart.defaults.global.defaultFontFamily = "Poppins";
     let ctx = document.querySelector('#revenueChart');
 
     let revChart = new Chart(ctx, {
         type: "line",
         data: {
-            labels: ["Sept 1", "Sept 3", "Sept 6", "Sept 9", "Sept 12", "Sept 15", "Sept 18", "Sept 21", "Sept 24", "Sept 27", "Sept 30"],
+            labels: ["Dec 1", "Dec 3", "Dec 6", "Dec 9", "Dec 12", "Dec 15", "Dec 18", "Dec 21", "Dec 24", "Dec 27", "Dec 31"],
             datasets: [
                 {
-                    label: "Views",
+                    label: "Undefine",
                     borderColor: "#2ec3a3",
                     borderWidth: "3",
                     backgroundColor: "rgba(235, 247, 245, 0.5)",
