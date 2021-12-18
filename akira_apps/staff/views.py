@@ -1,21 +1,21 @@
-import io
-from os import error
 from django.contrib.auth import authenticate
 from django.http import request
 from django.http.response import HttpResponse
-import pandas as pd
 
 from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
 
-from akira_apps.super_admin.decorators import allowed_users
-from akira_apps.authentication.forms import CreateUserForm
-# from akira_apps.academic_registration.models import Semester , Course, course_registration_staff, SectionRooms
-from akira_apps.staff.models import Staff
-from akira_apps.student.forms import StudentsForm
-from akira_apps.student.models import Students#, course_registration_student
+from akira_apps.super_admin.decorators import (allowed_users)
+from akira_apps.authentication.forms import (CreateUserForm)
+from .models import (Staff)
+from akira_apps.student.forms import (StudentsForm)
+from akira_apps.student.models import (Students)
+from akira_apps.course.models import (Course)
 
 import secrets
+import pandas as pd
+import io
+import csv
 
 @allowed_users(allowed_roles=['Assistant Professor', 'Associate Professor', 'Professor'])
 def staff_dashboard(request):
@@ -23,7 +23,7 @@ def staff_dashboard(request):
     context = {
         "rAnd0m123":rAnd0m123,
     }
-    return render(request, 'staff/staff_dashboard.html', context)
+    return render(request, 'staff/staff_templates/staff_dashboard.html', context)
 
 @allowed_users(allowed_roles=['Head of the Department'])
 def hod_dashboard(request):
@@ -252,12 +252,165 @@ def student_enroll_course(request, course_id):
         else:
             return HttpResponse(e)
 
-# lst = course_registration_staff.objects.all()
-# for i in lst:
-#     unenrollCourse = course_registration_staff.objects.get(id=i.id)
-#     unenrollCourse.delete()
+def manage_staff(request):
+    staffs = Staff.objects.all()
+    doctorial_faculty = Staff.objects.filter(name_prefix='Dr')
+    courses = Course.objects.all()
+    context = {
+        "staffs":staffs,
+        "doctorial_faculty":doctorial_faculty,
+        "courses":courses,
+    }
+    return render(request, 'staff/staff_templates/manage_staff/manage_faculty.html', context)
 
-# lst = course_registration_student.objects.all()
-# for i in lst:
-#     unenrollCourse = course_registration_student.objects.get(id=i.id)
-#     unenrollCourse.delete()
+def add_staff(request):
+    form = CreateUserForm()
+    staff_form = StaffsForm()
+    list_groups = Group.objects.all()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        staff_form = StaffsForm(request.POST,request.FILES)
+        assigned_group = request.POST.get('designation-group')
+        staff_from_db = User.objects.all()
+        staff_user=[]
+        for i in staff_from_db:
+            staff_user.append(i.username)
+            staff_user.append(i.email)
+        username = request.POST.get('username')
+        if username in staff_user:
+            print("A user already exist with "+ username)
+            return redirect('add_staff')
+
+        if form.is_valid() and staff_form.is_valid():
+            user = form.save()
+            staff = staff_form.save(commit=False)
+            staff.user = user
+            staff.save()
+
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            
+            user = authenticate(username = username, password = password)
+            my_group = Group.objects.get(name='%s' % str(assigned_group)) 
+            userObj = User.objects.get(username=username)
+            my_group.user_set.add(userObj)
+            return redirect('manage_staff')
+        else:
+            form = CreateUserForm()
+            staff_form = StaffsForm()
+
+    context = {
+        'form':form,
+        'staff_form':staff_form,
+        'list_groups':list_groups,
+    }       
+    return render(request, 'staff/staff_templates/manage_staff/add_faculty.html', context)
+
+def edit_staff(request, staff_username):
+    staff = Staff.objects.get(user__username=staff_username)
+    form = CreateUserForm(instance=staff.user)
+    staff_form = StaffsForm(instance=staff)
+    list_groups = Group.objects.all()
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST, instance=staff.user)
+        staff_form = StaffsForm(request.POST, request.FILES, instance=staff)
+        assigned_group = request.POST.get('designation-group')
+        if form.is_valid() and staff_form.is_valid():
+            form.save()
+            staff_form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username = username, password = password)
+            my_group = Group.objects.get(name='%s' % str(assigned_group)) 
+            user = User.objects.get(id=request.user.id)
+            my_group.user_set.add(user)
+            print("Faculty Updated Successfully.")
+            return redirect('manage_staff')
+        else:
+            form = CreateUserForm(instance=staff.user)
+            staff_form = StaffsForm(instance=staff)
+
+    context = {
+        'form':form,
+        'staff_form':staff_form,
+        'list_groups':list_groups,
+    }       
+    return render(request, 'staff/staff_templates/manage_staff/edit_faculty.html', context)
+
+def view_staff(request, staff_username):
+    staff = Staff.objects.get(user__username=staff_username)
+    user = User.objects.get(username=staff_username)
+    list_groups = Group.objects.all()
+    current_user_group = ', '.join(map(str, user.groups.all()))
+    context = {
+        "staff": staff,
+        "current_user_group":current_user_group,
+        "list_groups":list_groups,
+    }
+    return render(request, "staff/staff_templates/manage_staff/view_faculty.html", context)
+
+import datetime as pydt
+def staff_info_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=staff_info_record' + \
+        str(pydt.datetime.now()) + '.csv'
+
+    writer = csv.writer(response)
+    writer.writerow(['Username', 'First Name', 'Last Name', 'Email', 
+                    'Name Prefix', 'Gender', 'Date of Birth',
+                    'Blood Group', 'Door No.', 'Zip Code', 'City Name', 
+                    'State Name', 'Country', 'Branch', 'Current Medical Issue', 'Designation'])
+    
+    staff = Staff.objects.all()
+
+    for i in staff:
+        writer.writerow([i.user.username, i.user.first_name, i.user.last_name, i.user.email,
+                        i.name_prefix, i.gender, i.date_of_birth,
+                        i.blood_group, i.door_no, i.zip_code, i.city_name, 
+                        i.state_name, i.country_name, i.branch, i.current_medical_issue, ', '.join(map(str, i.user.groups.all()))])
+    return response
+
+def bulk_upload_staffs_save(request):
+    if request.method == 'POST':
+        staff_from_db = User.objects.all()
+        staff_user=[]
+        for i in staff_from_db:
+            staff_user.append(i.username)
+            staff_user.append(i.email)
+
+        paramFile = io.TextIOWrapper(request.FILES['staff_file'].file)
+        data = pd.read_csv(paramFile)
+        data.drop_duplicates(subset ="Username", keep = 'first', inplace = True)
+
+        for index, row in data.iterrows():
+            if str(row['Username']) not in staff_user and str(row['Email']) not in staff_user:
+                newuser = User.objects.create_user(
+                    username=row['Username'],
+                    first_name=row['First Name'],
+                    last_name=row['Last Name'],
+                    email=row['Email'],
+                    password="AKIRAaccount@21",
+                )
+                group_name = row['Designation']
+                my_group = Group.objects.get(name='%s' % str(group_name))
+                my_group.user_set.add(newuser)
+
+                staff = Staff.objects.bulk_create([
+                    Staff(
+                        user_id = newuser.id,
+                        name_prefix=row['Name Prefix'],
+                        gender=row['Gender'],
+                        date_of_birth=(row['Date of Birth'] if row['Date of Birth'] != '' else '1998-12-01'),
+                        door_no=row['Door No.'],
+                        zip_code=row['Zip Code'],
+                        city_name=row['City Name'],
+                        state_name=row['State Name'],
+                        country_name=row['Country'],
+                        current_medical_issue=row['Current Medical Issue'],
+                        blood_group=row['Blood Group'],
+                        branch=row['Branch'],
+                    )
+                ])
+        return redirect('manage_staff')
+    else:
+        return redirect('manage_staff')

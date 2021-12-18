@@ -1,0 +1,60 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% block content %}
+{% load humanize %}
+
+{% block view-faculty %}
+<title>View Faculty Info.</title>
+
+<img
+{% if not staff.profile_pic %}
+src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
+{% else %}
+src="{{ staff.profile_pic.url }}"
+{% endif %}
+alt="staff Profile Pic">
+
+First Name: {{ staff.user.first_name }}
+<br>
+Last Name: {{ staff.user.last_name }}
+<br>
+Gender: {{ staff.gender }}
+<br>
+Date of Birth: {{ staff.date_of_birth }}
+<br>
+Door No. {{ staff.door_no }}
+<br>
+Zip Code: {{ staff.zip_code }}
+<br>
+City: {{ staff.city_name }}
+<br>
+State: {{ staff.state_name }}
+<br>
+Country: {{ staff.country_name }}
+<br>
+Current Medical Issue: {{ staff.current_medical_issue }}
+<br>
+Blood Group: {{ staff.blood_group }}
+<br>
+Designation: {{ current_user_group }}
+<br>
+User Login Details:
+<br>
+{{ staff.user.last_login|naturaltime }} | {{ staff.user.last_login }}
+
+<form action="{% url 'assign_user_group' staff.user.username %}" method="POST">
+    {% csrf_token %}
+    <select name="designation-group" id="id_designation-group" required>
+        <option value="">Choose Designation</option>
+        {% for i in list_groups %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit">
+</form>
+
+<a href="{% url 'edit_staff' staff.user.username %}">Edit Staff</a>
+
+{% endblock %}
+
+{% endblock %}

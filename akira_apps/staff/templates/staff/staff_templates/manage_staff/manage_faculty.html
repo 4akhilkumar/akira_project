@@ -1,0 +1,165 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load user_group %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Manage Staff</h1>
+<p>Display analytics about your Staff <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-chalkboard-teacher"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Faculty</h4>
+          <h1>{{ staffs|length }} <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-user-graduate"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Doctorial Faculty</h4>
+        <h1>{{ doctorial_faculty|length }} <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-book"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Non-Teaching</h4>
+          <h1>-- <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Total Staff</h4>
+        <h1>{{ staffs|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block manage-faculty %}
+<button onClick='window.location="{% url 'add_staff' %}"' class="add-faculty">Add Faculty</button>
+<button id="showFormBulkImport" class="add-faculty">Bulk Import</button>
+
+
+<div id="myModal" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model" class="close">&times;</span>
+      <form action="{% url 'bulk_upload_staffs_save' %}" method="POST" enctype="multipart/form-data">
+        <div class="drop-zone">
+          <span class="drop-zone__prompt">
+            <i class="fa-solid fa-file fileUploadIcon"></i> <br>
+            Drop file here or click to upload</span>
+          {% csrf_token %}
+            <input type="file" name="staff_file" class="drop-zone__input" accept=".csv" required>
+        </div>
+        <input type="submit" class="bulkUploadButton" value="Bulk Upload">
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/fileDragUpload.js' %}"></script>
+
+{% if staffs %}
+<div class="search-box-container">
+  <form method="post" action="" class="form-elements">
+    {% csrf_token %}
+    <input type="text" name="search-faculty" id="search-bar" placeholder="Search Faculty" autocomplete="off" required>
+    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+<div class="list-all-faculty">
+  {% for staff in staffs %}
+  <div class="staff-profile-card"
+  {% if staff.user|user_group == "Head of the Department" %}
+  style="--card-top-color: #4172f5aa;"
+  {% elif staff.name_prefix == "Dr" %}
+  style="--card-top-color: #ef5350e0;"
+  {% else %}
+  style="--card-top-color: #14c66fab;"
+  {% endif %}
+  >
+    <div class="staff-profile-img">
+      <img
+        {% if not staff.profile_pic %}
+        src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
+        {% else %}
+        src="{{ staff.profile_pic.url }}"
+        {% endif %}
+        alt="staff Profile Pic">
+    </div>
+    <div class="staff-profile-infos">
+      <div class="staff-profile-name">
+        <h2>{{ staff.name_prefix }} {{ staff.user.first_name|title }} {{ staff.user.last_name|title }}</h2>
+        <h4>@{{ staff.user.username }}</h4>
+      </div>
+      <p class="staff-profile-text">
+        I'm {% if staff.user|user_group == "Head of the Department" %} the {% else %} a {% endif %} {{ staff.user|user_group }} in {{ staff.branch }} department.
+      </p>
+      <ul class="staff-profile-stats">
+        <li>
+          <h3>11</h3>
+          <h4>Research</h4>
+        </li>
+        <li>
+          <h3>42</h3>
+          <h4>Projects</h4>
+        </li>
+      </ul>
+      <div class="staff-profile-links">
+        <button class="staff-profile-follow">Contact</button>
+        <button class="staff-profile-view" onclick="document.location='{% url 'view_staff' staff.user.username %}'">View profile</button>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
+{% endif %}
+<script>
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("showFormBulkImport");
+var span = document.getElementById("close-model");
+
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+{% endblock %}
+
+{% endblock %}
+
+{% comment %}
+<a class="edit_button" href="{% url 'edit_staff' staff.user.id %}"><i class="fas fa-edit"></i> Edit</a> &nbsp; <br>
+<a class="delete_button" href="{% url 'delete_staff' staff.user.id %}"><i class="fas fa-trash"></i> Delete</a>
+{% endcomment %}
