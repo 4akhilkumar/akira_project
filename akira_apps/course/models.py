@@ -31,3 +31,10 @@ class Course(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.course_code, self.course_name)
+
+class CourseFiles(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course_files = models.FileField(upload_to='Course Files/', blank=True, null=True)
+
+    def __str__(self):
+        return '%s - %s' % (self.course, self.course_files)
