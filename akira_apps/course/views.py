@@ -7,7 +7,7 @@ from akira_apps.academic.models import (Semester)
 from akira_apps.academic.forms import (BranchForm)
 from akira_apps.staff.models import (Staff)
 from akira_apps.authentication.models import (User_IP_B_List)
-from akira_apps.course.models import (Course)
+from akira_apps.course.models import (Course, CourseFiles)
 
 def manage_courses(request):
     courses = Course.objects.all()
@@ -25,12 +25,12 @@ def create_course(request):
         messages.info(request, 'Please create a staff first')
         return redirect('add_staff')
 
-    course_coordinator_list = User.objects.filter(groups__name='Course Co-Ordinator')
+    faculty_list = User.objects.all()
     branch_list = BranchForm()
     semester_list = Semester.objects.all()
 
     context = {
-        "course_coordinator_list":course_coordinator_list,
+        "faculty_list":faculty_list,
         "branch_list":branch_list,
         "semester_list":semester_list,
     }
@@ -49,27 +49,43 @@ def create_course_save(request):
         courseBranch = request.POST.get('branch')
         courseSemester = request.POST.get('semester')
         courseSemester = Semester.objects.get(id=courseSemester)
-        createCourse = Course.objects.create(
-            course_code=courseCode,
-            course_name=courseName,
-            course_short_info=courseShortInfo,
-            course_wywl=courseWYWL,
-            course_sywg=courseSYWG,
-            course_desc=courseDesc,
-            course_coordinator=courseCC,
-            branch=courseBranch,
-            semester=courseSemester)
+        courseFiles = request.FILES.getlist('course_files')
+        try:
+
+            courseObj = Course(
+                course_code=courseCode,
+                course_name=courseName,
+                course_short_info=courseShortInfo,
+                course_wywl=courseWYWL,
+                course_sywg=courseSYWG,
+                course_desc=courseDesc,
+                course_coordinator=courseCC,
+                branch=courseBranch,
+                semester=courseSemester)
+            courseObj.save()
+            getCourseObj = Course.objects.get(course_code = courseCode)
+            try:
+                for file in courseFiles:
+                    CourseFiles.objects.create(course = getCourseObj, course_files = file)
+            except Exception as e:
+                print(e)
+        except Exception as e:
+            print(e)
         return redirect('manage_courses')
 
 def view_course(request, course_code):
-    course = Course.objects.get(course_code=course_code)
+    courseObj = Course.objects.get(course_code=course_code)
+    courseFilesObjs = CourseFiles.objects.filter(course = courseObj)
     context = {
-        "course":course,
+        "course":courseObj,
+        "courseFilesObjs":courseFilesObjs,
     }
     return render(request, 'course/view_course.html', context)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def delete_courses(request, course_id):
+def delete_course(request, course_id):
     course = Course.objects.get(id=course_id)
     course.delete()
     return redirect('manage_courses')
+
+# Course.objects.all().delete()
