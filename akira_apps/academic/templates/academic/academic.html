@@ -60,62 +60,106 @@
 
 <div class="list-all-blocks-info">
   {% for i in blocks %}
-  <div class="block-info-card"
-    style="--card-top-color: #14c66fab;"
-  >
-    <div class="block-infos">
-      <div class="block-name">
+  <div class="item-block">
+    <div class="block-name-desc">
+      <span class="fa-solid fa-building building-block-icon"></span>
+      <div class="block-name-block-desc">
         <h2>{{ i.block_name }}</h2>
-        <h4>
-            <span class="block-component-span">
-                <span class="fa-solid fa-layer-group"></span> {{ i.block_name|block_floors }} Floor{{ i.block_name|block_floors|pluralize }}
-            </span>
-            <span class="block-component-span">
-                <span class="fa-solid fa-person-booth"></span> {{ i.block_name|block_rooms }} Room{{ i.block_name|block_rooms|pluralize }}
-            </span>
-            <span class="block-component-span">
-                <i class="fa-solid fa-couch"></i> {{ i.block_name|block_waiting_halls }} Waiting Hall{{ i.block_name|block_waiting_halls|pluralize }} 
-            </span>
-        </h4>
-      </div>
-      <ul class="block-stats">
-        <li>
-          <h3>{{ i.block_name|block_lab_rooms }}</h3>
-          <h4> <span class="fa-solid fa-flask"></span> Lab{{ i.block_name|block_lab_rooms|pluralize }}</h4>
-        </li>
-        <li>
-          <h3>{{ i.block_name|block_staff_rooms }}</h3>
-          <h4> <span class="fa-solid fa-chalkboard-user"></span> Staff Room{{ i.block_name|block_staff_rooms|pluralize }}</h4>
-        </li>
-      </ul>
-      <ul class="block-stats">
-        <li>
-          <h3>{{ i.block_name|block_class_rooms }}</h3>
-          <h4> <span class="fa-solid fa-user-graduate"></span> Class Room{{ i.block_name|block_class_rooms|pluralize }}</h4>
-        </li>
-        <li>
-          <h3>{{ i.block_name|block_meeting_halls }}</h3>
-          <h4> <span class="fa-solid fa-handshake"></span> Meeting Hall{{ i.block_name|block_meeting_halls|pluralize }}</h4>
-        </li>
-      </ul>
-      <div class="block-links">
-        <button class="block-contact">Contact</button>
-        <button class="block-delete" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button>
+        <p>{{ i.block_desc }}</p>
       </div>
     </div>
+    <div class="block-chips">
+      <span class="block-chip chip-one">
+        <i class="fa-solid fa-layer-group"></i>
+        {{ i.block_name|block_floors }} Floor{{ i.block_name|block_floors|pluralize }}
+      </span>
+      &nbsp;
+      <span class="block-chip chip-two">
+        <i class="fa-solid fa-layer-group"></i>
+        {{ i.block_name|block_rooms }} Room{{ i.block_name|block_rooms|pluralize }}
+      </span>
+      &nbsp;
+      <span class="block-chip chip-three">
+        <i class="fa-solid fa-layer-group"></i>
+        {{ i.block_name|block_waiting_halls }} Waiting Hall{{ i.block_name|block_waiting_halls|pluralize }}
+      </span>
+    </div>
+    <!-- <hr class="block-hr"> -->
+    <div class="block-contents">
+      <div class="component1">
+        <li>
+          <div class="whole-component">
+            <div class="icon-component">
+              <span class="fa-solid fa-chalkboard-user"></span>
+            </div>
+            <div class="info-component">
+              <h5>Staff Room{{ i.block_name|block_staff_rooms|pluralize }}</h5>
+              <h4>{{ i.block_name|block_staff_rooms }}</h4>
+            </div>
+          </div>
+        </li>
+      </div>
+      <div class="component2">
+        <li>
+          <div class="whole-component">
+            <div class="icon-component">
+              <span class="fa-solid fa-user-graduate"></span>
+            </div>
+            <div class="info-component">
+              <h5>Class Room{{ i.block_name|block_class_rooms|pluralize }}</h5>
+              <h4>{{ i.block_name|block_class_rooms }}</h4>
+            </div>
+          </div>
+        </li>
+      </div>
+      <div class="component3">
+        <li>
+          <div class="whole-component">
+            <div class="icon-component">
+              <span class="fa-solid fa-handshake"></span>
+            </div>
+            <div class="info-component">
+              <h5>Meeting Hall{{ i.block_name|block_meeting_halls|pluralize }}</h5>
+              <h4>{{ i.block_name|block_meeting_halls }}</h4>
+            </div>
+          </div>
+        </li>
+      </div>
+      <div class="component4">
+        <li>
+          <div class="whole-component">
+            <div class="icon-component">
+              <span class="fa-solid fa-flask"></span>
+            </div>
+            <div class="info-component">
+              <h5>Lab{{ i.block_name|block_lab_rooms|pluralize }}</h5>
+              <h4>{{ i.block_name|block_lab_rooms }}</h4>
+            </div>
+          </div>
+        </li>
+      </div>
+    </div>
+    <div class="block-buttons">
+      <button class="block-delete-btn" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button>
+      <button class="block-contact-btn"><span>Contact</span></button>
+    </div>
   </div>
+  {% empty %}
+  No Data Available
   {% endfor %}
 </div>
 
+{% comment %}
 <h2 class="blocks-list">Blocks Lists</h2>
 <h4 class="create-block">
     <form action="{% url 'create_block_save' %}" method="POST">
         {% csrf_token %}
         <input type="text" name="block_name" id="id_block_name" placeholder="Block Name" required>
+        <input type="text" name="block_desc" id="id_block_desc" placeholder="Block Desc." required>
         <input type="submit" value="submit">
     </form>
     {% for i in blocks %}
-    {{ i.block_name }} | <a href="">Edit</a> | <a href="{% url 'delete_block' i.id %}">Delete</a>
+    {{ i.block_name }} {{ i.block_desc }} | <a href="">Edit</a> | <a href="{% url 'delete_block' i.id %}">Delete</a>
     <br>
     {% empty %}
     No Blocks
@@ -205,6 +249,7 @@
         No semester found
     {% endfor %}
 </h4>
+{% endcomment %}
 {% endblock %}
 
 {% endblock %}
