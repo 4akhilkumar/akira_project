@@ -1,10 +1,15 @@
 from django.shortcuts import redirect, render
 from .models import (Resource)
 
+import datetime as pydt
+
 def manage_resources(request):
     all_resources = Resource.objects.all()
+    twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
+    new_resource = Resource.objects.filter(created_at__gte=twenty_four_hrs).count()
     context = {
         "all_resources":all_resources,
+        "new_resource":new_resource,
     }
     return render(request, 'shigen/manage_resources.html', context)
 
