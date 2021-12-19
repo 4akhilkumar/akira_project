@@ -1,5 +1,6 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
+{% load humanize %}
 {% load user_group %}
 
 {% block content %}
@@ -16,38 +17,38 @@
 <div class="analytics">
   <div class="analytic">
       <div class="analytic-icon">
-          <span class="fas fa-chalkboard-teacher"></span>
+        <span class="fas fa-chalkboard-teacher"></span>
       </div>
       <div class="analytic-info">
-          <h4>Most Viewed</h4>
-          <h1>-- <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+        <h4>Most Viewed</h4>
+        <h1>--</h1>
       </div>
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fas fa-user-graduate"></span>
+      <span class="fas fa-user-graduate"></span>
     </div>
     <div class="analytic-info">
-        <h4>Least Viewed</h4>
-        <h1>-- <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      <h4>Least Viewed</h4>
+      <h1>--</h1>
     </div>
   </div>
   <div class="analytic">
       <div class="analytic-icon">
-          <span class="fas fa-book"></span>
+        <span class="fas fa-book"></span>
       </div>
       <div class="analytic-info">
-          <h4>New Resource</h4>
-          <h1>-- <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+        <h4>New Resource{{ new_resource|pluralize }}</h4>
+        <h1>{% if new_resource %}{{ new_resource }}{% else %}--{% endif %} <small class="text-success">0% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fas fa-swatchbook"></span>
+      <span class="fas fa-swatchbook"></span>
     </div>
     <div class="analytic-info">
-        <h4>Total Resources</h4>
-        <h1>-- <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+      <h4>Total Resources</h4>
+      <h1>{{all_resources|length}} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
 </div>
@@ -55,19 +56,18 @@
 
 {% block manage-resource %}
 
-{% if not resources %}
+{% if all_resources %}
 <div class="search-box-container">
   <form method="post" action="" class="form-elements">
     {% csrf_token %}
-    <input type="text" name="search-resource" id="search-bar" placeholder="Search resource" autocomplete="off" required>
+    <input type="text" name="search-resource" id="search-bar" class="resource-form-field" placeholder="Search resource" autocomplete="off" required>
     <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
   </form>
 </div>
 
 <div class="main-resource">
   <ul class="resource-cards">
-
-    <li class="resurce-cards_item">
+    <li class="resurce-cards_item" id="showFormCreateResource">
       <div class="resource-card">
         <div class="course_image">
           <span class="fa-solid fa-circle-plus"></span>
@@ -96,7 +96,7 @@
               <p>{{ resource.user.first_name }} {{ resource.user.last_name }}</p>
             </div>
             <div class="resource-when-uploaded">
-              <p>{{ resource.created_at }}</p>
+              <p><span class="fa-solid fa-clock-rotate-left"></span> {{ resource.created_at|naturaltime }}</p>
             </div>
           </div>
         </div>
@@ -107,30 +107,68 @@
 </div>
 
 <br>
-<form action="{% url 'create_resource_save' %}" method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-  <label for="Name">Name</label>
-  <input type="text" name="name" id="id_name">
-  <label for="Thumbnail">Thumbnail</label>
-  <input type="file" name="thumbnail" id="id_thumbnail">
-  <br>
-  <label for="Description">Description</label>
-  <textarea name="description" id="id_description" cols="30" rows="10"></textarea>
-  <br>
-  <label for="Video File">Video File</label>
-  <input type="file" name="video_file" id="video_file">
-  <br>
-  <label for="References">References</label>
-  <textarea name="reference_info" id="id_reference_info" cols="30" rows="10"></textarea>
-  <br>
-  <label for="Hash tags">Hash tags</label>
-  <textarea name="hash_tags" id="id_hash_tags" cols="30" rows="10"></textarea>
-  <input type="submit">
-</form>
+<div id="myModal" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model" class="close">&times;</span>
+      <form action="{% url 'create_resource_save' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-components">
+          <div class="form-component">
+            <label for="id_name">Name</label>
+            <input type="text" name="name" id="id_name" class="resource-form-field" placeholder="Resource name" required>
+          </div>
+          <div class="form-component">
+            <label for="id_description">Description</label>
+            <textarea name="description" id="id_description" class="resource-form-field" placeholder="Description"></textarea>
+          </div>
+          <div class="form-component">
+            <label for="id_reference_info">References</label>
+            <textarea name="reference_info" id="id_reference_info" class="resource-form-field" placeholder="References"></textarea>
+          </div>
+          <div class="form-component">
+            <label for="id_hash_tags">Hash tags</label>
+            <textarea name="hash_tags" id="id_hash_tags" class="resource-form-field" placeholder="Hash tags"></textarea>
+          </div>
+          <div class="form-component">
+            <label for="id_thumbnail">Thumbnail</label>
+            <input type="file" name="thumbnail" id="id_thumbnail">
+          </div>
+          <div class="form-component">
+            <label for="id_video_file">Video File</label>
+            <input type="file" name="video_file" id="id_video_file">
+          </div>
+          <div class="form-component">
+            <input type="submit">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {% else %}
 <h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
 {% endif %}
+<script>
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("showFormCreateResource");
+var span = document.getElementById("close-model");
+
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
 {% endblock %}
 
 {% endblock %}
