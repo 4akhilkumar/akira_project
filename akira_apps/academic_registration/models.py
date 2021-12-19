@@ -4,8 +4,6 @@ from django.db import models
 
 import uuid
 
-from ckeditor_uploader.fields import RichTextUploadingField
-
 BRANCH_CHOICES = [
     ("","Branch Name"),
     ("Computer Science and Engineering","Computer Science and Engineering"),
