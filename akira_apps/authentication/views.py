@@ -78,12 +78,16 @@ def user_login(request):
 
             user_ip_address = ip
 
-            captcha_token=request.POST.get("g-recaptcha-response")
-            cap_url="https://www.google.com/recaptcha/api/siteverify"
-            cap_secret=settings.GOOGLE_RECAPTCHA_SECRET_KEY
-            cap_data={"secret":cap_secret,"response":captcha_token}
-            cap_server_response=requests.post(url=cap_url,data=cap_data)
-            cap_json=json.loads(cap_server_response.text)
+            try:
+                captcha_token=request.POST.get("g-recaptcha-response")
+                cap_url="https://www.google.com/recaptcha/api/siteverify"
+                cap_secret=settings.GOOGLE_RECAPTCHA_SECRET_KEY
+                cap_data={"secret":cap_secret,"response":captcha_token}
+                cap_server_response=requests.post(url=cap_url,data=cap_data)
+                cap_json=json.loads(cap_server_response.text)
+            except Exception:
+                messages.info(request, 'Check your internet connection')
+                return redirect('login')
 
             try:
                 checkUserExists = User.objects.get(username=username)
