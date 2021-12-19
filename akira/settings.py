@@ -27,23 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CKEDITOR_UPLOAD_PATH = 'uploads/'
-
-CKEDITOR_CONFIGS = {
-'default': {
-    # 'toolbar': None, #You can change this based on your requirements.
-    'toolbar': [["Format", "Bold", "Italic", "Underline", "Strike"],
-                ['NumberedList', 'BulletedList', "Indent", "Outdent", 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-                ["Image", "Table", "Link", "Unlink", "Anchor", "SectionLink", "Subscript", "Superscript"], 
-                ['Undo', 'Redo'], 
-                # ["Source"],
-                ["Maximize"],
-               ],
-    'width': 'auto',
-
-          },
-    }
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -64,9 +47,7 @@ INSTALLED_APPS = [
     'akira_apps.academic.apps.AcademicConfig',
     'akira_apps.accounts.apps.AccountsConfig',
     'akira_apps.course.apps.CourseConfig',
-
-    'ckeditor',
-    'ckeditor_uploader',
+    'akira_apps.shigen.apps.ShigenConfig',
 ]
 
 MIDDLEWARE = [
