@@ -23,8 +23,9 @@
 section {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
+    flex-direction: column;
 }
 
 .video-container {
