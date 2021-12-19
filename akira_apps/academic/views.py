@@ -42,8 +42,9 @@ def create_block_save(request):
             messages.info(request, 'What BLock is it?')
             return redirect('manage_academic')
         getblockName = returnBlockName(blockName)
+        blockDesc = request.POST.get('block_desc')
         try:
-            Block.objects.create(block_name=getblockName)
+            Block.objects.create(block_name=getblockName, block_desc=blockDesc)
         except Exception as e:
             if "UNIQUE constraint" in str(e):
                 messages.info(request, 'Block Name Already Exists!')
