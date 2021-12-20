@@ -6,8 +6,6 @@
 
 {% block view-resource %}
 
-{% block custom-video-css %}{% endblock %}
-
 <link rel="stylesheet" href="{% static 'styles/custom_video_editor.css' %}">
 
 {% if not resource %}
@@ -122,45 +120,6 @@
 </div>
 </section>
 
-<!-- <div class="resource-information">
-    <div class="resource_name">
-        <h4>{{ fetched_resource.name }}</h4>
-    </div>
-    <div class="resource-created-at_other-options">
-        <div class="resource-created-at">
-            <h6>{{ fetched_resource.created_at }}</h6>
-        </div>
-        <div class="resource-other-options">
-            <button class="resource-download"><span class="fa-solid fa-download"></span></button>
-            <button class="resource-share"><span class="fa-solid fa-share-nodes"></span></button>
-        </div>
-    </div>
-    <hr>
-    <div class="resource-uploaded-by_description-references-hashtags">
-        <div class="resource-uploaded-user-pic">
-            <img src="{% get_static_prefix %}Default User Profile Photo/{{fetched_resource.user.first_name|capfirst|first}}.png" alt="" class="resource-uploaded-by-avatar">
-        </div>
-        <div class="resource-info">
-            <div class="resource-title">
-                <p>{{ fetched_resource.user.first_name }} {{ fetched_resource.user.last_name }}</p>
-            </div>
-            <div class="resource-uploaded-by-user">
-                <p>{{ fetched_resource.user.username|user_group }}</p>
-            </div>
-            <br>
-            <div class="resource-description">
-                <p>{{ fetched_resource.description }}</p>
-            </div>
-            <div class="resource-references">
-                <p>{{ fetched_resource.reference_info }}</p>
-            </div>
-            <div class="resource-hashtags">
-                <p>{{ fetched_resource.hash_tags }}</p>
-            </div>
-        </div>
-    </div>
-</div> -->
-
 {% endif %}
 
 <script src="{% static 'js/custom_video_editor.js' %}"></script>
@@ -169,6 +128,18 @@ $(document).ready(function () {
     $('html, body').animate({
         scrollTop: $('#gotosearch-box').offset().top
     }, 'slow');
+});
+</script>
+<script>
+const shareData = {
+    title: '{{ fetched_resource.name }}',
+    text: '{{ fetched_resource.description }}',
+    url: '{{ request.build_absolute_uri }}'
+}
+
+const btn = document.querySelector('.resource-share');
+btn.addEventListener('click', async () => {
+    await navigator.share(shareData)
 });
 </script>
 
