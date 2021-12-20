@@ -67,8 +67,8 @@
 
 <div class="main-resource">
   <ul class="resource-cards">
-    <li class="resurce-cards_item" id="showFormCreateResource">
-      <div class="resource-card">
+    <li class="resurce-cards_item">
+      <div class="resource-card" id="showFormCreateResource">
         <div class="course_image">
           <span class="fa-solid fa-circle-plus"></span>
         </div>
@@ -106,7 +106,10 @@
   </ul>
 </div>
 
-<br>
+{% else %}
+<h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
+{% endif %}
+
 <div id="myModal" class="modal">
   <div class="model-container">
     <div class="modal-content">
@@ -147,9 +150,6 @@
   </div>
 </div>
 
-{% else %}
-<h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
-{% endif %}
 <script>
 var modal = document.getElementById("myModal");
 var btn = document.getElementById("showFormCreateResource");
