@@ -1,41 +1,32 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.db.models import Q
+
+from datetime import datetime
 
 from akira_apps.super_admin.decorators import allowed_users
 from akira_apps.academic.models import (Semester)
 from akira_apps.academic.forms import (BranchForm)
-from akira_apps.staff.models import (Staff)
-from akira_apps.authentication.models import (User_IP_B_List)
 from akira_apps.course.models import (Course, CourseFiles)
 
+@login_required(login_url=settings.LOGIN_URL)
 def manage_courses(request):
     courses = Course.objects.all()
-    context = {
-        "courses":courses,
-    }
-    return render(request, 'course/manage_courses.html', context)
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def create_course(request):
-    if Semester.objects.all().count() == 0:
-        messages.info(request, 'Please create a semester first')
-        return redirect('manage_academic')
-    elif Staff.objects.all().count() == 0:
-        messages.info(request, 'Please create a staff first')
-        return redirect('add_staff')
-
     faculty_list = User.objects.all()
     branch_list = BranchForm()
     semester_list = Semester.objects.all()
-
     context = {
+        "courses":courses,
         "faculty_list":faculty_list,
         "branch_list":branch_list,
         "semester_list":semester_list,
     }
-    return render(request, 'course/create_course.html', context)
+    return render(request, 'course/manage_courses.html', context)
 
+@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_course_save(request):
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
@@ -51,7 +42,6 @@ def create_course_save(request):
         courseSemester = Semester.objects.get(id=courseSemester)
         courseFiles = request.FILES.getlist('course_files')
         try:
-
             courseObj = Course(
                 course_code=courseCode,
                 course_name=courseName,
@@ -67,25 +57,58 @@ def create_course_save(request):
             try:
                 for file in courseFiles:
                     CourseFiles.objects.create(course = getCourseObj, course_files = file)
+                messages.success(request, "Course created successfully")
             except Exception as e:
-                print(e)
+                messages.error(request, e)
         except Exception as e:
-            print(e)
+            messages.error(request, e)
         return redirect('manage_courses')
 
+@login_required(login_url=settings.LOGIN_URL)
 def view_course(request, course_code):
     courseObj = Course.objects.get(course_code=course_code)
     courseFilesObjs = CourseFiles.objects.filter(course = courseObj)
+    faculty_list = User.objects.all()
+    branch_list = BranchForm()
+    semester_list = Semester.objects.all()
+    edit_course = False
     context = {
         "course":courseObj,
         "courseFilesObjs":courseFilesObjs,
+        "faculty_list":faculty_list,
+        "branch_list":branch_list,
+        "semester_list":semester_list,
+        "edit_course":edit_course,
     }
     return render(request, 'course/view_course.html', context)
+
+@login_required(login_url=settings.LOGIN_URL)
+def search_course(request):
+    if request.method == 'POST':
+        query = request.POST['search'].strip()
+        beforeSearch = datetime.now()
+        courses = Course.objects.filter(
+            Q(course_code__icontains=query) | Q(course_name__icontains=query) |
+            Q(course_short_info__icontains=query) | Q(course_wywl__icontains=query) |
+            Q(course_sywg__icontains=query) | Q(course_desc__icontains=query) |
+            Q(course_coordinator__first_name__icontains=query) | Q(course_coordinator__last_name__icontains=query) |
+            Q(branch__icontains=query) | Q(semester__mode__icontains=query) |
+            Q(semester__start_year__icontains=query) | Q(semester__end_year__icontains=query)
+        )
+        afterSearch = datetime.now()
+        totalTimeTaken = (afterSearch - beforeSearch).total_seconds()
+        context = {
+            'courses': courses,
+            'totalTimeTaken':totalTimeTaken,
+            'query':query,
+        }
+        return render(request, 'course/search_course.html', context)
+    else:
+        messages.info(request, "We could process your request!")
+        return redirect('manage_courses')
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def delete_course(request, course_id):
     course = Course.objects.get(id=course_id)
     course.delete()
     return redirect('manage_courses')
-
-# Course.objects.all().delete()
