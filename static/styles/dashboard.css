@@ -2168,3 +2168,20 @@ button.resource-share {
   box-sizing: border-box;
   resize: vertical;
 }
+
+div.query-search-result {
+  display: flex;
+  flex-direction: column;
+}
+
+p.search-result-text,
+.search-result-text {
+  color: var(--normal-text-color);
+  font-size: .9rem;
+}
+
+li.search-result-text::before {
+  content: '\2d';
+  font-family: 'Font Awesome 6 Free';
+  font-size: .9rem;
+}
