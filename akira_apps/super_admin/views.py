@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from akira_apps.authentication.models import UserLoginDetails
-from akira_apps.course.models import Course
+from akira_apps.course.models import CourseMC
 
 from akira_apps.staff.forms import StaffsForm
 from akira_apps.staff.models import Staff
@@ -70,7 +70,7 @@ def super_admin_dashboard(request):
     rAnd0m123 = secrets.token_urlsafe(16)
     listFaculty = Staff.objects.all()
     listStudents = Students.objects.all()
-    listCourses = Course.objects.all()
+    listCourses = CourseMC.objects.all()
     context = {
         "rAnd0m123":rAnd0m123,
         "listFaculty":listFaculty,
