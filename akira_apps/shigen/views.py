@@ -1,8 +1,13 @@
 from django.shortcuts import redirect, render
-from .models import (Resource)
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 import datetime as pydt
 
+from .models import (Resource)
+from akira_apps.super_admin.decorators import allowed_users
+
+@login_required(login_url=settings.LOGIN_URL)
 def manage_resources(request):
     all_resources = Resource.objects.all()
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
@@ -13,6 +18,7 @@ def manage_resources(request):
     }
     return render(request, 'shigen/manage_resources.html', context)
 
+@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_resource_save(request):
     if request.method == "POST":
         Name = request.POST.get("name")
@@ -41,3 +47,9 @@ def view_resource(request, resource_id):
         "fetched_resource":get_resource,
     }
     return render(request, 'shigen/view_resource.html', context)
+
+@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
+def delete_resource(request, resource_id):
+    get_resource = Resource.objects.get(id = resource_id)
+    get_resource.delete()
+    return redirect('manage_resources')
