@@ -770,7 +770,11 @@ main {
   margin-bottom: 1rem;
 }
 
-.security-status-details button, .see-login-details-button button, button.add-faculty, .bulkUploadButton {
+.security-status-details button, 
+.see-login-details-button button, 
+button.add-faculty, 
+.bulkUploadButton,
+button.create-block-btn {
   outline: none;
   border: none;
   cursor: pointer;
@@ -782,12 +786,24 @@ main {
   border-radius: .4rem;
 }
 
+.btn-area {
+  display: flex;
+  width: fit-content;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+
 .see-login-details {
   background: #f4b40033;
   color: #F4B400;
 }
 
-.see-login-details-clear, .see-details, .setup-2fa, .add-faculty, .bulkUploadButton {
+.see-login-details-clear, 
+.see-details, 
+.setup-2fa, 
+.add-faculty, 
+.bulkUploadButton,
+.create-block-btn {
   background: var(--security-button-color);
   color: var(--color-main);
 }
@@ -1204,6 +1220,7 @@ input[type="text"]#search-bar {
   border-radius: 2rem;
   outline: none;
   box-shadow: 0 0 11px rgba(0, 0, 0, .15);
+  background: transparent;
 }
 input[type="text"]#search-bar:focus {
   border: 1px solid #008abf;
@@ -2178,6 +2195,10 @@ p.search-result-text,
 .search-result-text {
   color: var(--normal-text-color);
   font-size: .9rem;
+}
+
+p.search-result-text {
+  margin-bottom: .7rem;
 }
 
 li.search-result-text::before {
