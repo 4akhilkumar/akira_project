@@ -5,7 +5,8 @@
     span#picture_in_picutre-icon,
     span#fast-forward-icon,
     span#fast-rewind-icon,
-    span#volume-icon {
+    span#volume-icon,
+    span#auto-play-icon {
         display: none;
     }
 }
@@ -23,7 +24,7 @@
 section {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: stretch;
     width: 100%;
     flex-direction: column;
 }
@@ -274,8 +275,8 @@ main {
     right: 25px;
     bottom: 62px;
     background: rgb(28 28 28 / 90%);
-    width: 200px;
-    height: 250px;
+    width: 180px;
+    height: 240px;
     color: #fff;
     overflow-y: scroll;
     z-index: 20;
