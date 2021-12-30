@@ -96,14 +96,36 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if "manage_academic" in request.path or "registration" in request.path %}
+                    <li>
+                        <a href="{% url 'sem_registration' %}"
+                        {% if "registration" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fa-solid fa-check-to-slot"></span>
+                            <span>Sem. Registration</span>
+                        </a>
+                    </li>
+                    {% endif %}
                     <li>
                         <a href="{% url 'manage_courses' %}"
-                        {% if "manage_courses" in request.path %}
+                        {% if "course" in request.path %}
                         class="active"
                         {% endif %}
                         >
                             <span class="fas fa-book"></span>
                             <span>Courses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'manage_specializations' %}"
+                        {% if "specialization" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="fas fa-swatchbook"></span>
+                            <span>Specializations</span>
                         </a>
                     </li>
                     {% if "manage_course" in request.path or "resource" in request.path %}
@@ -130,7 +152,11 @@
                     </li>
                     {% if request.user|user_group != "Student" %}
                     <li>
-                        <a href="">
+                        <a href="{% url 'manage_students' %}"
+                        {% if "student" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
                             <span class="fas fa-user-graduate"></span>
                             <span>Students</span>
                         </a>
@@ -191,11 +217,16 @@
             {% block manage-courses %} {% endblock %}
             {% block create-course %} {% endblock %}
             {% block view-course %} {% endblock %}
+            {% block manage-specializations %} {% endblock %}
+            {% block view-specialization %} {% endblock %}
+            {% block search-specializations %} {% endblock %}
             {% block manage-resource %} {% endblock %}
             {% block view-resource %} {% endblock %}
             {% block manage-faculty %} {% endblock %}
-            {% block manage-account %} {% endblock %}
             {% block view-faculty %} {% endblock %}
+            {% block manage-students %} {% endblock %}
+            {% block view-student %} {% endblock %}
+            {% block manage-account %} {% endblock %}
             <section>
                 <div class="block-grid">
                     {% block revenue-card %}{% endblock %}
