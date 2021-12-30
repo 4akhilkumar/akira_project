@@ -14,7 +14,7 @@
 <div class="search-box-container">
   <form action="{% url 'search_course' %}" method="POST" class="form-elements">
     {% csrf_token %}
-    <input type="text" name="search" id="search-bar" placeholder="Search course..." autocomplete="off" required>
+    <input type="text" name="search" id="search-bar" placeholder="Search course..." value="{{ query }}" autocomplete="off" required>
     <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
   </form>
 </div>
@@ -46,9 +46,9 @@
         <p class="search-result-text">Your search - <b>{{ query }}</b> - did not match any documents.</p>
         <p class="search-result-text">Suggestions:</p>
         <ul class="search-result-text">
-            <li class="search-result-text">&nbsp;Make sure that all words are spelled correctly.</li>
-            <li class="search-result-text">&nbsp;Try different keywords.</li>
-            <li class="search-result-text">&nbsp;Try more general keywords.</li>
+          <li class="search-result-text">&nbsp;Make sure that all words are spelled correctly.</li>
+          <li class="search-result-text">&nbsp;Try different keywords.</li>
+          <li class="search-result-text">&nbsp;Try more general keywords.</li>
         </ul>
     </div>
     {% endfor %}
