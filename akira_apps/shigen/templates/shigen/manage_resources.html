@@ -64,6 +64,7 @@
     <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
   </form>
 </div>
+{% endif %}
 
 <div class="main-resource">
   <ul class="resource-cards">
@@ -102,13 +103,11 @@
         </div>
       </div>
     </li>
+    {% empty %}
+    <h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
     {% endfor %}
   </ul>
 </div>
-
-{% else %}
-<h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
-{% endif %}
 
 <div id="myModal" class="modal">
   <div class="model-container">
