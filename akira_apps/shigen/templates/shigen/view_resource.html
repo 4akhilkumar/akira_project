@@ -21,7 +21,7 @@
   <div class="video-container">
     <div id="id_video_player">
         <video src="{{ fetched_resource.video_file.url }}" id="main-video"></video>
-        <div class="progressAreaTime">0:00</div>
+        <div class="progressAreaTime">0:00:00</div>
         <div class="controls">
             <div class="progress-area">
                 <div class="progress-bar">
@@ -44,7 +44,7 @@
                         <input type="range" min="0" max="100" class="volume_range">
                     </span>
                     <div class="timer">
-                        <span class="current">0:00</span> / <span class="duration">0:00</span>
+                        <span class="current">0:00:00</span> / <span class="duration">0:00:00</span>
                     </div>
                 </div>
                 <div class="controls-right">
@@ -119,6 +119,7 @@
     </div>
 </div>
 </section>
+<a href="{% url 'delete_resource' fetched_resource.id %}">Delete</a>
 
 {% endif %}
 
