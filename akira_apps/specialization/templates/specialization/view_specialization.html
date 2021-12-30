@@ -1,0 +1,48 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load first_letter_word %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>{{ specialization.specialization_name|first_letter_word }}</h1>
+<p>{{ specialization.specialization_name }}</p>
+{% endblock %}
+
+{% block view-course %}
+<h4>Specialization Name</h4>
+{{ specialization.specialization_name }}
+<br>
+<h4>Specialization Short Info</h4>
+{{ specialization.specialization_short_info }}
+<br>
+<h4>What you will learn</h4>
+{{ specialization.specialization_wywl }}
+<br>
+<h4>Skills you will gain</h4>
+{{ specialization.specialization_sywg }}
+<br>
+<h4>Specialization Desciption</h4>
+{{ specialization.specialization_desc }}
+<br>
+<h4>Specialization Faculty</h4>
+{{ specialization.specialization_faculty }}
+<br>
+<h4>Specialization Offered by </h4>
+{{ specialization.branch }}
+<br>
+<h4>Specialization Capacity</h4>
+{{ specialization.capacity }}
+<br>
+<h4>Specialization Files</h4>
+{% for i in specializationFilesObjs %}
+<a href="{{ i.specialization_files.url }}" download="{{ i.specialization_files.name|slice:'13:' }}">{{ i.specialization_files.name|slice:"13:" }}</a>
+{% empty %}
+<p>No files uploaded</p>
+{% endfor %}
+<br>
+<h4>Action</h4>
+<a href="{% url 'delete_specialization' specialization.id %}">Delete Specialization</a>
+{% endblock %}
+
+{% endblock %}

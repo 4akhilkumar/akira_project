@@ -1,0 +1,185 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load first_letter_word %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Manage Specializations</h1>
+<p>Display analytics about your Specializations <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-swatchbook"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Most Reg. spc.</h4>
+          <h1>--</h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Least Reg. spc.</h4>
+        <h1>--</h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-swatchbook"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Specializations</h4>
+          <h1>{{ specializations|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-book"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Courses</h4>
+        <h1>{{ courses|length }}</h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block manage-specializations %}
+
+<div class="search-box-container">
+  <form action="{% url 'search_specialization' %}" method="POST" class="form-elements">
+    {% csrf_token %}
+    <input type="text" name="search-specialization" id="search-bar" placeholder="Search specialization..." autocomplete="off" required>
+    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+<div class="course-container">
+  <ul class="courses">
+    <li class="courses_item">
+      <div class="course">
+        <div class="course_image">
+          <span id="showFormCreateSpecialization" class="fa-solid fa-circle-plus"></span>
+          /
+          <span class="fa-solid fa-file-csv"></span>
+        </div>
+        <div class="course_content">
+          <h2 class="course_title">Create a Specialization</h2>
+          <p class="course_text">A Specialization is the process of concentrating on and becoming expert in a particular subject or skill.</p>
+        </div>
+      </div>
+    </li>
+    {% for i in specializations %}
+    <li class="courses_item">
+      <div class="course">
+        <div class="course_image">
+          <h1 class="course-short_title">{{ i.specialization_name|first_letter_word }} </h1>
+        </div>
+        <div class="course_content">
+          <h2 class="course_title">{{ i.specialization_name }}</h2>
+          <p class="course_text">{{ i.specialization_desc }}</p>
+          <div class="course-buttons">
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_specialization' i.specialization_name %}'" >Read More</button>
+            <button class="enrollCoursebtn course_btn">Enroll</button>
+          </div>
+        </div>  
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div id="myModal" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model" class="close">&times;</span>
+      <form action="{% url 'create_specialization_save' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="id_specialization_name">Specialization Name</label>
+        <input type="text" name="specialization_name" maxlength="100" value="Cybersecurity and Blockchain Technology" id="id_specialization_name" required>
+        <br>
+        <label for="id_specialization_short_info">Specialization Short Info</label>
+        <textarea name="specialization_short_info" cols="40" rows="10" maxlength="500" id="id_specialization_short_info" required>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis.
+        </textarea>
+        <br>
+        <label for="id_specialization_wywl">What you will learn</label>
+        <textarea name="specialization_wywl" cols="40" rows="10" maxlength="500" id="id_specialization_wywl" required>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis.
+        </textarea>
+        <br>
+        <label for="id_specialization_sywg">Skill You Will Gain</label>
+        <textarea name="specialization_sywg" cols="40" rows="10" maxlength="500" id="id_specialization_sywg" required>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis.
+        </textarea>
+        <br>
+        <label for="id_specialization_desc">Specialization Description</label>
+        <textarea name="specialization_desc" cols="40" rows="10" maxlength="500" id="id_specialization_desc" required>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis.
+        </textarea>
+        <br>
+        <label for="id_specialization_faculty">Specialization Faculty</label>
+        <select name="specialization_faculty" id="id_specialization_faculty" required>
+          {% for i in faculty_list %}
+          <option value="{{ i.id }}"> {{ i }} </option>
+          {% endfor %}
+        </select>
+        <br>
+        <label for="id_branch">Branch</label>
+        <select name="branch" id="id_branch" required>
+          {% for x,y in branch_list.fields.branch.choices %}
+            <option value="{{ x }}" selected>{{ y }}</option>
+          {% endfor %}
+        </select>
+        <br>
+        <label for="id_semester">Semester</label>
+        <select name="semester" id="id_semester" required>
+          {% for i in semester_list %}
+          <option value="{{ i.id }}"> {{ i }} </option>
+          {% endfor %}
+        </select>
+        <br>
+        <label for="Upload Files">Upload Files</label>
+        <input type="file" name="specialization_files" id="id_specialization_files" multiple>
+        <br>
+        <label for="id_specialization_capacity">Specialization Name</label>
+        <input type="number" name="specialization_capacity" value="100" id="id_specialization_capacity" required>
+        <br>
+        <input type="submit">
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  var modal = document.getElementById("myModal");
+  var btn = document.getElementById("showFormCreateSpecialization");
+  var span = document.getElementById("close-model");
+  
+  btn.onclick = function() {
+    modal.style.display = "block";
+  }
+  
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+  
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+</script>
+
+{% endblock %}
+
+{% endblock %}

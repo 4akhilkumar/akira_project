@@ -28,6 +28,7 @@ urlpatterns = [
     path('academic/', include('akira_apps.academic.urls')),
     path('accounts/', include('akira_apps.accounts.urls')),
     path('course/', include('akira_apps.course.urls')),
+    path('specialization/', include('akira_apps.specialization.urls')),
     path('shigen/', include('akira_apps.shigen.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

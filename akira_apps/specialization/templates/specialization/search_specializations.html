@@ -1,0 +1,60 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% load first_letter_word %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Search Specializations...</h1>
+{% endblock %}
+
+{% block search-specializations %}
+
+<div class="search-box-container">
+  <form action="{% url 'search_specialization' %}" method="POST" class="form-elements">
+    {% csrf_token %}
+    <input type="text" name="search-specialization" id="search-bar" value="{{ query }}" placeholder="Search specialization..." autocomplete="off" required>
+    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+{% if specializations %}
+<p class="search-result-text">About {{ specializations|length|intcomma }} result{{ specializations|length|pluralize }} ({{totalTimeTaken}} seconds)</p>
+{% endif %}
+
+<div class="course-container">
+  <ul class="courses">
+    {% for i in specializations %}
+    <li class="courses_item">
+      <div class="course">
+        <div class="course_image">
+          <h1 class="course-short_title">{{ i.specialization_name|first_letter_word }} </h1>
+        </div>
+        <div class="course_content">
+          <h2 class="course_title">{{ i.specialization_name }}</h2>
+          <p class="course_text">{{ i.specialization_desc }}</p>
+          <div class="course-buttons">
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_specialization' i.specialization_name %}'" >Read More</button>
+            <button class="enrollCoursebtn course_btn">Enroll</button>
+          </div>
+        </div>  
+      </div>
+    </li>
+    {% empty %}
+    <div class="query-search-result">
+        <p class="search-result-text">Your search - <b>{{ query }}</b> - did not match any documents.</p>
+        <p class="search-result-text">Suggestions:</p>
+        <ul class="search-result-text">
+            <li class="search-result-text">&nbsp;Make sure that all words are spelled correctly.</li>
+            <li class="search-result-text">&nbsp;Try different keywords.</li>
+            <li class="search-result-text">&nbsp;Try more general keywords.</li>
+        </ul>
+    </div>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}
+
+{% endblock %}
