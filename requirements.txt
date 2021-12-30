@@ -6,7 +6,6 @@ certifi==2021.10.8
 chardet==4.0.0
 charset-normalizer==2.0.8
 Django==3.2.5
-django-ckeditor==6.1.0
 django-js-asset==1.2.2
 django-utils-six==2.0
 httpagentparser==1.9.1
