@@ -171,7 +171,10 @@
                                                                                                         </table>
                                                                                                         {% endblocktranslate %}
                                                                                                     </p>
-                                                                                                    <p>{% blocktranslate %}If this login activity wasn&apos;t done by you&#44; then please change your password immediately. If this was you&#44; then it&apos;s alright!{% endblocktranslate %}</p>
+                                                                                                    <p>
+                                                                                                        <a href="http://{{ domain }}{% url 'secure_account' username=username user_response='no' %}">No, secure account</a>
+                                                                                                        <a href="http://{{ domain }}{% url 'secure_account' username=username user_response='yes' %}">Yes, it was me</a>
+                                                                                                    </p>
                                                                                                     <p>
                                                                                                         <button>Change Password</button>
                                                                                                     </p>
