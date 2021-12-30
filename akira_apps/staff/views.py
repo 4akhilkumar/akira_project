@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.http import request
 from django.http.response import HttpResponse
 
 from django.contrib.auth.models import Group, User
@@ -9,13 +8,13 @@ from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.authentication.forms import (CreateUserForm)
 from .models import (Staff)
 from akira_apps.student.forms import (StudentsForm)
-from akira_apps.student.models import (Students)
-from akira_apps.course.models import (Course)
+from akira_apps.course.models import (CourseMC)
 
 import secrets
 import pandas as pd
 import io
 import csv
+import datetime as pydt
 
 @allowed_users(allowed_roles=['Assistant Professor', 'Associate Professor', 'Professor'])
 def staff_dashboard(request):
@@ -35,7 +34,7 @@ def hod_dashboard(request):
     
 def view_course(request, course_id):
     rAnd0m123 = secrets.token_urlsafe(16)
-    course = Course.objects.get(id=course_id)
+    course = CourseMC.objects.get(id=course_id)
     user = User.objects.get(id=request.user.id)
     group_list = ', '.join(map(str, user.groups.all())) 
 
@@ -156,67 +155,9 @@ def add_student(request):
     context = {'form':form, 'student_form':student_form}        
     return render(request, 'staff/admission_templates/add_student.html', context)
 
-def bulk_upload_students_save(request):
-    if request.method == 'POST':
-        student_from_db = User.objects.all()
-        student_user=[]
-        for i in student_from_db:
-            student_user.append(i.username)
-            student_user.append(i.email)
-
-        paramFile = io.TextIOWrapper(request.FILES['studentfile'].file)
-        data = pd.read_csv(paramFile)
-        data.drop_duplicates(subset ="Username", keep = 'first', inplace = True)
-
-        for index, row in data.iterrows():
-            if str(row['Username']) not in student_user and str(row['Email']) not in student_user:
-                newuser = User.objects.create_user(
-                    username=row['Username'],
-                    first_name=row['First Name'],
-                    last_name=row['Last Name'],
-                    email=row['Email'],
-                    password=row['Password'],
-                )
-                Student=Group.objects.get(name='Student')
-                if row['Group'] == 'Student':
-                    Student.user_set.add(newuser)
-                    newuser.groups.add(Student)
-
-                student = Students.objects.bulk_create([
-                    Students(
-                        user_id = newuser.id,
-                        gender=row['Gender'],
-                        father_name=row['Father Name'],
-                        father_occ=row['Father Occupation'],
-                        father_phone=row['Father Phone'],
-                        mother_name=row['Mother Name'],
-                        mother_tounge=row['Mother Tounge'],
-                        dob=(row['Date of Birth'] if row['Date of Birth'] != '' else '1998-12-01'),
-                        blood_group=row['Blood Group'],
-                        phone=row['Phone'],
-                        dno_sn=row['Door No.'],
-                        zip_code=row['Zip Code'],
-                        city_name=row['City Name'],
-                        state_name=row['State Name'],
-                        country_name=row['Country'],
-                        branch=row['Branch']
-                    )
-                ])
-        success_message = "Student Record(s) Imported Successfully."
-        context = {
-            "success_message":success_message
-        }
-        return redirect('manage_student', context)
-    else:
-        error_message = "Failed to Import Bulk Records!."
-        context = {
-            "error_message":error_message
-        }
-        return redirect('manage_student', context)
-
 def staff_enroll_course(request, course_id):
     current_staff = User.objects.get(id=request.user.id)
-    courseId = Course.objects.get(id=course_id)
+    courseId = CourseMC.objects.get(id=course_id)
     sectionRoom = request.POST.get('section')
     sectionRoom_Id = SectionRooms.objects.get(id=sectionRoom)
     try:
@@ -239,7 +180,7 @@ def staff_unenroll_course(request, staff_enroll_course_id):
     
 def student_enroll_course(request, course_id):
     current_student = User.objects.get(id=request.user.id)
-    courseId = Course.objects.get(id=course_id)
+    courseId = CourseMC.objects.get(id=course_id)
     sectionRoom = request.POST.get('section')
     sectionRoom_Id = SectionRooms.objects.get(id=sectionRoom)
     try:
@@ -255,7 +196,7 @@ def student_enroll_course(request, course_id):
 def manage_staff(request):
     staffs = Staff.objects.all()
     doctorial_faculty = Staff.objects.filter(name_prefix='Dr')
-    courses = Course.objects.all()
+    courses = CourseMC.objects.all()
     context = {
         "staffs":staffs,
         "doctorial_faculty":doctorial_faculty,
@@ -349,7 +290,6 @@ def view_staff(request, staff_username):
     }
     return render(request, "staff/staff_templates/manage_staff/view_faculty.html", context)
 
-import datetime as pydt
 def staff_info_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=staff_info_record' + \
