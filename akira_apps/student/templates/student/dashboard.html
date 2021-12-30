@@ -1,9 +1,10 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
+{% load user_group %}
 
 {% block analytics-text %}
 <h1>Analytics</h1>
-<p>Display analytics about your Academic <span class="fas fa-chart-line"></span> </p>
+<p>Display analytics about your Academic career <span class="fas fa-chart-line"></span> </p>
 {% endblock %}
 
 {% block analytic-overview %}
@@ -13,20 +14,20 @@
 <div class="analytics">
   <div class="analytic">
       <div class="analytic-icon">
-          <span class="fa-solid fa-graduation-cap"></span>
+          <span class="fa-solid fa-star"></span>
       </div>
       <div class="analytic-info">
-          <h4>Total SGPA</h4>
+          <h4>Total CGPA</h4>
           <h1>8.40 <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fas fa-user-graduate"></span>
+        <span class="fa-solid fa-hand"></span>
     </div>
     <div class="analytic-info">
         <h4>Total Attendance</h4>
-        <h1>84%</h1>
+        <h1>84% <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
   <div class="analytic">
@@ -34,7 +35,7 @@
           <span class="fas fa-book"></span>
       </div>
       <div class="analytic-info">
-          <h4>Total Courses</h4>
+          <h4>Reg. Courses</h4>
           <h1>48</h1>
       </div>
   </div>
@@ -43,8 +44,8 @@
         <span class="fa-solid fa-trophy"></span>
     </div>
     <div class="analytic-info">
-        <h4>Other Activities</h4>
-        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+        <h4>Achievements</h4>
+        <h1>11 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
     </div>
   </div>
 </div>
@@ -57,7 +58,7 @@
         <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="">
         <div class="rev-info">
             <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-            <h1><small>Designation</small></h1>
+            <h1><small>{{ request.user|user_group }}</small></h1>
         </div>
         <div class="rev-sum">
             <h4>Current SGPA</h4>
