@@ -1,0 +1,78 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load humanize %}
+{% load user_group %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Search Students...</h1>
+{% endblock %}
+
+{% block manage-students %}
+
+<div class="search-box-container">
+  <form method="post" action="{% url 'search_student' %}" class="form-elements">
+    {% csrf_token %}
+    <input type="text" name="search-student" id="search-bar" placeholder="Search Students..." value="{{ query }}" autocomplete="off" required>
+    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+{% if students %}
+<p class="search-result-text">About {{ students|length|intcomma }} result{{ students|length|pluralize }} ({{totalTimeTaken}} seconds)</p>
+{% endif %}
+
+<div class="list-all-faculty">
+  {% for student in students %}
+  <div class="staff-profile-card"
+  style="--card-top-color: #14c66fab;"
+  >
+    <div class="staff-profile-img">
+      <img
+        {% if not student.profile_pic %}
+        src="{% get_static_prefix %}Default User Profile Photo/{{student.user.first_name|capfirst|first}}.png" 
+        {% else %}
+        src="{{ student.profile_pic.url }}"
+        {% endif %}
+        alt="Student Profile Pic">
+    </div>
+    <div class="staff-profile-infos">
+      <div class="staff-profile-name">
+        <h2>{{ student.name_prefix }} {{ student.user.first_name|title }} {{ student.user.last_name|title }}</h2>
+        <h4>@{{ student.user.username }}</h4>
+      </div>
+      <p class="staff-profile-text">
+        I'm a {{ student.user|user_group }} in {{ student.branch }} department.
+      </p>
+      <ul class="staff-profile-stats">
+        <li>
+          <h3>2</h3>
+          <h4>Research</h4>
+        </li>
+        <li>
+          <h3>4</h3>
+          <h4>Projects</h4>
+        </li>
+      </ul>
+      <div class="staff-profile-links">
+        <button class="staff-profile-follow">Contact</button>
+        <button class="staff-profile-view" onclick="document.location='{% url 'view_student' student.user.username %}'">View profile</button>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <div class="query-search-result">
+      <p class="search-result-text">Your search - <b>{{ query }}</b> - did not match any documents.</p>
+      <p class="search-result-text">Suggestions:</p>
+      <ul class="search-result-text">
+          <li class="search-result-text">&nbsp;Make sure that all words are spelled correctly.</li>
+          <li class="search-result-text">&nbsp;Try different keywords.</li>
+          <li class="search-result-text">&nbsp;Try more general keywords.</li>
+      </ul>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% endblock %}
