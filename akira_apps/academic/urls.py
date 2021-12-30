@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('create_floor_save/', views.create_floor_save, name='create_floor_save'),
     path('delete_floor/<floor_id>/', views.delete_floor, name='delete_floor'),
+    path('getFloorbyBlock/', views.getFloorbyBlock, name="getFloorbyBlock"),
 
     path('create_room_save/', views.create_room_save, name='create_room_save'),
     path('delete_room/<room_id>/', views.delete_room, name='delete_room'),

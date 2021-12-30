@@ -57,6 +57,21 @@
 {% endblock %}
 
 {% block academic %}
+<div class="btn-area">
+  <button id="showFormCreateBlock" class="create-block-btn">Create Block</button>
+  <button id="showFormCreateFloor" class="create-block-btn">Create Floor</button>
+  <button id="showFormCreateRoom" class="create-block-btn">Create Room</button>
+  <button id="showFormCreateSemester" class="create-block-btn">Create Semester</button>
+</div>
+
+{% if blocks %}
+<div class="search-box-container">
+  <form method="post" action="" class="form-elements">
+    {% csrf_token %}
+    <input type="text" name="search-block" id="search-bar" placeholder="Search Block..." autocomplete="off" required>
+    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
 
 <div class="list-all-blocks-info">
   {% for i in blocks %}
@@ -144,32 +159,31 @@
       <button class="block-contact-btn"><span>Contact</span></button>
     </div>
   </div>
-  {% empty %}
-  No Data Available
   {% endfor %}
 </div>
+{% else %}
+<h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
+{% endif %}
 
-{% comment %}
-<h2 class="blocks-list">Blocks Lists</h2>
-<h4 class="create-block">
-    <form action="{% url 'create_block_save' %}" method="POST">
+<div id="myModal" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model" class="close">&times;</span>
+      <form action="{% url 'create_block_save' %}" method="POST">
         {% csrf_token %}
         <input type="text" name="block_name" id="id_block_name" placeholder="Block Name" required>
         <input type="text" name="block_desc" id="id_block_desc" placeholder="Block Desc." required>
         <input type="submit" value="submit">
-    </form>
-    {% for i in blocks %}
-    {{ i.block_name }} {{ i.block_desc }} | <a href="">Edit</a> | <a href="{% url 'delete_block' i.id %}">Delete</a>
-    <br>
-    {% empty %}
-    No Blocks
-    {% endfor %}
-</h4>
-<hr>
+      </form>
+    </div>
+  </div>
+</div>
 
-<h2 class="floors-list">Floors Lists</h2>
-<h4 class="create-floor">
-    <form action="{% url 'create_floor_save' %}" method="POST">
+<div id="myModal2" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model2" class="close">&times;</span>
+      <form action="{% url 'create_floor_save' %}" method="POST">
         {% csrf_token %}
         <input type="text" name="floor_name" id="id_floor_name" placeholder="Floor Name" required>
         <select name="block_id" id="id_block_id">
@@ -178,50 +192,48 @@
             {% endfor %}
         </select>
         <input type="submit" value="submit">
-    </form>
-    {% for i in floors %}
-    {{ i.floor_name }} {{ i.block }} | <a href="">Edit</a> | <a href="{% url 'delete_floor' i.id %}">Delete</a>
-    <br>
-    {% empty %}
-    No Floors
-    {% endfor %}
-</h4>
+      </form>
+    </div>
+  </div>
+</div>
 
-<hr>
-
-<h2 class="rooms-list">Rooms Lists</h2>
-<h4 class="create-room">
-    <form action="{% url 'create_room_save' %}" method="POST">
+<div id="myModal3" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model3" class="close">&times;</span>
+      <form action="{% url 'create_room_save' %}" method="POST">
         {% csrf_token %}
         <input type="text" name="room_name" id="id_room_name" placeholder="Room Name/No." required>
-        <select name="block_id" id="id_block_id" required>
+        <select name="get_block_id" id="id_block_id" required>
+            <option value="">Select Block</option>
             {% for i in blocks %}
             <option value="{{ i.id }}">{{ i.block_name }}</option>
             {% endfor %}
         </select>
         <select name="floor_id" id="id_floor_id" required>
-            {% for i in floors %}
+          <option value="">Select Floor</option>
+          {% for i in floors %}
             <option value="{{ i.id }}">{{ i.floor_name }}</option>
             {% endfor %}
         </select>
         <select name="room_type" id="id_room_type">
+            <option value="">Select Room Type</option>
             {% for x,y in roomTypeForm.fields.roomTypeForm.choices %}
             <option value="{{ x }}">{{ y }}</option>
             {% endfor %}
         </select>
         <input type="number" name="capacity" id="id_capacity" placeholder="Room Capacity" required>
         <input type="submit" name="submit">
-    </form>
-    {% for i in rooms %}
-    {{ i.room_name }} {{ i.block }} {{ i.floor }} {{ i.type }} {{ i.capacity }} | <a href="">Edit</a> | <a href="{% url 'delete_room' i.id %}">Delete</a>
-    {% endfor %}
-</h4>
+      </form>
+    </div>
+  </div>
+</div>
 
-<hr>
-
-<h2 class="semester-lists">Semester Lists</h2>
-<h4 class="create-semester">
-    <form action="{% url 'create_semester_save' %}" method="POST">
+<div id="myModal4" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model4" class="close">&times;</span>
+      <form action="{% url 'create_semester_save' %}" method="POST">
         {% csrf_token %}
         <label for="">Semester Mode</label>
         <select name="semester_mode" id="id_semester_mode">
@@ -236,7 +248,46 @@
         <label for="">Semester Status</label>
         <input type="checkbox" name="semester_is_active" id="id_semester_is_active">
         <input type="submit" value="Create Semester">
-    </form>
+      </form>
+    </div>
+  </div>
+</div>
+
+<h2 class="blocks-list">Blocks Lists</h2>
+<h4 class="create-block">
+    {% for i in blocks %}
+    {{ i.block_name }} {{ i.block_desc }} | <a href="">Edit</a> | <a href="{% url 'delete_block' i.id %}">Delete</a>
+    <br>
+    {% empty %}
+    No Blocks
+    {% endfor %}
+</h4>
+<hr>
+
+<h2 class="floors-list">Floors Lists</h2>
+<h4 class="create-floor">
+    {% for i in floors %}
+    {{ i.floor_name }} {{ i.block }} | <a href="">Edit</a> | <a href="{% url 'delete_floor' i.id %}">Delete</a>
+    <br>
+    {% empty %}
+    No Floors
+    {% endfor %}
+</h4>
+
+<hr>
+
+<h2 class="rooms-list">Rooms Lists</h2>
+<h4 class="create-room">
+    {% for i in rooms %}
+    {{ i.room_name }} {{ i.block }} {{ i.floor }} {{ i.type }} {{ i.capacity }} | <a href="">Edit</a> | <a href="{% url 'delete_room' i.id %}">Delete</a>
+    <br>
+    {% endfor %}
+</h4>
+
+<hr>
+
+<h2 class="semester-lists">Semester Lists</h2>
+<h4 class="create-semester">
     {% for i in semesters %}
         {{ i.mode }}
         {{ i.start_year }}
@@ -249,7 +300,30 @@
         No semester found
     {% endfor %}
 </h4>
-{% endcomment %}
+
+<script src="{% static 'js/academic.js' %}"></script>
+<script>
+  $("select[name = 'get_block_id']").change(function () {
+      const blockId = $(this).val();
+      console.log(blockId);
+      $.ajax({
+          type: "POST",
+          url: '{% url "getFloorbyBlock" %}',
+          data: {
+              'block': blockId,
+              'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+          },
+          success: function (data) {
+              let html_data = '<option value=""> Select Floor </option>';
+              data.forEach(function (data) {
+                  html_data += `<option value="${data.id}">${data.floor_name}</option>`
+              });
+              $("#id_floor_id").html(html_data);
+          }
+      });
+  });
+</script>
+
 {% endblock %}
 
 {% endblock %}

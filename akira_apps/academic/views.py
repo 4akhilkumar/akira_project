@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.http import JsonResponse
 
 from akira_apps.super_admin.decorators import allowed_users
 from .models import (Semester, Block, Floor, Room)
@@ -35,6 +36,7 @@ def returnBlockName(blockName):
         blockName = blockName.replace("block", " Block")
     return blockName
 
+@allowed_users(allowed_roles=['Administrator'])
 def create_block_save(request):
     if request.method == 'POST':
         blockName = request.POST.get('block_name')
@@ -51,6 +53,7 @@ def create_block_save(request):
                 return redirect('manage_academic')
         return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
 def delete_block(request, block_id):
     block = Block.objects.get(id = block_id)
     block.delete()
@@ -80,6 +83,7 @@ def returnFloorName(floorName):
                 break
     return floorName
 
+@allowed_users(allowed_roles=['Administrator'])
 def create_floor_save(request):
     if request.method == 'POST':
         floorName = request.POST.get('floor_name')
@@ -94,15 +98,29 @@ def create_floor_save(request):
                 return redirect('manage_academic')
         return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
 def delete_floor(request, floor_id):
     floor = Floor.objects.get(id = floor_id)
     floor.delete()
     return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
+def getFloorbyBlock(request):
+    if request.method == "POST":
+        block_id = request.POST['block']
+        try:
+            blockObj = Block.objects.get(id = block_id)
+            getFloors = Floor.objects.filter(block__block_name=blockObj.block_name)
+            print(getFloors)
+        except Exception as e:
+            print(e)
+        return JsonResponse(list(getFloors.values('id', 'floor_name')), safe = False) 
+
+@allowed_users(allowed_roles=['Administrator'])
 def create_room_save(request):
     if request.method == 'POST':
         roomName = request.POST.get('room_name')
-        roomBlockID = request.POST.get('block_id')
+        roomBlockID = request.POST.get('get_block_id')
         fetchedBlock = Block.objects.get(id = roomBlockID)
         roomFloorID = request.POST.get('floor_id')
         fetchedFloor = Floor.objects.get(id = roomFloorID)
@@ -118,11 +136,13 @@ def create_room_save(request):
             print(e)
         return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
 def delete_room(request, room_id):
     room = Room.objects.get(id = room_id)
     room.delete()
     return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
 def create_semester_save(request):
     if request.method == 'POST':
         semesterMode = request.POST.get('semester_mode')
@@ -140,6 +160,7 @@ def create_semester_save(request):
         createSemester.save()
         return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
 def fetch_semester(request, semester_id):
     semester = Semester.objects.get(id=semester_id)
     context = {
@@ -147,6 +168,7 @@ def fetch_semester(request, semester_id):
     }
     return render(request, 'academic/semester/edit_semester.html', context)
 
+@allowed_users(allowed_roles=['Administrator'])
 def update_semester_save(request, semester_id):
     if request.method == 'POST':
         semesterMode = request.POST.get('semester_mode')
@@ -165,6 +187,7 @@ def update_semester_save(request, semester_id):
         updateSemester.save()
         return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator'])
 def delete_semester(request, semester_id):
     semester = Semester.objects.get(id = semester_id)
     semester.delete()
