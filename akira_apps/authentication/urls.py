@@ -1,8 +1,6 @@
 from django.urls import path
 from . import views
-from .views import activate, confirm, twofacauth_email
 from django.contrib.auth import views as auth_views
-from akira_apps import authentication
 
 
 urlpatterns = [
@@ -10,16 +8,22 @@ urlpatterns = [
     path('logout/', views.logoutUser, name="logout"),
 
     path('verify_its_you/<username>/', views.verify_its_you, name="verify_its_you"),
+
+    path('secure_account/<username>/<user_response>/', views.secure_account, name="secure_account"),
+
+    path('confirmUserLogin/<username>/', views.confirmUserLogin, name="confirmUserLogin"),
+
+    path('checkUserResponse/<username>/', views.checkUserResponse, name="checkUserResponse"),
     
     path('verify_user_by_email/<username>/', views.verify_user_by_email, name="verify_user_by_email"),
     path('verify_user_by_backup_codes/<en_username>/', views.verify_user_by_backup_codes, name="verify_user_by_backup_codes"),
-    path('confirm/<uidb64>/<token>/', confirm, name='confirm'),
+    path('confirm/<uidb64>/<token>/', views.confirm, name='confirm'),
     
-    path('activate/<uidb64>/<token>/', activate, name='activate'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     path('twofa_verify_its_you/<username>/', views.twofa_verify_its_you, name="twofa_verify_its_you"),
     path('twofa_verify_user_by_email/<username>/', views.twofa_verify_user_by_email, name="twofa_verify_user_by_email"),
-    path('twofacauth_email/<uidb64>/<token>/', twofacauth_email, name='twofacauth_email'),
+    path('twofacauth_email/<uidb64>/<token>/', views.twofacauth_email, name='twofacauth_email'),
     path('twofa_verify_user_by_backup_codes/<username>/', views.twofa_verify_user_by_backup_codes, name="twofa_verify_user_by_backup_codes"),
     
     path('reset_password/',
