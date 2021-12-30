@@ -31,10 +31,14 @@
 <h4>Course Duration</h4>
 {{ course.semester }}
 <br>
+<h4>Course Specialization</h4>
+{{ course.specialization }}
+<br>
 <h4>Course Files</h4>
 {% for i in courseFilesObjs %}
 <a href="{{ i.course_files.url }}" download="{{ i.course_files.name|slice:'13:' }}">{{ i.course_files.name|slice:"13:" }}</a>
-<br>
+{% empty %}
+<p>No files uploaded</p>
 {% endfor %}
 <br>
 <h4>Action</h4>
