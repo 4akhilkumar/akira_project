@@ -60,22 +60,25 @@ fast_forward.addEventListener('click',()=>{
 // Load video duration
 mainVideo.addEventListener("loadeddata",(e)=>{
     let videoDuration = e.target.duration;
-    let totalMin = Math.floor(videoDuration / 60);
-    let totalSec = Math.floor(videoDuration % 60);
-
-    // if seconds are less then 10 then add 0 at the begning
+    let totalHrs = Math.floor(videoDuration / 3600);
+    let totalMin = Math.floor((videoDuration - (totalHrs * 3600)) / 60);
+    let totalSec = Math.round(videoDuration - (totalHrs * 3600) - (totalMin * 60));
+    totalHrs < 10 ? totalHrs = "0"+totalHrs : totalHrs;
+    totalMin < 10 ? totalMin = "0"+totalMin : totalMin;
     totalSec < 10 ? totalSec = "0"+totalSec : totalSec;
-    totalDuration.innerHTML = `${totalMin}:${totalSec}`;
+    totalDuration.innerHTML = `${totalHrs}:${totalMin}:${totalSec}`;
 })
 
 // Current video duration
 mainVideo.addEventListener('timeupdate',(e)=>{
     let currentVideoTime = e.target.currentTime;
-    let currentMin = Math.floor(currentVideoTime / 60);
-    let currentSec = Math.floor(currentVideoTime % 60);
-   // if seconds are less then 10 then add 0 at the begning
+    let currentHrs = Math.floor(currentVideoTime / 3600);
+    let currentMin = Math.floor((currentVideoTime - (currentHrs * 3600)) / 60);
+    let currentSec = Math.round(currentVideoTime - (currentHrs * 3600) - (currentMin * 60));
+    currentHrs < 10 ? currentHrs = "0"+currentHrs : currentHrs;
+    currentMin < 10 ? currentMin = "0"+currentMin : currentMin;
     currentSec < 10 ? currentSec = "0"+currentSec : currentSec; 
-    current.innerHTML = `${currentMin}:${currentSec}`;
+    current.innerHTML = `${currentHrs}:${currentMin}:${currentSec}`;
 
     let videoDuration = e.target.duration
     // progressBar width change
@@ -132,11 +135,14 @@ progressArea.addEventListener('mousemove',(e)=>{
     progressAreaTime.style.display = "block";
     let videoDuration = mainVideo.duration;
     let progressTime = Math.floor((x/progressWidthval)*videoDuration);
-    let currentMin = Math.floor(progressTime / 60);
-    let currentSec = Math.floor(progressTime % 60);
-   // if seconds are less then 10 then add 0 at the begning
+    let currentHrs = Math.floor(progressTime / 3600);
+    let currentMin = Math.floor((progressTime - (currentHrs * 3600)) / 60);
+    let currentSec = Math.round(progressTime - (currentHrs * 3600) - (currentMin * 60));
+
+    currentHrs < 10 ? currentHrs = "0"+currentHrs : currentHrs;
+    currentMin < 10 ? currentMin = "0"+currentMin : currentMin;
     currentSec < 10 ? currentSec = "0"+currentSec : currentSec; 
-    progressAreaTime.innerHTML = `${currentMin} : ${currentSec}`;
+    progressAreaTime.innerHTML = `${currentHrs}:${currentMin}:${currentSec}`;
 })
 
 progressArea.addEventListener('mouseleave',()=>{
@@ -212,19 +218,19 @@ function removeActiveClasses() {
 }
 
 // Store video duration and video path in local storage
-window.addEventListener('unload',()=>{
-    let setDuration = localStorage.setItem('duration',`${mainVideo.currentTime}`);
-    let setSrc = localStorage.setItem('src',`${mainVideo.getAttribute('src')}`);
-})
+// window.addEventListener('unload',()=>{
+//     let setDuration = localStorage.setItem('duration',`${mainVideo.currentTime}`);
+//     let setSrc = localStorage.setItem('src',`${mainVideo.getAttribute('src')}`);
+// })
 
-window.addEventListener('load',()=>{
-    let getDuration = localStorage.getItem('duration');
-    let getSrc = localStorage.getItem('src');
-    if (getSrc) {
-        mainVideo.src = getSrc;
-        mainVideo.currentTime = getDuration;
-    }
-})
+// window.addEventListener('load',()=>{
+//     let getDuration = localStorage.getItem('duration');
+//     let getSrc = localStorage.getItem('src');
+//     if (getSrc) {
+//         mainVideo.src = getSrc;
+//         mainVideo.currentTime = getDuration;
+//     }
+// })
 
 mainVideo.addEventListener('contextmenu',(e)=>{
     e.preventDefault();
