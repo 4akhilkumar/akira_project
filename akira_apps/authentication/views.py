@@ -230,13 +230,14 @@ def save_login_details(request, user_name, user_ip_address, attempt, reason):
 
 def verify_login(request, uid, current_time, user):
     current_uld = UserLoginDetails.objects.filter(user__username = uid)
+    old_uld_7 = UserLoginDetails.objects.filter(created_at__lte = pydt.datetime.now() - pydt.timedelta(days=7)).count()
     last_current_uld = UserLoginDetails.objects.filter(user__username = uid).order_by('-created_at')
     current_user = User.objects.get(username=uid)
     list_current_uld_ipa = []
     list_current_uld_osd = []
     list_current_uld_bd = []
-    if len(current_uld) > 7:
-        n = len(current_uld) - 7
+    if len(current_uld) > old_uld_7:
+        n = len(current_uld) - old_uld_7
     else:
         n = 0
     for i in range(n,len(current_uld)-1):
