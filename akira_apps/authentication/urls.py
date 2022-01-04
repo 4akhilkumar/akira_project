@@ -40,4 +40,9 @@ urlpatterns = [
     path('reset_password_complete/',
         auth_views.PasswordResetCompleteView.as_view(template_name="authentication/password_reset/password_reset_complete.html"),
         name="password_reset_complete"),
+
+    path('requestSwitchDevice/', views.requestSwitchDevice, name="requestSwitchDevice"),
+    path('validateSwitchDevice/', views.validateSwitchDevice, name="validateSwitchDevice"),
+    path('checkValidatedSwitchDeviceRequest/<username>/', views.checkValidatedSwitchDeviceRequest, name="checkValidatedSwitchDeviceRequest"),
+    path('listSwitchDevice/', views.listSwitchDevice, name="listSwitchDevice"),
 ]

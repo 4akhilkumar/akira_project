@@ -1,3 +1,4 @@
+from decimal import Context
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -11,6 +12,7 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 
 import datetime as pydt
 import re
@@ -21,7 +23,7 @@ import requests
 from akira_apps.super_admin.decorators import unauthenticated_user
 from akira_apps.accounts.models import TwoFactorAuth
 from akira_apps.authentication.token import account_activation_token
-from . models import (User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, User_IP_S_List, UserLoginDetails, User_IP_B_List)
+from . models import (User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, User_IP_S_List, UserLoginDetails, User_IP_B_List, SwitchDevice, UserPageVisits)
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
@@ -799,6 +801,121 @@ def checkUserResponse(request, username):
         }
     response = JsonResponse(data)
     return response
+
+def requestSwitchDevice(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    user_agent = request.META['HTTP_USER_AGENT']
+    browser = httpagentparser.detect(user_agent)
+    if not browser:
+        browser = user_agent.split('/')[0]
+    else:
+        browser = browser['browser']['name']
+
+    res = re.findall(r'\(.*?\)', user_agent)
+    OS_Details = res[0][1:-1]
+
+    if request.method == 'POST':
+        currentUserIPAddr = request.POST.get('user_ip_address')
+        currentUserBrowser = request.POST.get('user_browser')
+        currentUserOS = request.POST.get('user_os')
+        currentUsername = request.POST.get('username')
+        getUserObject = User.objects.get(username = currentUsername)
+        try:
+            SwitchDevice.objects.create(
+                    userIPAddr = currentUserIPAddr,
+                    userBrowser = currentUserBrowser,
+                    userOS = currentUserOS,
+                    reason = "Not Approved Yet",
+                    user = getUserObject)
+        except IntegrityError:
+            messages.info(request, "You have already requested to switch device!")
+            print("You have already requested to switch device!")
+
+        PostContext = {
+            "currentUsername":currentUsername,
+        }
+        return render(request, 'authentication/SwitchDevice/waitingSwitchDeviceResponse.html', PostContext)
+    context = {
+        "CurrentUserIPAddr":ip,
+        "CurrentBrowser":browser,
+        "CurrentOS":OS_Details,
+    }
+    return render(request, 'authentication/SwitchDevice/requestSwitchDevice.html', context)
+
+def validateSwitchDevice(request):
+    try:
+        get_SwitchDeviceRequest = SwitchDevice.objects.get(
+                                            user__username=request.user.username,
+                                            reason = "Not Approved Yet",
+                                            userConfirm = "Pending")
+    except SwitchDevice.DoesNotExist:
+        get_SwitchDeviceRequest = None
+    if request.method == "POST":
+        if get_SwitchDeviceRequest != None:
+            get_SwitchDeviceRequest = SwitchDevice.objects.get(
+                            user__username=request.user.username,
+                            reason = "Not Approved Yet",
+                            userConfirm = "Pending")
+            if get_SwitchDeviceRequest.user.username == request.user.username:
+                getLastPage = UserPageVisits.objects.filter(user__username=request.user.username).order_by('-created_at')[0]
+                update_SwitchDeviceRequest = SwitchDevice.objects.filter(user__username=request.user.username, 
+                                                            reason = "Not Approved Yet",
+                                                            userConfirm = "Pending").order_by('-created_at')[0]
+                update_SwitchDeviceRequest.userConfirm = "User Approved"
+                update_SwitchDeviceRequest.reason = "User Confirmed the Switch Device"
+                update_SwitchDeviceRequest.currentPage = getLastPage.currentPage
+                update_SwitchDeviceRequest.save()
+                user = User.objects.get(username = request.user.username)
+                user.is_active = True
+                user.save()
+                return HttpResponse("Your Approval Request is been taken successfully")
+        else:
+            logout(request)
+            return HttpResponse("No Switch Device Request Found!")
+    Context = {
+        "get_SwitchDeviceRequest":get_SwitchDeviceRequest,
+    }
+    return render(request, 'authentication/SwitchDevice/acceptSwitchDevice.html', Context)
+
+def checkValidatedSwitchDeviceRequest(request, username):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    try:
+        GetSwitchDeviceRequestObject = SwitchDevice.objects.get(
+                        user__username=username, 
+                        userConfirm = "User Approved",
+                        reason = "User Confirmed the Switch Device")
+    except SwitchDevice.DoesNotExist:
+        GetSwitchDeviceRequestObject = None
+    if (GetSwitchDeviceRequestObject != None) and (GetSwitchDeviceRequestObject.userIPAddr == ip):
+        user = User.objects.get(username = username)
+        currentUrl = GetSwitchDeviceRequestObject.currentPage
+        login(request, user)
+        data = {
+            'status': 'success',
+            'redirect_url':currentUrl,
+        }
+    else:
+        logout(request)
+        data = {
+            'status': 'failed',
+        }
+    response = JsonResponse(data)
+    return response
+
+def listSwitchDevice(request):
+    SwitchDeviceList = SwitchDevice.objects.filter(user__username = request.user.username)
+    return JsonResponse({'SwitchDeviceList': list(SwitchDeviceList.values())})
+
+# SwitchDevice.objects.all().delete()
+# UserPageVisits.objects.all().delete()
 
 def logoutUser(request):
     if request.user.is_authenticated:

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accept Switch Device</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name="reqIpAddr" id="id_reqIpAddr" value="{{ get_SwitchDeviceRequest.userIPAddr }}" disabled>
+        <input type="text" name="reqBrowser" id="id_reqBrowser" value="{{ get_SwitchDeviceRequest.userBrowser }}" disabled>
+        <input type="text" name="reqOS" id="id_reqOS" value="{{ get_SwitchDeviceRequest.userOS }}" disabled>
+        <input type="text" name="reqTimeDate" id="id_reqTimeDate" value="{{ get_SwitchDeviceRequest.created_at }}" disabled>
+        <input type="submit" value="Accept Request">
+    </form>
+</body>
+</html>

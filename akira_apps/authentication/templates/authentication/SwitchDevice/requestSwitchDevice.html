@@ -1,0 +1,22 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Device - AkirA</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name="user_ip_address" id="id_user_ip_address" value="{{ CurrentUserIPAddr }}" required>
+        <input type="text" name="user_browser" id="id_user_browser" value="{{ CurrentBrowser }}" required>
+        <input type="text" name="user_os" id="id_user_os" value="{{ CurrentOS }}" required>
+
+        <input type="text" name="username" id="id_username" placeholder="Username" required>
+        <input type="submit" value="Request Switch Device">
+    </form>
+</body>
+</html>

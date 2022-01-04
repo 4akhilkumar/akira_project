@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <title>Waiting for Swtich Device Response...</title>
+</head>
+<body>
+    <h1>{{ currentUsername }}</h1>
+    <h1>Waiting for Swtich Device Response...</h1>
+
+    <script>
+        function ajaxCall() {
+            $.ajax({
+                url: "{% url 'checkValidatedSwitchDeviceRequest' username=currentUsername %}",
+                type: 'GET',
+                success: function(data) {
+                    if (data.status == "success") {
+                        window.location.href = data.redirect_url;
+                    }
+                }
+            });
+        }
+        setInterval(ajaxCall, 10000);    
+    </script>
+</body>
+</html>
