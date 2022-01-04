@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'akira_apps.authentication.middleware.filter_ip_middleware.FilterIPMiddleware',
+    'akira_apps.authentication.middleware.userPageTracking_middleware.userPageTrackingMiddleware',
 ]
 
 ROOT_URLCONF = 'akira.urls'
