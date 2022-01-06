@@ -864,7 +864,8 @@ def validateSwitchDevice(request):
                 getLastPage = UserPageVisits.objects.filter(user__username=request.user.username).order_by('-created_at')[0]
                 update_SwitchDeviceRequest = SwitchDevice.objects.filter(user__username=request.user.username, 
                                                             reason = "Not Approved Yet",
-                                                            userConfirm = "Pending").order_by('-created_at')[0]
+                                                            userConfirm = "Pending",
+                                                            status="Switch Device Pending").order_by('-created_at')[0]
                 update_SwitchDeviceRequest.userConfirm = "User Approved"
                 update_SwitchDeviceRequest.reason = "User Confirmed the Switch Device"
                 update_SwitchDeviceRequest.currentPage = getLastPage.currentPage
@@ -872,12 +873,18 @@ def validateSwitchDevice(request):
                 user = User.objects.get(username = request.user.username)
                 user.is_active = True
                 user.save()
-                return HttpResponse("Your Approval Request is been taken successfully")
+                # return HttpResponse("Your Approval Request is been taken successfully")
+                postContext = {
+                    "get_SwitchDeviceRequest":get_SwitchDeviceRequest,
+                    "SwitchDeviceStatus":True,
+                }
+                return render(request, 'authentication/SwitchDevice/acceptSwitchDevice.html', postContext)
         else:
             logout(request)
             return HttpResponse("No Switch Device Request Found!")
     Context = {
         "get_SwitchDeviceRequest":get_SwitchDeviceRequest,
+        "SwitchDeviceStatus":False,
     }
     return render(request, 'authentication/SwitchDevice/acceptSwitchDevice.html', Context)
 
@@ -891,7 +898,8 @@ def checkValidatedSwitchDeviceRequest(request, username):
         GetSwitchDeviceRequestObject = SwitchDevice.objects.get(
                         user__username=username, 
                         userConfirm = "User Approved",
-                        reason = "User Confirmed the Switch Device")
+                        reason = "User Confirmed the Switch Device",
+                        status="Switch Device Pending")
     except SwitchDevice.DoesNotExist:
         GetSwitchDeviceRequestObject = None
     if (GetSwitchDeviceRequestObject != None) and (GetSwitchDeviceRequestObject.userIPAddr == ip):
@@ -910,9 +918,45 @@ def checkValidatedSwitchDeviceRequest(request, username):
     response = JsonResponse(data)
     return response
 
+def SwitchDeviceStatus(request, username):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    try:
+        GetSwitchDeviceRequestObject = SwitchDevice.objects.get(
+                        user__username=username, 
+                        userConfirm = "User Approved",
+                        reason = "User Confirmed the Switch Device",
+                        status="Switch Device Pending")
+    except SwitchDevice.DoesNotExist:
+        GetSwitchDeviceRequestObject = None
+    if (GetSwitchDeviceRequestObject != None) and (GetSwitchDeviceRequestObject.userIPAddr == ip):
+        update_SwitchDeviceStatus = SwitchDevice.objects.filter(user__username=request.user.username, 
+                                                    reason = "User Confirmed the Switch Device",
+                                                    userConfirm = "User Approved",
+                                                    status="Switch Device Pending").order_by('-created_at')[0]
+        update_SwitchDeviceStatus.userIPAddr = ip
+        update_SwitchDeviceStatus.status = "Switch Device Successful"
+        update_SwitchDeviceStatus.save()
+        return "Switch Device Successful"
+    else:
+        return HttpResponse("No Switch Device Request Found!")
+
 def listSwitchDevice(request):
     SwitchDeviceList = SwitchDevice.objects.filter(user__username = request.user.username)
     return JsonResponse({'SwitchDeviceList': list(SwitchDeviceList.values())})
+
+def SyncDevice(request):
+    getSecondDevice = SwitchDevice.objects.filter(
+                                user = request.user,
+                                status = "Switch Device Successful",
+                                userConfirm = "User Approved").order_by('-created_at')[0]
+    getSecondDeviceCurrentData = SwitchDevice.objects.filter(
+                                user = request.user,
+                                userIPAddr = getSecondDevice.userIPAddr).order_by('-created_at')[0]
+    return redirect(getSecondDeviceCurrentData.currentPage)
 
 # SwitchDevice.objects.all().delete()
 # UserPageVisits.objects.all().delete()

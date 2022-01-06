@@ -15,5 +15,8 @@
         <input type="text" name="reqTimeDate" id="id_reqTimeDate" value="{{ get_SwitchDeviceRequest.created_at }}" disabled>
         <input type="submit" value="Accept Request">
     </form>
+    {% if SwitchDeviceStatus == True %}
+    <a href="{% url 'SyncDevice' %}">Sync Device</a>
+    {% endif %}
 </body>
 </html>

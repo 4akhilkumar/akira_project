@@ -20,6 +20,10 @@
                 type: 'GET',
                 success: function(data) {
                     if (data.status == "success") {
+                        $.ajax({
+                            url: "{% url 'SwitchDeviceStatus' username=currentUsername %}",
+                            type: 'GET',
+                        });
                         window.location.href = data.redirect_url;
                     }
                 }
