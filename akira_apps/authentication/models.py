@@ -81,6 +81,7 @@ class SwitchDevice(models.Model):
     userConfirm = models.CharField(max_length=100, blank=True, null=True, default='Pending')
     reason = models.CharField(max_length=100, blank=True, null=True)
     currentPage = models.CharField(max_length=500, blank=True, null=True)
+    status = models.CharField(max_length=100, default="Switch Device Pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
