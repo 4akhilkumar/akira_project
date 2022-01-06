@@ -13,13 +13,18 @@ class userPageTrackingMiddleware:
                 "admin",
                 "/"
             ]
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
             currentPageURL = str(request.build_absolute_uri())
             # if not any(item in currentPageURL for item in DONT_SAVE_LIST):
-            if ("SwitchDevice" or "admin" or "/") in currentPageURL:
+            if ("Device" or "admin" or "/") in currentPageURL:
                 pass
             else:
                 print(currentPageURL)
-                UserPageVisits.objects.create(user=request.user, currentPage=currentPageURL)
+                UserPageVisits.objects.create(user=request.user, currentPage=currentPageURL, userIPAddr=ip)
                 pass
 
         return self.get_response(request)

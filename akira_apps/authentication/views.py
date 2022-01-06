@@ -950,13 +950,14 @@ def listSwitchDevice(request):
 
 def SyncDevice(request):
     getSecondDevice = SwitchDevice.objects.filter(
-                                user = request.user,
-                                status = "Switch Device Successful",
-                                userConfirm = "User Approved").order_by('-created_at')[0]
-    getSecondDeviceCurrentData = SwitchDevice.objects.filter(
-                                user = request.user,
+                            user__username = request.user.username,
+                            status = "Switch Device Successful",
+                            userConfirm = "User Approved").order_by('-created_at')[0]
+    getSecondDeviceCurrentPage = UserPageVisits.objects.filter(
+                                user__username = request.user.username,
                                 userIPAddr = getSecondDevice.userIPAddr).order_by('-created_at')[0]
-    return redirect(getSecondDeviceCurrentData.currentPage)
+    return redirect(getSecondDeviceCurrentPage.currentPage)
+
 
 # SwitchDevice.objects.all().delete()
 # UserPageVisits.objects.all().delete()

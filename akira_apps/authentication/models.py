@@ -93,6 +93,7 @@ class SwitchDevice(models.Model):
 class UserPageVisits(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    userIPAddr = models.GenericIPAddressField(blank=True, null=True)
     currentPage = models.CharField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
