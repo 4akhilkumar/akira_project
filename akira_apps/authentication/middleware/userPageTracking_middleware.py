@@ -13,7 +13,7 @@ class userPageTrackingMiddleware:
                 "admin",
                 "/"
             ]
-            currentPageURL = str(request.META.get('HTTP_REFERER'))
+            currentPageURL = str(request.build_absolute_uri())
             # if not any(item in currentPageURL for item in DONT_SAVE_LIST):
             if ("SwitchDevice" or "admin" or "/") in currentPageURL:
                 pass
