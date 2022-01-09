@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <title>Confirm your Login via Email</title>
+</head>
+<body>
+    <h1>Please confirm your login via your registered Email</h1>
+
+    <script>
+        function ajaxCall() {
+            $.ajax({
+                url: "{% url 'confirmEmailStatus' username=username %}",
+                type: 'GET',
+                success: function(data) {
+                    if (data.status == "success") {
+                        window.location.href = "{% url 'login' %}";
+                    }
+                }
+            });
+        }
+        setInterval(ajaxCall, 10000);    
+    </script>
+</body>
+</html>

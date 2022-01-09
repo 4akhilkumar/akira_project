@@ -320,7 +320,10 @@ def verify_user_by_email(request, username):
         email = EmailMessage(mail_subject, message, to=[to_email])
         email.send()
         messages.warning(request, "Please Check Your Email Inbox")
-        return redirect('login')
+        loginAlertContent = {
+            "username":username,
+        }
+        return render(request, 'authentication/loginAlert.html', loginAlertContent)
 
 def confirm(request, uidb64, token):
     User = get_user_model()
@@ -347,6 +350,39 @@ def confirm(request, uidb64, token):
         logout(request)
         messages.warning(request, "Link has been expired!")
         return redirect('login')
+
+def confirmEmailStatus(request, username):
+    try:
+        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        response = requests.get(url)
+        dataUsername = response.json()
+    except Exception:
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('login')
+
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    if UserLoginDetails.objects.filter(user_ip_address = ip, 
+                                        user__username = dataUsername['DecryptedUsername'],
+                                        attempt="Success", 
+                                        reason = "Verified via Confirm Link via Email").exists() is True:
+        user = User.objects.get(username = dataUsername['DecryptedUsername'])
+        messages.success(request, "Login Successful")
+        login(request, user)
+        data = {
+            'status': 'success',
+        }
+    else:
+        logout(request)
+        data = {
+            'status': 'failed',
+        }
+    response = JsonResponse(data)
+    return response
 
 def verify_user_by_backup_codes(request, username):
     try:
