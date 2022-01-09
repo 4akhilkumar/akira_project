@@ -396,7 +396,7 @@ def verify_user_by_backup_codes(request, username):
         checkUserBackupCode = None
     if checkUserBackupCode != None:
         user = User.objects.get(username=dataUsername['DecryptedUsername'])
-        if (TwoFactorAuth.objects.filter(user__username = dataUsername['DecryptedUsername'], twofa = True).exists() is True) and (UserLoginDetails.objects.filter(user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False):
+        if (UserLoginDetails.objects.filter(user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False):
             return redirect('login')
         else:
             user = User.objects.get(username = dataUsername['DecryptedUsername'])
@@ -406,7 +406,6 @@ def verify_user_by_backup_codes(request, username):
                     ip = x_forwarded_for.split(',')[0]
                 else:
                     ip = request.META.get('REMOTE_ADDR')
-                user_confirm = 0
                 backup_code = request.POST.get('backup_code')
                 current_user_backup_codes = User_BackUp_Codes.objects.get(user=user)
                 backup_codes_with_hash = current_user_backup_codes.backup_codes
@@ -415,7 +414,6 @@ def verify_user_by_backup_codes(request, username):
                 for i in splitup_backup_codes:
                     align_backup_code.append(i)
                 if backup_code in align_backup_code:
-                    user_confirm = 1
                     align_backup_code.remove(backup_code)
                     join_hash = '#'.join(align_backup_code)
                     userbackupcodes = User_BackUp_Codes.objects.get(id = current_user_backup_codes.id)
@@ -428,15 +426,31 @@ def verify_user_by_backup_codes(request, username):
                     update_LoginAttempt.attempt = "Success"
                     update_LoginAttempt.reason = "Confirmed User via Backup Codes"
                     update_LoginAttempt.save()
+                    try:
+                        User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").delete()
+                    except Exception:
+                        pass
+                    try:
+                        backup_codes = User_BackUp_Codes.objects.get(user = user)
+                    except User_BackUp_Codes.DoesNotExist:
+                        backup_codes = None
+                    if backup_codes == None:
+                        pass
+                    else:
+                        checkBackupCodesLength = len(backup_codes.backup_codes)
+                        if checkBackupCodesLength == 0:
+                            return redirect('delete_existing_backup_codes')
                     login(request, user)
                     messages.success(request, "Login Successful")
                     return redirect('login')
                 else:
-                    user_confirm = 2
-                    User_BackUp_Codes_Login_Attempts.objects.create(user = user, attempt = user_confirm, status = "Failed")
+                    messages.info(request, "Invalid Backup Code")
+                    User_BackUp_Codes_Login_Attempts.objects.create(user = user, status = "Failed")
                     backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
                     if backup_code_attempt_status_count > 4:
-                        User_IP_S_List.objects.create(suspicious_list = ip)
+                        User_IP_S_List.objects.update_or_create(suspicious_list = ip)
+                        messages.info("Please confirm it's you to login")
+                        return redirect('login')
                     else:
                         return redirect('verify_user_by_backup_codes', username = username)
             else:
@@ -623,7 +637,6 @@ def twofa_verify_user_by_backup_codes(request, username):
                 ip = x_forwarded_for.split(',')[0]
             else:
                 ip = request.META.get('REMOTE_ADDR')
-            user_confirm = 0
             backup_code = request.POST.get('backup_code')
             current_user_backup_codes = User_BackUp_Codes.objects.get(user=user)
             backup_codes_with_hash = current_user_backup_codes.backup_codes
@@ -632,7 +645,6 @@ def twofa_verify_user_by_backup_codes(request, username):
             for i in splitup_backup_codes:
                 align_backup_code.append(i)
             if backup_code in align_backup_code:
-                user_confirm = 1
                 align_backup_code.remove(backup_code)
                 join_hash = '#'.join(align_backup_code)
                 userbackupcodes = User_BackUp_Codes.objects.get(id = current_user_backup_codes.id)
@@ -640,31 +652,26 @@ def twofa_verify_user_by_backup_codes(request, username):
                 userbackupcodes.save()
                 user.is_active = True
                 user.save()
-                try:
-                    user_backup_code_la = User_BackUp_Codes_Login_Attempts.objects.get(user__username = dataUsername['DecryptedUsername'])
-                except User_BackUp_Codes_Login_Attempts.DoesNotExist:
-                    user_backup_code_la = None
-                if user_backup_code_la == None:
-                    User_BackUp_Codes_Login_Attempts.objects.create(user = user, attempt = user_confirm, status = "Success")
-                else:
-                    get_user_bcla = User_BackUp_Codes_Login_Attempts.objects.get(user__username = dataUsername['DecryptedUsername'])
-                    get_user_bcla.attempt = user_confirm
-                    get_user_bcla.status = "Success"
-                    get_user_bcla.save()
-
                 get_LoginAttempt = UserLoginDetails.objects.filter(user=user, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
                 update_LoginAttempt = UserLoginDetails.objects.get(id=get_LoginAttempt.id)
                 update_LoginAttempt.attempt = "Success"
                 update_LoginAttempt.reason = "Confirmed User via 2FA Backup Codes"
                 update_LoginAttempt.save()
+                try:
+                    User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").delete()
+                except Exception:
+                    pass
                 login(request, user)
+                messages.success(request, "Login Successful")
                 return redirect('login')
             else:
-                user_confirm = 2
-                User_BackUp_Codes_Login_Attempts.objects.create(user = user, attempt = user_confirm, status = "Failed")
+                messages.info(request, "Invalid Backup Code")
+                User_BackUp_Codes_Login_Attempts.objects.create(user = user, status = "Failed")
                 backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
                 if backup_code_attempt_status_count > 4:
-                    User_IP_S_List.objects.create(suspicious_list=ip)
+                    User_IP_S_List.objects.update_or_create(suspicious_list = ip)
+                    messages.info("Please confirm it's you to login")
+                    return redirect('login')
                 else:
                     return redirect('twofa_verify_user_by_backup_codes', username = username)
         context = {
@@ -955,8 +962,20 @@ def SyncDevice(request):
     return redirect(getSecondDeviceCurrentPage.currentPage)
 
 def logoutUser(request):
-    if request.user.is_authenticated:
+    if (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = False).exists() is True):
         logout(request)
         return redirect('login')
+    elif (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True):
+        try:
+            UBC = User_BackUp_Codes.objects.get(user = request.user)
+            if UBC.download == False:
+                messages.info(request, "Please Download Backup codes")
+                return redirect('account_settings')
+            else:
+                logout(request)
+                return redirect('login')
+        except User_BackUp_Codes.DoesNotExist:
+            messages.info(request, "Please generate Backup codes")
+            return redirect('account_settings')
     else:
         return redirect('login')

@@ -25,10 +25,9 @@ def account_settings(request):
     if backup_codes == None:
         backup_codes_status = 0
     else:
-        backup_codes_status = 1
         checkBackupCodesLength = len(backup_codes.backup_codes)
-        if checkBackupCodesLength == 0:
-            return redirect('delete_existing_backup_codes')
+        if checkBackupCodesLength != 0:
+            backup_codes_status = 1
 
     try:
         status_2fa = TwoFactorAuth.objects.get(user=userObj)
@@ -172,6 +171,9 @@ def download_backup_codes(request):
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if backup_codes:
+        updateBCDS = User_BackUp_Codes.objects.get(user=userObj)
+        updateBCDS.download = True
+        updateBCDS.save()
         response = HttpResponse(content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(userObj) + ' - AkirA Account' + '.txt'
         current_user_backup_codes = User_BackUp_Codes.objects.get(user=userObj)
