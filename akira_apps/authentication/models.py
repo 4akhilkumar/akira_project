@@ -51,6 +51,7 @@ class User_BackUp_Codes(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, unique=True, on_delete=models.SET_NULL, blank=True, null=True)
     backup_codes = models.CharField(max_length=60)
+    download = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -61,8 +62,7 @@ class User_BackUp_Codes(models.Model):
 
 class User_BackUp_Codes_Login_Attempts(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True, null=True)
-    attempt = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
