@@ -484,63 +484,90 @@ def twofa_verify_its_you(request, username):
         messages.warning(request, "You haven't enabled 2FA!")
         return redirect('login')
 
-def twofa_verify_user_by_email(request, username):
-    try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
-        response = requests.get(url)
-        dataUsername = response.json()
-    except Exception:
-        messages.info(request, "Server under maintenance. Please try again later.")
-        return redirect('login')
+# def twofa_verify_user_by_email(request, username):
+#     try:
+#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         response = requests.get(url)
+#         dataUsername = response.json()
+#     except Exception:
+#         messages.info(request, "Server under maintenance. Please try again later.")
+#         return redirect('login')
 
-    if TwoFactorAuth.objects.filter(user__username = dataUsername['DecryptedUsername'], twofa = True).exists() is True:
-        user = User.objects.get(username = dataUsername['DecryptedUsername'])
-        current_site = get_current_site(request)
-        mail_subject = "2FA Link via Email - AkirA"
-        message = render_to_string('authentication/twoFactorAuthentication/two_fac_auth_email.html', {
-            'user': user,  
-            'domain': current_site.domain,  
-            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-            'token':account_activation_token.make_token(user),
-        })
-        current_user = User.objects.get(username = dataUsername['DecryptedUsername'])
-        to_email = current_user.email
-        email = EmailMessage(mail_subject, message, to=[to_email])
-        email.send()
-        messages.info(request, "Please Check Your Email Inbox")
-        return redirect('login')
-    else:
-        messages.warning(request, "You haven't enabled 2FA!")
-        return redirect('login')
+#     if TwoFactorAuth.objects.filter(user__username = dataUsername['DecryptedUsername'], twofa = True).exists() is True:
+#         user = User.objects.get(username = dataUsername['DecryptedUsername'])
+#         current_site = get_current_site(request)
+#         mail_subject = "2FA Link via Email - AkirA"
+#         message = render_to_string('authentication/twoFactorAuthentication/two_fac_auth_email.html', {
+#             'user': user,
+#             'domain': current_site.domain,
+#             'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+#             'token':account_activation_token.make_token(user),
+#         })
+#         current_user = User.objects.get(username = dataUsername['DecryptedUsername'])
+#         to_email = current_user.email
+#         email = EmailMessage(mail_subject, message, to=[to_email])
+#         email.send()
+#         loginAlert2FAContent = {
+#             "username":username,
+#         }
+#         return render(request, 'authentication/twoFactorAuthentication/loginAlert2FA.html', loginAlert2FAContent)
+#     else:
+#         messages.warning(request, "You haven't enabled 2FA!")
+#         return redirect('login')
 
-def twofacauth_email(request, uidb64, token):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
+# def twofacauth_email(request, uidb64, token):
+#     User = get_user_model()
+#     try:  
+#         uid = force_text(urlsafe_base64_decode(uidb64))
+#         user = User.objects.get(pk=uid)  
+#     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+#         user = None
+#     if user is not None and account_activation_token.check_token(user, token):
+#         user.is_active = True
+#         user.save()
+#         getCurrentLogin = UserLoginDetails.objects.filter(user__username = user, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+#         UpdateCurrentLoginAttepmt = UserLoginDetails.objects.get(id=getCurrentLogin.id)
+#         UpdateCurrentLoginAttepmt.attempt = "Success"
+#         UpdateCurrentLoginAttepmt.reason = "Verified via 2FA Email Link"
+#         UpdateCurrentLoginAttepmt.save()
+#         return HttpResponse("Thank you for confirming your Login")
+#     else:
+#         logout(request)
+#         messages.warning(request, "Link has been expired!")
+#         return redirect('login')
 
-    User = get_user_model()
-    try:  
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)  
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        getCurrentLogin = UserLoginDetails.objects.filter(user__username = user).order_by('-created_at')[0]
-        UpdateCurrentLoginAttepmt = UserLoginDetails.objects.get(id=getCurrentLogin.id)
-        UpdateCurrentLoginAttepmt.attempt = "Success"
-        UpdateCurrentLoginAttepmt.reason = "Verified via 2FA Email Link"
-        UpdateCurrentLoginAttepmt.save()
-        login(request, user)
-        messages.success(request, "Login Successful")
-        return redirect('login')
-    else:
-        logout(request)
-        messages.warning(request, "Link Expired!")
-        return redirect('login')
+# def confirm2FAEmailStatus(request, username):
+#     try:
+#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         response = requests.get(url)
+#         dataUsername = response.json()
+#     except Exception:
+#         messages.info(request, "Server under maintenance. Please try again later.")
+#         return redirect('login')
+
+#     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+#     if x_forwarded_for:
+#         ip = x_forwarded_for.split(',')[0]
+#     else:
+#         ip = request.META.get('REMOTE_ADDR')
+
+#     if UserLoginDetails.objects.filter(user_ip_address = ip,
+#                                         user__username = dataUsername['DecryptedUsername'],
+#                                         attempt = "Success",
+#                                         reason = "Verified via 2FA Email Link").exists() is True:
+#         user = User.objects.get(username = dataUsername['DecryptedUsername'])
+#         messages.success(request, "Login Successful")
+#         login(request, user)
+#         data = {
+#             'status': 'success',
+#         }
+#     else:
+#         logout(request)
+#         data = {
+#             'status': 'failed',
+#         }
+#     response = JsonResponse(data)
+#     return response
 
 def twofa_verify_user_by_backup_codes(request, username):
     try:

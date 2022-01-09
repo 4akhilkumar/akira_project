@@ -44,6 +44,7 @@
             <div class="two-step-verification-title-two">
                 <h4>2-Step Verification: Ways to sign in</h4>
             </div>
+            {% comment %}
             <div class="using_link_via_email">
                 <div class="icon-link-email">
                     <span class="fa-solid fa-link"></span>
@@ -52,6 +53,7 @@
                     <p> Get a verification link at your registered email</p>
                 </div>
             </div>
+            {% endcomment %}
             <div class="using_backup_code">
                 {% if checkUserBackupCode != None %}
                 <div class="icon-backup-code">

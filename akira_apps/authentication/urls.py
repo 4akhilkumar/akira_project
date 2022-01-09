@@ -22,8 +22,9 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 
     path('twofa_verify_its_you/<username>/', views.twofa_verify_its_you, name="twofa_verify_its_you"),
-    path('twofa_verify_user_by_email/<username>/', views.twofa_verify_user_by_email, name="twofa_verify_user_by_email"),
-    path('twofacauth_email/<uidb64>/<token>/', views.twofacauth_email, name='twofacauth_email'),
+    # path('twofa_verify_user_by_email/<username>/', views.twofa_verify_user_by_email, name="twofa_verify_user_by_email"),
+    # path('twofacauth_email/<uidb64>/<token>/', views.twofacauth_email, name='twofacauth_email'),
+    # path('confirm2FAEmailStatus/<username>/', views.confirm2FAEmailStatus, name="confirm2FAEmailStatus"),
     path('twofa_verify_user_by_backup_codes/<username>/', views.twofa_verify_user_by_backup_codes, name="twofa_verify_user_by_backup_codes"),
     
     path('reset_password/',
