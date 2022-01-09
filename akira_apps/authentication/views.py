@@ -336,16 +336,11 @@ def confirm(request, uidb64, token):
         user.is_active = True
         user.save()
         get_attempt_ncy = UserLoginDetails.objects.filter(user__username=user, attempt="Need to verify").order_by('-created_at')[0]
-        try:
-            update_attempt_ncy = UserLoginDetails.objects.get(id=get_attempt_ncy.id)
-            update_attempt_ncy.attempt = "Success"
-            update_attempt_ncy.reason = "Verified via Confirm Link via Email"
-            update_attempt_ncy.save()
-        except UserLoginDetails.DoesNotExist:
-            print("UserLoginDetails DoesNotExist")
-        login(request, user)
-        messages.success(request, "Login Successful")
-        return redirect('login')
+        update_attempt_ncy = UserLoginDetails.objects.get(id=get_attempt_ncy.id)
+        update_attempt_ncy.attempt = "Success"
+        update_attempt_ncy.reason = "Verified via Confirm Link via Email"
+        update_attempt_ncy.save()
+        return HttpResponse("Thank you for confirming your Login")
     else:
         logout(request)
         messages.warning(request, "Link has been expired!")
