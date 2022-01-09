@@ -16,10 +16,10 @@ from akira_apps.authentication.models import User_BackUp_Codes, User_IP_S_List, 
 
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
-    username = request.user 
-    status_2fa = TwoFactorAuth.objects.filter(user=username)
+    userObj = request.user 
+    status_2fa = TwoFactorAuth.objects.filter(user = userObj)
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes = User_BackUp_Codes.objects.get(user = userObj)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if backup_codes == None:
@@ -31,7 +31,7 @@ def account_settings(request):
             return redirect('delete_existing_backup_codes')
 
     try:
-        status_2fa = TwoFactorAuth.objects.get(user=username)
+        status_2fa = TwoFactorAuth.objects.get(user=userObj)
     except TwoFactorAuth.DoesNotExist:
         status_2fa = None
     current_user_2fa_status = 0
@@ -46,7 +46,7 @@ def account_settings(request):
     nxt_mnth = start_month.replace(day=28) + datetime.timedelta(days=4)
     res = nxt_mnth - datetime.timedelta(days=nxt_mnth.day)
     end_month = pydt.datetime.now().replace(day=res.day, hour=23, minute=59, second=59, microsecond=0)
-    get_attempt = UserLoginDetails.objects.filter(user = username, created_at__range=(start_month,end_month))
+    get_attempt = UserLoginDetails.objects.filter(user = userObj, created_at__range=(start_month,end_month))
 
     def ordinal(n):
         s = ('th', 'st', 'nd', 'rd') + ('th',)*10
@@ -72,20 +72,20 @@ def account_settings(request):
     for i in removed_duplicate_date:
         start_date = pydt.datetime.now().replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
         end_date = pydt.datetime.now().replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
-        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = username, attempt = 'Success', created_at__range=(start_date,end_date)).count()
+        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = 'Success', created_at__range=(start_date,end_date)).count()
         success_attempts_date.append(attempt_on_that_date)
     
     failed_attempts_date = []
     for i in removed_duplicate_date:
         start_date = pydt.datetime.now().replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
         end_date = pydt.datetime.now().replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
-        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
+        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
         failed_attempts_date.append(attempt_on_that_date)
 
-    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed", score__lte = 15).order_by('-created_at')
-    get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = username, attempt = "Failed", user_confirm = 'Pending', score__lte = 15, created_at__range=(start_month,end_month)).count()
-    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = username, attempt = "Failed", score__lte = 15).count()
-    get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[0]
+    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = "Failed", score__lte = 15).order_by('-created_at')
+    get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = userObj, attempt = "Failed", user_confirm = 'Pending', score__lte = 15, created_at__range=(start_month,end_month)).count()
+    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = "Failed", score__lte = 15).count()
+    get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = userObj.username, attempt="Success").order_by('-created_at')[0]
     
     user_agent = request.META['HTTP_USER_AGENT']
     browser = httpagentparser.detect(user_agent)
@@ -101,8 +101,8 @@ def account_settings(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     
-    if UserLoginDetails.objects.filter(user__username = username).count() > 2:
-        get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = username, attempt="Success").order_by('-created_at')[1]
+    if UserLoginDetails.objects.filter(user__username = userObj.username).count() > 2:
+        get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = userObj.username, attempt="Success").order_by('-created_at')[1]
     else:
         get_PreviousLoginInfo = 0
     
@@ -166,15 +166,15 @@ def generate_backup_codes(request):
     
 @login_required(login_url=settings.LOGIN_URL)
 def download_backup_codes(request):
-    username = request.user
+    userObj = request.user
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes = User_BackUp_Codes.objects.get(user=userObj)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
-    if backup_codes != None:
+    if backup_codes:
         response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(username) + ' - AkirA Account' + '.txt'
-        current_user_backup_codes = User_BackUp_Codes.objects.get(user=username)
+        response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(userObj) + ' - AkirA Account' + '.txt'
+        current_user_backup_codes = User_BackUp_Codes.objects.get(user=userObj)
         backup_codes_with_hash = current_user_backup_codes.backup_codes
         splitup_backup_codes = backup_codes_with_hash.split('#')
         align_backup_code = []
@@ -188,33 +188,33 @@ def download_backup_codes(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def delete_existing_backup_codes(request):
-    username = request.user
+    userObj = request.user
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes = User_BackUp_Codes.objects.get(user=userObj)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if backup_codes == None:
         messages.info(request, "No Backup codes to delete")
         return redirect('account_settings')
     else:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes = User_BackUp_Codes.objects.get(user=userObj)
         backup_codes.delete()
         messages.info(request, "Backup codes deleted")
     return redirect('account_settings')
 
 @login_required(login_url=settings.LOGIN_URL)
 def status_2fa(request):
-    current_user = request.user
+    userObj = request.user
     try:
-        check_current_user_2fa = TwoFactorAuth.objects.get(user=current_user)
+        check_current_user_2fa = TwoFactorAuth.objects.get(user=userObj)
     except TwoFactorAuth.DoesNotExist:
         check_current_user_2fa = None
     if check_current_user_2fa == None:
-        create_enable_2fa = TwoFactorAuth.objects.create(user=current_user, twofa = 1)
+        create_enable_2fa = TwoFactorAuth.objects.create(user=userObj, twofa = 1)
         create_enable_2fa.save()
         messages.info(request, "2-Factor Authentication is enabled")
     else:
-        check_current_user_2fa_status = TwoFactorAuth.objects.get(user=current_user)
+        check_current_user_2fa_status = TwoFactorAuth.objects.get(user=userObj)
         if check_current_user_2fa_status.twofa == False:
             update_enable_2fa = TwoFactorAuth.objects.get(id = check_current_user_2fa_status.id)
             update_enable_2fa.twofa = 1
