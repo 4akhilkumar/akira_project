@@ -11,14 +11,20 @@
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
 </head>
 <body>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <input type="text" name="reqIpAddr" id="id_reqIpAddr" value="{{ get_SwitchDeviceRequest.userIPAddr }}" disabled>
-        <input type="text" name="reqBrowser" id="id_reqBrowser" value="{{ get_SwitchDeviceRequest.userBrowser }}" disabled>
-        <input type="text" name="reqOS" id="id_reqOS" value="{{ get_SwitchDeviceRequest.userOS }}" disabled>
-        <input type="text" name="reqTimeDate" id="id_reqTimeDate" value="{{ get_SwitchDeviceRequest.created_at }}" disabled>
-        <input type="submit" value="Accept Request">
-    </form>
+    {% if get_SwitchDeviceRequest %}
+        {% if SwitchDeviceStatus == False %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name="reqIpAddr" id="id_reqIpAddr" value="{{ get_SwitchDeviceRequest.userIPAddr }}" disabled>
+            <input type="text" name="reqBrowser" id="id_reqBrowser" value="{{ get_SwitchDeviceRequest.userBrowser }}" disabled>
+            <input type="text" name="reqOS" id="id_reqOS" value="{{ get_SwitchDeviceRequest.userOS }}" disabled>
+            <input type="text" name="reqTimeDate" id="id_reqTimeDate" value="{{ get_SwitchDeviceRequest.created_at }}" disabled>
+            <input type="submit" value="Accept Request">
+        </form>
+        {% endif %}
+    {% else %}
+    <h1>No Switch Device request is made yet!</h1>
+    {% endif %}
     {% if SwitchDeviceStatus == True %}
     <a href="{% url 'SyncDevice' %}">Sync Device</a>
     {% endif %}

@@ -20,7 +20,7 @@ class userPageTrackingMiddleware:
                 ip = request.META.get('REMOTE_ADDR')
             currentPageURL = str(request.build_absolute_uri())
             # if not any(item in currentPageURL for item in DONT_SAVE_LIST):
-            if ("Device" or "admin" or "/") in currentPageURL:
+            if ("Device" or "admin" or "/" or "logout") in currentPageURL:
                 pass
             else:
                 print(currentPageURL)

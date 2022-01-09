@@ -796,6 +796,13 @@ def requestSwitchDevice(request):
         currentUserBrowser = request.POST.get('user_browser')
         currentUserOS = request.POST.get('user_os')
         currentUsername = request.POST.get('username')
+        try:
+            url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(currentUsername)
+            response = requests.get(url)
+            dataUsername = response.json()
+        except Exception:
+            messages.info(request, "Server under maintenance. Please try again later.")
+            return redirect('login')
         getUserObject = User.objects.get(username = currentUsername)
         try:
             SwitchDevice.objects.create(
@@ -809,7 +816,8 @@ def requestSwitchDevice(request):
             print("You have already requested to switch device!")
 
         PostContext = {
-            "currentUsername":currentUsername,
+            "currentUsername":dataUsername['EncryptedUsername'],
+            "plainUsername":currentUsername,
         }
         return render(request, 'authentication/SwitchDevice/waitingSwitchDeviceResponse.html', PostContext)
     context = {
@@ -846,7 +854,7 @@ def validateSwitchDevice(request):
                 user = User.objects.get(username = request.user.username)
                 user.is_active = True
                 user.save()
-                # return HttpResponse("Your Approval Request is been taken successfully")
+                messages.info(request, "Your Approval Request is been taken successfully")
                 postContext = {
                     "get_SwitchDeviceRequest":get_SwitchDeviceRequest,
                     "SwitchDeviceStatus":True,
@@ -855,13 +863,20 @@ def validateSwitchDevice(request):
         else:
             logout(request)
             return HttpResponse("No Switch Device Request Found!")
-    Context = {
+    context = {
         "get_SwitchDeviceRequest":get_SwitchDeviceRequest,
         "SwitchDeviceStatus":False,
     }
-    return render(request, 'authentication/SwitchDevice/acceptSwitchDevice.html', Context)
+    return render(request, 'authentication/SwitchDevice/acceptSwitchDevice.html', context)
 
 def checkValidatedSwitchDeviceRequest(request, username):
+    try:
+        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        response = requests.get(url)
+        dataUsername = response.json()
+    except Exception:
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('login')    
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -869,14 +884,14 @@ def checkValidatedSwitchDeviceRequest(request, username):
         ip = request.META.get('REMOTE_ADDR')
     try:
         GetSwitchDeviceRequestObject = SwitchDevice.objects.get(
-                        user__username=username, 
+                        user__username=dataUsername['DecryptedUsername'], 
                         userConfirm = "User Approved",
                         reason = "User Confirmed the Switch Device",
                         status="Switch Device Pending")
     except SwitchDevice.DoesNotExist:
         GetSwitchDeviceRequestObject = None
     if (GetSwitchDeviceRequestObject != None) and (GetSwitchDeviceRequestObject.userIPAddr == ip):
-        user = User.objects.get(username = username)
+        user = User.objects.get(username = dataUsername['DecryptedUsername'])
         currentUrl = GetSwitchDeviceRequestObject.currentPage
         login(request, user)
         data = {
@@ -892,6 +907,14 @@ def checkValidatedSwitchDeviceRequest(request, username):
     return response
 
 def SwitchDeviceStatus(request, username):
+    try:
+        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        response = requests.get(url)
+        dataUsername = response.json()
+    except Exception:
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('login')
+
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -899,7 +922,7 @@ def SwitchDeviceStatus(request, username):
         ip = request.META.get('REMOTE_ADDR')
     try:
         GetSwitchDeviceRequestObject = SwitchDevice.objects.get(
-                        user__username=username, 
+                        user__username=dataUsername['DecryptedUsername'], 
                         userConfirm = "User Approved",
                         reason = "User Confirmed the Switch Device",
                         status="Switch Device Pending")
