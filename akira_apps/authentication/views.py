@@ -886,10 +886,6 @@ def SwitchDeviceStatus(request, username):
     else:
         return HttpResponse("No Switch Device Request Found!")
 
-def listSwitchDevice(request):
-    SwitchDeviceList = SwitchDevice.objects.filter(user__username = request.user.username)
-    return JsonResponse({'SwitchDeviceList': list(SwitchDeviceList.values())})
-
 def SyncDevice(request):
     getSecondDevice = SwitchDevice.objects.filter(
                             user__username = request.user.username,

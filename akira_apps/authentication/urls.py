@@ -45,7 +45,6 @@ urlpatterns = [
     path('requestSwitchDevice/', views.requestSwitchDevice, name="requestSwitchDevice"),
     path('validateSwitchDevice/', views.validateSwitchDevice, name="validateSwitchDevice"),
     path('checkValidatedSwitchDeviceRequest/<username>/', views.checkValidatedSwitchDeviceRequest, name="checkValidatedSwitchDeviceRequest"),
-    path('listSwitchDevice/', views.listSwitchDevice, name="listSwitchDevice"),
     path('SwitchDeviceStatus/<username>/', views.SwitchDeviceStatus, name="SwitchDeviceStatus"),
     path('SyncDevice/', views.SyncDevice, name="SyncDevice"),
 ]
