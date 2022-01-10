@@ -965,9 +965,17 @@ def SyncDevice(request):
 
 def logoutUser(request):
     if (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = False).exists() is True):
+        try:
+            UserPageVisits.objects.filter(user = request.user).delete()
+        except Exception:
+            pass
         logout(request)
         return redirect('login')
     elif (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True):
+        try:
+            UserPageVisits.objects.filter(user = request.user).delete()
+        except Exception:
+            pass
         try:
             UBC = User_BackUp_Codes.objects.get(user = request.user)
             if UBC.download == False:
