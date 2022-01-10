@@ -120,9 +120,8 @@ def account_settings(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def generate_backup_codes(request):
-    username = request.user
     try:
-        status_2fa = TwoFactorAuth.objects.get(user=username)
+        status_2fa = TwoFactorAuth.objects.get(user=request.user)
     except TwoFactorAuth.DoesNotExist:
         status_2fa = None
     current_user_2fa_status = 0
@@ -132,9 +131,8 @@ def generate_backup_codes(request):
         current_user_2fa_status = 1
     else:
         current_user_2fa_status = 0
-
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user=username)
+        backup_codes = User_BackUp_Codes.objects.get(user__username=request.user.username)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if current_user_2fa_status == 1:
@@ -142,7 +140,7 @@ def generate_backup_codes(request):
             list_codes = secrets.token_urlsafe(45)
             split_str = re.findall('.{1,6}', str(list_codes))
             join_hash = '#'.join(split_str)
-            userbackupcodes = User_BackUp_Codes(user = username,backup_codes = join_hash)
+            userbackupcodes = User_BackUp_Codes(user__username = request.user.username, backup_codes = join_hash)
             userbackupcodes.save()
             messages.success(request, "Backup Codes generated")
             return redirect('account_settings')
@@ -155,18 +153,17 @@ def generate_backup_codes(request):
     
 @login_required(login_url=settings.LOGIN_URL)
 def download_backup_codes(request):
-    userObj = request.user
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user=userObj)
+        backup_codes = User_BackUp_Codes.objects.get(user=request.user)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if backup_codes:
-        updateBCDS = User_BackUp_Codes.objects.get(user=userObj)
+        updateBCDS = User_BackUp_Codes.objects.get(user=request.user)
         updateBCDS.download = True
         updateBCDS.save()
         response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(userObj) + ' - AkirA Account' + '.txt'
-        current_user_backup_codes = User_BackUp_Codes.objects.get(user=userObj)
+        response['Content-Disposition'] = 'attachment; filename=BackUp Codes - ' + str(request.user) + ' - AkirA Account' + '.txt'
+        current_user_backup_codes = User_BackUp_Codes.objects.get(user=request.user)
         backup_codes_with_hash = current_user_backup_codes.backup_codes
         splitup_backup_codes = backup_codes_with_hash.split('#')
         align_backup_code = []
@@ -180,33 +177,31 @@ def download_backup_codes(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def delete_existing_backup_codes(request):
-    userObj = request.user
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user=userObj)
+        backup_codes = User_BackUp_Codes.objects.get(user=request.user)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if backup_codes == None:
         messages.info(request, "No Backup codes to delete")
         return redirect('account_settings')
     else:
-        backup_codes = User_BackUp_Codes.objects.get(user=userObj)
+        backup_codes = User_BackUp_Codes.objects.get(user=request.user)
         backup_codes.delete()
         messages.info(request, "Backup codes deleted")
     return redirect('account_settings')
 
 @login_required(login_url=settings.LOGIN_URL)
 def status_2fa(request):
-    userObj = request.user
     try:
-        check_current_user_2fa = TwoFactorAuth.objects.get(user=userObj)
+        check_current_user_2fa = TwoFactorAuth.objects.get(user=request.user)
     except TwoFactorAuth.DoesNotExist:
         check_current_user_2fa = None
     if check_current_user_2fa == None:
-        create_enable_2fa = TwoFactorAuth.objects.create(user=userObj, twofa = 1)
+        create_enable_2fa = TwoFactorAuth.objects.create(user=request.user, twofa = 1)
         create_enable_2fa.save()
         messages.info(request, "2-Factor Authentication is enabled")
     else:
-        check_current_user_2fa_status = TwoFactorAuth.objects.get(user=userObj)
+        check_current_user_2fa_status = TwoFactorAuth.objects.get(user=request.user)
         if check_current_user_2fa_status.twofa == False:
             update_enable_2fa = TwoFactorAuth.objects.get(id = check_current_user_2fa_status.id)
             update_enable_2fa.twofa = 1
@@ -222,9 +217,8 @@ def status_2fa(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def agree_login_attempt(request, login_attempt_id):
-    current_user = request.user
     update_login_confirm = UserLoginDetails.objects.get(id=login_attempt_id)
-    if current_user == update_login_confirm.user:
+    if request.user == update_login_confirm.user:
         update_login_confirm.user_confirm = "YES"
         update_login_confirm.save()
         messages.success(request, "Login Activity Confirmed!")
@@ -235,10 +229,9 @@ def agree_login_attempt(request, login_attempt_id):
 
 @login_required(login_url=settings.LOGIN_URL)
 def deny_login_attempt(request, login_attempt_id):
-    current_user = request.user
     update_login_confirm = UserLoginDetails.objects.get(id=login_attempt_id)
     spam_ip_address = update_login_confirm.user_ip_address
-    if current_user == update_login_confirm.user:
+    if request.user == update_login_confirm.user:
         update_login_confirm.user_confirm = "NO"
         update_login_confirm.save()
         messages.success(request, "Login Activity Confirmed!")
