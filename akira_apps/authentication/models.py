@@ -63,6 +63,7 @@ class User_BackUp_Codes(models.Model):
 class User_BackUp_Codes_Login_Attempts(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    userIPAddr = models.GenericIPAddressField(blank=True, null=True)
     status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 

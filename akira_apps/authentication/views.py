@@ -445,8 +445,8 @@ def verify_user_by_backup_codes(request, username):
                     return redirect('login')
                 else:
                     messages.info(request, "Invalid Backup Code")
-                    User_BackUp_Codes_Login_Attempts.objects.create(user = user, status = "Failed")
-                    backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
+                    User_BackUp_Codes_Login_Attempts.objects.create(user = user, userIPAddr = ip, status = "Failed")
+                    backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, userIPAddr = ip, status = "Failed").count()
                     if backup_code_attempt_status_count > 4:
                         User_IP_S_List.objects.update_or_create(suspicious_list = ip)
                         messages.info("Please confirm it's you to login")
@@ -666,8 +666,8 @@ def twofa_verify_user_by_backup_codes(request, username):
                 return redirect('login')
             else:
                 messages.info(request, "Invalid Backup Code")
-                User_BackUp_Codes_Login_Attempts.objects.create(user = user, status = "Failed")
-                backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, status = "Failed").count()
+                User_BackUp_Codes_Login_Attempts.objects.create(user = user, userIPAddr = ip, status = "Failed")
+                backup_code_attempt_status_count = User_BackUp_Codes_Login_Attempts.objects.filter(user = user, userIPAddr = ip, status = "Failed").count()
                 if backup_code_attempt_status_count > 4:
                     User_IP_S_List.objects.update_or_create(suspicious_list = ip)
                     messages.info("Please confirm it's you to login")
@@ -690,7 +690,7 @@ def confirmUserLogin(request, username):
         return redirect('login')
     try:
         get_attempt_ARU = UserLoginDetails.objects.get(
-                        user__username = dataUsername['DecryptedUsername'], 
+                        user__username = dataUsername['DecryptedUsername'],
                         attempt = "Manual Confirmation Required",
                         reason = "Login is unusual",
                         user_confirm = "Pending due to unusual login")
