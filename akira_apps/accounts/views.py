@@ -1,9 +1,8 @@
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.contrib.auth.decorators import login_required
-from django.conf import settings
 
 import re
 import secrets
@@ -16,10 +15,13 @@ from akira_apps.authentication.models import User_BackUp_Codes, User_IP_S_List, 
 
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
-    userObj = request.user 
-    status_2fa = TwoFactorAuth.objects.filter(user = userObj)
+    if TwoFactorAuth.objects.filter(user__username = request.user.username, twofa = True).exists() is True:
+        current_user_2fa_status = 1
+    else:
+        current_user_2fa_status = 0
+
     try:
-        backup_codes = User_BackUp_Codes.objects.get(user = userObj)
+        backup_codes = User_BackUp_Codes.objects.get(user = request.user)
     except User_BackUp_Codes.DoesNotExist:
         backup_codes = None
     if backup_codes == None:
@@ -29,23 +31,11 @@ def account_settings(request):
         if checkBackupCodesLength != 0:
             backup_codes_status = 1
 
-    try:
-        status_2fa = TwoFactorAuth.objects.get(user=userObj)
-    except TwoFactorAuth.DoesNotExist:
-        status_2fa = None
-    current_user_2fa_status = 0
-    if (status_2fa != None) and (status_2fa.twofa == 0):
-        current_user_2fa_status = 0
-    elif (status_2fa != None) and (status_2fa.twofa == 1):
-        current_user_2fa_status = 1
-    else:
-        current_user_2fa_status = 0
-
     start_month = pydt.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     nxt_mnth = start_month.replace(day=28) + datetime.timedelta(days=4)
     res = nxt_mnth - datetime.timedelta(days=nxt_mnth.day)
     end_month = pydt.datetime.now().replace(day=res.day, hour=23, minute=59, second=59, microsecond=0)
-    get_attempt = UserLoginDetails.objects.filter(user = userObj, created_at__range=(start_month,end_month))
+    get_attempt = UserLoginDetails.objects.filter(user = request.user, created_at__range=(start_month,end_month))
 
     def ordinal(n):
         s = ('th', 'st', 'nd', 'rd') + ('th',)*10
@@ -71,20 +61,20 @@ def account_settings(request):
     for i in removed_duplicate_date:
         start_date = pydt.datetime.now().replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
         end_date = pydt.datetime.now().replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
-        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = 'Success', created_at__range=(start_date,end_date)).count()
+        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = 'Success', created_at__range=(start_date,end_date)).count()
         success_attempts_date.append(attempt_on_that_date)
     
     failed_attempts_date = []
     for i in removed_duplicate_date:
         start_date = pydt.datetime.now().replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
         end_date = pydt.datetime.now().replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
-        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
+        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
         failed_attempts_date.append(attempt_on_that_date)
 
-    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = "Failed", score__lte = 15).order_by('-created_at')
-    get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = userObj, attempt = "Failed", user_confirm = 'Pending', score__lte = 15, created_at__range=(start_month,end_month)).count()
-    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = userObj.username, attempt = "Failed", score__lte = 15).count()
-    get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = userObj.username, attempt="Success").order_by('-created_at')[0]
+    get_failed_login_attempts = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = "Failed", score__lte = 15).order_by('-created_at')
+    get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = request.user, attempt = "Failed", user_confirm = 'Pending', score__lte = 15, created_at__range=(start_month,end_month)).count()
+    get_failed_login_attempts_count = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = "Failed", score__lte = 15).count()
+    get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = request.user.username, attempt="Success").order_by('-created_at')[0]
     
     user_agent = request.META['HTTP_USER_AGENT']
     browser = httpagentparser.detect(user_agent)
@@ -100,8 +90,8 @@ def account_settings(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     
-    if UserLoginDetails.objects.filter(user__username = userObj.username).count() > 2:
-        get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = userObj.username, attempt="Success").order_by('-created_at')[1]
+    if UserLoginDetails.objects.filter(user__username = request.user.username).count() > 2:
+        get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = request.user.username, attempt="Success").order_by('-created_at')[1]
     else:
         get_PreviousLoginInfo = 0
     

@@ -1,17 +1,17 @@
-from django.http.response import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.core.mail import send_mail, EmailMessage
-from django.contrib.auth.models import User
 from django import http
-from django.contrib.sites.shortcuts import get_current_site
+from django.db import IntegrityError
 from django.utils.encoding import force_bytes, force_text  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.db import IntegrityError
+from django.contrib.auth import get_user_model, authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail, EmailMessage
+from django.http.response import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 
 import datetime as pydt
 import re
@@ -838,6 +838,7 @@ def requestSwitchDevice(request):
     }
     return render(request, 'authentication/SwitchDevice/requestSwitchDevice.html', context)
 
+@login_required(login_url=settings.LOGIN_URL)
 def validateSwitchDevice(request):
     try:
         get_SwitchDeviceRequest = SwitchDevice.objects.get(
@@ -951,6 +952,7 @@ def SwitchDeviceStatus(request, username):
     else:
         return HttpResponse("No Switch Device Request Found!")
 
+@login_required(login_url=settings.LOGIN_URL)
 def SyncDevice(request):
     getSecondDevice = SwitchDevice.objects.filter(
                             user__username = request.user.username,
