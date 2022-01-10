@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
@@ -35,12 +36,13 @@ def create_resource_save(request):
                                 video_file = videoFile,
                                 reference_info = referenceInfo, 
                                 hash_tags = hashTags)
-        except Exception as e:
-            print(e)
+        except Exception:
+            messages.error(request, "Failed to Create the resource")
         return redirect('manage_resources')
     else:
         return redirect('manage_resources')
 
+@login_required(login_url=settings.LOGIN_URL)
 def view_resource(request, resource_id):
     get_resource = Resource.objects.get(id = resource_id)
     context = {
@@ -50,6 +52,9 @@ def view_resource(request, resource_id):
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def delete_resource(request, resource_id):
-    get_resource = Resource.objects.get(id = resource_id)
-    get_resource.delete()
+    try:
+        get_resource = Resource.objects.get(id = resource_id)
+        get_resource.delete()
+    except Exception:
+        messages.error(request, "Failed to delete the resource")
     return redirect('manage_resources')
