@@ -89,6 +89,7 @@
             <h6>{{ fetched_resource.created_at }}</h6>
         </div>
         <div class="resource-other-options">
+            <button class="resource-delete" onclick="document.location='{% url 'delete_resource' fetched_resource.id %}'"><span class="fa-solid fa-trash"></span></button>
             <button class="resource-download"><span class="fa-solid fa-download"></span></button>
             <button class="resource-share"><span class="fa-solid fa-share-nodes"></span></button>
         </div>
@@ -119,7 +120,6 @@
     </div>
 </div>
 </section>
-<a href="{% url 'delete_resource' fetched_resource.id %}">Delete</a>
 
 {% endif %}
 
@@ -143,7 +143,6 @@ btn.addEventListener('click', async () => {
     await navigator.share(shareData)
 });
 </script>
-
 {% endblock %}
 
 {% endblock %}
