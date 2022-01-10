@@ -2138,6 +2138,7 @@ button.block-contact-btn {
   color: var(--normal-text-color);
 }
 
+button.resource-delete,
 button.resource-download,
 button.resource-share {
   outline: none;
@@ -2149,6 +2150,11 @@ button.resource-share {
   font-weight: 500;
   line-height: 1.25rem;
   border-radius: 0.4rem;
+}
+
+.resource-delete {
+  background: #db443733;
+  color: #DB4437;
 }
 
 .resource-download {
