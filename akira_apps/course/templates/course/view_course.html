@@ -58,6 +58,82 @@
 <h4>Action</h4>
 <a href="{% url 'delete_course' course.id %}">Delete Course</a>
 
+<hr>
+
+<h4>Course Component</h4>
+<form action="{% url 'course_component' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" placeholder="Course" required>
+    <input type="text" name="component" id="id_component" placeholder="Name" required>
+    <input type="text" name="desc" id="id_desc" placeholder="description" required>
+    <input type="submit">
+</form>
+
+{% for i in courseComponent %}
+{{ i.name }} | {{ i.desc }} <br>
+{% endfor %}
+
+<hr>
+
+<h4>Sub Components</h4>
+<form action="{% url 'sub_component' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
+    <select name="component" id="id_component">
+        <option value="">Select Component</option>
+        {% for i in courseComponent %}
+        <option value="{{ i.id }}">{{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="sub_component" id="id_sub_component" placeholder="Name" required>
+    <input type="text" name="desc" id="id_desc" placeholder="description" required>
+    <input type="submit">
+</form>
+
+{% for i in courseSubComponent %}
+{{ i.course.course_name }} | {{ i.component.name }} | {{ i.name }} | {{ i.desc }} <br>
+{% endfor %}
+
+<hr>
+
+<h4>Course Task</h4>
+
+<form action="{% url 'course_task' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
+    <select name="component" id="id_component">
+        <option value="">Select Component</option>
+        {% for i in courseComponent %}
+        <option value="{{ i.id }}">{{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="subcomponent" id="id_subcomponent">
+        <option value="">Select Sub Component</option>
+        {% for i in courseSubComponent %}
+        <option value="{{ i.id }}">{{ i.name }}</option>
+        {% endfor %}
+    </select>
+    <textarea name="question" id="id_question" cols="30" rows="10"></textarea>
+    <input type="submit">
+</form>
+
+{% for i in courseTask %}
+<p>{{ i.question }}</p>
+<form action="{% url 'task_answer' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
+    <input type="hidden" name="component" id="id_component" value="{{ i.component.id }}" required>
+    <input type="hidden" name="subcomponent" id="id_subcomponent" value="{{ i.sub_component.id }}" required>
+    <input type="hidden" name="task" id="id_task" value="{{ i.id }}" required>
+    <input type="file" name="answer" id="id_answer" required>
+    <input type="submit">
+</form>
+{% endfor %}
+
+{% for i in taskAnswer %}
+{{ i.answer }} <br>
+{% endfor %}
+
 <div class="tab_container">
     {% for i in courseComponent %}
     <input id="tab{{ forloop.counter }}" type="radio" name="tabs" {% if forloop.counter == 1 %} checked {% endif %}>
