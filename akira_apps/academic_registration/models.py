@@ -1,8 +1,9 @@
-from enum import unique
 from django.contrib.auth.models import User
 from django.db import models
 
 import uuid
+
+from akira_apps.specialization.models import (SpecializationsMC)
 
 BRANCH_CHOICES = [
     ("","Branch Name"),
@@ -16,6 +17,18 @@ BRANCH_CHOICES = [
     ("Bio Technology","Bio Technology"),
     ("Mechanical Engineering","Mechanical Engineering"),
 ]
+
+class SpecEnrollStudent(models.Model):
+    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
+    enrolledSpec = models.ForeignKey(SpecializationsMC, on_delete = models.SET_NULL, blank = True, null = True)
+
+    def __str__(self):
+        return '%s - %s' % (self.user.username, self.enrolledSpec)
+
+    class Meta:
+        unique_together = ('user','enrolledSpec')
+
 
 # class academic_registration_staff(models.Model):
 #     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
