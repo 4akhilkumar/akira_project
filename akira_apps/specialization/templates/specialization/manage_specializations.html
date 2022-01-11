@@ -88,8 +88,10 @@
           <h2 class="course_title">{{ i.specialization_name }}</h2>
           <p class="course_text">{{ i.specialization_desc }}</p>
           <div class="course-buttons">
-            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_specialization' i.specialization_name %}'" >Read More</button>
-            <button class="enrollCoursebtn course_btn">Enroll</button>
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_specialization' i.specialization_name %}'" >Know More</button>
+            {% if specEnrolledCurrentUser == i.id %}
+            <button class="enrollCoursebtn course_btn">Enrolled</button>
+            {% endif %}
           </div>
         </div>  
       </div>

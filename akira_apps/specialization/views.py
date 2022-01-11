@@ -12,21 +12,28 @@ from akira_apps.academic.models import (Semester)
 from akira_apps.academic.forms import (BranchForm)
 from akira_apps.course.models import (CourseMC)
 from .models import (SpecializationsMC, SpecializationFiles)
+from akira_apps.academic_registration.models import (SpecEnrollStudent)
 
 @login_required(login_url=settings.LOGIN_URL)
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
+@allowed_users(allowed_roles=['Administrator', 'Head of the Department', 'Student'])
 def manage_specializations(request):
     specializations = SpecializationsMC.objects.all()
     courses = CourseMC.objects.all()
     faculty_list = User.objects.all()
     branch_list = BranchForm()
     semester_list = Semester.objects.all()
+    try:
+        specEnrolledCurrentUserObj = SpecEnrollStudent.objects.get(user = request.user)
+        specEnrolledCurrentUser = specEnrolledCurrentUserObj.enrolledSpec.id
+    except Exception:
+        specEnrolledCurrentUser = None
     context = {
         "specializations":specializations,
         "courses":courses,
         "faculty_list":faculty_list,
         "branch_list":branch_list,
         "semester_list":semester_list,
+        "specEnrolledCurrentUser":specEnrolledCurrentUser,
     }
     return render(request, 'specialization/manage_specializations.html', context)
 
@@ -75,6 +82,11 @@ def view_specialization(request, specialization_name):
     branch_list = BranchForm()
     semester_list = Semester.objects.all()
     edit_course = False
+    try:
+        specEnrolledCurrentUserObj = SpecEnrollStudent.objects.get(user = request.user)
+        specEnrolledCurrentUser = specEnrolledCurrentUserObj.enrolledSpec.id
+    except Exception:
+        specEnrolledCurrentUser = None
     context = {
         "specialization":specializationObj,
         "specializationFilesObjs":specializationFilesObjs,
@@ -82,6 +94,7 @@ def view_specialization(request, specialization_name):
         "branch_list":branch_list,
         "semester_list":semester_list,
         "edit_course":edit_course,
+        "specEnrolledCurrentUser":specEnrolledCurrentUser,
     }
     return render(request, 'specialization/view_specialization.html', context)
 
@@ -89,6 +102,11 @@ def view_specialization(request, specialization_name):
 def search_specialization(request):
     if request.method == 'POST':
         query = request.POST['search-specialization'].strip()
+        try:
+            specEnrolledCurrentUserObj = SpecEnrollStudent.objects.get(user = request.user)
+            specEnrolledCurrentUser = specEnrolledCurrentUserObj.enrolledSpec.id
+        except Exception:
+            specEnrolledCurrentUser = None
         beforeSearch = datetime.now()
         specializations = SpecializationsMC.objects.filter(
             Q(specialization_name__icontains=query) |
@@ -103,6 +121,7 @@ def search_specialization(request):
             'specializations': specializations,
             'totalTimeTaken':totalTimeTaken,
             'query':query,
+            'specEnrolledCurrentUser':specEnrolledCurrentUser,
         }
         return render(request, 'specialization/search_specializations.html', context)
     else:

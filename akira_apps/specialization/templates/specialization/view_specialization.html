@@ -32,7 +32,11 @@
 {{ specialization.branch }}
 <br>
 <h4>Specialization Capacity</h4>
+{% if specialization.capacity == 0 %}
+Spec. Enroll is closed. Please choose other spec.
+{% else %}
 {{ specialization.capacity }}
+{% endif %}
 <br>
 <h4>Specialization Files</h4>
 {% for i in specializationFilesObjs %}
@@ -43,6 +47,23 @@
 <br>
 <h4>Action</h4>
 <a href="{% url 'delete_specialization' specialization.id %}">Delete Specialization</a>
+
+{% if specialization.capacity != 0 %}
+    {% if specialization.id != specEnrolledCurrentUser %}
+    <form action="{% url 'enrollSpec' specialization.id %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="spec" id="id_spec" value="{{ specialization.id }}" readonly>
+        <input type="submit" value="Enroll">
+    </form>
+    {% else %}
+    <form action="{% url 'unenrollSpec' specialization.id %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="spec" id="id_spec" value="{{ specialization.id }}" readonly>
+        <input type="submit" value="Unenroll">
+    </form>
+    {% endif %}
+{% endif %}
+
 {% endblock %}
 
 {% endblock %}
