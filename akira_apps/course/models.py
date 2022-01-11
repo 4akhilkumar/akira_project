@@ -78,7 +78,7 @@ class CourseTask(models.Model):
     component = models.ForeignKey(CourseComponent, on_delete=models.CASCADE)
     sub_component = models.ForeignKey(CourseSubComponent, on_delete=models.CASCADE)
     question = models.TextField(max_length = 500)
-    answer = models.ForeignKey('TaskAnswer', on_delete=models.CASCADE)
+    answer = models.ForeignKey('TaskAnswer', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.question)
