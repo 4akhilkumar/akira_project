@@ -2029,7 +2029,7 @@ button.block-contact-btn {
 }
 
 .resource-card:hover {
-  box-shadow: #11111a47 0px 2px 16px;
+  box-shadow: #bdbdbd 0px 2px 4px 2px;
 }
 
 .resource-card_content {
