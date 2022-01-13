@@ -96,7 +96,6 @@ body {
   margin: 0;
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
-  list-style-type: none;
   box-sizing: border-box;
 }
 
@@ -236,6 +235,7 @@ img {
 
 .sidebar-menu li {
   margin-bottom: .2rem;
+  list-style-type: none;
 }
 
 .sidebar-menu a {
@@ -1339,6 +1339,7 @@ button.search-icon:hover {
 }
 .staff-profile-stats li {
   min-width: 5rem;
+  list-style-type: none;
 }
 
 .staff-profile-stats li h3 {
@@ -1847,6 +1848,7 @@ span.chip-three {
   padding: .65rem 0rem 0rem .65rem;
   border-radius: 10px;
   height: 100%;
+  list-style-type: none;
 }
   
 .component1 {
