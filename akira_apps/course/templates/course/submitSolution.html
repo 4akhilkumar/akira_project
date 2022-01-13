@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Solution</title>
+</head>
+<body>
+    {{ taskCourse.course_name }}
+    <br>
+    {{ taskComponent.name }}
+    <br>
+    {{ taskSubComponent.name }}
+    <br>
+    {{ getTaskObj.question }}
+    <br>
+    <form action="{% url 'task_answer' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="course" id="id_course" value="{{ taskCourse.id }}" required>
+        <input type="hidden" name="component" id="id_component" value="{{ taskComponent.id }}" required>
+        <input type="hidden" name="subcomponent" id="id_subcomponent" value="{{ taskSubComponent.id }}" required>
+        <input type="hidden" name="task" id="id_task" value="{{ getTaskObj.id }}" required>
+        <input type="file" name="answer" id="id_answer" required>
+        <input type="submit">
+    </form>
+    <hr>
+    {% for i in taskAnswer %}
+    {{ i.answer }} <br>
+    {% endfor %}
+</body>
+</html>
