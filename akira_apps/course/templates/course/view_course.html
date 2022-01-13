@@ -1,6 +1,7 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
 {% load first_letter_word %}
+{% load course_components %}
 
 {% block content %}
 
@@ -139,25 +140,26 @@
     <input id="tab{{ forloop.counter }}" type="radio" name="tabs" {% if forloop.counter == 1 %} checked {% endif %}>
     <label class="tab-labels" for="tab{{ forloop.counter }}"><i class="fa-regular fa-folder"></i><span>{{ i.name }}</span></label>
     {% endfor %}
+    
+    <input id="tab" type="radio" name="tabs">
+    <label class="tab-labels" for="tab"><i class="fa-solid fa-folder-plus"></i>&nbsp;&nbsp;<span>Create</span></label>
 
     {% for i in courseComponent %}
     <section id="content{{ forloop.counter }}" class="tab-content tab-section">
-        <h3>Headline 1</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-          proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-          cillum dolore eu fugiat nulla pariatur.</p>
+        <h4>Total Submissions: 48</h4>
+        <h4>Still 4 Members</h4>
+        {% for j in i.id|subComponent %}
+        <details>
+            <summary>{{ j.sub_component.name }}</summary>
+            {{ j }}
+            <a href="{% url 'submitSolutionPage' j.id %}">Submit the Solution</a>
+        </details>
+        {% endfor %}
     </section>
     {% endfor %}
 </div>
 
+<script src="{% static '' %}"></script>
 <script>
     $("select[name = 'component-course-task']").change(function () {
         const componentId = $(this).val();
