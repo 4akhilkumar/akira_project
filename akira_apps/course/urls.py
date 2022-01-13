@@ -12,4 +12,7 @@ urlpatterns = [
     path('sub_component/', views.sub_component, name='sub_component'),
     path('course_task/', views.course_task, name='course_task'),
     path('task_answer/', views.task_answer, name='task_answer'),
+    path('subComponentsbyComponents/', views.subComponentsbyComponents, name='subComponentsbyComponents'),
+
+    path('submitSolutionPage/<uuid:task_id>/', views.submitSolutionPage, name='submitSolutionPage'),
 ]

@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.db.models import Q
+from django.http import JsonResponse
 
 from datetime import datetime
 
@@ -176,7 +177,7 @@ def sub_component(request):
 def course_task(request):
     if request.method == "POST":
         courseId = request.POST.get('course')
-        componentId = request.POST.get('component')
+        componentId = request.POST.get('component-course-task')
         subComponentId = request.POST.get('subcomponent')
         question = request.POST.get('question')
         try:
@@ -214,11 +215,35 @@ def task_answer(request):
                                         sub_component = getSubComponentObj,
                                         task = getTaskObj,
                                         answer = answer)
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('submitSolutionPage', task_id = questionId)
         except Exception as e:
             print(e)
             messages.info(request, "Failed to submit answer")
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('view_course', task_id = questionId)
     else:
         messages.info(request, "We could process your request!")
         return redirect('manage_courses')
+
+def submitSolutionPage(request, task_id):
+    getTaskObj = CourseTask.objects.get(id=task_id)
+    taskCourse = getTaskObj.course
+    taskComponent = getTaskObj.component
+    taskSubComponent = getTaskObj.sub_component
+    taskAnswer = TaskAnswer.objects.filter(task = getTaskObj, user = request.user)
+    context = {
+        "taskCourse":taskCourse,
+        "taskComponent":taskComponent,
+        "taskSubComponent":taskSubComponent,
+        "getTaskObj":getTaskObj,
+        "taskAnswer":taskAnswer,
+    }
+    return render(request, 'course/submitSolution.html', context)
+
+def subComponentsbyComponents(request):
+    if request.method == "POST":
+        component_id = request.POST['component']
+        try:
+            getSubComponents = CourseSubComponent.objects.filter(component__id=component_id)
+        except Exception as e:
+            print(e)
+        return JsonResponse(list(getSubComponents.values('id', 'name')), safe = False) 

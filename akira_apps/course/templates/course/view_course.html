@@ -101,13 +101,13 @@
 <form action="{% url 'course_task' %}" method="POST">
     {% csrf_token %}
     <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
-    <select name="component" id="id_component">
+    <select name="component-course-task" id="id_component">
         <option value="">Select Component</option>
         {% for i in courseComponent %}
         <option value="{{ i.id }}">{{ i.name }}</option>
         {% endfor %}
     </select>
-    <select name="subcomponent" id="id_subcomponent">
+    <select name="subcomponent" id="id_subcomponent-get">
         <option value="">Select Sub Component</option>
         {% for i in courseSubComponent %}
         <option value="{{ i.id }}">{{ i.name }}</option>
@@ -157,6 +157,28 @@
     </section>
     {% endfor %}
 </div>
+
+<script>
+    $("select[name = 'component-course-task']").change(function () {
+        const componentId = $(this).val();
+        console.log(componentId);
+        $.ajax({
+            type: "POST",
+            url: '{% url "subComponentsbyComponents" %}',
+            data: {
+                'component': componentId,
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            },
+            success: function (data) {
+                let html_data = '<option value=""> Select Sub Component </option>';
+                data.forEach(function (data) {
+                    html_data += `<option value="${data.id}">${data.name}</option>`
+                });
+                $("#id_subcomponent-get").html(html_data);
+            }
+        });
+    });
+  </script>
 
 {% endblock %}
 
