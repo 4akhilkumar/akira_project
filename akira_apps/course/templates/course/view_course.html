@@ -23,6 +23,15 @@
     color: #999;
     border-bottom: 2px solid #f0f0f0;
 }
+
+#tab{{ courseComponent|length|add:"1" }}:checked ~ #content{{ courseComponent|length|add:"1" }}
+{
+    display: block;
+    padding: 20px;
+    background: #fff;
+    color: #999;
+    border-bottom: 2px solid #f0f0f0;
+}
 </style>
 
 <h4>Course Short Info</h4>
@@ -59,16 +68,7 @@
 <h4>Action</h4>
 <a href="{% url 'delete_course' course.id %}">Delete Course</a>
 
-<hr>
-
-<h4>Course Component</h4>
-<form action="{% url 'course_component' %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" placeholder="Course" required>
-    <input type="text" name="component" id="id_component" placeholder="Name" required>
-    <input type="text" name="desc" id="id_desc" placeholder="description" required>
-    <input type="submit">
-</form>
+<!-- <hr>
 
 {% for i in courseComponent %}
 {{ i.name }} | {{ i.desc }} <br>
@@ -76,49 +76,13 @@
 
 <hr>
 
-<h4>Sub Components</h4>
-<form action="{% url 'sub_component' %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
-    <select name="component" id="id_component">
-        <option value="">Select Component</option>
-        {% for i in courseComponent %}
-        <option value="{{ i.id }}">{{ i.name }}</option>
-        {% endfor %}
-    </select>
-    <input type="text" name="sub_component" id="id_sub_component" placeholder="Name" required>
-    <input type="text" name="desc" id="id_desc" placeholder="description" required>
-    <input type="submit">
-</form>
-
 {% for i in courseSubComponent %}
 {{ i.course.course_name }} | {{ i.component.name }} | {{ i.name }} | {{ i.desc }} <br>
 {% endfor %}
 
-<hr>
+<hr> -->
 
-<h4>Course Task</h4>
-
-<form action="{% url 'course_task' %}" method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
-    <select name="component-course-task" id="id_component">
-        <option value="">Select Component</option>
-        {% for i in courseComponent %}
-        <option value="{{ i.id }}">{{ i.name }}</option>
-        {% endfor %}
-    </select>
-    <select name="subcomponent" id="id_subcomponent-get">
-        <option value="">Select Sub Component</option>
-        {% for i in courseSubComponent %}
-        <option value="{{ i.id }}">{{ i.name }}</option>
-        {% endfor %}
-    </select>
-    <textarea name="question" id="id_question" cols="30" rows="10"></textarea>
-    <input type="submit">
-</form>
-
-{% for i in courseTask %}
+<!-- {% for i in courseTask %}
 <p>{{ i.question }}</p>
 <form action="{% url 'task_answer' %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
@@ -129,11 +93,11 @@
     <input type="file" name="answer" id="id_answer" required>
     <input type="submit">
 </form>
-{% endfor %}
+{% endfor %} -->
 
-{% for i in taskAnswer %}
+<!-- {% for i in taskAnswer %}
 {{ i.answer }} <br>
-{% endfor %}
+{% endfor %} -->
 
 <div class="tab_container">
     {% for i in courseComponent %}
@@ -141,8 +105,8 @@
     <label class="tab-labels" for="tab{{ forloop.counter }}"><i class="fa-regular fa-folder"></i><span>{{ i.name }}</span></label>
     {% endfor %}
     
-    <input id="tab" type="radio" name="tabs">
-    <label class="tab-labels" for="tab"><i class="fa-solid fa-folder-plus"></i>&nbsp;&nbsp;<span>Create</span></label>
+    <input id="tab{{ courseComponent|length|add:"1" }}" type="radio" name="tabs">
+    <label class="tab-labels" for="tab{{ courseComponent|length|add:"1" }}"><i class="fa-solid fa-folder-plus"></i>&nbsp;&nbsp;<span>Create</span></label>
 
     {% for i in courseComponent %}
     <section id="content{{ forloop.counter }}" class="tab-content tab-section">
@@ -157,9 +121,55 @@
         {% endfor %}
     </section>
     {% endfor %}
+
+    <section id="content{{ courseComponent|length|add:"1" }}" class="tab-content tab-section">
+        <h4>Course Component</h4>
+        <form action="{% url 'course_component' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="course" id="id_course" value="{{ course.id }}" placeholder="Course" required>
+            <input type="text" name="component" id="id_component" placeholder="Name" required>
+            <input type="text" name="desc" id="id_desc" placeholder="description" required>
+            <input type="submit">
+        </form>
+        <hr>
+        <h4>Sub Components</h4>
+        <form action="{% url 'sub_component' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
+            <select name="component" id="id_component">
+                <option value="">Select Component</option>
+                {% for i in courseComponent %}
+                <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="sub_component" id="id_sub_component" placeholder="Name" required>
+            <input type="text" name="desc" id="id_desc" placeholder="description" required>
+            <input type="submit">
+        </form>
+        <hr>
+        <h4>Course Task</h4>
+        <form action="{% url 'course_task' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
+            <select name="component-course-task" id="id_component">
+                <option value="">Select Component</option>
+                {% for i in courseComponent %}
+                <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="subcomponent" id="id_subcomponent-get">
+                <option value="">Select Sub Component</option>
+                {% for i in courseSubComponent %}
+                <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <textarea name="question" id="id_question" cols="30" rows="10"></textarea>
+            <input type="submit">
+        </form>
+    </section>
+
 </div>
 
-<script src="{% static '' %}"></script>
 <script>
     $("select[name = 'component-course-task']").change(function () {
         const componentId = $(this).val();
