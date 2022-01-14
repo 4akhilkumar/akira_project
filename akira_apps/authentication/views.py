@@ -857,26 +857,26 @@ def requestSwitchDevice(request):
                     messages.info(request, "Server under maintenance. Please try again later.")
                     return redirect('requestSwitchDevice')
 
-                fifteen_minutes_ago = pydt.datetime.now() + pydt.timedelta(minutes=-15)
-                if SwitchDevice.objects.filter(user = getUserObject, reason = "Not Approved Yet", created_at__gte = fifteen_minutes_ago).exists() is True:
+                ten_minutes_ago = pydt.datetime.now() + pydt.timedelta(minutes=-10)
+                if SwitchDevice.objects.filter(user = getUserObject, reason = "Not Approved Yet", created_at__gte = ten_minutes_ago).exists() is True:
                     messages.info(request, "You have already requested to switch device!")
                     getReqSDObj = SwitchDevice.objects.get(user = getUserObject, userIPAddr = ip, reason = "Not Approved Yet")
                     if SwitchDevice.objects.filter(user = getUserObject, userIPAddr = ip, reason = "Not Approved Yet").exists() is True:
                         return redirect('waitingSwitchDeviceResponse', switchDeviceReqID = getReqSDObj.id, username = dataUsername['EncryptedUsername'])
                     else:
                         return redirect('requestSwitchDevice')
-                elif SwitchDevice.objects.filter(user = getUserObject, reason = "Not Approved Yet").exists() is True:
-                    SwitchDevice.objects.filter(user = getUserObject, reason = "Not Approved Yet").delete()
-                    switchDeviceObj = SwitchDevice.objects.create(
-                            userIPAddr = ip,
-                            userBrowser = browser,
-                            userOS = OS_Details,
-                            reason = "Not Approved Yet",
-                            user = getUserObject)
-                    switchDeviceID = SwitchDevice.objects.get(id = switchDeviceObj.id)
-                    return redirect('waitingSwitchDeviceResponse', switchDeviceReqID = switchDeviceID.id,  username = dataUsername['EncryptedUsername'])
+                # elif SwitchDevice.objects.filter(user = getUserObject, reason = "Not Approved Yet").exists() is True:
+                #     SwitchDevice.objects.filter(user = getUserObject, reason = "Not Approved Yet").delete()
+                #     switchDeviceObj = SwitchDevice.objects.create(
+                #             userIPAddr = ip,
+                #             userBrowser = browser,
+                #             userOS = OS_Details,
+                #             reason = "Not Approved Yet",
+                #             user = getUserObject)
+                #     switchDeviceID = SwitchDevice.objects.get(id = switchDeviceObj.id)
+                #     return redirect('waitingSwitchDeviceResponse', switchDeviceReqID = switchDeviceID.id,  username = dataUsername['EncryptedUsername'])
                 elif SwitchDevice.objects.filter(user = getUserObject, status = "Switch Device Successful").exists() is True:
-                    messages.error(request, "Terminate the active session in order to make Switch Device request")
+                    messages.error(request, "Terminate the active session in order to make new Switch Device request")
                     return redirect('requestSwitchDevice')
                 else:
                     switchDeviceObj = SwitchDevice.objects.create(
@@ -919,7 +919,6 @@ def waitingSwitchDeviceResponse(request, switchDeviceReqID, username):
     }
     return render(request, 'authentication/SwitchDevice/waitingSwitchDeviceResponse.html', context)
 
-# SwitchDevice.objects.all().delete()
 @login_required(login_url=settings.LOGIN_URL)
 def validateSwitchDevice(request):
     getSwitchDeviceRequests = SwitchDevice.objects.filter(user = request.user).order_by('-created_at')
@@ -976,6 +975,23 @@ def denySwitchDevice(request, switchDeviceReqID):
 
 def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
     try:
+        currentSDObj = SwitchDevice.objects.get(id=switchDeviceID)
+    except SwitchDevice.DoesNotExist:
+        currentSDObj = None
+        messages.error(request, "Switch Device request is expired")
+
+    getCurrentSDReqOvertimeObj = False
+    try:
+        getCurrentSDReqOvertime = SwitchDevice.objects.get(id=switchDeviceID)
+        eleven_minutes = getCurrentSDReqOvertime.created_at + pydt.timedelta(minutes=+11)
+    except Exception:
+        getCurrentSDReqOvertime = None
+    if (getCurrentSDReqOvertime) and (pydt.datetime.now() >= eleven_minutes):
+        getCurrentSDReqOvertime.delete()
+        getCurrentSDReqOvertimeObj = True
+        messages.error(request, "Switch Device request is expired")
+
+    try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
@@ -989,6 +1005,15 @@ def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
         ip = request.META.get('REMOTE_ADDR')
     
     try:
+        GetSwitchDeviceRequestObjectUD = SwitchDevice.objects.get(
+                        id = switchDeviceID,
+                        user__username=dataUsername['DecryptedUsername'],
+                        status = "Terminated")
+        messages.error(request, "Switch Device request is expired")
+    except SwitchDevice.DoesNotExist:
+        GetSwitchDeviceRequestObjectUD = None
+
+    try:
         getCurrentSDReq = SwitchDevice.objects.get(
                         id = switchDeviceID,
                         user__username=dataUsername['DecryptedUsername'], 
@@ -998,15 +1023,6 @@ def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
     except SwitchDevice.DoesNotExist:
         getCurrentSDReq = None
 
-    try:
-        GetSwitchDeviceRequestObjectUD = SwitchDevice.objects.get(
-                        id = switchDeviceID,
-                        user__username=dataUsername['DecryptedUsername'], 
-                        userConfirm = "User Denied",
-                        reason = "User Denied the Switch Device",
-                        status = "Terminated")
-    except SwitchDevice.DoesNotExist:
-        GetSwitchDeviceRequestObjectUD = None
     if (getCurrentSDReq) and (getCurrentSDReq.userIPAddr == ip):
         user = User.objects.get(username = dataUsername['DecryptedUsername'])
         currentUrl = getCurrentSDReq.currentPage
@@ -1017,11 +1033,14 @@ def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
         }
     elif (GetSwitchDeviceRequestObjectUD) and (GetSwitchDeviceRequestObjectUD.userIPAddr == ip):
         logout(request)
-        current_site = get_current_site(request)
         data = {
             'status': 'failed',
             'message': 'User Denied',
-            'redirect_url': current_site.domain,
+        }
+    elif getCurrentSDReqOvertimeObj is True or currentSDObj is None:
+        data = {
+            'status': 'failed',
+            'message': 'Request Expired',
         }
     else:
         logout(request)
