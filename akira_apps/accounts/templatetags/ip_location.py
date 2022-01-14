@@ -9,10 +9,10 @@ def ip_location(value):
         url = 'https://ipinfo.io/{}/geo'.format(value)
         response = requests.get(url)
         data = response.json()
-        if (data['bogon'] == True):
-            city_region_country = 'Unknown'
-        else:
+        try:
             city_region_country = data['city'] + ', ' + data['region'] + ', ' + data['country']
+        except Exception:
+            city_region_country = 'Unknown'
         return city_region_country
-    except Exception as e:
+    except Exception:
         return value
