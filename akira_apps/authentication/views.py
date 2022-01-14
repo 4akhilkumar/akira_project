@@ -1144,5 +1144,8 @@ def logoutUser(request):
         except User_BackUp_Codes.DoesNotExist:
             messages.info(request, "Please generate Backup codes")
             return redirect('account_settings')
+    elif (request.user.is_authenticated):
+        logout(request)
+        return redirect('login')
     else:
         return redirect('login')
