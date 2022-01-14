@@ -173,7 +173,11 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'validateSwitchDevice' %}">
+                        <a href="{% url 'validateSwitchDevice' %}"
+                        {% if "validateSwitchDevice" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
                             <span class="fa-solid fa-laptop-code"></span>
                             <span>Switch Device</span>
                         </a>
@@ -233,6 +237,7 @@
             {% block manage-students %} {% endblock %}
             {% block view-student %} {% endblock %}
             {% block manage-account %} {% endblock %}
+            {% block switch-device %} {% endblock %}
             <section>
                 <div class="block-grid">
                     {% block revenue-card %}{% endblock %}

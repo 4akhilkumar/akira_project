@@ -149,6 +149,12 @@ button:disabled, button[disabled] {
   justify-content: space-between;
   flex-wrap: wrap;
 }
+.rsd-text {
+  text-align: center;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
 .input {
   position: relative;
   margin: 16px 0;

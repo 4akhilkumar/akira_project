@@ -734,6 +734,23 @@ main {
   background: var(--card-color);
 }
 
+.previous-switch-devices {
+  max-width: fit-content;
+}
+
+h1.switchDeviceStatusText {
+  font-weight: 400;
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: var(--normal-text-color);
+  font-family: monospace;
+}
+
+h1.small-size-text {
+  font-size: 1rem;
+}
+
 .account-status-summary {
   display: flex;
   flex-direction: row;
@@ -1087,6 +1104,17 @@ input:checked + .slider:before {
   width: fit-content;
   background: #4285f433;
   color: #77aaff;
+}
+
+.whole-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 500px) {
+  .whole-container {
+    flex-wrap: wrap;
+  }  
 }
 
 @media only screen and (max-width: 378px) {
