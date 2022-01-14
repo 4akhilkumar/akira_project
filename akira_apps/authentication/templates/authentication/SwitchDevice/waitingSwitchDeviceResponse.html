@@ -1,41 +1,64 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#317EFB"/>
+    <meta name="description" content="AkirA is a kind of Learning Mangement System which can be accessible in all your devices Android, iOS, and desktop devices.">
+
     <script src="{% static "js/jquery.min.js" %}"></script>
-    <title>Waiting for Swtich Device Response...</title>
+
+    <link rel="stylesheet" href="{% static 'styles/waitingSDR.css' %}">
+    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
+    
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <title>Waiting for Response...</title>
 </head>
 <body>
-    <h1>{{ plainUsername }}</h1>
-    <h1>Waiting for Swtich Device Response...</h1>
+    
+    {% include 'messages.html' %}
 
-    <script>
-        function ajaxCall() {
-            $.ajax({
-                url: "{% url 'checkValidatedSwitchDeviceRequest' username=currentUsername switchDeviceID=switchDeviceID %}",
-                type: 'GET',
-                success: function(data) {
-                    if (data.status == "success") {
-                        $.ajax({
-                            url: "{% url 'SwitchDeviceStatus' username=currentUsername %}",
-                            type: 'GET',
-                        });
-                        window.location.href = data.redirect_url;
-                    }
-                    else if (data.status == "failed" && data.message == "User Denied") {
-                        alert("User Denied");
-                        window.location.href = "{% url 'login' %}";
-                    }
+    <div class="container">
+        <div class="loader">
+          <div class="loader-shap one"></div>
+          <div class="loader-shap two"></div>
+          <div class="loader-shap three"></div>
+          <div class="loader-shap four"></div>
+        </div>
+        <h1 class="loading-text">Waiting for Response</h1>
+    </div>
+
+<script>
+    function ajaxCall() {
+        $.ajax({
+            url: "{% url 'checkValidatedSwitchDeviceRequest' username=currentUsername switchDeviceID=switchDeviceID %}",
+            type: 'GET',
+            success: function(data) {
+                if (data.status == "success") {
+                    $.ajax({
+                        url: "{% url 'SwitchDeviceStatus' username=currentUsername %}",
+                        type: 'GET',
+                    });
+                    window.location.href = data.redirect_url;
                 }
-            });
-        }
-        setInterval(ajaxCall, 10000);
-    </script>
+                else if (data.status == "failed" && data.message == "User Denied") {
+                    alert("User Denied");
+                    window.location.href = "{% url 'login' %}";
+                }
+                else if (data.status == "failed" && data.message == "Request Expired") {
+                    alert("Request Expired");
+                    window.location.href = "{% url 'login' %}";
+                }
+            }
+        });
+    }
+    setInterval(ajaxCall, 10000);
+</script>
 </body>
 </html>

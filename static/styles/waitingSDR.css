@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.loader {
+    display: flex;
+    align-items: center;
+}
+
+.one {
+    background-color: #4285F4;
+    animation: load_shap_one 1.2s ease infinite;
+}
+
+.two {
+    background-color: #DB4437;
+    animation: load_shap_two 1.2s ease infinite;
+}
+
+.three {
+    background-color: #F4B400;
+    animation: load_shap_three 1.2s ease infinite;
+}
+
+.four {
+    background-color: #0F9D58;
+    animation: load_shap_four 1.2s ease infinite;
+}
+
+.loader-shap {
+    width: 2rem;
+    height: 2rem;
+    margin: 1rem;
+    border-radius: 50%;
+}
+
+.loader-shap:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.loader-shap:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.loader-shap:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.loader-shap:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
+@keyframes load_shap_one {
+    50% {
+        transform: translateY(-50%);
+        box-shadow: 0 5rem 2rem #4285F433;
+    }
+}
+
+@keyframes load_shap_two {
+    50% {
+        transform: translateY(-50%);
+        box-shadow: 0 5rem 2rem #DB443733;
+    }
+}
+
+@keyframes load_shap_three {
+    50% {
+        transform: translateY(-50%);
+        box-shadow: 0 5rem 2rem #f4b40033;
+    }
+}
+
+@keyframes load_shap_four {
+    50% {
+        transform: translateY(-50%);
+        box-shadow: 0 5rem 2rem #0F9D5833;
+    }
+}
+
+h1 {
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    padding-top: 1.8rem;
+}
+
+.loading-text:after {
+    content: '.';
+    animation: dots 1.6s ease infinite;
+}
+  
+@keyframes dots {
+    0%, 20% {
+        text-shadow: .25em 0 0 #0000, .5em 0 0 #0000;
+    }
+    40% {
+        text-shadow: .25em 0 0 #0000, .5em 0 0 #0000;
+    }
+    60% {
+        text-shadow: .25em 0 0 #000, .5em 0 0 #0000;
+    }
+    80%, 100% {
+        text-shadow: .25em 0 0 #000, .5em 0 0 #000;
+    }
+}
