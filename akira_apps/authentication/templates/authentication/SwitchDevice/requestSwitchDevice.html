@@ -1,24 +1,80 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Switch Device - AkirA</title>
+    <meta name="theme-color" content="#317EFB"/>
+    <meta name="description" content="AkirA is a kind of Learning Mangement System which can be accessible in all your devices Android, iOS, and desktop devices.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href='{% static "styles/login_styles.css" %}'>
+
+    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <title>Switch Device - AkirA</title>
 </head>
 <body>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <input type="text" name="user_ip_address" id="id_user_ip_address" value="{{ CurrentUserIPAddr }}" required>
-        <input type="text" name="user_browser" id="id_user_browser" value="{{ CurrentBrowser }}" required>
-        <input type="text" name="user_os" id="id_user_os" value="{{ CurrentOS }}" required>
 
-        <input type="text" name="username" id="id_username" placeholder="Username" required>
-        <input type="submit" value="Request Switch Device">
-    </form>
+	{% include 'messages.html' %}
+
+    <div class="container">
+        <div class="header">
+            <div class="header-image">
+                <div class="header-image-particle header-image-particle-1"></div>
+                <div class="header-image-particle header-image-particle-2"></div>
+                <div class="header-image-particle header-image-particle-3"></div>
+                <svg viewBox="0 0 512 512">
+                    <defs>
+                        <linearGradient id="logo-gradient" x1="50%" y1="0%" x2="75%" y2="100%" >
+                            <stop offset="0%" stop-color="#F79533">
+                                <animate attributeName="stop-color" values="#F79533; #F37055; #EF4E7B; #A166AB; #5073B8; #1098AD; #07B39B; #6DBA82; #F79533" dur="4s" repeatCount="indefinite"></animate>
+                            </stop>
+                            <stop offset="100%" stop-color="#F79533">
+                                <animate attributeName="stop-color" values="#F37055; #EF4E7B; #A166AB; #5073B8; #1098AD; #07B39B; #6DBA82; #F79533; #F37055" dur="4s" repeatCount="indefinite"></animate>
+                            </stop>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url('#logo-gradient')" d="M496 127.1C496 381.3 309.1 512 255.1 512C204.9 512 16 385.3 16 127.1c0-19.41 11.7-36.89 29.61-44.28l191.1-80.01c4.906-2.031 13.13-3.701 18.44-3.701c5.281 0 13.58 1.67 18.46 3.701l192 80.01C484.3 91.1 496 108.6 496 127.1z"></path>
+                </svg>
+            </div>
+    
+            <h1 class="header-title text-center">
+                Welcome to&nbsp;<span class="akira">AkirA!</span>
+            </h1>
+    
+            <p class="text text-center">
+                Safe <b>&nbsp; &#183; &nbsp;</b> Secure <b>&nbsp; &#183; &nbsp;</b> Ideal
+            </p>
+        </div>
+    
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="input app-input">
+                <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" required>
+                <label for="username"><i class="far fa-user"></i> Username</label>
+            </div>
+            <div class="g-recaptcha" data-sitekey="{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}"></div>
+            <button type="submit" class="button app-login-button" id="id_submit">
+                <i class="fa-solid fa-laptop-code"></i> Request Switch Device
+            </button>
+        </form>
+    
+        <div class="text-center rsd-text">
+            <a href="#" class="text link"><i class="fa-solid fa-circle-info"></i> Need help&quest;</a>
+        </div>
+    </div>
+    <script src='{% static "js/login.js" %}'></script>
 </body>
 </html>

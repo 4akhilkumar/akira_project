@@ -1,32 +1,254 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
+{% load humanize %}
+{% load ip_location %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accept Switch Device</title>
-    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
-    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
-</head>
-<body>
-    {% if get_SwitchDeviceRequest %}
-        {% if SwitchDeviceStatus == False %}
-        <form action="" method="POST">
-            {% csrf_token %}
-            <input type="text" name="reqIpAddr" id="id_reqIpAddr" value="{{ get_SwitchDeviceRequest.userIPAddr }}" disabled>
-            <input type="text" name="reqBrowser" id="id_reqBrowser" value="{{ get_SwitchDeviceRequest.userBrowser }}" disabled>
-            <input type="text" name="reqOS" id="id_reqOS" value="{{ get_SwitchDeviceRequest.userOS }}" disabled>
-            <input type="text" name="reqTimeDate" id="id_reqTimeDate" value="{{ get_SwitchDeviceRequest.created_at }}" disabled>
-            <input type="submit" value="Accept Request">
-        </form>
+{% block analytics-text %}
+<h1>Switch Device</h1>
+<p>Respond to Switch Device request <span class="fa-solid fa-laptop-code"></span></p>
+{% endblock %}
+
+{% block switch-device %}
+
+{% if currentSDReq.userConfirm == "Pending" %}
+    <div class="user-login-details previous-switch-devices" id="Current-Previous-Login_Details">
+        <h4>Current Request</h4>
+        <div class="whole-container">
+            <div class="outer-container">
+                <div class="each-login-details">
+                    <div class="device-icon-login-details">
+                        <div class="device-icon">
+                            {% if "Windows" in currentSDReq.userOS %}
+                            <span class="fab fa-windows"></span>
+                            {% elif "iPhone" in currentSDReq.userOS or "Macintosh" in currentSDReq.userOS %}
+                            <span class="fab fa-apple"></span>
+                            {% elif "Ubuntu" in currentSDReq.userOS %}
+                            <span class="fab fa-ubuntu"></span>
+                            {% elif "Android" in currentSDReq.userOS %}
+                            <span class="fab fa-android"></span>
+                            {% elif "CrOS" in currentSDReq.userOS %}
+                            <span class="fab fa-chrome"></span>
+                            {% else %}
+                            <span class="fas fa-exclamation-circle"></span>
+                            {% endif %}
+                        </div>
+                        <div class="device-platform_ip_addr-location-time">
+                            <div class="platform-name">
+                                <h4>{{ currentSDReq.userOS }} - {{ currentSDReq.userIPAddr }}</h4>
+                            </div>
+                            <div class="location_name">
+                                <p>{{ currentSDReq.userIPAddr|ip_location }} &#183; {{ currentSDReq.userBrowser }}</p>
+                            </div>
+                            <div class="time-date">
+                                <p>{{ currentSDReq.created_at|date:"h:i A" }} &#183; {{ currentSDReq.created_at|date:"d M" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="login-attempt-action">
+                        <form action="" method="POST" style="display: contents;">
+                            {% csrf_token %}
+                            <button class="true-button"><span class="fas fa-check"></span> Accept</button>
+                        </form>
+                        <button class="false-button" onclick="window.location='{% url 'denySwitchDevice' currentSDReq.id %}'"><span class="fas fa-exclamation-triangle"></span> Decline</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% elif currentSDReq.userConfirm == "User Approved" and currentSDReq.status == "Switch Device Successful" %}
+    <div class="user-login-details previous-switch-devices" id="Current-Previous-Login_Details">
+        <h4>Current Request</h4>
+        <div class="whole-container">
+            <div class="outer-container">
+                <div class="each-login-details">
+                    <div class="device-icon-login-details">
+                        <div class="device-icon">
+                            {% if "Windows" in currentSDReq.userOS %}
+                            <span class="fab fa-windows"></span>
+                            {% elif "iPhone" in currentSDReq.userOS or "Macintosh" in currentSDReq.userOS %}
+                            <span class="fab fa-apple"></span>
+                            {% elif "Ubuntu" in currentSDReq.userOS %}
+                            <span class="fab fa-ubuntu"></span>
+                            {% elif "Android" in currentSDReq.userOS %}
+                            <span class="fab fa-android"></span>
+                            {% elif "CrOS" in currentSDReq.userOS %}
+                            <span class="fab fa-chrome"></span>
+                            {% else %}
+                            <span class="fas fa-exclamation-circle"></span>
+                            {% endif %}
+                        </div>
+                        <div class="device-platform_ip_addr-location-time">
+                            <div class="platform-name">
+                                <h4>{{ currentSDReq.userOS }} - {{ currentSDReq.userIPAddr }}</h4>
+                            </div>
+                            <div class="location_name">
+                                <p>{{ currentSDReq.userIPAddr|ip_location }} &#183; {{ currentSDReq.userBrowser }}</p>
+                            </div>
+                            <div class="time-date">
+                                <p>{{ currentSDReq.created_at|date:"h:i A" }} &#183; {{ currentSDReq.created_at|date:"d M" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="login-attempt-action">
+                        <button class="true-button" onclick="window.location='{% url 'SyncDevice' currentSDReq.id %}'"><span class="fa-solid fa-rotate"></span> Sync Device</button>
+                        <!-- <button class="false-button" onclick="window.location='{% url 'denySwitchDevice' currentSDReq.id %}'"><span class="far fa-times-circle"></span> Terminate</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% elif currentSDReq.userConfirm == "User Approved" and currentSDReq.status == "Switch Device Pending" %}
+    <div class="user-login-details previous-switch-devices" id="Current-Previous-Login_Details">
+        <h4>Current Request</h4>
+        <div class="whole-container">
+            <div class="outer-container">
+                <div class="each-login-details">
+                    <div class="device-icon-login-details">
+                        <div class="device-icon">
+                            {% if "Windows" in currentSDReq.userOS %}
+                            <span class="fab fa-windows"></span>
+                            {% elif "iPhone" in currentSDReq.userOS or "Macintosh" in currentSDReq.userOS %}
+                            <span class="fab fa-apple"></span>
+                            {% elif "Ubuntu" in currentSDReq.userOS %}
+                            <span class="fab fa-ubuntu"></span>
+                            {% elif "Android" in currentSDReq.userOS %}
+                            <span class="fab fa-android"></span>
+                            {% elif "CrOS" in currentSDReq.userOS %}
+                            <span class="fab fa-chrome"></span>
+                            {% else %}
+                            <span class="fas fa-exclamation-circle"></span>
+                            {% endif %}
+                        </div>
+                        <div class="device-platform_ip_addr-location-time">
+                            <div class="platform-name">
+                                <h4>{{ currentSDReq.userOS }} - {{ currentSDReq.userIPAddr }}</h4>
+                            </div>
+                            <div class="location_name">
+                                <p>{{ currentSDReq.userIPAddr|ip_location }} &#183; {{ currentSDReq.userBrowser }}</p>
+                            </div>
+                            <div class="time-date">
+                                <p>{{ currentSDReq.created_at|date:"h:i A" }} &#183; {{ currentSDReq.created_at|date:"d M" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="login-attempt-action">
+                        <button class="suspicious-button"><span class="fa-solid fa-spinner"></span> Switching...</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    {% if getSwitchDeviceRequests %}
+    <h1 class="switchDeviceStatusText" id="change-text">No new request is made!</h1>
+    {% endif %}
+{% endif %}
+
+{% if getSwitchDeviceRequests %}
+<div class="user-login-details previous-switch-devices" id="Current-Previous-Login_Details">
+    <h4>Previous Switch Device{{ getSwitchDeviceRequests|pluralize }}</h4>
+    <div class="whole-container">
+    {% for i in getSwitchDeviceRequests %}
+        {% if i.userConfirm == "User Approved" and i.status == "Terminated" %}
+        <div class="outer-container">
+            <div class="each-login-details">
+                <div class="device-icon-login-details">
+                    <div class="device-icon">
+                        {% if "Windows" in i.userOS %}
+                        <span class="fab fa-windows"></span>
+                        {% elif "iPhone" in i.userOS or "Macintosh" in i.userOS %}
+                        <span class="fab fa-apple"></span>
+                        {% elif "Ubuntu" in i.userOS %}
+                        <span class="fab fa-ubuntu"></span>
+                        {% elif "Android" in i.userOS %}
+                        <span class="fab fa-android"></span>
+                        {% elif "CrOS" in i.userOS %}
+                        <span class="fab fa-chrome"></span>
+                        {% else %}
+                        <span class="fas fa-exclamation-circle"></span>
+                        {% endif %}
+                    </div>
+                    <div class="device-platform_ip_addr-location-time">
+                        <div class="platform-name">
+                            <h4>{{ i.userOS }} - {{ i.userIPAddr }}</h4>
+                        </div>
+                        <div class="location_name">
+                            <p>{{ i.userIPAddr|ip_location }} &#183; {{ i.userBrowser }}</p>
+                        </div>
+                        <div class="time-date">
+                            <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-attempt-action">
+                    <button class="confirmed-button"><span class="fas fa-check-circle"></span> Approved</button>
+                </div>
+            </div>
+        </div>
+        {% elif i.userConfirm == "User Denied" and i.status == "Terminated" %}
+        <div class="outer-container">
+            <div class="each-login-details">
+                <div class="device-icon-login-details">
+                    <div class="device-icon">
+                        {% if "Windows" in i.userOS %}
+                        <span class="fab fa-windows"></span>
+                        {% elif "iPhone" in i.userOS or "Macintosh" in i.userOS %}
+                        <span class="fab fa-apple"></span>
+                        {% elif "Ubuntu" in i.userOS %}
+                        <span class="fab fa-ubuntu"></span>
+                        {% elif "Android" in i.userOS %}
+                        <span class="fab fa-android"></span>
+                        {% elif "CrOS" in i.userOS %}
+                        <span class="fab fa-chrome"></span>
+                        {% else %}
+                        <span class="fas fa-exclamation-circle"></span>
+                        {% endif %}
+                    </div>
+                    <div class="device-platform_ip_addr-location-time">
+                        <div class="platform-name">
+                            <h4>{{ i.userOS }} - {{ i.userIPAddr }}</h4>
+                        </div>
+                        <div class="location_name">
+                            <p>{{ i.userIPAddr|ip_location }} &#183; {{ i.userBrowser }}</p>
+                        </div>
+                        <div class="time-date">
+                            <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-attempt-action">
+                    <button class="false-button"><span class="far fa-times-circle"></span> Denied</button>
+                </div>
+            </div>
+        </div>
         {% endif %}
-    {% else %}
-    <h1>No Switch Device request is made yet!</h1>
-    {% endif %}
-    {% if SwitchDeviceStatus == True %}
-    <a href="{% url 'SyncDevice' %}">Sync Device</a>
-    {% endif %}
-</body>
-</html>
+    {% empty %}
+    <h1 class="switchDeviceStatusText small-size-text">No previous Switch Device requests!</h1>
+    {% endfor %}
+    </div>
+</div>
+{% else %}
+<h1 class="switchDeviceStatusText">No request is made yet!</h1>
+{% endif %}
+
+<script>
+    $(document).ready(function(){
+        setInterval(function(){
+            $("#change-text").fadeOut(500, function(){
+                $(this).text(function(i, text){
+                    return text === "No new request is made!" ? "If you request Switch Device, refresh the tab" : "No new request is made!";
+                }).fadeIn(500);
+            });
+        }, 3000);
+    });
+</script>
+
+{% if currentSDReq.userConfirm == "User Approved" and currentSDReq.status == "Switch Device Pending" %}
+<script>
+    setInterval(function(){
+        location.reload();
+    }, 10000);
+</script>
+{% endif %}
+<!-- <i class="fa-solid fa-arrows-rotate"></i> -->
+{% endblock %}

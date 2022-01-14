@@ -18,7 +18,7 @@
     <script>
         function ajaxCall() {
             $.ajax({
-                url: "{% url 'checkValidatedSwitchDeviceRequest' username=currentUsername %}",
+                url: "{% url 'checkValidatedSwitchDeviceRequest' username=currentUsername switchDeviceID=switchDeviceID %}",
                 type: 'GET',
                 success: function(data) {
                     if (data.status == "success") {
@@ -28,10 +28,14 @@
                         });
                         window.location.href = data.redirect_url;
                     }
+                    else if (data.status == "failed" && data.message == "User Denied") {
+                        alert("User Denied");
+                        window.location.href = "{% url 'login' %}";
+                    }
                 }
             });
         }
-        setInterval(ajaxCall, 10000);    
+        setInterval(ajaxCall, 10000);
     </script>
 </body>
 </html>

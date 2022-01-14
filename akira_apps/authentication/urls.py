@@ -44,8 +44,10 @@ urlpatterns = [
         name="password_reset_complete"),
 
     path('requestSwitchDevice/', views.requestSwitchDevice, name="requestSwitchDevice"),
+    path('waitingSwitchDeviceResponse/<switchDeviceReqID>/<username>/', views.waitingSwitchDeviceResponse, name="waitingSwitchDeviceResponse"),
     path('validateSwitchDevice/', views.validateSwitchDevice, name="validateSwitchDevice"),
-    path('checkValidatedSwitchDeviceRequest/<username>/', views.checkValidatedSwitchDeviceRequest, name="checkValidatedSwitchDeviceRequest"),
+    path('denySwitchDevice/<switchDeviceReqID>/', views.denySwitchDevice, name="denySwitchDevice"),
+    path('checkValidatedSwitchDeviceRequest/<username>/<switchDeviceID>/', views.checkValidatedSwitchDeviceRequest, name="checkValidatedSwitchDeviceRequest"),
     path('SwitchDeviceStatus/<username>/', views.SwitchDeviceStatus, name="SwitchDeviceStatus"),
-    path('SyncDevice/', views.SyncDevice, name="SyncDevice"),
+    path('SyncDevice/<switchDeviceID>/', views.SyncDevice, name="SyncDevice"),
 ]
