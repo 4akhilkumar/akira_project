@@ -104,6 +104,7 @@ def assign_user_group(request, staff_username):
 # user.first_name = 'Sai Akhil Kumar Reddy'
 # user.last_name = 'N'
 # user.email = '4akhilkumar@gmail.com'
+# user.set_password("root")
 # user.is_active = True
 # user.is_staff = True
 # user.is_superuser = True
