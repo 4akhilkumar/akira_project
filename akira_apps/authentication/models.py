@@ -7,8 +7,8 @@ User._meta.get_field('email')._unique = True
 
 class UserLoginDetails(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    user_ip_address = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_ip_address = models.GenericIPAddressField()
     os_details = models.CharField(max_length=100)
     browser_details = models.CharField(max_length=100)
     score = models.IntegerField(blank=True, null=True)
@@ -25,8 +25,8 @@ class UserLoginDetails(models.Model):
 
 class User_IP_B_List(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    login_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    black_list = models.GenericIPAddressField(blank=True, null=True)
+    login_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    black_list = models.GenericIPAddressField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -37,8 +37,8 @@ class User_IP_B_List(models.Model):
 
 class User_IP_S_List(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    login_user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    suspicious_list = models.GenericIPAddressField(blank=True, null=True)
+    login_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    suspicious_list = models.GenericIPAddressField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -49,8 +49,8 @@ class User_IP_S_List(models.Model):
 
 class User_BackUp_Codes(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, unique=True, on_delete=models.SET_NULL, blank=True, null=True)
-    backup_codes = models.CharField(max_length=60)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    backup_codes = models.TextField(max_length=100)
     download = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -62,8 +62,8 @@ class User_BackUp_Codes(models.Model):
 
 class User_BackUp_Codes_Login_Attempts(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    userIPAddr = models.GenericIPAddressField(blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    userIPAddr = models.GenericIPAddressField()
     status = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -75,13 +75,13 @@ class User_BackUp_Codes_Login_Attempts(models.Model):
 
 class SwitchDevice(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    userIPAddr = models.GenericIPAddressField(blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    userIPAddr = models.GenericIPAddressField()
     userBrowser = models.CharField(max_length=100)
     userOS = models.CharField(max_length=100)
     userConfirm = models.CharField(max_length=100, blank=True, null=True, default='Pending')
     reason = models.CharField(max_length=100, blank=True, null=True)
-    currentPage = models.CharField(max_length=500, blank=True, null=True)
+    currentPage = models.TextField(max_length=400, blank=True, null=True)
     status = models.CharField(max_length=100, default="Switch Device Pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -93,9 +93,9 @@ class SwitchDevice(models.Model):
 
 class UserPageVisits(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    userIPAddr = models.GenericIPAddressField(blank=True, null=True)
-    currentPage = models.CharField(max_length=500, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    userIPAddr = models.GenericIPAddressField()
+    currentPage = models.TextField(max_length=400)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
