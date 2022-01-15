@@ -113,17 +113,12 @@ def user_login(request):
                                     dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username).count()
                                     if dataset_UserLoginDetails > 2:
                                         current_uld = UserLoginDetails.objects.filter(user__username = username)
-                                        old_uld_7 = UserLoginDetails.objects.filter(created_at__lte = pydt.datetime.now() - pydt.timedelta(days = 7)).count()
                                         last_current_uld = UserLoginDetails.objects.filter(user__username = username).order_by('-created_at')
                                         current_user = User.objects.get(username = username)
                                         list_current_uld_ipa = []
                                         list_current_uld_osd = []
                                         list_current_uld_bd = []
-                                        if len(current_uld) > old_uld_7:
-                                            n = len(current_uld) - old_uld_7
-                                        else:
-                                            n = 0
-                                        for i in range(n,len(current_uld)-1):
+                                        for i in range(len(current_uld)-1):
                                             list_current_uld_ipa.append(current_uld[i].user_ip_address)
                                             list_current_uld_osd.append(current_uld[i].os_details)
                                             list_current_uld_bd.append(current_uld[i].browser_details)
