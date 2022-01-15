@@ -62,7 +62,7 @@
         <form action="" method="POST">
             {% csrf_token %}
             <div class="input app-input">
-                <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" required>
+                <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" onkeyup="isEmpty()" required>
                 <label for="username"><i class="far fa-user"></i> Username</label>
             </div>
             <div class="g-recaptcha" data-sitekey="{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}"></div>
