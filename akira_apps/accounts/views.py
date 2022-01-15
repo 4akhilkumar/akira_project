@@ -90,10 +90,10 @@ def account_settings(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     
-    if UserLoginDetails.objects.filter(user__username = request.user.username).count() > 2:
+    if UserLoginDetails.objects.filter(user__username = request.user.username).count() >= 2:
         get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = request.user.username, attempt="Success").order_by('-created_at')[1]
     else:
-        get_PreviousLoginInfo = 0
+        get_PreviousLoginInfo = None
     
     if get_currentLoginInfo.user_ip_address == ip and \
         get_currentLoginInfo.browser_details == browser and \
@@ -120,28 +120,16 @@ def account_settings(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def generate_backup_codes(request):
-    try:
-        status_2fa = TwoFactorAuth.objects.get(user=request.user)
-    except TwoFactorAuth.DoesNotExist:
-        status_2fa = None
-    current_user_2fa_status = 0
-    if (status_2fa != None) and (status_2fa.twofa == 0):
-        current_user_2fa_status = 0
-    elif (status_2fa != None) and (status_2fa.twofa == 1):
-        current_user_2fa_status = 1
-    else:
-        current_user_2fa_status = 0
-    try:
-        backup_codes = User_BackUp_Codes.objects.get(user__username=request.user.username)
-    except User_BackUp_Codes.DoesNotExist:
-        backup_codes = None
-    if current_user_2fa_status == 1:
+    if TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True:
+        try:
+            backup_codes = User_BackUp_Codes.objects.get(user=request.user)
+        except User_BackUp_Codes.DoesNotExist:
+            backup_codes = None
         if backup_codes == None:
             list_codes = secrets.token_urlsafe(45)
             split_str = re.findall('.{1,6}', str(list_codes))
             join_hash = '#'.join(split_str)
-            userbackupcodes = User_BackUp_Codes(user__username = request.user.username, backup_codes = join_hash)
-            userbackupcodes.save()
+            User_BackUp_Codes.objects.create(user = request.user, backup_codes = join_hash)
             messages.success(request, "Backup Codes generated")
             return redirect('account_settings')
         else:
