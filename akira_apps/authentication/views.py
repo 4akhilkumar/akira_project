@@ -1072,7 +1072,7 @@ def SwitchDeviceStatus(request, username):
         updateCurrentSDReq.userIPAddr = ip
         updateCurrentSDReq.status = "Switch Device Successful"
         updateCurrentSDReq.save()
-        return "Switch Device Successful"
+        return HttpResponse(status=200)
     else:
         return HttpResponse("No Switch Device Request Found!")
 
