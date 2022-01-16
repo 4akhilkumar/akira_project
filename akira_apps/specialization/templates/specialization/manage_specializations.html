@@ -139,7 +139,7 @@
         <label for="id_branch">Branch</label>
         <select name="branch" id="id_branch" required>
           {% for x,y in branch_list.fields.branch.choices %}
-            <option value="{{ x }}" selected>{{ y }}</option>
+            <option value="{{ x }}">{{ y }}</option>
           {% endfor %}
         </select>
         <br>
