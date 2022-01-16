@@ -54,9 +54,13 @@
 {% endblock %}
 
 {% block manage-faculty %}
-<button onClick='window.location="{% url 'add_staff' %}"' class="add-faculty">Add Faculty</button>
-<button id="showFormBulkImport" class="add-faculty">Bulk Import</button>
-
+<div class="btn-area">
+  <button onClick='window.location="{% url 'add_staff' %}"' class="add-faculty">Add Faculty</button>
+  <button id="showFormBulkImport" class="add-faculty">Bulk Import</button>
+  {% if staffs %}
+  <button onClick='window.location="{% url 'staff_info_csv' %}"' class="add-faculty">Bulk Export</button>
+  {% endif %}
+</div>
 
 <div id="myModal" class="modal">
   <div class="model-container">
