@@ -1,0 +1,114 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Analytics</h1>
+<p>Display analytics about your Sem-Registration <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+        <span class="fa-solid fa-building"></span>
+      </div>
+      <div class="analytic-info">
+        <h4>Total Blocks</h4>
+        <h1> -- </h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fa-solid fa-person-booth"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Total Rooms</h4>
+        <h1> -- </h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+        <span class="fa-solid fa-calendar-day"></span>
+      </div>
+      <div class="analytic-info">
+        <h4>Current Semester</h4>
+        <h1>{{ activeSemesterMode }}</h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Lorem Ipsum</h4>
+        <h1> -- </h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block sem-registration %}
+<div class="btn-area">
+  <button id="showFormCreateSemester" class="create-block-btn">Create Semester</button>
+</div>
+
+<br>
+
+<div id="myModal" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <span id="close-model" class="close">&times;</span>
+      <form action="{% url 'create_semester_save' %}" method="POST">
+        {% csrf_token %}
+        <label for="">Semester Mode</label>
+        <select name="semester_mode" id="id_semester_mode">
+            {% for x,y in semesterModeForm.fields.semesterModeForm.choices %}
+            <option value="{{ x }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <label for="">Semester Start Year</label>
+        <input type="date" name="semester_start_year" id="id_semester_start_year">
+        <label for="">Semester End year</label>
+        <input type="date" name="semester_end_year" id="id_semester_end_year">
+        <br>
+        <label for="id_branch">Branch</label>
+        <select name="branch" id="id_branch" required>
+          {% for x,y in branch_list.fields.branch.choices %}
+            <option value="{{ x }}">{{ y }}</option>
+          {% endfor %}
+        </select>
+        <br>
+        <label for="">Semester Status</label>
+        <input type="checkbox" name="semester_is_active" id="id_semester_is_active">
+        <input type="submit" value="Create Semester">
+      </form>
+    </div>
+  </div>
+</div>
+
+<br>
+<h2 class="semester-lists">Semester Lists</h2>
+<h4 class="create-semester">
+    {% for i in semesters %}
+        {{ i.mode }}
+        {{ i.start_year }}
+        {{ i.end_year }}
+        {{ i.branch }}
+        {{ i.is_active }}
+        <a href="{% url 'fetch_semester' i.id %}">Edit</a>
+        <a href="{% url 'delete_semester' i.id %}">Delete</a>
+        <br>
+    {% empty %}
+        No semester found
+    {% endfor %}
+</h4>
+
+<script src="{% static 'js/semRegistration.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

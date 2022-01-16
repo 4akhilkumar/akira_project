@@ -1,0 +1,16 @@
+<form action="{% url 'update_semester_save' semester.id %}" method="POST">
+    {% csrf_token %}
+    <label for="">Semester Mode</label>
+    <select name="semester_mode" id="id_semeste_mode">
+        <option value="">Select Mode</option>
+        <option value="ODD" {% if semester.mode == "ODD" %} selected {% endif %}>ODD</option>
+        <option value="EVEN" {% if semester.mode == "EVEN" %} selected {% endif %}>EVEN</option>
+    </select>
+    <label for="">Semester Start Year</label>
+    <input type="date" name="semester_start_year" value="{{ semester.start_year|date:'Y-m-d' }}" id="id_semester_start_year">
+    <label for="">Semester End year</label>
+    <input type="date" name="semester_end_year" value="{{ semester.end_year|date:'Y-m-d' }}" id="id_semester_end_year">
+    <label for="">Semester Status</label>
+    <input type="checkbox" name="semester_is_active" {% if semester.is_active == True %} checked {% endif %} id="id_semester_is_active">
+    <input type="submit" value="Update Semester">
+</form>
