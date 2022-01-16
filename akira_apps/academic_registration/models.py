@@ -40,20 +40,6 @@ class SpecEnrollStudent(models.Model):
 #     student = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
 #     branch = models.CharField(max_length = 50, unique = True, choices = BRANCH_CHOICES, default=1)
 
-# class Specialization(models.Model):
-#     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-#     specialization_name = models.CharField(max_length = 50, unique = True)
-#     specialization_short_info = models.TextField(max_length = 100, default="Start your path to a career in project management. No degree or experience is required.")
-#     specialization_wywl = models.TextField(max_length = 500, default="WHAT YOU WILL LEARN")
-#     specialization_sywg = models.TextField(max_length = 500, default="SKILLS YOU WILL GAIN")
-#     specialization_desc = RichTextUploadingField()
-#     specialization_faculty = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-#     branch = models.CharField(max_length = 50, unique = True, choices = BRANCH_CHOICES, default=1)
-#     capacity = models.IntegerField(default=0)
-
-#     def __str__(self):
-#         return '%s' % (self.specialization_name)
-
 # class specialization_registration_staff(models.Model):
 #     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
 #     staff = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
