@@ -142,7 +142,7 @@
                     {% endif %}
                     <li>
                         <a href="{% url 'manage_staff' %}"
-                        {% if "manage_staff" in request.path %}
+                        {% if "manage_staff" in request.path or "view_staff" in request.path %}
                         class="active"
                         {% endif %}
                         >
@@ -224,18 +224,25 @@
         <main>
             {% block analytic-overview %}{% endblock %}
             {% block academic %} {% endblock %}
+            {% block sem-registration %} {% endblock %}
+            
             {% block manage-courses %} {% endblock %}
-            {% block create-course %} {% endblock %}
             {% block view-course %} {% endblock %}
+            {% block search-courses %} {% endblock %}
+            
             {% block manage-specializations %} {% endblock %}
             {% block view-specialization %} {% endblock %}
             {% block search-specializations %} {% endblock %}
+            
             {% block manage-resource %} {% endblock %}
             {% block view-resource %} {% endblock %}
+            
             {% block manage-faculty %} {% endblock %}
             {% block view-faculty %} {% endblock %}
+            
             {% block manage-students %} {% endblock %}
             {% block view-student %} {% endblock %}
+            
             {% block manage-account %} {% endblock %}
             {% block switch-device %} {% endblock %}
             <section>
