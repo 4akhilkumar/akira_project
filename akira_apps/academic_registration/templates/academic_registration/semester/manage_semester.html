@@ -1,0 +1,28 @@
+{% for i in list_all_semester %}
+{{ i.mode }}
+{{ i.start_year }}
+{{ i.end_year }}
+{{ i.is_active }}
+<a href="{% url 'fetch_semester' i.id %}">Edit</a>
+<a href="{% url 'delete_semester' i.id %}">Delete</a>
+{% empty %}
+No semester found
+{% endfor %}
+
+<form action="{% url 'create_semester_save' %}" method="POST">
+    {% csrf_token %}
+    <label for="">Semester Mode</label>
+    <select name="semester_mode" id="id_semeste_mode">
+        <option value="">Select Mode</option>
+        <option value="ODD">ODD</option>
+        <option value="EVEN">EVEN</option>
+    </select>
+
+    <label for="">Semester Start Year</label>
+    <input type="date" name="semester_start_year" id="id_semester_start_year">
+    <label for="">Semester End year</label>
+    <input type="date" name="semester_end_year" id="id_semester_end_year">
+    <label for="">Semester Name</label>
+    <input type="checkbox" name="semester_is_active" id="id_semester_is_active">
+    <input type="submit" value="Create Semester">
+</form>

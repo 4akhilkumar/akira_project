@@ -1,6 +1,19 @@
 from django.db import models
 import uuid
 
+BRANCH_CHOICES = [
+    ("","Branch Name"),
+    ("Computer Science and Engineering","Computer Science and Engineering"),
+    ("Aerospace/aeronautical Engineering","Aerospace/aeronautical Engineering"),
+    ("Chemical Engineering","Chemical Engineering"),
+    ("Civil Engineering","Civil Engineering"),
+    ("Electronics and Communications Engineering","Electronics and Communications Engineering"),
+    ("Electrical and Electronics Engineering","Electrical and Electronics Engineering"),
+    ("Petroleum Engineering","Petroleum Engineering"),
+    ("Bio Technology","Bio Technology"),
+    ("Mechanical Engineering","Mechanical Engineering"),
+]
+
 class Block(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     block_name = models.CharField(max_length = 50, unique = True)
@@ -28,9 +41,10 @@ class Room(models.Model):
     TYPE = [
         ('Class Room','Class Room'),
         ('Staff Room','Staff Room'),
-        ('Waiting Hall','Waiting Hall'),
         ('Lab','Lab'),
         ('Meeting Hall','Meeting Hall'),
+        ('Waiting Hall','Waiting Hall'),
+        ('Other','Other'),
     ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     room_name = models.CharField(max_length = 50)
@@ -44,6 +58,7 @@ class Room(models.Model):
     
     class Meta:
         ordering = ['room_name']
+        unique_together = ('block', 'floor', 'room_name')
 
 class Semester(models.Model):
     MODE = [
@@ -54,6 +69,7 @@ class Semester(models.Model):
     mode = models.CharField(max_length = 4, choices = MODE, default = 1)
     start_year = models.DateField()
     end_year = models.DateField()
+    branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
