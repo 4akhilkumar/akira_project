@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate
 from django.http.response import HttpResponse
-
+from django.contrib import messages
 from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
 
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.authentication.forms import (CreateUserForm)
 from .models import (Staff)
+from .forms import (StaffsForm)
 from akira_apps.student.forms import (StudentsForm)
 from akira_apps.course.models import (CourseMC)
 
@@ -279,7 +280,11 @@ def edit_staff(request, staff_username):
     return render(request, 'staff/staff_templates/manage_staff/edit_faculty.html', context)
 
 def view_staff(request, staff_username):
-    staff = Staff.objects.get(user__username=staff_username)
+    try:
+        staff = Staff.objects.get(user__username=staff_username)
+    except Exception:
+        messages.error(request, "Staff doesn't exist")
+        return redirect('manage_staff')
     user = User.objects.get(username=staff_username)
     list_groups = Group.objects.all()
     current_user_group = ', '.join(map(str, user.groups.all()))
