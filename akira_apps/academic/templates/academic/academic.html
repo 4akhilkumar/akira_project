@@ -6,7 +6,7 @@
 {% block content %}
 
 {% block analytics-text %}
-<h1>Analytics</h1>
+<h1>Manage Academy</h1>
 <p>Display analytics about your Academy <span class="fas fa-chart-line"></span> </p>
 {% endblock %}
 
@@ -52,7 +52,6 @@
   <button id="showFormCreateBlock" class="create-block-btn">Create Block</button>
   <button id="showFormCreateFloor" class="create-block-btn">Create Floor</button>
   <button id="showFormCreateRoom" class="create-block-btn">Create Room</button>
-  <button id="showFormCreateSemester" class="create-block-btn">Create Semester</button>
   <button id="showFormCreateBulk" class="create-block-btn">Bulk Import</button>
   {% if blocks %}
   <button onClick='window.location="{% url 'academic_info_csv' %}"' class="add-faculty">Bulk Export</button>
