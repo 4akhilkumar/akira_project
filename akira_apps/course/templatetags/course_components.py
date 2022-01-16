@@ -1,6 +1,6 @@
 from django import template
 register = template.Library()
-from akira_apps.course.models import (CourseComponent, CourseMC, CourseFiles, CourseSubComponent, CourseTask, TaskAnswer)
+from akira_apps.course.models import (CourseTask)
 
 @register.filter
 def subComponent(value):
