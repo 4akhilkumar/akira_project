@@ -77,3 +77,8 @@ class Semester(models.Model):
 
     class Meta:
         ordering = ['-start_year']
+
+# Testing Many-to-Many
+class Testing(models.Model):
+    name = models.CharField(max_length=128)
+    members = models.ManyToManyField(Block)

@@ -274,6 +274,30 @@
     {% endfor %}
 </h4>
 
+
+<!-- Testing Many-to-Many -->
+
+<form action="{% url 'TestingMet' %}" method="post">
+  {% csrf_token %}
+  <input type="text" name="name" id="id_name" value="LoremText">
+  <select name="members" id="id_members" multiple>
+    {% for i in blocks %}
+    <option value="{{i.id}}">{{ i.block_name }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Test it">
+</form>
+
+{% for i in test %}
+    Name: {{ i.name }} <br>
+    Blocks: <br>
+    {% for j in i.members.all %}
+      {{ j }}<br/>
+    {% endfor %}
+{% endfor %}
+
+<!-- Testing Many-to-Many -->
+
 <script src="{% static 'js/academic.js' %}"></script>
 <script src="{% static 'js/fileDragUpload.js' %}"></script>
 <script>

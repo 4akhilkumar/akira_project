@@ -184,17 +184,23 @@ def bulk_upload_academic_info_save(request):
             messages.success(request, "Bulk Import done")
         return redirect('manage_academic')
 
+# Testing MTM
+from .models import (Testing)
+
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def manage_academic(request):
     blocks = Block.objects.all().order_by('block_name')
     floors = Floor.objects.all()
     rooms = Room.objects.all()
     roomTypeForm = RoomTypeForm()
+    # Testing MTM
+    test = Testing.objects.all()
     context = {
         "blocks": blocks,
         "floors": floors,
         "rooms": rooms,
         "roomTypeForm":roomTypeForm,
+        "test":test,
     }
     return render(request, 'academic/academic.html', context)
 
@@ -214,3 +220,17 @@ def academic_info_csv(request):
         writer.writerow([i.block.block_name, i.block.block_desc, i.floor.floor_name,
                         i.room_name, i.type, i.capacity])
     return response
+
+# Testing Many-to-Many
+
+# Testing.objects.all().delete()
+
+def TestingMet(request):
+    if request.method == "POST":
+        getName = request.POST['name']
+        getMembers = request.POST.getlist('members')
+        createObj = Testing.objects.create(name = getName)
+        for i in getMembers:
+            ithObj = Block.objects.get(id=i)
+            createObj.members.add(ithObj)
+    return redirect('manage_academic')

@@ -16,4 +16,6 @@ urlpatterns = [
 
     path('bulk_upload_academic_info_save/', views.bulk_upload_academic_info_save, name='bulk_upload_academic_info_save'),
     path('academic_info_csv/', views.academic_info_csv, name='academic_info_csv'),
+
+    path('TestingMet/', views.TestingMet, name='TestingMet'),
 ]
