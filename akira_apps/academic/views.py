@@ -11,7 +11,6 @@ from akira_apps.super_admin.decorators import allowed_users
 from .models import (Block, Floor, Room)
 from akira_apps.academic.forms import (RoomTypeForm)
 
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def returnBlockName(blockName):
     if not "block" in blockName:
         blockName = blockName.capitalize() + " Block"
@@ -47,7 +46,7 @@ def create_block_save(request):
     if request.method == 'POST':
         blockName = request.POST.get('block_name')
         if "block" == blockName.lower() or blockName == None or blockName == "":
-            messages.info(request, 'What BLock is it?')
+            messages.info(request, 'What Block is it?')
             return redirect('manage_academic')
         getblockName = returnBlockName(blockName)
         blockDesc = request.POST.get('block_desc')
@@ -75,7 +74,6 @@ def ordinal(n):
     else:
         return f'{n}{s[v]}'
 
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def returnFloorName(floorName):
     if floorName.isnumeric():
         floorName = ordinal(int(floorName)) + " Floor"
@@ -115,7 +113,6 @@ def delete_floor(request, floor_id):
     floor.delete()
     return redirect('manage_academic')
 
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def getFloorbyBlock(request):
     if request.method == "POST":
         block_id = request.POST['block']
