@@ -74,35 +74,30 @@ def user_login(request):
         except User.DoesNotExist:
             checkUserExists = None
 
-        user = User.objects.get(username = username)
-
-        try:
-            checkSD = SwitchDevice.objects.get(user = user, status = "Switch Device Successful")
-        except SwitchDevice.DoesNotExist:
-            checkSD = None
-        
-        if checkSD:
-            updatecheckSD = SwitchDevice.objects.filter(user = user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful")[0]
-            updatecheckSD.reason = "User Logged In"
-            updatecheckSD.status = "Terminated"
-            updatecheckSD.save()
-
-        try:
-            checkSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
-        except SwitchDevice.DoesNotExist:
-            checkSDPNA = None
-
-        if checkSDPNA:
-            updatecheckSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
-            updatecheckSDPNA.userConfirm = "User Denied"
-            updatecheckSDPNA.reason = "User Logged In"
-            updatecheckSDPNA.status = "Terminated"
-            updatecheckSDPNA.save()
-
         if cap_json['success'] == True:
             if data['checkKeyEncrypted'] is True:
                 if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False:
                     if checkUserExists:
+                        user = User.objects.get(username = username)
+                        try:
+                            checkSD = SwitchDevice.objects.get(user = user, status = "Switch Device Successful")
+                        except SwitchDevice.DoesNotExist:
+                            checkSD = None
+                        if checkSD:
+                            updatecheckSD = SwitchDevice.objects.filter(user = user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful")[0]
+                            updatecheckSD.reason = "User Logged In"
+                            updatecheckSD.status = "Terminated"
+                            updatecheckSD.save()
+                        try:
+                            checkSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
+                        except SwitchDevice.DoesNotExist:
+                            checkSDPNA = None
+                        if checkSDPNA:
+                            updatecheckSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
+                            updatecheckSDPNA.userConfirm = "User Denied"
+                            updatecheckSDPNA.reason = "User Logged In"
+                            updatecheckSDPNA.status = "Terminated"
+                            updatecheckSDPNA.save()
                         if user.is_active == True:
                             user = authenticate(request, username = username, password = data['MetaKey'])
                             if user is not None:
