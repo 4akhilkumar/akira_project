@@ -33,15 +33,6 @@
         <h1>{{ rooms|length }}</h1>
     </div>
   </div>
-  <div class="analytic">
-      <div class="analytic-icon">
-          <span class="fa-solid fa-calendar-day"></span>
-      </div>
-      <div class="analytic-info">
-          <h4>Current Semester</h4>
-          <h1>{{ activeSemesterMode }}</h1>
-      </div>
-  </div>
   {% comment %}
   <div class="analytic">
     <div class="analytic-icon">
@@ -62,6 +53,10 @@
   <button id="showFormCreateFloor" class="create-block-btn">Create Floor</button>
   <button id="showFormCreateRoom" class="create-block-btn">Create Room</button>
   <button id="showFormCreateSemester" class="create-block-btn">Create Semester</button>
+  <button id="showFormCreateBulk" class="create-block-btn">Bulk Import</button>
+  {% if blocks %}
+  <button onClick='window.location="{% url 'academic_info_csv' %}"' class="add-faculty">Bulk Export</button>
+  {% endif %}
 </div>
 
 {% if blocks %}
@@ -155,7 +150,7 @@
       </div>
     </div>
     <div class="block-buttons">
-      <button class="block-delete-btn" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button>
+      <!-- <button class="block-delete-btn" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button> -->
       <button class="block-contact-btn"><span>Contact</span></button>
     </div>
   </div>
@@ -233,21 +228,15 @@
   <div class="model-container">
     <div class="modal-content">
       <span id="close-model4" class="close">&times;</span>
-      <form action="{% url 'create_semester_save' %}" method="POST">
-        {% csrf_token %}
-        <label for="">Semester Mode</label>
-        <select name="semester_mode" id="id_semester_mode">
-            {% for x,y in semesterModeForm.fields.semesterModeForm.choices %}
-            <option value="{{ x }}">{{ y }}</option>
-            {% endfor %}
-        </select>
-        <label for="">Semester Start Year</label>
-        <input type="date" name="semester_start_year" id="id_semester_start_year">
-        <label for="">Semester End year</label>
-        <input type="date" name="semester_end_year" id="id_semester_end_year">
-        <label for="">Semester Status</label>
-        <input type="checkbox" name="semester_is_active" id="id_semester_is_active">
-        <input type="submit" value="Create Semester">
+      <form action="{% url 'bulk_upload_academic_info_save' %}" method="POST" enctype="multipart/form-data">
+        <div class="drop-zone">
+          <span class="drop-zone__prompt">
+            <i class="fa-solid fa-file fileUploadIcon"></i> <br>
+            Drop file here or click to upload</span>
+          {% csrf_token %}
+            <input type="file" name="academic_file" class="drop-zone__input" accept=".csv" required>
+        </div>
+        <input type="submit" class="bulkUploadButton" value="Bulk Upload">
       </form>
     </div>
   </div>
@@ -281,27 +270,13 @@
     {% for i in rooms %}
     {{ i.room_name }} {{ i.block }} {{ i.floor }} {{ i.type }} {{ i.capacity }} | <a href="">Edit</a> | <a href="{% url 'delete_room' i.id %}">Delete</a>
     <br>
-    {% endfor %}
-</h4>
-
-<hr>
-
-<h2 class="semester-lists">Semester Lists</h2>
-<h4 class="create-semester">
-    {% for i in semesters %}
-        {{ i.mode }}
-        {{ i.start_year }}
-        {{ i.end_year }}
-        {{ i.is_active }}
-        <a href="{% url 'fetch_semester' i.id %}">Edit</a>
-        <a href="{% url 'delete_semester' i.id %}">Delete</a>
-        <br>
     {% empty %}
-        No semester found
+    No Rooms found
     {% endfor %}
 </h4>
 
 <script src="{% static 'js/academic.js' %}"></script>
+<script src="{% static 'js/fileDragUpload.js' %}"></script>
 <script>
   $("select[name = 'get_block_id']").change(function () {
       const blockId = $(this).val();
