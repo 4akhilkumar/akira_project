@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 
 import uuid
@@ -22,7 +21,6 @@ class SpecializationsMC(models.Model):
     specialization_wywl = models.TextField(max_length = 500, default="WHAT YOU WILL LEARN")
     specialization_sywg = models.TextField(max_length = 500, default="SKILLS YOU WILL GAIN")
     specialization_desc = models.TextField(max_length = 500, default="Description of the Specialization")
-    specialization_faculty = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
     capacity = models.IntegerField(default=0)
 
