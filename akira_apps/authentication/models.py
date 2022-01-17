@@ -15,6 +15,7 @@ class UserLoginDetails(models.Model):
     attempt = models.CharField(max_length=100)
     user_confirm = models.CharField(max_length=100, blank=True, null=True, default='Pending')
     reason = models.CharField(max_length=100, blank=True, null=True)
+    sessionKey = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
