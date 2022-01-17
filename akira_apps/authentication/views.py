@@ -464,6 +464,7 @@ def verify_user_by_backup_codes(request, username):
                     update_LoginAttempt = UserLoginDetails.objects.get(id=get_LoginAttempt.id)
                     update_LoginAttempt.score = getLoginScore(update_LoginAttempt.id, dataUsername['DecryptedUsername'])
                     update_LoginAttempt.attempt = "Success"
+                    update_LoginAttempt.user_confirm = "User used 2FA Backup Codes"
                     update_LoginAttempt.reason = "Confirmed User via Backup Codes"
                     update_LoginAttempt.save()
                     try:
