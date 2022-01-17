@@ -171,7 +171,6 @@ def delete_existing_backup_codes(request):
         backup_codes = None
     if backup_codes == None:
         messages.info(request, "No Backup codes to delete")
-        return redirect('account_settings')
     else:
         backup_codes = User_BackUp_Codes.objects.get(user=request.user)
         backup_codes.delete()
@@ -185,19 +184,18 @@ def status_2fa(request):
     except TwoFactorAuth.DoesNotExist:
         check_current_user_2fa = None
     if check_current_user_2fa == None:
-        create_enable_2fa = TwoFactorAuth.objects.create(user=request.user, twofa = 1)
-        create_enable_2fa.save()
+        TwoFactorAuth.objects.create(user=request.user, twofa = True)
         messages.info(request, "2-Factor Authentication is enabled")
     else:
         check_current_user_2fa_status = TwoFactorAuth.objects.get(user=request.user)
         if check_current_user_2fa_status.twofa == False:
             update_enable_2fa = TwoFactorAuth.objects.get(id = check_current_user_2fa_status.id)
-            update_enable_2fa.twofa = 1
+            update_enable_2fa.twofa = True
             update_enable_2fa.save()
             messages.info(request, "2-Factor Authentication is enabled")
         else:
             update_disable_2fa = TwoFactorAuth.objects.get(id = check_current_user_2fa_status.id)
-            update_disable_2fa.twofa = 0
+            update_disable_2fa.twofa = False
             update_disable_2fa.save()
             messages.info(request, "2-Factor Authentication is disabled")
             return redirect('delete_existing_backup_codes')
