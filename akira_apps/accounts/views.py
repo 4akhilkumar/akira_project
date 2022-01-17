@@ -110,6 +110,7 @@ def account_settings(request):
         "get_dates":remove_duplicate_date_after_ordinal,
         "success_attempts_date":success_attempts_date,
         "failed_attempts_date":failed_attempts_date,
+        "get_unconfirmed_login_attempts":get_unconfirmed_login_attempts,
         "get_failed_attempt_in_a_month":get_failed_attempt_in_a_month,
         "get_currentLoginInfo":get_currentLoginInfo,
         "get_PreviousLoginInfo":get_PreviousLoginInfo,
