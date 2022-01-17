@@ -284,6 +284,32 @@ def save_login_details(request, user_name, user_ip_address, attempt, reason):
         except Exception as e:
             return e
 
+def getLoginScore(LoginObjectID, username):
+    current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success")
+    last_current_uld = UserLoginDetails.objects.get(id = LoginObjectID)
+    list_current_uld_ipa = []
+    list_current_uld_osd = []
+    list_current_uld_bd = []
+    for i in range(len(current_uld)-1):
+        list_current_uld_ipa.append(current_uld[i].user_ip_address)
+        list_current_uld_osd.append(current_uld[i].os_details)
+        list_current_uld_bd.append(current_uld[i].browser_details)
+
+    user_ip_address = str(last_current_uld.user_ip_address)
+    os_details = str(last_current_uld.os_details)
+    browser_details = str(last_current_uld.browser_details)
+
+    count = 0
+    if user_ip_address in list_current_uld_ipa:
+        count += 16
+    if os_details in list_current_uld_osd:
+        count += 4
+    if browser_details in list_current_uld_bd:
+        count += 2
+    return count
+
+# UserLoginDetails.objects.all().delete()
+
 def verify_its_you(request, username):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
@@ -436,6 +462,7 @@ def verify_user_by_backup_codes(request, username):
                     user.save()
                     get_LoginAttempt = UserLoginDetails.objects.filter(user=user, attempt="Need to verify").order_by('-created_at')[0]
                     update_LoginAttempt = UserLoginDetails.objects.get(id=get_LoginAttempt.id)
+                    update_LoginAttempt.score = getLoginScore(update_LoginAttempt.id, dataUsername['DecryptedUsername'])
                     update_LoginAttempt.attempt = "Success"
                     update_LoginAttempt.reason = "Confirmed User via Backup Codes"
                     update_LoginAttempt.save()
@@ -667,7 +694,9 @@ def twofa_verify_user_by_backup_codes(request, username):
                 user.save()
                 get_LoginAttempt = UserLoginDetails.objects.filter(user=user, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
                 update_LoginAttempt = UserLoginDetails.objects.get(id=get_LoginAttempt.id)
+                update_LoginAttempt.score = getLoginScore(update_LoginAttempt.id, dataUsername['DecryptedUsername'])
                 update_LoginAttempt.attempt = "Success"
+                update_LoginAttempt.user_confirm = "User used 2FA Backup Codes"
                 update_LoginAttempt.reason = "Confirmed User via 2FA Backup Codes"
                 update_LoginAttempt.save()
                 try:
