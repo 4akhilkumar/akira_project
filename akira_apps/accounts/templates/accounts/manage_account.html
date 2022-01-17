@@ -200,13 +200,13 @@
     <div class="user-login-details" id="login-attempts">
         <h4>Login attempts</h4>
         <p>Help us to serve you better in securing your account. 
-            {% if get_failed_login_attempts_count %}
+            {% if get_unconfirmed_login_attempts %}
             Please confirm the authentication which was done by you.
             {% endif %}
         </p>
-        {% if get_failed_login_attempts_count %}
+        {% if get_unconfirmed_login_attempts %}
         <div class="outer-container">
-            {% for i in get_failed_login_attempts %}
+            {% for i in get_unconfirmed_login_attempts %}
             <div class="show-details-login-info">
                 <div class="each-login-details">
                     <div class="device-icon-login-details">
@@ -230,7 +230,7 @@
                                 <h4>{{ i.os_details }} - {{ i.user_ip_address }}</h4>
                             </div>
                             <div class="location_name">
-                                <p>{{ i.user_ip_address|ip_location }}</p>
+                                <p>{{ i.user_ip_address|ip_location }} &#183; {{ i.browser_details }}</p>
                             </div>
                             <div class="time-date">
                                 <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
@@ -238,9 +238,9 @@
                         </div>
                     </div>
                     <div class="login-attempt-action">
-                        {% if i.user_confirm == "YES" %}
+                        {% if i.user_confirm == "Login Confirmed" %}
                         <button class="confirmed-button"><span class="fas fa-check-circle"></span> Confirmed</button>
-                        {% elif i.user_confirm == "NO" %}
+                        {% elif i.user_confirm == "User Denied" %}
                         <button class="suspicious-button"><span class="fas fa-exclamation-circle"></span> Suspicious</button>
                         {% else %}
                         <button class="true-button" onclick="window.location='{% url 'agree_login_attempt' i.id %}'"><span class="fas fa-check"></span> It was me</button>
@@ -250,7 +250,7 @@
                 </div>
             </div>
             {% endfor %}
-            {% if get_failed_login_attempts_count > 3 %}
+            {% if get_unconfirmed_login_attempts|length > 3 %}
             <button href="#" id="loadMore"><i class="fa-solid fa-spinner"></i> Load More</button>
             {% endif %}
         </div>

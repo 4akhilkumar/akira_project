@@ -108,7 +108,7 @@ def user_login(request):
                                 else:
                                     dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username).count()
                                     if dataset_UserLoginDetails > 2:
-                                        current_uld = UserLoginDetails.objects.filter(user__username = username)
+                                        current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success")
                                         last_current_uld = UserLoginDetails.objects.filter(user__username = username).order_by('-created_at')
                                         current_user = User.objects.get(username = username)
                                         list_current_uld_ipa = []
