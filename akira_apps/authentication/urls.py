@@ -47,6 +47,7 @@ urlpatterns = [
     path('waitingSwitchDeviceResponse/<switchDeviceReqID>/<username>/', views.waitingSwitchDeviceResponse, name="waitingSwitchDeviceResponse"),
     path('validateSwitchDevice/', views.validateSwitchDevice, name="validateSwitchDevice"),
     path('denySwitchDevice/<switchDeviceReqID>/', views.denySwitchDevice, name="denySwitchDevice"),
+    path('terminateSwitchDevice/<switchDeviceReqID>/', views.terminateSwitchDevice, name="terminateSwitchDevice"),
     path('checkValidatedSwitchDeviceRequest/<username>/<switchDeviceID>/', views.checkValidatedSwitchDeviceRequest, name="checkValidatedSwitchDeviceRequest"),
     path('SwitchDeviceStatus/<username>/', views.SwitchDeviceStatus, name="SwitchDeviceStatus"),
     path('SyncDevice/<switchDeviceID>/', views.SyncDevice, name="SyncDevice"),

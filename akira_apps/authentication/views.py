@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail, EmailMessage
 from django.http.response import HttpResponse, JsonResponse
@@ -962,6 +963,20 @@ def denySwitchDevice(request, switchDeviceReqID):
     messages.info(request, "Your Denied Request is been taken successfully")
     return redirect('validateSwitchDevice')
 
+@login_required(login_url=settings.LOGIN_URL)
+def terminateSwitchDevice(request, switchDeviceReqID):
+    update_currentSDReq = SwitchDevice.objects.get(id = switchDeviceReqID, user__username = request.user.username)
+    session_key = update_currentSDReq.sessionKey
+    try:
+        session = Session.objects.get(session_key=session_key)
+        session.delete()
+    except Exception:
+        messages.info(request, "Session is already terminated")
+    update_currentSDReq.status = "Terminated"
+    update_currentSDReq.save()
+    messages.info(request, "Your Terminate Request is been taken successfully")
+    return redirect('validateSwitchDevice')
+
 def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
     try:
         currentSDObj = SwitchDevice.objects.get(id=switchDeviceID)
@@ -1016,6 +1031,8 @@ def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
         user = User.objects.get(username = dataUsername['DecryptedUsername'])
         currentUrl = getCurrentSDReq.currentPage
         login(request, user)
+        getCurrentSDReq.sessionKey = request.session.session_key
+        getCurrentSDReq.save()
         data = {
             'status': 'success',
             'redirect_url': currentUrl,
