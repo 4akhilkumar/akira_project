@@ -91,7 +91,9 @@
                     </div>
                     <div class="login-attempt-action">
                         <button class="true-button" onclick="window.location='{% url 'SyncDevice' currentSDReq.id %}'"><span class="fa-solid fa-rotate"></span> Sync Device</button>
+                        {% if terminate_access == "Allowed" %}
                         <button class="false-button" onclick="window.location='{% url 'terminateSwitchDevice' currentSDReq.id %}'"><span class="far fa-times-circle"></span> Terminate</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -788,7 +788,7 @@ def requestSwitchDevice(request):
     OS_Details = res[0][1:-1]
 
     if User_IP_S_List.objects.filter(suspicious_list = ip).exists() is True:
-        messages.warning("We can't process your Switch Device request")
+        messages.warning(request, "We can't process your Switch Device request")
         return redirect('login')
     else:
         if request.method == 'POST':
@@ -886,7 +886,13 @@ def validateSwitchDevice(request):
                 currentSDReq = SwitchDevice.objects.get(user = request.user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful")
             except SwitchDevice.DoesNotExist:
                 currentSDReq = None
-
+    try:
+        if request.session.session_key == currentSDReq.sessionKey:
+            terminate_access = "Denied"
+        else:
+            terminate_access = "Allowed"
+    except Exception:
+        terminate_access = "NA"
     if request.method == "POST":
         if currentSDReq.user == request.user:
             try:
@@ -913,6 +919,7 @@ def validateSwitchDevice(request):
     context = {
         "currentSDReq": currentSDReq,
         "getSwitchDeviceRequests": getSwitchDeviceRequests,
+        "terminate_access":terminate_access,
     }
     return render(request, 'authentication/SwitchDevice/acceptSwitchDevice.html', context)
 
@@ -929,15 +936,17 @@ def denySwitchDevice(request, switchDeviceReqID):
 @login_required(login_url=settings.LOGIN_URL)
 def terminateSwitchDevice(request, switchDeviceReqID):
     update_currentSDReq = SwitchDevice.objects.get(id = switchDeviceReqID, user__username = request.user.username)
-    session_key = update_currentSDReq.sessionKey
-    try:
-        session = Session.objects.get(session_key=session_key)
-        session.delete()
-    except Exception:
-        messages.info(request, "Session is already terminated")
-    update_currentSDReq.status = "Terminated"
-    update_currentSDReq.save()
-    messages.info(request, "Your Terminate Request is been taken successfully")
+    if request.session.session_key == update_currentSDReq.sessionKey:
+        messages.info(request, "You don't have access to terminate the session")
+    else:
+        try:
+            session = Session.objects.get(session_key=update_currentSDReq.sessionKey)
+            session.delete()
+        except Exception:
+            messages.info(request, "Session is already terminated")
+        update_currentSDReq.status = "Terminated"
+        update_currentSDReq.save()
+        messages.info(request, "Your Terminate Request is been taken successfully")
     return redirect('validateSwitchDevice')
 
 def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
