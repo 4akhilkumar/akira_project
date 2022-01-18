@@ -427,6 +427,7 @@ def confirmEmailStatus(request, username, userLoginObj):
                                         attempt = "Success", 
                                         reason = "Verified via Confirm Link via Email")
         getUserLoginDetailsObj.sessionKey = request.session.session_key
+        getUserLoginDetailsObj.score = getLoginScore(userLoginObj, dataUsername['DecryptedUsername'])
         getUserLoginDetailsObj.save()
         data = {
             'status': 'success',
@@ -757,6 +758,7 @@ def checkUserResponse(request, username, userLoginObj):
         user = User.objects.get(username = dataUsername['DecryptedUsername'])
         login(request, user)
         userLoginDetails.sessionKey = request.session.session_key
+        userLoginDetails.score = getLoginScore(userLoginObj, dataUsername['DecryptedUsername'])
         userLoginDetails.save()
         data = {
             'status': 'success',
