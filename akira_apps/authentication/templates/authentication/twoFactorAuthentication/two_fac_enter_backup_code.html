@@ -53,7 +53,7 @@
                     <input type="text" name="backup_code" id="id_backup_code" autocapitalize="off" autocomplete="off" placeholder="Enter Code" maxlength="6" required>
                 </div>
                 <div class="two-step-other-choice-next-buttons">
-                    <a href="{% url 'twofa_verify_its_you' encrypted_username %}">Try another way</a>
+                    <a href="{% url 'twofa_verify_its_you' username=encrypted_username userLoginObj=userLoginObj %}">Try another way</a>
                     <button type="submit">Next</button>
                 </div>
             </form>

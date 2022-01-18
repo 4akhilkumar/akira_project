@@ -44,22 +44,12 @@
             <div class="two-step-verification-title-two">
                 <h4>2-Step Verification: Ways to sign in</h4>
             </div>
-            {% comment %}
-            <div class="using_link_via_email">
-                <div class="icon-link-email">
-                    <span class="fa-solid fa-link"></span>
-                </div>
-                <div class="text-link-email" onclick="document.location='{% url 'twofa_verify_user_by_email' encrypted_username %}'">
-                    <p> Get a verification link at your registered email</p>
-                </div>
-            </div>
-            {% endcomment %}
             <div class="using_backup_code">
                 {% if checkUserBackupCode != None %}
                 <div class="icon-backup-code">
                     <span class="fa-solid fa-key"></span>
                 </div>
-                <div class="text-backup-code" onclick="document.location='{% url 'twofa_verify_user_by_backup_codes' encrypted_username %}'">
+                <div class="text-backup-code" onclick="document.location='{% url 'twofa_verify_user_by_backup_codes' username=encrypted_username userLoginObj=userLoginObj %}'">
                     <p> Use one code from your Backup Codes</p>
                 </div>
                 {% else %}

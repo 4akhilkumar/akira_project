@@ -102,14 +102,14 @@ def user_login(request):
                         if user.is_active == True:
                             user = authenticate(request, username = username, password = data['MetaKey'])
                             if user is not None:
-                                save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
+                                getuserLoginObj = save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
                                 if TwoFactorAuth.objects.filter(user__username = username, twofa = True).exists() is True:
-                                    return redirect('twofa_verify_its_you', username = dataUsername['EncryptedUsername'])
+                                    return redirect('twofa_verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                                 else:
                                     dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username).count()
                                     if dataset_UserLoginDetails > 2:
                                         current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success")
-                                        last_current_uld = UserLoginDetails.objects.filter(user__username = username).order_by('-created_at')
+                                        last_current_uld = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username).order_by('-created_at')
                                         current_user = User.objects.get(username = username)
                                         list_current_uld_ipa = []
                                         list_current_uld_osd = []
@@ -132,7 +132,7 @@ def user_login(request):
                                             count += 2
                                         if (count == 22):
                                             login(request, user)
-                                            get_attempt_ncy = UserLoginDetails.objects.filter(user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                            get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
                                             update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
                                             update_attempt_ncy.score = count
                                             update_attempt_ncy.attempt = "Success"
@@ -141,7 +141,7 @@ def user_login(request):
                                             update_attempt_ncy.save()
                                             return redirect('login')
                                         elif (count >= 4 and count <= 20):
-                                            get_attempt_ncy = UserLoginDetails.objects.filter(user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                            get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
                                             update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
                                             update_attempt_ncy.score = count
                                             update_attempt_ncy.attempt = "Manual Confirmation Required"
@@ -163,9 +163,9 @@ def user_login(request):
                                             try:
                                                 send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
                                                 messages.info(request, "Please check your email inbox")
-                                                return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'])
+                                                return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                                             except Exception:
-                                                deleteLoginDetails = UserLoginDetails.objects.filter(user__username = username, 
+                                                deleteLoginDetails = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, 
                                                                                                     attempt = "Manual Confirmation Required", 
                                                                                                     reason = "Login is unusual",
                                                                                                     user_confirm = "Pending due to unusual login")
@@ -176,16 +176,16 @@ def user_login(request):
                                             user = User.objects.get(username = user.username)
                                             user.is_active = False
                                             user.save()
-                                            get_attempt_ncy = UserLoginDetails.objects.filter(user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                            get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
                                             update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
                                             update_attempt_ncy.score = count
                                             update_attempt_ncy.attempt = "Need to verify"
                                             update_attempt_ncy.reason = str(count)
                                             update_attempt_ncy.save()
-                                            return redirect('verify_its_you', username = dataUsername['EncryptedUsername'])
+                                            return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                                     elif dataset_UserLoginDetails < 3:
                                         login(request, user)
-                                        current_userlogindetailsObject = UserLoginDetails.objects.filter(user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                        current_userlogindetailsObject = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
                                         get_current_userlogindetailsObject_Id = UserLoginDetails.objects.get(id = current_userlogindetailsObject.id)
                                         get_current_userlogindetailsObject_Id.attempt = "Success"
                                         get_current_userlogindetailsObject_Id.sessionKey = request.session.session_key
@@ -235,8 +235,8 @@ def user_login(request):
                                 return redirect('login')
                         else:
                             messages.info(request, 'Your account has been disabled')
-                            save_login_details(request, username, user_ip_address, "Need to verify", "User account is disabled")
-                            return redirect('verify_its_you', username = dataUsername['EncryptedUsername'])
+                            getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "User account is disabled")
+                            return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                     else:
                         messages.warning(request, 'No such account exist!')
                         save_login_details(request, None, user_ip_address, "Failed", "No such account exist!")
@@ -244,8 +244,8 @@ def user_login(request):
                 else:
                     messages.warning(request, 'Login from suspicious IP address')
                     if checkUserExists:
-                        save_login_details(request, username, user_ip_address, "Need to verify", "Login attempt from suspicious IP address")
-                        return redirect('verify_its_you', username = dataUsername['EncryptedUsername'])
+                        getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "Login attempt from suspicious IP address")
+                        return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
             else:
                 messages.warning(request, 'Connection is NOT secured!')
                 if checkUserExists:
@@ -278,13 +278,19 @@ def save_login_details(request, user_name, user_ip_address, attempt, reason):
     res = re.findall(r'\(.*?\)', user_agent)
     OS_Details = res[0][1:-1]
     if user_name == None:
-        UserLoginDetails.objects.create(user_ip_address = user_ip_address, os_details = OS_Details, browser_details = browser, attempt = attempt, reason = reason)
+        userLoginObj = UserLoginDetails.objects.create(
+                                    user_ip_address = user_ip_address, 
+                                    os_details = OS_Details, 
+                                    browser_details = browser, 
+                                    attempt = attempt, reason = reason)
     else:
         userObj = User.objects.get(username=user_name)
-        try:
-            UserLoginDetails.objects.create(user_ip_address = user_ip_address, user = userObj, os_details = OS_Details, browser_details = browser, attempt = attempt, reason = reason)
-        except Exception as e:
-            return e
+        userLoginObj = UserLoginDetails.objects.create(
+                                    user_ip_address = user_ip_address, 
+                                    user = userObj, os_details = OS_Details, 
+                                    browser_details = browser, 
+                                    attempt = attempt, reason = reason)
+    return userLoginObj
 
 def getLoginScore(LoginObjectID, username):
     current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success")
@@ -310,9 +316,7 @@ def getLoginScore(LoginObjectID, username):
         count += 2
     return count
 
-# UserLoginDetails.objects.all().delete()
-
-def verify_its_you(request, username):
+def verify_its_you(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -326,17 +330,18 @@ def verify_its_you(request, username):
     except User_BackUp_Codes.DoesNotExist:
         checkUserBackupCode = None
 
-    if UserLoginDetails.objects.filter(user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False:
+    if UserLoginDetails.objects.filter(id = userLoginObj, user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False:
         return redirect('login')
     else:
         context = {
             "username": username,
             "checkUserBackupCode": checkUserBackupCode,
             "custom_decrypted_username": dataUsername['DecryptedUsername'],
+            "userLoginObj":userLoginObj,
         }
         return render(request, 'authentication/verifyItsYou/verify_its_you.html', context)
 
-def verify_user_by_email(request, username):
+def verify_user_by_email(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -346,7 +351,7 @@ def verify_user_by_email(request, username):
         return redirect('login')
 
     user = User.objects.get(username = dataUsername['DecryptedUsername'])
-    if UserLoginDetails.objects.filter(user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False:
+    if UserLoginDetails.objects.filter(id = userLoginObj, user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False:
         messages.info(request, "You've been verified, already!")
         return redirect('login')
     else:
@@ -358,6 +363,7 @@ def verify_user_by_email(request, username):
             'domain': current_site.domain,  
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': account_activation_token.make_token(user),
+            'userLoginObj':userLoginObj,
         })
         current_user = User.objects.get(username = dataUsername['DecryptedUsername'])
         to_email = current_user.email
@@ -366,10 +372,11 @@ def verify_user_by_email(request, username):
         messages.warning(request, "Please Check Your Email Inbox")
         loginAlertContent = {
             "username": username,
+            "userLoginObj":userLoginObj,
         }
         return render(request, 'authentication/loginAlert.html', loginAlertContent)
 
-def confirm(request, uidb64, token):
+def confirm(request, uidb64, token, userLoginObj):
     User = get_user_model()
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -379,7 +386,10 @@ def confirm(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        get_attempt_ncy = UserLoginDetails.objects.filter(user__username = user, attempt = "Need to verify").order_by('-created_at')[0]
+        try:
+            get_attempt_ncy = UserLoginDetails.objects.filter(id = userLoginObj, user__username = user, attempt = "Need to verify").order_by('-created_at')[0]
+        except Exception:
+            return HttpResponse(status = 410)
         update_attempt_ncy = UserLoginDetails.objects.get(id=get_attempt_ncy.id)
         update_attempt_ncy.attempt = "Success"
         update_attempt_ncy.reason = "Verified via Confirm Link via Email"
@@ -390,7 +400,7 @@ def confirm(request, uidb64, token):
         messages.warning(request, "Link has been expired!")
         return redirect('login')
 
-def confirmEmailStatus(request, username):
+def confirmEmailStatus(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -405,14 +415,14 @@ def confirmEmailStatus(request, username):
     else:
         ip = request.META.get('REMOTE_ADDR')
 
-    if UserLoginDetails.objects.filter(user_ip_address = ip, 
+    if UserLoginDetails.objects.filter(id = userLoginObj, user_ip_address = ip, 
                                         user__username = dataUsername['DecryptedUsername'],
                                         attempt = "Success", 
                                         reason = "Verified via Confirm Link via Email").exists() is True:
         user = User.objects.get(username = dataUsername['DecryptedUsername'])
         messages.success(request, "Login Successful")
         login(request, user)
-        getUserLoginDetailsObj = UserLoginDetails.objects.get(user_ip_address = ip, 
+        getUserLoginDetailsObj = UserLoginDetails.objects.get(id = userLoginObj, user_ip_address = ip, 
                                         user__username = dataUsername['DecryptedUsername'],
                                         attempt = "Success", 
                                         reason = "Verified via Confirm Link via Email")
@@ -429,7 +439,7 @@ def confirmEmailStatus(request, username):
     response = JsonResponse(data)
     return response
 
-def verify_user_by_backup_codes(request, username):
+def verify_user_by_backup_codes(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -443,7 +453,7 @@ def verify_user_by_backup_codes(request, username):
         checkUserBackupCode = None
     if checkUserBackupCode != None:
         user = User.objects.get(username=dataUsername['DecryptedUsername'])
-        if (UserLoginDetails.objects.filter(user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False):
+        if (UserLoginDetails.objects.filter(id = userLoginObj, user__username = dataUsername['DecryptedUsername'], attempt = "Need to verify").exists() is False):
             return redirect('login')
         else:
             user = User.objects.get(username = dataUsername['DecryptedUsername'])
@@ -469,7 +479,7 @@ def verify_user_by_backup_codes(request, username):
                     user.is_active = True
                     user.save()
                     login(request, user)
-                    get_LoginAttempt = UserLoginDetails.objects.filter(user=user, attempt="Need to verify").order_by('-created_at')[0]
+                    get_LoginAttempt = UserLoginDetails.objects.filter(id = userLoginObj, user=user, attempt="Need to verify").order_by('-created_at')[0]
                     update_LoginAttempt = UserLoginDetails.objects.get(id=get_LoginAttempt.id)
                     update_LoginAttempt.score = getLoginScore(update_LoginAttempt.id, dataUsername['DecryptedUsername'])
                     update_LoginAttempt.attempt = "Success"
@@ -491,7 +501,7 @@ def verify_user_by_backup_codes(request, username):
                                                             status = "Failed", 
                                                             created_at__gte=twenty_four_hrs).count()
                     if backup_code_attempt_status_count > 4:
-                        User_IP_S_List.objects.update_or_create(suspicious_list = ip)
+                        User_IP_S_List.objects.create(suspicious_list = ip)
                         messages.info("Please confirm it's you to login")
                         return redirect('login')
                     else:
@@ -500,6 +510,7 @@ def verify_user_by_backup_codes(request, username):
                 context = {
                     "custom_decrypted_username": dataUsername['DecryptedUsername'],
                     "en_username": username,
+                    "userLoginObj": userLoginObj,
                 }
                 return render(request, 'authentication/verifyItsYou/enter_backup_code.html', context)
     else:
@@ -547,7 +558,7 @@ def activate(request, uidb64, token):
     else:  
         return HttpResponse('Link has been expired!')
 
-def twofa_verify_its_you(request, username):
+def twofa_verify_its_you(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -569,98 +580,14 @@ def twofa_verify_its_you(request, username):
             "username": dataUsername['DecryptedUsername'],
             "first_name": first_name,
             "checkUserBackupCode": checkUserBackupCode,
+            "userLoginObj":userLoginObj,
         }
         return render(request, 'authentication/twoFactorAuthentication/twofactorauth.html', context)
     else:
         messages.warning(request, "You haven't enabled 2FA!")
         return redirect('login')
 
-# def twofa_verify_user_by_email(request, username):
-#     try:
-#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
-#         response = requests.get(url)
-#         dataUsername = response.json()
-#     except Exception:
-#         messages.info(request, "Server under maintenance. Please try again later.")
-#         return redirect('login')
-
-#     if TwoFactorAuth.objects.filter(user__username = dataUsername['DecryptedUsername'], twofa = True).exists() is True:
-#         user = User.objects.get(username = dataUsername['DecryptedUsername'])
-#         current_site = get_current_site(request)
-#         mail_subject = "2FA Link via Email - AkirA"
-#         message = render_to_string('authentication/twoFactorAuthentication/two_fac_auth_email.html', {
-#             'user': user,
-#             'domain': current_site.domain,
-#             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-#             'token': account_activation_token.make_token(user),
-#         })
-#         current_user = User.objects.get(username = dataUsername['DecryptedUsername'])
-#         to_email = current_user.email
-#         email = EmailMessage(mail_subject, message, to=[to_email])
-#         email.send()
-#         loginAlert2FAContent = {
-#             "username": username,
-#         }
-#         return render(request, 'authentication/twoFactorAuthentication/loginAlert2FA.html', loginAlert2FAContent)
-#     else:
-#         messages.warning(request, "You haven't enabled 2FA!")
-#         return redirect('login')
-
-# def twofacauth_email(request, uidb64, token):
-#     User = get_user_model()
-#     try:  
-#         uid = force_text(urlsafe_base64_decode(uidb64))
-#         user = User.objects.get(pk=uid)  
-#     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-#         user = None
-#     if user is not None and account_activation_token.check_token(user, token):
-#         user.is_active = True
-#         user.save()
-#         getCurrentLogin = UserLoginDetails.objects.filter(user__username = user, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-#         UpdateCurrentLoginAttepmt = UserLoginDetails.objects.get(id=getCurrentLogin.id)
-#         UpdateCurrentLoginAttepmt.attempt = "Success"
-#         UpdateCurrentLoginAttepmt.reason = "Verified via 2FA Email Link"
-#         UpdateCurrentLoginAttepmt.save()
-#         return HttpResponse("Thank you for confirming your Login")
-#     else:
-#         logout(request)
-#         messages.warning(request, "Link has been expired!")
-#         return redirect('login')
-
-# def confirm2FAEmailStatus(request, username):
-#     try:
-#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
-#         response = requests.get(url)
-#         dataUsername = response.json()
-#     except Exception:
-#         messages.info(request, "Server under maintenance. Please try again later.")
-#         return redirect('login')
-
-#     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-#     if x_forwarded_for:
-#         ip = x_forwarded_for.split(',')[0]
-#     else:
-#         ip = request.META.get('REMOTE_ADDR')
-
-#     if UserLoginDetails.objects.filter(user_ip_address = ip,
-#                                         user__username = dataUsername['DecryptedUsername'],
-#                                         attempt = "Success",
-#                                         reason = "Verified via 2FA Email Link").exists() is True:
-#         user = User.objects.get(username = dataUsername['DecryptedUsername'])
-#         messages.success(request, "Login Successful")
-#         login(request, user)
-#         data = {
-#             'status': 'success',
-#         }
-#     else:
-#         logout(request)
-#         data = {
-#             'status': 'failed',
-#         }
-#     response = JsonResponse(data)
-#     return response
-
-def twofa_verify_user_by_backup_codes(request, username):
+def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -696,7 +623,7 @@ def twofa_verify_user_by_backup_codes(request, username):
                 user.is_active = True
                 user.save()
                 login(request, user)
-                get_LoginAttempt = UserLoginDetails.objects.filter(user=user, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
+                get_LoginAttempt = UserLoginDetails.objects.filter(id =userLoginObj, user=user, attempt="Not Confirmed Yet!").order_by('-created_at')[0]
                 update_LoginAttempt = UserLoginDetails.objects.get(id=get_LoginAttempt.id)
                 update_LoginAttempt.score = getLoginScore(update_LoginAttempt.id, dataUsername['DecryptedUsername'])
                 update_LoginAttempt.attempt = "Success"
@@ -718,7 +645,7 @@ def twofa_verify_user_by_backup_codes(request, username):
                                                         status = "Failed", 
                                                         created_at__gte=twenty_four_hrs).count()
                 if backup_code_attempt_status_count > 4:
-                    User_IP_S_List.objects.update_or_create(suspicious_list = ip)
+                    User_IP_S_List.objects.create(suspicious_list = ip)
                     messages.info("Please confirm it's you to login")
                     return redirect('login')
                 else:
@@ -726,10 +653,11 @@ def twofa_verify_user_by_backup_codes(request, username):
         context = {
             "custom_decrypted_username": dataUsername['DecryptedUsername'],
             "encrypted_username": username,
+            "userLoginObj":userLoginObj,
         }
         return render(request, 'authentication/twoFactorAuthentication/two_fac_enter_backup_code.html', context)
 
-def confirmUserLogin(request, username):
+def confirmUserLogin(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -739,6 +667,7 @@ def confirmUserLogin(request, username):
         return redirect('login')
     try:
         get_attempt_ARU = UserLoginDetails.objects.get(
+                        id = userLoginObj,
                         user__username = dataUsername['DecryptedUsername'],
                         attempt = "Manual Confirmation Required",
                         reason = "Login is unusual",
@@ -754,7 +683,7 @@ def confirmUserLogin(request, username):
         messages.info(request, "User is already confirmed!")
         return redirect('login')
 
-def secure_account(request, username, user_response):
+def secure_account(request, username, user_response, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -765,6 +694,7 @@ def secure_account(request, username, user_response):
 
     try:
         get_attempt_ARU = UserLoginDetails.objects.get(
+                        id = userLoginObj,
                         user__username = dataUsername['DecryptedUsername'], 
                         attempt = "Manual Confirmation Required",
                         reason = "Login is unusual",
@@ -773,13 +703,14 @@ def secure_account(request, username, user_response):
         get_attempt_ARU = None
     if get_attempt_ARU:
         get_attempt_ARU = UserLoginDetails.objects.get(
+                        id = userLoginObj,
                         user__username = dataUsername['DecryptedUsername'], 
                         attempt = "Manual Confirmation Required",
                         reason = "Login is unusual",
                         user_confirm = "Pending due to unusual login")
         if get_attempt_ARU.user.username == dataUsername['DecryptedUsername']:
             if user_response == "yes":
-                get_attempt_ARU = UserLoginDetails.objects.filter(user__username = dataUsername['DecryptedUsername'], attempt = "Manual Confirmation Required").order_by('-created_at')[0]
+                get_attempt_ARU = UserLoginDetails.objects.filter(id = userLoginObj, user__username = dataUsername['DecryptedUsername'], attempt = "Manual Confirmation Required").order_by('-created_at')[0]
                 get_attempt_ARU.attempt = "Success"
                 get_attempt_ARU.user_confirm = "Login Confirmed"
                 get_attempt_ARU.reason = "Login Confirmed via Email Manually"
@@ -798,7 +729,7 @@ def secure_account(request, username, user_response):
         logout(request)
         return redirect('login')
 
-def checkUserResponse(request, username):
+def checkUserResponse(request, username, userLoginObj):
     try:
         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
@@ -814,6 +745,7 @@ def checkUserResponse(request, username):
         ip = request.META.get('REMOTE_ADDR')
     try:
         userLoginDetails = UserLoginDetails.objects.get(
+                        id = userLoginObj,
                         user__username = dataUsername['DecryptedUsername'], 
                         attempt = "Success",
                         user_ip_address = ip,
@@ -1184,3 +1116,50 @@ def logoutUser(request):
         return redirect('login')
     else:
         return redirect('login')
+
+# from django.contrib.sessions.models import Session
+# for s in Session.objects.all():
+#     user = User.objects.get(username = '4akhi')
+#     if s.get_decoded().get('_auth_user_id') == str(user.id):
+        # print(s)
+        # s.delete()
+        # print("\tSession was deleted")
+
+# import datetime
+# from django.conf import settings
+# from django.contrib.auth import logout
+# from django.contrib.auth.models import User
+# from django.contrib.sessions.models import Session
+# from django.http import HttpRequest
+# from importlib import import_module
+
+# def init_session(session_key):
+#     """
+#     Initialize same session as done for ``SessionMiddleware``.
+#     """
+#     engine = import_module(settings.SESSION_ENGINE)
+#     return engine.SessionStore(session_key)
+
+# now = datetime.datetime.now()
+# request = HttpRequest()
+
+# sessions = Session.objects.filter(expire_date__gt=now)
+
+# for session in sessions:
+#     user_id = session.get_decoded().get('_auth_user_id')
+#     print(session.session_key)
+#     request.session = init_session(session.session_key)
+
+#     # logout(request)
+#     print('Successfully logout %r user.' % user_id) # 2qgdps6v10mag22nfnbji6n1rfrycxmf 2022-01-17 18:58:05.037466
+
+# from django.contrib.sessions.models import Session
+# from django.contrib.auth.models import User
+
+# session_key = '2qgdps6v10mag22nfnbji6n1rfrycxmf'
+
+# session = Session.objects.get(session_key=session_key)
+# session_data = session.get_decoded()
+# print(session_data)
+# uid = session_data.get('_auth_user_id')
+# user = User.objects.get(id=uid)

@@ -52,7 +52,7 @@
                     <input type="text" name="backup_code" id="id_backup_code" placeholder="Enter Code" maxlength="6" required>
                 </div>
                 <div class="two-step-other-choice-next-buttons">
-                    <a href="{% url 'verify_its_you' en_username %}">Try another way</a>
+                    <a href="{% url 'verify_its_you' username=en_username userLoginObj=userLoginObj %}">Try another way</a>
                     <button type="submit">Next</button>
                 </div>
             </form>

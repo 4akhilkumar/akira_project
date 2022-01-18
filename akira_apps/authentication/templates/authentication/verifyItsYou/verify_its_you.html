@@ -48,7 +48,7 @@
                 <div class="icon-link-email">
                     <span class="fa-solid fa-link"></span>
                 </div>
-                <div class="text-link-email" onclick="document.location='{% url 'verify_user_by_email' username %}'">
+                <div class="text-link-email" onclick="document.location='{% url 'verify_user_by_email' username=username userLoginObj=userLoginObj %}'">
                     <p> Get a verification link at your registered email</p>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                 <div class="icon-backup-code">
                     <span class="fa-solid fa-key"></span>
                 </div>
-                <div class="text-backup-code" onclick="document.location='{% url 'verify_user_by_backup_codes' username %}'">
+                <div class="text-backup-code" onclick="document.location='{% url 'verify_user_by_backup_codes' username=username userLoginObj=userLoginObj %}'">
                     <p> Use one code from your Backup Codes</p>
                 </div>
                 {% else %}
