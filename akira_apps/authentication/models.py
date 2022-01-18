@@ -38,7 +38,6 @@ class User_IP_B_List(models.Model):
 
 class User_IP_S_List(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    login_user = models.ForeignKey(User, on_delete=models.CASCADE)
     suspicious_list = models.GenericIPAddressField()
     created_at = models.DateTimeField(auto_now_add=True)
 
