@@ -172,8 +172,8 @@
                                                                                                         {% endblocktranslate %}
                                                                                                     </p>
                                                                                                     <p>
-                                                                                                        <a href="http://{{ domain }}{% url 'secure_account' username=username user_response='no' %}">No, secure account</a>
-                                                                                                        <a href="http://{{ domain }}{% url 'secure_account' username=username user_response='yes' %}">Yes, it was me</a>
+                                                                                                        <a href="http://{{ domain }}{% url 'secure_account' username=username user_response='no' userLoginObj=userLoginObj %}">No, secure account</a>
+                                                                                                        <a href="http://{{ domain }}{% url 'secure_account' username=username user_response='yes' userLoginObj=userLoginObj %}">Yes, it was me</a>
                                                                                                     </p>
                                                                                                     <p>
                                                                                                         <button>Change Password</button>

@@ -158,6 +158,7 @@ def user_login(request):
                                                 "current_time": current_time,
                                                 "username": dataUsername['EncryptedUsername'],
                                                 "domain": current_site.domain,
+                                                "userLoginObj": getuserLoginObj.id,
                                             }
                                             template = render_to_string('authentication/login_alert_email.html', context)
                                             try:
