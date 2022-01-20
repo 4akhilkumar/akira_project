@@ -2,6 +2,7 @@
 {% load static %}
 {% load humanize %}
 {% load ip_location %}
+{% load switchDevice %}
 
 {% block analytics-text %}
 <h1>Switch Device</h1>
@@ -148,9 +149,9 @@
 
 {% if getSwitchDeviceRequests %}
 <div class="user-login-details previous-switch-devices" id="Current-Previous-Login_Details">
-    <h4>Previous Switch Device{{ getSwitchDeviceRequests|pluralize }}</h4>
+    <h4>Recent Switch Device{{ getSwitchDeviceRequests|pluralize }}</h4>
     <div class="whole-container">
-    {% for i in getSwitchDeviceRequests %}
+    {% for i in getSwitchDeviceRequests|slice:":4" %}
         {% if i.userConfirm == "User Approved" and i.status == "Terminated" %}
         <div class="outer-container">
             <div class="each-login-details">
@@ -184,6 +185,11 @@
                 </div>
                 <div class="login-attempt-action">
                     <button class="confirmed-button"><span class="fas fa-check-circle"></span> Approved</button>
+                    {% if i.sessionKey != request.session.session_key %}
+                    {% if i.id|checkSessionKey == True %}
+                    <button class="false-button" onclick="window.location='{% url 'terminateSwitchDevice' i.id %}'"><span class="far fa-times-circle"></span> Terminate</button>
+                    {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
