@@ -51,6 +51,10 @@
                     alert("User Denied");
                     window.location.href = "{% url 'login' %}";
                 }
+                else if (data.status == "failed" && data.message == "Object does not exist") {
+                    alert("Request not found");
+                    window.location.href = "{% url 'login' %}";
+                }
                 else if (data.status == "failed" && data.message == "Request Expired") {
                     alert("Request Expired");
                     window.location.href = "{% url 'login' %}";
