@@ -206,7 +206,7 @@
         </p>
         {% if get_unconfirmed_login_attempts %}
         <div class="outer-container">
-            {% for i in get_unconfirmed_login_attempts %}
+            {% for i in get_unconfirmed_login_attempts|slice:":4" %}
             <div class="show-details-login-info">
                 <div class="each-login-details">
                     <div class="device-icon-login-details">
