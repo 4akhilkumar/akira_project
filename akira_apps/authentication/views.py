@@ -680,6 +680,7 @@ def confirmUserLogin(request, username, userLoginObj):
     if get_attempt_ARU:
         context = {
             "username": username,
+            "userLoginObj":userLoginObj,
         }
         return render(request, 'authentication/confirmUserLogin.html', context)
     else:
