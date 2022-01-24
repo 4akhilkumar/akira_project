@@ -43,6 +43,10 @@ def user_login(request):
         ep = request.POST.get('password')
         user_ip_address = ip
 
+        if username == "" or ep == "":
+            messages.error(request, 'Please enter your username.')
+            return redirect('login')
+
         try:
             url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
             response = requests.get(url)
@@ -722,16 +726,16 @@ def secure_account(request, username, user_response, userLoginObj):
                 user = User.objects.get(username = dataUsername['DecryptedUsername'])
                 user.is_active = True
                 user.save()
-                return redirect('login')
+                return HttpResponse(status=200)
             else:
                 logout(request)
-                return redirect('login')
+                return HttpResponse(status=400)
         else:
             logout(request)
-            return redirect('login')
+            return HttpResponse(status=400)
     else:
         logout(request)
-        return redirect('login')
+        return HttpResponse(status=400)
 
 def checkUserResponse(request, username, userLoginObj):
     try:
