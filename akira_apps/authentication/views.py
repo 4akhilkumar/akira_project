@@ -80,187 +80,168 @@ def user_login(request):
             checkUserExists = None
 
         if cap_json['success'] == True:
-            if data['checkKeyEncrypted'] is True:
-                if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False:
-                    if checkUserExists:
-                        user = User.objects.get(username = username)
-                        try:
-                            checkSD = SwitchDevice.objects.get(user = user, status = "Switch Device Successful")
-                        except SwitchDevice.DoesNotExist:
-                            checkSD = None
-                        if checkSD:
-                            updatecheckSD = SwitchDevice.objects.filter(user = user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful")[0]
-                            updatecheckSD.reason = "User Logged In"
-                            updatecheckSD.status = "Terminated"
-                            updatecheckSD.save()
-                        try:
-                            checkSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
-                        except SwitchDevice.DoesNotExist:
-                            checkSDPNA = None
-                        if checkSDPNA:
-                            updatecheckSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
-                            updatecheckSDPNA.userConfirm = "User Denied"
-                            updatecheckSDPNA.reason = "User Logged In"
-                            updatecheckSDPNA.status = "Terminated"
-                            updatecheckSDPNA.save()
-                        if user.is_active == True:
-                            user = authenticate(request, username = username, password = data['MetaKey'])
-                            if user is not None:
-                                getuserLoginObj = save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
-                                if TwoFactorAuth.objects.filter(user__username = username, twofa = True).exists() is True:
-                                    return redirect('twofa_verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                                else:
-                                    dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username).count()
-                                    if dataset_UserLoginDetails > 2:
-                                        six_days_ago = pydt.datetime.now() - pydt.timedelta(days = 6)
-                                        current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success", created_at__gte = six_days_ago)
-                                        last_current_uld = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username).order_by('-created_at')
-                                        current_user = User.objects.get(username = username)
-                                        list_current_uld_ipa = []
-                                        list_current_uld_osd = []
-                                        list_current_uld_bd = []
-                                        for i in range(len(current_uld)-1):
-                                            list_current_uld_ipa.append(current_uld[i].user_ip_address)
-                                            list_current_uld_osd.append(current_uld[i].os_details)
-                                            list_current_uld_bd.append(current_uld[i].browser_details)
-
-                                        user_ip_address = list(last_current_uld)[0].user_ip_address
-                                        os_details = list(last_current_uld)[0].os_details
-                                        browser_details = list(last_current_uld)[0].browser_details
-
-                                        count = 0
-                                        if user_ip_address in list_current_uld_ipa:
-                                            count += 16
-                                        if os_details in list_current_uld_osd:
-                                            count += 4
-                                        if browser_details in list_current_uld_bd:
-                                            count += 2
-                                        if (count == 22):
-                                            login(request, user)
-                                            get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-                                            update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
-                                            update_attempt_ncy.score = count
-                                            update_attempt_ncy.attempt = "Success"
-                                            update_attempt_ncy.reason = str(count)
-                                            update_attempt_ncy.sessionKey = request.session.session_key
-                                            update_attempt_ncy.save()
-                                            return redirect('login')
-                                        elif (count >= 4 and count <= 20):
-                                            get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-                                            update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
-                                            update_attempt_ncy.score = count
-                                            update_attempt_ncy.attempt = "Manual Confirmation Required"
-                                            update_attempt_ncy.reason = "Login is unusual"
-                                            update_attempt_ncy.user_confirm = "Pending due to unusual login"
-                                            update_attempt_ncy.save()
-                                            current_site = get_current_site(request)
-                                            context = {
-                                                "first_name": current_user.first_name,
-                                                "email": current_user.email,
-                                                "user_ip_address": user_ip_address,
-                                                "os_details": os_details,
-                                                "browser_details": browser_details,
-                                                "current_time": current_time,
-                                                "username": dataUsername['EncryptedUsername'],
-                                                "domain": current_site.domain,
-                                                "userLoginObj": getuserLoginObj.id,
-                                            }
-                                            template = render_to_string('authentication/login_alert_email.html', context)
-                                            try:
-                                                send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
-                                                messages.info(request, "Please check your email inbox")
-                                                return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                                            except Exception:
-                                                deleteLoginDetails = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, 
-                                                                                                    attempt = "Manual Confirmation Required", 
-                                                                                                    reason = "Login is unusual",
-                                                                                                    user_confirm = "Pending due to unusual login")
-                                                deleteLoginDetails.delete()
-                                                messages.warning(request, "Check your internet connection")
-                                                return redirect('login')
-                                        elif count <= 2:
-                                            user = User.objects.get(username = user.username)
-                                            user.is_active = False
-                                            user.save()
-                                            get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-                                            update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
-                                            update_attempt_ncy.score = count
-                                            update_attempt_ncy.attempt = "Need to verify"
-                                            update_attempt_ncy.reason = str(count)
-                                            update_attempt_ncy.save()
-                                            return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                                    elif dataset_UserLoginDetails < 3:
-                                        login(request, user)
-                                        current_userlogindetailsObject = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-                                        get_current_userlogindetailsObject_Id = UserLoginDetails.objects.get(id = current_userlogindetailsObject.id)
-                                        get_current_userlogindetailsObject_Id.attempt = "Success"
-                                        get_current_userlogindetailsObject_Id.sessionKey = request.session.session_key
-                                        get_current_userlogindetailsObject_Id.save()
-                                        
-                                        group = None
-                                        if request.user.groups.exists():
-                                            group = request.user.groups.all()[0].name
-                                        if group == 'Student':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else:
-                                                return redirect('student_dashboard')
-                                        elif group == 'Assistant Professor':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else: 
-                                                return redirect('staff_dashboard')
-                                        elif group == 'Associate Professor':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else: 
-                                                return redirect('staff_dashboard')
-                                        elif group == 'Professor':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else: 
-                                                return redirect('staff_dashboard')
-                                        elif group == 'Head of the Department':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else: 
-                                                return redirect('hod_dashboard')
-                                        elif group == 'Course Co-Ordinator':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else: 
-                                                return redirect('staff_dashboard')
-                                        elif group == 'Administrator':
-                                            if (request.GET.get('next')):
-                                                return redirect(request.GET.get('next'))
-                                            else:
-                                                return redirect('super_admin_dashboard')
-                            else:
-                                messages.warning(request, 'Username or Password is Incorrect!')
-                                save_login_details(request, username, user_ip_address, "Failed", "Username or Password is Incorrect!")
-                                return redirect('login')
-                        else:
-                            messages.info(request, 'Your account has been disabled')
-                            getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "User account is disabled")
-                            return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                    else:
-                        messages.warning(request, 'No such account exist!')
-                        save_login_details(request, None, user_ip_address, "Failed", "No such account exist!")
-                        return redirect('login')
-                else:
-                    messages.warning(request, 'Login from suspicious IP address')
-                    if checkUserExists:
-                        getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "Login attempt from suspicious IP address")
-                        return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-            else:
-                messages.warning(request, 'Connection is NOT secured!')
+            if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False:
                 if checkUserExists:
-                    save_login_details(request, username, user_ip_address, "Failed", "Connection is NOT secured")
-                    detect_spam_login(request, username, user_ip_address)
+                    user = User.objects.get(username = username)
+                    try:
+                        checkSD = SwitchDevice.objects.get(user = user, status = "Switch Device Successful")
+                    except SwitchDevice.DoesNotExist:
+                        checkSD = None
+                    if checkSD:
+                        updatecheckSD = SwitchDevice.objects.filter(user = user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful")[0]
+                        updatecheckSD.reason = "User Logged In"
+                        updatecheckSD.status = "Terminated"
+                        updatecheckSD.save()
+                    try:
+                        checkSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
+                    except SwitchDevice.DoesNotExist:
+                        checkSDPNA = None
+                    if checkSDPNA:
+                        updatecheckSDPNA = SwitchDevice.objects.get(user = user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending")
+                        updatecheckSDPNA.userConfirm = "User Denied"
+                        updatecheckSDPNA.reason = "User Logged In"
+                        updatecheckSDPNA.status = "Terminated"
+                        updatecheckSDPNA.save()
+                    if user.is_active == True:
+                        user = authenticate(request, username = username, password = data['MetaKey'])
+                        if user is not None:
+                            getuserLoginObj = save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
+                            if TwoFactorAuth.objects.filter(user__username = username, twofa = True).exists() is True:
+                                return redirect('twofa_verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
+                            else:
+                                dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username).count()
+                                if dataset_UserLoginDetails > 1:
+                                    six_days_ago = pydt.datetime.now() - pydt.timedelta(days = 6)
+                                    current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success", created_at__gte = six_days_ago)
+                                    last_current_uld = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username).order_by('-created_at')
+                                    current_user = User.objects.get(username = username)
+                                    list_current_uld_ipa = []
+                                    list_current_uld_osd = []
+                                    list_current_uld_bd = []
+                                    for i in range(len(current_uld)-1):
+                                        list_current_uld_ipa.append(current_uld[i].user_ip_address)
+                                        list_current_uld_osd.append(current_uld[i].os_details)
+                                        list_current_uld_bd.append(current_uld[i].browser_details)
+
+                                    user_ip_address = list(last_current_uld)[0].user_ip_address
+                                    os_details = list(last_current_uld)[0].os_details
+                                    browser_details = list(last_current_uld)[0].browser_details
+
+                                    count = 0
+                                    if user_ip_address in list_current_uld_ipa:
+                                        count += 16
+                                    if os_details in list_current_uld_osd:
+                                        count += 4
+                                    if browser_details in list_current_uld_bd:
+                                        count += 2
+                                    if (count == 22):
+                                        login(request, user)
+                                        get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                        update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
+                                        update_attempt_ncy.score = count
+                                        update_attempt_ncy.attempt = "Success"
+                                        update_attempt_ncy.reason = str(count)
+                                        update_attempt_ncy.sessionKey = request.session.session_key
+                                        update_attempt_ncy.save()
+                                        return redirect('login')
+                                    else:
+                                        get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                        update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
+                                        update_attempt_ncy.score = count
+                                        update_attempt_ncy.attempt = "Manual Confirmation Required"
+                                        update_attempt_ncy.reason = "Login is unusual"
+                                        update_attempt_ncy.user_confirm = "Pending due to unusual login"
+                                        update_attempt_ncy.save()
+                                        current_site = get_current_site(request)
+                                        context = {
+                                            "first_name": current_user.first_name,
+                                            "email": current_user.email,
+                                            "user_ip_address": user_ip_address,
+                                            "os_details": os_details,
+                                            "browser_details": browser_details,
+                                            "current_time": current_time,
+                                            "username": dataUsername['EncryptedUsername'],
+                                            "domain": current_site.domain,
+                                            "userLoginObj": getuserLoginObj.id,
+                                        }
+                                        template = render_to_string('authentication/login_alert_email.html', context)
+                                        try:
+                                            send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
+                                            messages.info(request, "Please check your email inbox")
+                                            return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
+                                        except Exception:
+                                            deleteLoginDetails = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, 
+                                                                                                attempt = "Manual Confirmation Required", 
+                                                                                                reason = "Login is unusual",
+                                                                                                user_confirm = "Pending due to unusual login")
+                                            deleteLoginDetails.delete()
+                                            messages.warning(request, "Check your internet connection")
+                                            return redirect('login')
+                                else:
+                                    login(request, user)
+                                    current_userlogindetailsObject = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                    get_current_userlogindetailsObject_Id = UserLoginDetails.objects.get(id = current_userlogindetailsObject.id)
+                                    get_current_userlogindetailsObject_Id.attempt = "Success"
+                                    get_current_userlogindetailsObject_Id.sessionKey = request.session.session_key
+                                    get_current_userlogindetailsObject_Id.save()
+                                    
+                                    group = None
+                                    if request.user.groups.exists():
+                                        group = request.user.groups.all()[0].name
+                                    if group == 'Student':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else:
+                                            return redirect('student_dashboard')
+                                    elif group == 'Assistant Professor':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else: 
+                                            return redirect('staff_dashboard')
+                                    elif group == 'Associate Professor':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else: 
+                                            return redirect('staff_dashboard')
+                                    elif group == 'Professor':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else: 
+                                            return redirect('staff_dashboard')
+                                    elif group == 'Head of the Department':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else: 
+                                            return redirect('hod_dashboard')
+                                    elif group == 'Course Co-Ordinator':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else: 
+                                            return redirect('staff_dashboard')
+                                    elif group == 'Administrator':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else:
+                                            return redirect('super_admin_dashboard')
+                                    else:
+                                        return HttpResponse("Contact Administrator")
+                        else:
+                            messages.warning(request, 'Username or Password is Incorrect!')
+                            save_login_details(request, username, user_ip_address, "Failed", "Username or Password is Incorrect!")
+                            return redirect('login')
+                    else:
+                        messages.info(request, 'Your account has been disabled')
+                        getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "User account is disabled")
+                        return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                 else:
-                    save_login_details(request, None, user_ip_address, "Failed", "Connection is NOT secured")
-                    detect_spam_login(request, None, user_ip_address)
-                return redirect('login')
+                    messages.warning(request, 'No such account exist!')
+                    save_login_details(request, None, user_ip_address, "Failed", "No such account exist!")
+                    return redirect('login')
+            else:
+                messages.warning(request, 'Login from suspicious IP address')
+                if checkUserExists:
+                    getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "Login attempt from suspicious IP address")
+                    return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
         else:
             messages.error(request, 'Invalid Captcha try again!')
             if checkUserExists:
