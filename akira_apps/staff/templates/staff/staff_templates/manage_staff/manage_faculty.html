@@ -140,30 +140,7 @@
 {% else %}
 <h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
 {% endif %}
-<script>
-var modal = document.getElementById("myModal");
-var btn = document.getElementById("showFormBulkImport");
-var span = document.getElementById("close-model");
-
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
-</script>
+<script src="{% static 'js/manage_staff.js' %}"></script>
 {% endblock %}
 
 {% endblock %}
-
-{% comment %}
-<a class="edit_button" href="{% url 'edit_staff' staff.user.id %}"><i class="fas fa-edit"></i> Edit</a> &nbsp; <br>
-<a class="delete_button" href="{% url 'delete_staff' staff.user.id %}"><i class="fas fa-trash"></i> Delete</a>
-{% endcomment %}

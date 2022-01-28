@@ -1,7 +1,57 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Add Staff/Faculty</h1>
+<p>Create/add the staff <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block manage-courses %}
+
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form.as_p}}
-    {{staff_form.as_p}}
+    <p><label for="id_username">Username:</label> <input type="text" name="username" maxlength="150" autofocus required id="id_username"> <span class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
+    <p><label for="id_email">Email address:</label> <input type="email" name="email" maxlength="254" id="id_email"></p>
+    <p><label for="id_first_name">First name:</label> <input type="text" name="first_name" maxlength="150" id="id_first_name"></p>
+    <p><label for="id_last_name">Last name:</label> <input type="text" name="last_name" maxlength="150" id="id_last_name"></p>
+    <p><label for="id_password1">Password:</label> <input type="password" name="password1" autocomplete="new-password" required id="id_password1"> <span class="helptext"><ul><li>Your password can’t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can’t be a commonly used password.</li><li>Your password can’t be entirely numeric.</li></ul></span></p>
+    <p><label for="id_password2">Password confirmation:</label> <input type="password" name="password2" autocomplete="new-password" required id="id_password2"> <span class="helptext">Enter the same password as before, for verification.</span></p>
+    <p><label for="id_name_prefix">Name prefix:</label> <input type="text" name="name_prefix" maxlength="10" id="id_name_prefix"></p>
+    <p>
+        <label for="id_gender">Gender:</label>
+        <select name="gender" required id="id_gender">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </p>
+    <p><label for="id_date_of_birth">Date of birth:</label> <input type="text" name="date_of_birth" value="1975-01-01" required id="id_date_of_birth"></p>
+    <p><label for="id_door_no">Door no:</label> <input type="text" name="door_no" value="A-BCD, On Earth" maxlength="100" required id="id_door_no"></p>
+    <p><label for="id_zip_code">Zip code:</label> <input type="number" name="zip_code" value="123456" maxlength="8" required id="id_zip_code"></p>
+    <p><label for="id_city_name">City name:</label> <input type="text" name="city_name" value="Vijayawada" maxlength="50" required id="id_city_name"></p>
+    <p><label for="id_state_name">State name:</label> <input type="text" name="state_name" value="Andhra Pradesh" maxlength="50" required id="id_state_name"></p>
+    <p><label for="id_country_name">Country name:</label> <input type="text" name="country_name" value="India" maxlength="50" required id="id_country_name"></p>
+    <p><label for="id_profile_pic">Profile pic:</label> <input type="file" name="profile_pic" accept="image/*" id="id_profile_pic"></p>
+    <p><label for="id_current_medical_issue">Current medical issue:</label>
+        <textarea name="current_medical_issue" cols="40" rows="10" maxlength="50" required id="id_current_medical_issue">
+        </textarea>
+    </p>
+    <label for="id_branch">Blood Group</label>
+    <select name="branch" id="id_branch" required>
+      {% for x,y in bloodgroup.fields.bloodgroup.choices %}
+        <option value="{{ x }}">{{ y }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <label for="id_branch">Branch</label>
+    <select name="branch" id="id_branch" required>
+      {% for x,y in branch_list.fields.branch.choices %}
+        <option value="{{ x }}">{{ y }}</option>
+      {% endfor %}
+    </select>
+    <br>
     <select name="designation-group" id="id_designation-group" required>
         <option value="">Choose Designation</option>
         {% for i in list_groups %}
@@ -10,3 +60,7 @@
     </select>
     <input type="submit">
 </form>
+
+{% endblock %}
+
+{% endblock %}

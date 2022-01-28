@@ -5,11 +5,10 @@ from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
 
 from akira_apps.super_admin.decorators import (allowed_users)
-from akira_apps.authentication.forms import (CreateUserForm)
 from .models import (Staff)
-from .forms import (StaffsForm)
-from akira_apps.student.forms import (StudentsForm)
 from akira_apps.course.models import (CourseMC)
+from akira_apps.academic.forms import (BranchForm)
+from akira_apps.super_admin.forms import (BLOODGROUPForm)
 
 import secrets
 import pandas as pd
@@ -117,45 +116,6 @@ def view_course(request, course_id):
     }
     return render(request, 'staff/hod_templates/courses_templates/view_course.html', context)
 
-@allowed_users(allowed_roles=['Administrator'])
-def add_student(request):
-    form = CreateUserForm()
-    student_form = StudentsForm()
-    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        student_form = StudentsForm(request.POST,request.FILES)
-        student_from_db = User.objects.all()
-        student_user=[]
-        for i in student_from_db:
-            student_user.append(i.username)
-            student_user.append(i.email)
-        username = request.POST.get('username')
-        if username in student_user:
-            print("A user already exist with "+ username)
-            return redirect('add_student')
-
-        if form.is_valid() and student_form.is_valid():
-            user = form.save()
-            student = student_form.save(commit=False)
-            student.user = user
-            student.save()
-
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            
-            user = authenticate(username = username, password = password)
-
-            group = Group.objects.get(name='Student')
-            user.groups.add(group)
-            print("Student Registered Successfully.")
-            return redirect('manage_staff')
-        else:
-            form = CreateUserForm()
-            student_form = StudentsForm()
-
-    context = {'form':form, 'student_form':student_form}        
-    return render(request, 'staff/admission_templates/add_student.html', context)
-
 def staff_enroll_course(request, course_id):
     current_staff = User.objects.get(id=request.user.id)
     courseId = CourseMC.objects.get(id=course_id)
@@ -206,77 +166,30 @@ def manage_staff(request):
     return render(request, 'staff/staff_templates/manage_staff/manage_faculty.html', context)
 
 def add_staff(request):
-    form = CreateUserForm()
-    staff_form = StaffsForm()
+    branch_list = BranchForm()
+    bloodgroup = BLOODGROUPForm()
     list_groups = Group.objects.all()
     if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        staff_form = StaffsForm(request.POST,request.FILES)
-        assigned_group = request.POST.get('designation-group')
-        staff_from_db = User.objects.all()
-        staff_user=[]
-        for i in staff_from_db:
-            staff_user.append(i.username)
-            staff_user.append(i.email)
-        username = request.POST.get('username')
-        if username in staff_user:
-            print("A user already exist with "+ username)
-            return redirect('add_staff')
-
-        if form.is_valid() and staff_form.is_valid():
-            user = form.save()
-            staff = staff_form.save(commit=False)
-            staff.user = user
-            staff.save()
-
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            
-            user = authenticate(username = username, password = password)
-            my_group = Group.objects.get(name='%s' % str(assigned_group)) 
-            userObj = User.objects.get(username=username)
-            my_group.user_set.add(userObj)
-            return redirect('manage_staff')
-        else:
-            form = CreateUserForm()
-            staff_form = StaffsForm()
-
+        pass
+    else:
+        pass
     context = {
-        'form':form,
-        'staff_form':staff_form,
         'list_groups':list_groups,
-    }       
+        "branch_list":branch_list,
+        "bloodgroup":bloodgroup,
+    }
     return render(request, 'staff/staff_templates/manage_staff/add_faculty.html', context)
 
 def edit_staff(request, staff_username):
     staff = Staff.objects.get(user__username=staff_username)
-    form = CreateUserForm(instance=staff.user)
-    staff_form = StaffsForm(instance=staff)
     list_groups = Group.objects.all()
     if request.method == 'POST':
-        form = CreateUserForm(request.POST, instance=staff.user)
-        staff_form = StaffsForm(request.POST, request.FILES, instance=staff)
-        assigned_group = request.POST.get('designation-group')
-        if form.is_valid() and staff_form.is_valid():
-            form.save()
-            staff_form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username = username, password = password)
-            my_group = Group.objects.get(name='%s' % str(assigned_group)) 
-            user = User.objects.get(id=request.user.id)
-            my_group.user_set.add(user)
-            print("Faculty Updated Successfully.")
-            return redirect('manage_staff')
-        else:
-            form = CreateUserForm(instance=staff.user)
-            staff_form = StaffsForm(instance=staff)
-
+        pass
+    else:
+        pass
     context = {
-        'form':form,
-        'staff_form':staff_form,
         'list_groups':list_groups,
-    }       
+    }
     return render(request, 'staff/staff_templates/manage_staff/edit_faculty.html', context)
 
 def view_staff(request, staff_username):
@@ -359,3 +272,17 @@ def bulk_upload_staffs_save(request):
         return redirect('manage_staff')
     else:
         return redirect('manage_staff')
+
+@allowed_users(allowed_roles=['Administrator'])
+def add_student(request):
+    branch_list = BranchForm()
+    bloodgroup = BLOODGROUPForm()
+    if request.method == 'POST':
+        pass
+    else:
+        pass
+    context = {
+        "branch_list":branch_list,
+        "bloodgroup":bloodgroup,
+    }
+    return render(request, 'staff/admission_templates/add_student.html', context)
