@@ -36,12 +36,14 @@ def unauthenticated_user(view_func):
                 if (request.GET.get('next')):
                     return redirect(request.GET.get('next'))
                 else: 
-                    return redirect('cc_dashboard')
+                    return redirect('staff_dashboard')
             elif group == 'Administrator':
                 if (request.GET.get('next')):
                     return redirect(request.GET.get('next'))
                 else:
                     return redirect('super_admin_dashboard')
+            else:
+                return HttpResponse("Contact Administrator")
         else:
             return view_func(request, *args, **kwargs)
     return wrapper_func
@@ -56,6 +58,6 @@ def allowed_users(allowed_roles=[]):
                 # print('Working:', allowed_roles)
                 return view_func(request, *args, **kwargs)
             else:
-                return HttpResponse("Looks Like You Have Lost Your Way...!")
+                return HttpResponse(status=401)
         return wrapper_func
     return decorator
