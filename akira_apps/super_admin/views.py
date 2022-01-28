@@ -8,7 +8,6 @@ from django.conf import settings
 from akira_apps.authentication.models import UserLoginDetails
 from akira_apps.course.models import CourseMC
 
-from akira_apps.staff.forms import StaffsForm
 from akira_apps.staff.models import Staff
 from akira_apps.authentication.forms import CreateUserForm
 
