@@ -17,16 +17,10 @@ from akira_apps.specialization.models import (SpecializationsMC)
 @login_required(login_url=settings.LOGIN_URL)
 def manage_courses(request):
     courses = CourseMC.objects.all()
-    faculty_list = User.objects.all()
     specializations = SpecializationsMC.objects.all()
-    branch_list = BranchForm()
-    semester_list = Semester.objects.all()
     context = {
         "courses":courses,
-        "faculty_list":faculty_list,
         "specializations":specializations,
-        "branch_list":branch_list,
-        "semester_list":semester_list,
     }
     return render(request, 'course/manage_courses.html', context)
 
@@ -45,7 +39,10 @@ def first_letter_word(value):
     return out
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def create_course_save(request):
+def create_course(request):
+    branch_list = BranchForm()
+    semester_list = Semester.objects.all()
+    faculty_list = User.objects.all()
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
         courseName = request.POST.get('course_name')
@@ -82,7 +79,12 @@ def create_course_save(request):
                 pass
         except Exception as e:
             messages.error(request, e)
-        return redirect('manage_courses')
+    context = {
+        "branch_list":branch_list,
+        "semester_list":semester_list,
+        "faculty_list":faculty_list,
+    }
+    return render(request, 'course/create_course.html', context)
 
 @login_required(login_url=settings.LOGIN_URL)
 def courseExtraFieldsCreate(request, courseID):
