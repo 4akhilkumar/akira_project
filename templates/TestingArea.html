@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <title>Client Side Encryption</title>
+</head>
+<body>
+    <form>
+        <div class="input app-input">
+            <!-- <label for="username"><i class="far fa-user"></i> Username</label> -->
+            <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" placeholder="Username">
+        </div>
+
+        <label for="password"><i class="fas fa-lock"></i> Password</label>
+        <input type="password" name="password" id="id_password" autocomplete="current-password" placeholder="Password">
+        
+        <button type="submit" class="button app-login-button" id="id_submit">
+            <i class="fas fa-sign-in-alt"></i> Encrypt
+        </button>
+    </form>
+
+    <br>
+    <div class="plain-key">
+        <label for="plain-text">Plain Password</label>
+        <input type="text" id="plain-text" placeholder="Plain Password" value="{{ plainPassword }}" disabled>
+    </div>
+    <div class="cipher-text">
+        <textarea name="" id="generatedCipherText" disabled cols="50" rows="15"></textarea>
+        <br>
+        <button id="copyText">Copy Cipher</button>
+    </div>
+    <br>
+    <div class="de-cipher-text">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" id="typedUsername" autocapitalize="none" autocomplete="off" placeholder="Username">
+            <br>
+            <input type="password" name="password" id="typedPassword" autocomplete="current-password" placeholder="Password" hidden>
+            <textarea name="deciphertext" id="deciphertext" cols="50" rows="15" placeholder="Cipher Text"></textarea>
+            <br>
+            <div class="plain-key">
+                <label for="plain-text">Plain Password</label>
+                <input type="text" id="plain-text" placeholder="Plain Password" value="{{ decipherText }}" disabled>
+            </div>
+            <input type="submit" value="Decrypt">
+        </form>
+    </div>
+    <script src="{% static 'js/TestingArea.js' %}"></script>
+</body>
+</html>
