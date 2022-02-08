@@ -68,15 +68,13 @@ def TestingArea(request):
 
         # Second Largest Number in ASCII_Username_Sum
         def findLargest(arr):
-            secondLargest = arr[0]
-            largest = arr[0]
-            for i in range(len(arr)):
-                if arr[i] > largest:
-                    largest = arr[i]
-            for i in range(len(arr)):
-                if arr[i] > secondLargest and arr[i] != largest:
-                    secondLargest = arr[i]
-            return secondLargest
+            a=arr
+            a=list(set(a))
+            a.sort()
+            if(len(a)==1 ):
+                return (a[0]+1)
+            else:
+                return (a[-2])
 
         second_largest = findLargest(ASCII_Username_Sum)
         print("Second Largest", second_largest)
