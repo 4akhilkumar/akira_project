@@ -7,6 +7,8 @@ urlpatterns = [
     path('', views.user_login, name = 'login'),
     path('logout/', views.logoutUser, name="logout"),
 
+    path('TestingArea/', views.TestingArea, name="TestingArea"),
+
     path('verify_its_you/<username>/<userLoginObj>/', views.verify_its_you, name="verify_its_you"),
 
     path('secure_account/<username>/<user_response>/<userLoginObj>/', views.secure_account, name="secure_account"),
