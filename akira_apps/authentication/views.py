@@ -33,8 +33,6 @@ from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
 from akira_apps.academic_registration.urls import *
 
-# UserLoginDetails.objects.last().delete()
-
 def TestingArea(request):
     decipherText = ''
     plainPassword = ''
@@ -140,9 +138,10 @@ def user_login(request):
         username = request.POST.get('username')
         ep = request.POST.get('password')
         user_ip_address = ip
+        getClientCookie = request.COOKIES['request_token']
 
-        if (username == "" or ep == "") and (len(username) < 8 or len(ep) < 8):
-            messages.error(request, 'Please enter a valid credentials.')
+        if not re.match(r'[a-zA-Z0-9]{8,}$', username) and re.match(r'[a-zA-Z0-9]{8,}$', ep):
+            messages.info(request, 'Please enter a valid credentials.')
             return redirect('login')
 
         try:
@@ -173,7 +172,7 @@ def user_login(request):
             try:
                 getMetaDataUrl = 'https://akira-rest-api.herokuapp.com/getMetaData/{}/{}/?format=json'.format(username, ep)
                 getMetaDataUrlResponse = requests.get(getMetaDataUrl)
-                data = getMetaDataUrlResponse.json()
+                getMetaDataUrlResponsedata = getMetaDataUrlResponse.json()
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
@@ -200,7 +199,7 @@ def user_login(request):
                         updatecheckSDPNA.status = "Terminated"
                         updatecheckSDPNA.save()
                     if user.is_active == True:
-                        user = authenticate(request, username = username, password = data['MetaKey'])
+                        user = authenticate(request, username = username, password = getMetaDataUrlResponsedata['MetaKey'])
                         if user is not None:
                             getuserLoginObj = save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
                             if TwoFactorAuth.objects.filter(user__username = username, twofa = True).exists() is True:
@@ -349,7 +348,16 @@ def user_login(request):
     context = {
         "GOOGLE_RECAPTCHA_PUBLIC_KEY": settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
     }
-    return render(request, 'authentication/login.html', context)
+    loginResponse = render(request, 'authentication/login.html', context)
+    random_number = random.randint(48, 68)
+    ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=random_number))
+    ranNumberLength = math.ceil((0.18) * len(ranKey))
+    ranNumbers = set(random.choices(string.digits, k=ranNumberLength))
+    
+    cookie_max_age = 300
+    expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+    loginResponse.set_cookie(key='request_token', value=str(ranKey), max_age=cookie_max_age, expires=expire_time)
+    return loginResponse
 
 def save_login_details(request, user_name, user_ip_address, attempt, reason):
     user_agent = request.META['HTTP_USER_AGENT']
@@ -1167,6 +1175,14 @@ def SyncDevice(request, switchDeviceID):
 def logoutUser(request):
     currentSDUAUCSDSDS = SwitchDevice.objects.filter(user = request.user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful").exists()
     currentSDPNA = SwitchDevice.objects.filter(user = request.user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending").exists()
+    
+    logoutResponse = render(request, 'authentication/login.html')
+    # ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+    ranKey = request.user.username
+    cookie_max_age = 604800
+    expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+    logoutResponse.set_cookie(key='access_token', value=ranKey, max_age=cookie_max_age, expires=expire_time)
+    
     if (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = False).exists() is True):
         UserPageVisits.objects.filter(user = request.user).delete()
         if currentSDUAUCSDSDS is True:
@@ -1182,7 +1198,7 @@ def logoutUser(request):
             updatecurrentSDPNA.save()
 
         logout(request)
-        return redirect('login')
+        return logoutResponse
     elif (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True):
         UserPageVisits.objects.filter(user = request.user).delete()
         if currentSDUAUCSDSDS is True:
@@ -1203,59 +1219,12 @@ def logoutUser(request):
                 return redirect('account_settings')
             else:
                 logout(request)
-                return redirect('login')
+                return logoutResponse
         except User_BackUp_Codes.DoesNotExist:
             messages.info(request, "Please generate Backup codes")
             return redirect('account_settings')
     elif (request.user.is_authenticated):
         logout(request)
-        return redirect('login')
+        return logoutResponse
     else:
-        return redirect('login')
-
-# from django.contrib.sessions.models import Session
-# for s in Session.objects.all():
-#     user = User.objects.get(username = '4akhi')
-#     if s.get_decoded().get('_auth_user_id') == str(user.id):
-        # print(s)
-        # s.delete()
-        # print("\tSession was deleted")
-
-# import datetime
-# from django.conf import settings
-# from django.contrib.auth import logout
-# from django.contrib.auth.models import User
-# from django.contrib.sessions.models import Session
-# from django.http import HttpRequest
-# from importlib import import_module
-
-# def init_session(session_key):
-#     """
-#     Initialize same session as done for ``SessionMiddleware``.
-#     """
-#     engine = import_module(settings.SESSION_ENGINE)
-#     return engine.SessionStore(session_key)
-
-# now = datetime.datetime.now()
-# request = HttpRequest()
-
-# sessions = Session.objects.filter(expire_date__gt=now)
-
-# for session in sessions:
-#     user_id = session.get_decoded().get('_auth_user_id')
-#     print(session.session_key)
-#     request.session = init_session(session.session_key)
-
-#     # logout(request)
-#     print('Successfully logout %r user.' % user_id) # 2qgdps6v10mag22nfnbji6n1rfrycxmf 2022-01-17 18:58:05.037466
-
-# from django.contrib.sessions.models import Session
-# from django.contrib.auth.models import User
-
-# session_key = '2qgdps6v10mag22nfnbji6n1rfrycxmf'
-
-# session = Session.objects.get(session_key=session_key)
-# session_data = session.get_decoded()
-# print(session_data)
-# uid = session_data.get('_auth_user_id')
-# user = User.objects.get(id=uid)
+        return logoutResponse
