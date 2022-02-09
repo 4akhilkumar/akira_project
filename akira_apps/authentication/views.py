@@ -54,8 +54,6 @@ def TestingArea(request):
         ASCII_Username_Sum = list(map(int, str(sum(ASCII_Username))))
         print(ASCII_Username_Sum)
 
-        # ASCII_Username_Sum = [2,2,2,2]
-
         # If ASCII_Username_Sum contains any element zero, then replace those zero with 1
         for i in range(len(ASCII_Username_Sum)):
             if ASCII_Username_Sum[i] == 0:

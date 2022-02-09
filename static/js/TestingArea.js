@@ -46,8 +46,6 @@ function myFunction() {
     const arrayOfASCII_Username_Sum = Array.from(String(ASCII_Username_Sum), Number);
     console.log("Key Array",arrayOfASCII_Username_Sum);
 
-    // const arrayOfASCII_Username_Sum = [2,2,2,2];
-
     // If arrayOfASCII_Username_Sum array contains any element zero, then replace those zero with 1
     for (let i = 0; i < arrayOfASCII_Username_Sum.length; i++) {
         if (arrayOfASCII_Username_Sum[i] == 0) {
