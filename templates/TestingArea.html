@@ -7,8 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <title>Client Side Encryption</title>
+    <style>
+        .info {
+            font-family: sans-serif;
+            font-size: 24px;
+            text-align: center;
+            color: #999;
+        }
+    
+        #fingerprint { 
+            font-family: courier;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            color: #069;
+        }
+    </style>
 </head>
 <body>
+
+    <hr>
+        <p class="info">Your browser ID is below:</p>
+        <div id="fingerprint"></div>
+    <hr>
+
     <form>
         <div class="input app-input">
             <!-- <label for="username"><i class="far fa-user"></i> Username</label> -->
@@ -50,5 +72,6 @@
         </form>
     </div>
     <script src="{% static 'js/TestingArea.js' %}"></script>
+    <script src="{% static 'js/BrowserFingerPrinting.js' %}"></script>
 </body>
 </html>
