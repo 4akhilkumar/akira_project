@@ -196,5 +196,17 @@ var fp = new Fingerprint({
 
 var uid = fp.get();
 
-document.getElementById('id_fingerprint').value = uid;
-document.getElementById('fingerprint').innerHTML = uid;
+// try catch for above line
+try {
+    document.getElementById('id_fingerprint').value = uid;
+}
+catch(err) {
+    console.log("None");
+}
+
+try {
+    document.getElementById('fingerprint').innerHTML = uid;
+}
+catch(err) {
+    console.log("None");
+}
