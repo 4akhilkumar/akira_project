@@ -11,11 +11,11 @@ urlpatterns = [
 
     path('verify_its_you/<username>/<userLoginObj>/', views.verify_its_you, name="verify_its_you"),
 
-    path('secure_account/<username>/<user_response>/<userLoginObj>/', views.secure_account, name="secure_account"),
+    # path('secure_account/<username>/<user_response>/<userLoginObj>/', views.secure_account, name="secure_account"),
 
-    path('confirmUserLogin/<username>/<userLoginObj>/', views.confirmUserLogin, name="confirmUserLogin"),
+    # path('confirmUserLogin/<username>/<userLoginObj>/', views.confirmUserLogin, name="confirmUserLogin"),
 
-    path('checkUserResponse/<username>/<userLoginObj>/', views.checkUserResponse, name="checkUserResponse"),
+    # path('checkUserResponse/<username>/<userLoginObj>/', views.checkUserResponse, name="checkUserResponse"),
     
     path('verify_user_by_email/<username>/<userLoginObj>/', views.verify_user_by_email, name="verify_user_by_email"),
     path('verify_user_by_backup_codes/<username>/<userLoginObj>/', views.verify_user_by_backup_codes, name="verify_user_by_backup_codes"),
