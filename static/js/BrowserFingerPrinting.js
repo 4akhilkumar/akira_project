@@ -196,4 +196,5 @@ var fp = new Fingerprint({
 
 var uid = fp.get();
 
+document.getElementById('id_fingerprint').value = uid;
 document.getElementById('fingerprint').innerHTML = uid;

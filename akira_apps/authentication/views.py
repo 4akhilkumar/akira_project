@@ -126,6 +126,34 @@ def TestingArea(request):
     }
     return render(request, 'TestingArea.html', context)
 
+def DecryptEncryptedCookie(request, username, EncryptedCookie):
+    isEncryptedCookie = "Invalid Cookie"
+    try:
+        EncryptedCookieList = []
+        for i in range(0,len(username)):
+            EncryptedCookieList.append(EncryptedCookie[i*10:(i+1)*10])
+
+        randomDigits = []
+        for i in range(len(EncryptedCookieList)):
+            randomDigits.append(EncryptedCookieList[i][-2])
+
+        HexList = []
+        for i in range(len(EncryptedCookieList)):
+            HexList.append(EncryptedCookieList[i][int(randomDigits[i])]+EncryptedCookieList[i][int(randomDigits[i])+1])
+
+        final_list = []
+        for i in range(len(HexList)):
+            final_list.append(chr(int(HexList[i], 16)))
+
+        final_list_hex_str = "".join(final_list)
+        if username == final_list_hex_str:
+            isEncryptedCookie = True
+        else:
+            isEncryptedCookie = "Invalid Cookie"
+        return isEncryptedCookie
+    except Exception:
+        return isEncryptedCookie
+
 @unauthenticated_user
 def user_login(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -137,8 +165,8 @@ def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         ep = request.POST.get('password')
+        fingerprintID = request.POST.get('fingerprint')
         user_ip_address = ip
-        getClientCookie = request.COOKIES['request_token']
 
         if not re.match(r'[a-zA-Z0-9]{8,}$', username) and re.match(r'[a-zA-Z0-9]{8,}$', ep):
             messages.info(request, 'Please enter a valid credentials.')
@@ -168,6 +196,14 @@ def user_login(request):
         except User.DoesNotExist:
             checkUserExists = None
 
+        try:
+            getEncryptedCookie = request.COOKIES['access_token']
+        except Exception:
+            getEncryptedCookie = "Doesn't Exist"
+
+        if getEncryptedCookie:
+            DECookie = DecryptEncryptedCookie(request, username, getEncryptedCookie)
+
         if cap_json['success'] == True:
             try:
                 getMetaDataUrl = 'https://akira-rest-api.herokuapp.com/getMetaData/{}/{}/?format=json'.format(username, ep)
@@ -176,7 +212,7 @@ def user_login(request):
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
-            if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False:
+            if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False or DECookie is True:
                 if checkUserExists:
                     user = User.objects.get(username = username)
                     try:
@@ -201,78 +237,49 @@ def user_login(request):
                     if user.is_active == True:
                         user = authenticate(request, username = username, password = getMetaDataUrlResponsedata['MetaKey'])
                         if user is not None:
-                            getuserLoginObj = save_login_details(request, username, user_ip_address, "Not Confirmed Yet!", None)
+                            getuserLoginObj = save_login_details(request, username, user_ip_address, fingerprintID, "Not Confirmed Yet!", None)
                             if TwoFactorAuth.objects.filter(user__username = username, twofa = True).exists() is True:
                                 return redirect('twofa_verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                             else:
-                                dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username).count()
-                                if dataset_UserLoginDetails > 1:
-                                    six_days_ago = pydt.datetime.now() - pydt.timedelta(days = 6)
-                                    current_uld = UserLoginDetails.objects.filter(user__username = username, attempt = "Success", created_at__gte = six_days_ago)
-                                    last_current_uld = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username).order_by('-created_at')
+                                dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username)
+                                if dataset_UserLoginDetails.count() > 1:
                                     current_user = User.objects.get(username = username)
-                                    list_current_uld_ipa = []
-                                    list_current_uld_osd = []
-                                    list_current_uld_bd = []
-                                    for i in range(len(current_uld)-1):
-                                        list_current_uld_ipa.append(current_uld[i].user_ip_address)
-                                        list_current_uld_osd.append(current_uld[i].os_details)
-                                        list_current_uld_bd.append(current_uld[i].browser_details)
-
-                                    user_ip_address = list(last_current_uld)[0].user_ip_address
-                                    os_details = list(last_current_uld)[0].os_details
-                                    browser_details = list(last_current_uld)[0].browser_details
-
-                                    count = 0
-                                    if user_ip_address in list_current_uld_ipa:
-                                        count += 16
-                                    if os_details in list_current_uld_osd:
-                                        count += 4
-                                    if browser_details in list_current_uld_bd:
-                                        count += 2
-                                    if (count == 22):
+                                    currentULLCookieObj = UserLoginDetails.objects.filter(user__username = username).last()
+                                    if currentULLCookieObj.Logoutcookie == getEncryptedCookie:
+                                        LogoutCookie = True
+                                    else:
+                                        LogoutCookie = False
+                                    if UserLoginDetails.objects.filter(user__username = username, bfp = fingerprintID, attempt = "Success").exists() is True or LogoutCookie is True:
                                         login(request, user)
                                         get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
                                         update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
-                                        update_attempt_ncy.score = count
                                         update_attempt_ncy.attempt = "Success"
-                                        update_attempt_ncy.reason = str(count)
+                                        update_attempt_ncy.reason = "BFP ID Matched"
                                         update_attempt_ncy.sessionKey = request.session.session_key
                                         update_attempt_ncy.save()
                                         return redirect('login')
                                     else:
-                                        get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-                                        update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
-                                        update_attempt_ncy.score = count
-                                        update_attempt_ncy.attempt = "Manual Confirmation Required"
-                                        update_attempt_ncy.reason = "Login is unusual"
-                                        update_attempt_ncy.user_confirm = "Pending due to unusual login"
-                                        update_attempt_ncy.save()
-                                        current_site = get_current_site(request)
-                                        context = {
-                                            "first_name": current_user.first_name,
-                                            "email": current_user.email,
-                                            "user_ip_address": user_ip_address,
-                                            "os_details": os_details,
-                                            "browser_details": browser_details,
-                                            "current_time": current_time,
-                                            "username": dataUsername['EncryptedUsername'],
-                                            "domain": current_site.domain,
-                                            "userLoginObj": getuserLoginObj.id,
-                                        }
-                                        template = render_to_string('authentication/login_alert_email.html', context)
-                                        try:
-                                            send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
-                                            messages.info(request, "Please check your email inbox")
-                                            return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                                        except Exception:
-                                            deleteLoginDetails = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, 
-                                                                                                attempt = "Manual Confirmation Required", 
-                                                                                                reason = "Login is unusual",
-                                                                                                user_confirm = "Pending due to unusual login")
-                                            deleteLoginDetails.delete()
-                                            messages.warning(request, "Check your internet connection")
-                                            return redirect('login')
+                                        return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
+                                        # get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
+                                        # update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
+                                        # update_attempt_ncy.attempt = "Manual Confirmation Required"
+                                        # update_attempt_ncy.reason = "Login is unusual"
+                                        # update_attempt_ncy.user_confirm = "Pending due to unusual login"
+                                        # update_attempt_ncy.save()
+                                        # current_site = get_current_site(request)
+                                        # template = render_to_string('authentication/login_alert_email.html', context)
+                                        # try:
+                                        #     send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
+                                        #     messages.info(request, "Please check your email inbox")
+                                        #     return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
+                                        # except Exception:
+                                        #     deleteLoginDetails = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, 
+                                        #                                                         attempt = "Manual Confirmation Required", 
+                                        #                                                         reason = "Login is unusual",
+                                        #                                                         user_confirm = "Pending due to unusual login")
+                                        #     deleteLoginDetails.delete()
+                                        #     messages.warning(request, "Check your internet connection")
+                                        #     return redirect('login')
                                 else:
                                     login(request, user)
                                     current_userlogindetailsObject = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
@@ -323,27 +330,27 @@ def user_login(request):
                                         return HttpResponse("Contact Administrator")
                         else:
                             messages.warning(request, 'Username or Password is Incorrect!')
-                            save_login_details(request, username, user_ip_address, "Failed", "Username or Password is Incorrect!")
+                            save_login_details(request, username, user_ip_address, fingerprintID, "Failed", "Username or Password is Incorrect!")
                             return redirect('login')
                     else:
                         messages.info(request, 'Your account has been disabled')
-                        getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "User account is disabled")
+                        getuserLoginObj = save_login_details(request, username, user_ip_address, fingerprintID, "Need to verify", "User account is disabled")
                         return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
                 else:
                     messages.warning(request, 'No such account exist!')
-                    save_login_details(request, None, user_ip_address, "Failed", "No such account exist!")
+                    save_login_details(request, None, user_ip_address, fingerprintID, "Failed", "No such account exist!")
                     return redirect('login')
-            else:
-                messages.warning(request, 'Login from suspicious IP address')
+            elif  User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is True or DECookie is False:
+                messages.warning(request, 'Suspicious Activity Found!')
                 if checkUserExists:
-                    getuserLoginObj = save_login_details(request, username, user_ip_address, "Need to verify", "Login attempt from suspicious IP address")
+                    getuserLoginObj = save_login_details(request, username, user_ip_address, fingerprintID, "Need to verify", "Suspicious Activity")
                     return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
         else:
             messages.error(request, 'Invalid Captcha try again!')
             if checkUserExists:
-                save_login_details(request, username, user_ip_address, "Failed", "Invalid Captcha try again!")
+                save_login_details(request, username, user_ip_address, fingerprintID, "Failed", "Invalid Captcha try again!")
             else:
-                save_login_details(request, None, user_ip_address, "Failed", "Invalid Captcha try again!")
+                save_login_details(request, None, user_ip_address, fingerprintID, "Failed", "Invalid Captcha try again!")
             return redirect('login')
     context = {
         "GOOGLE_RECAPTCHA_PUBLIC_KEY": settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
@@ -352,14 +359,13 @@ def user_login(request):
     random_number = random.randint(48, 68)
     ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=random_number))
     ranNumberLength = math.ceil((0.18) * len(ranKey))
-    ranNumbers = set(random.choices(string.digits, k=ranNumberLength))
-    
+    ranNumbers = set(random.choices(string.digits, k=ranNumberLength))    
     cookie_max_age = 300
     expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
     loginResponse.set_cookie(key='request_token', value=str(ranKey), max_age=cookie_max_age, expires=expire_time)
     return loginResponse
 
-def save_login_details(request, user_name, user_ip_address, attempt, reason):
+def save_login_details(request, user_name, user_ip_address, fingerprintID, attempt, reason):
     user_agent = request.META['HTTP_USER_AGENT']
     browser = httpagentparser.detect(user_agent)
     if not browser:
@@ -371,16 +377,19 @@ def save_login_details(request, user_name, user_ip_address, attempt, reason):
     OS_Details = res[0][1:-1]
     if user_name == None:
         userLoginObj = UserLoginDetails.objects.create(
-                                    user_ip_address = user_ip_address, 
-                                    os_details = OS_Details, 
-                                    browser_details = browser, 
+                                    user_ip_address = user_ip_address,
+                                    bfp = fingerprintID,
+                                    os_details = OS_Details,
+                                    browser_details = browser,
                                     attempt = attempt, reason = reason)
     else:
         userObj = User.objects.get(username=user_name)
         userLoginObj = UserLoginDetails.objects.create(
-                                    user_ip_address = user_ip_address, 
-                                    user = userObj, os_details = OS_Details, 
-                                    browser_details = browser, 
+                                    user = userObj,
+                                    user_ip_address = user_ip_address,
+                                    bfp = fingerprintID,
+                                    os_details = OS_Details,
+                                    browser_details = browser,
                                     attempt = attempt, reason = reason)
     return userLoginObj
 
@@ -750,119 +759,119 @@ def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
         }
         return render(request, 'authentication/twoFactorAuthentication/two_fac_enter_backup_code.html', context)
 
-def confirmUserLogin(request, username, userLoginObj):
-    try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
-        response = requests.get(url)
-        dataUsername = response.json()
-    except Exception:
-        messages.info(request, "Server under maintenance. Please try again later.")
-        return redirect('login')
-    try:
-        get_attempt_ARU = UserLoginDetails.objects.get(
-                        id = userLoginObj,
-                        user__username = dataUsername['DecryptedUsername'],
-                        attempt = "Manual Confirmation Required",
-                        reason = "Login is unusual",
-                        user_confirm = "Pending due to unusual login")
-    except UserLoginDetails.DoesNotExist:
-        get_attempt_ARU = None
-    if get_attempt_ARU:
-        context = {
-            "username": username,
-            "userLoginObj":userLoginObj,
-        }
-        return render(request, 'authentication/confirmUserLogin.html', context)
-    else:
-        messages.info(request, "User is already confirmed!")
-        return redirect('login')
+# def confirmUserLogin(request, username, userLoginObj):
+#     try:
+#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         response = requests.get(url)
+#         dataUsername = response.json()
+#     except Exception:
+#         messages.info(request, "Server under maintenance. Please try again later.")
+#         return redirect('login')
+#     try:
+#         get_attempt_ARU = UserLoginDetails.objects.get(
+#                         id = userLoginObj,
+#                         user__username = dataUsername['DecryptedUsername'],
+#                         attempt = "Manual Confirmation Required",
+#                         reason = "Login is unusual",
+#                         user_confirm = "Pending due to unusual login")
+#     except UserLoginDetails.DoesNotExist:
+#         get_attempt_ARU = None
+#     if get_attempt_ARU:
+#         context = {
+#             "username": username,
+#             "userLoginObj":userLoginObj,
+#         }
+#         return render(request, 'authentication/confirmUserLogin.html', context)
+#     else:
+#         messages.info(request, "User is already confirmed!")
+#         return redirect('login')
 
-def secure_account(request, username, user_response, userLoginObj):
-    try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
-        response = requests.get(url)
-        dataUsername = response.json()
-    except Exception:
-        messages.info(request, "Server under maintenance. Please try again later.")
-        return redirect('login')
+# def secure_account(request, username, user_response, userLoginObj):
+#     try:
+#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         response = requests.get(url)
+#         dataUsername = response.json()
+#     except Exception:
+#         messages.info(request, "Server under maintenance. Please try again later.")
+#         return redirect('login')
 
-    try:
-        get_attempt_ARU = UserLoginDetails.objects.get(
-                        id = userLoginObj,
-                        user__username = dataUsername['DecryptedUsername'], 
-                        attempt = "Manual Confirmation Required",
-                        reason = "Login is unusual",
-                        user_confirm = "Pending due to unusual login")
-    except UserLoginDetails.DoesNotExist:
-        get_attempt_ARU = None
-    if get_attempt_ARU:
-        get_attempt_ARU = UserLoginDetails.objects.get(
-                        id = userLoginObj,
-                        user__username = dataUsername['DecryptedUsername'], 
-                        attempt = "Manual Confirmation Required",
-                        reason = "Login is unusual",
-                        user_confirm = "Pending due to unusual login")
-        if get_attempt_ARU.user.username == dataUsername['DecryptedUsername']:
-            if user_response == "yes":
-                get_attempt_ARU = UserLoginDetails.objects.filter(id = userLoginObj, user__username = dataUsername['DecryptedUsername'], attempt = "Manual Confirmation Required").order_by('-created_at')[0]
-                get_attempt_ARU.attempt = "Success"
-                get_attempt_ARU.user_confirm = "Login Confirmed"
-                get_attempt_ARU.reason = "Login Confirmed via Email Manually"
-                get_attempt_ARU.save()
-                user = User.objects.get(username = dataUsername['DecryptedUsername'])
-                user.is_active = True
-                user.save()
-                return HttpResponse(status=200)
-            else:
-                logout(request)
-                return HttpResponse(status=400)
-        else:
-            logout(request)
-            return HttpResponse(status=400)
-    else:
-        logout(request)
-        return HttpResponse(status=400)
+#     try:
+#         get_attempt_ARU = UserLoginDetails.objects.get(
+#                         id = userLoginObj,
+#                         user__username = dataUsername['DecryptedUsername'], 
+#                         attempt = "Manual Confirmation Required",
+#                         reason = "Login is unusual",
+#                         user_confirm = "Pending due to unusual login")
+#     except UserLoginDetails.DoesNotExist:
+#         get_attempt_ARU = None
+#     if get_attempt_ARU:
+#         get_attempt_ARU = UserLoginDetails.objects.get(
+#                         id = userLoginObj,
+#                         user__username = dataUsername['DecryptedUsername'], 
+#                         attempt = "Manual Confirmation Required",
+#                         reason = "Login is unusual",
+#                         user_confirm = "Pending due to unusual login")
+#         if get_attempt_ARU.user.username == dataUsername['DecryptedUsername']:
+#             if user_response == "yes":
+#                 get_attempt_ARU = UserLoginDetails.objects.filter(id = userLoginObj, user__username = dataUsername['DecryptedUsername'], attempt = "Manual Confirmation Required").order_by('-created_at')[0]
+#                 get_attempt_ARU.attempt = "Success"
+#                 get_attempt_ARU.user_confirm = "Login Confirmed"
+#                 get_attempt_ARU.reason = "Login Confirmed via Email Manually"
+#                 get_attempt_ARU.save()
+#                 user = User.objects.get(username = dataUsername['DecryptedUsername'])
+#                 user.is_active = True
+#                 user.save()
+#                 return HttpResponse(status=200)
+#             else:
+#                 logout(request)
+#                 return HttpResponse(status=400)
+#         else:
+#             logout(request)
+#             return HttpResponse(status=400)
+#     else:
+#         logout(request)
+#         return HttpResponse(status=400)
 
-def checkUserResponse(request, username, userLoginObj):
-    try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
-        response = requests.get(url)
-        dataUsername = response.json()
-    except Exception:
-        messages.info(request, "Server under maintenance. Please try again later.")
-        return redirect('login')
+# def checkUserResponse(request, username, userLoginObj):
+#     try:
+#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         response = requests.get(url)
+#         dataUsername = response.json()
+#     except Exception:
+#         messages.info(request, "Server under maintenance. Please try again later.")
+#         return redirect('login')
 
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    try:
-        userLoginDetails = UserLoginDetails.objects.get(
-                        id = userLoginObj,
-                        user__username = dataUsername['DecryptedUsername'], 
-                        attempt = "Success",
-                        user_ip_address = ip,
-                        user_confirm = "Login Confirmed",
-                        reason = "Login Confirmed via Email Manually")
-    except UserLoginDetails.DoesNotExist:
-        userLoginDetails = None
-    if (userLoginDetails) and (userLoginDetails.user_ip_address == ip):
-        user = User.objects.get(username = dataUsername['DecryptedUsername'])
-        login(request, user)
-        userLoginDetails.sessionKey = request.session.session_key
-        userLoginDetails.score = getLoginScore(userLoginObj, dataUsername['DecryptedUsername'])
-        userLoginDetails.save()
-        data = {
-            'status': 'success',
-        }
-    else:
-        logout(request)
-        data = {
-            'status': 'failed',
-        }
-    response = JsonResponse(data)
-    return response
+#     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+#     if x_forwarded_for:
+#         ip = x_forwarded_for.split(',')[0]
+#     else:
+#         ip = request.META.get('REMOTE_ADDR')
+#     try:
+#         userLoginDetails = UserLoginDetails.objects.get(
+#                         id = userLoginObj,
+#                         user__username = dataUsername['DecryptedUsername'], 
+#                         attempt = "Success",
+#                         user_ip_address = ip,
+#                         user_confirm = "Login Confirmed",
+#                         reason = "Login Confirmed via Email Manually")
+#     except UserLoginDetails.DoesNotExist:
+#         userLoginDetails = None
+#     if (userLoginDetails) and (userLoginDetails.user_ip_address == ip):
+#         user = User.objects.get(username = dataUsername['DecryptedUsername'])
+#         login(request, user)
+#         userLoginDetails.sessionKey = request.session.session_key
+#         userLoginDetails.score = getLoginScore(userLoginObj, dataUsername['DecryptedUsername'])
+#         userLoginDetails.save()
+#         data = {
+#             'status': 'success',
+#         }
+#     else:
+#         logout(request)
+#         data = {
+#             'status': 'failed',
+#         }
+#     response = JsonResponse(data)
+#     return response
 
 def requestSwitchDevice(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -1172,15 +1181,41 @@ def SyncDevice(request, switchDeviceID):
         messages.error(request, "Switch Device is terminated")
         return redirect('validateSwitchDevice')
 
+def UsernameEncryptedCookie(request, username):
+    username10 = len(username) * 10
+    username_hex = username.encode('utf-8').hex()
+
+    n = username10
+    ranString = ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+
+    ranStringList = []
+    for i in range(0,len(username)):
+        ranStringList.append(ranString[i*10:(i+1)*10])
+
+    ranDigits = [random.randint(1, 6) for i in range(len(username))]
+
+    for i in range(0,len(username)):
+        ranStringList[i] = ranStringList[i][:ranDigits[i]] + username_hex[i*2:i*2+2] + ranStringList[i][ranDigits[i]+2:]
+
+    saltArrayAT = ranStringList
+    SecLarAUS = -2
+    random_digit = ranDigits
+    for i in range(0,len(username)):
+        saltArrayAT[i] = saltArrayAT[i][:SecLarAUS] + str(random_digit[i]) + saltArrayAT[i][SecLarAUS+1:]
+
+    ranStringList_str = "".join(ranStringList)
+    return ranStringList_str
+
 def logoutUser(request):
     currentSDUAUCSDSDS = SwitchDevice.objects.filter(user = request.user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful").exists()
     currentSDPNA = SwitchDevice.objects.filter(user = request.user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending").exists()
     
     logoutResponse = render(request, 'authentication/login.html')
-    # ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
-    ranKey = request.user.username
+
+    ranKey = UsernameEncryptedCookie(request, request.user.username)
     cookie_max_age = 604800
     expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+    
     logoutResponse.set_cookie(key='access_token', value=ranKey, max_age=cookie_max_age, expires=expire_time)
     
     if (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = False).exists() is True):
@@ -1197,6 +1232,9 @@ def logoutUser(request):
             updatecurrentSDPNA.status = "Terminated"
             updatecurrentSDPNA.save()
 
+        currentULObj = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
+        currentULObj.Logoutcookie = ranKey
+        currentULObj.save()
         logout(request)
         return logoutResponse
     elif (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True):
@@ -1218,13 +1256,97 @@ def logoutUser(request):
                 messages.info(request, "Please Download Backup codes")
                 return redirect('account_settings')
             else:
+                currentULObj = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
+                currentULObj.Logoutcookie = ranKey
+                currentULObj.save()
                 logout(request)
                 return logoutResponse
         except User_BackUp_Codes.DoesNotExist:
             messages.info(request, "Please generate Backup codes")
             return redirect('account_settings')
     elif (request.user.is_authenticated):
+        currentULObj = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
+        currentULObj.Logoutcookie = ranKey
+        currentULObj.save()
         logout(request)
         return logoutResponse
     else:
         return logoutResponse
+
+# # Encrypting the cookie with content username
+# username = "4akhi"
+# print("Username",username)
+# username10 = len(username) * 10
+
+# # convert username into hex
+# username_hex = username.encode('utf-8').hex()
+# print("Username HEX",username_hex)
+
+# n = username10
+# ranString = ''.join(random.choices(string.ascii_letters + string.digits, k=n))
+# print("Random String",ranString)
+
+# # Divide the ranString by length of username and store it in a list
+# ranStringList = []
+# for i in range(0,len(username)):
+#     ranStringList.append(ranString[i*10:(i+1)*10])
+# print("Divide", ranStringList)
+
+# # Generate n random numbers between 1 and 6
+# ranDigits = [random.randint(1, 6) for i in range(len(username))]
+# # ranDigits = "".join(str(i) for i in ranDigits)
+# print("N Random Number ",ranDigits)
+
+# # Replace the two characters in each element of ranStringList at the index of ranDigits with the two characters in username_hex
+# for i in range(0,len(username)):
+#     ranStringList[i] = ranStringList[i][:ranDigits[i]] + username_hex[i*2:i*2+2] + ranStringList[i][ranDigits[i]+2:]
+# print("Username HEX Replaced ", ranStringList)
+
+
+# saltArrayAT = ranStringList
+# SecLarAUS = -2
+# random_digit = ranDigits
+# # Replace the characters in each element of saltArrayAT using SecLarAUS value as Index from the last with characters of random_digit
+# for i in range(0,len(username)):
+#     saltArrayAT[i] = saltArrayAT[i][:SecLarAUS] + str(random_digit[i]) + saltArrayAT[i][SecLarAUS+1:]
+# print("Random Digit Replaced ", saltArrayAT)
+
+# # Convert the ranStringList into a string
+# ranStringList_str = "".join(ranStringList)
+# print("ranStringList str", ranStringList_str)
+
+# # Decrypting the Encrypting the cookie with content username
+# username = "4akhilkumar"
+# EncryptedCookie = "pumP349u4KVem61ZcA37f6bxpg7q1H2bqdc68W58W48Go69S56r7X6cB9n3NRKhrzE6b6JORDaev756G3g0ezr6d6wyVj4Tk616PsNX672YH4U"
+
+# username10 = len(username) * 10
+
+# # Divide the EncryptedCookie by length of username and store it in a list
+# EncryptedCookieList = []
+# for i in range(0,len(username)):
+#     EncryptedCookieList.append(EncryptedCookie[i*10:(i+1)*10])
+# print("Divide", EncryptedCookieList)
+# # ['UmnqCu5hin', '5C7RfJf6Ev', 'Iz2n2hnBWc', 'Z1yb0JViCx', 'L4a8sXuBsq']
+
+# # Find the random digits in the encryptedText_list
+# randomDigits = []
+# # Store the last nth character of each element in the encryptedText_list in randomDigits list
+# for i in range(len(EncryptedCookieList)):
+#     randomDigits.append(EncryptedCookieList[i][-2])
+# print("Random Digits",randomDigits)
+# # N Random Number  [3, 1, 6, 2, 3]
+
+# # get the elements of the encryptedText_list at specific index using randomDigits elements as index values and store it in a list name final_list
+# HexList = []
+# for i in range(len(EncryptedCookieList)):
+#     HexList.append(EncryptedCookieList[i][int(randomDigits[i])]+EncryptedCookieList[i][int(randomDigits[i])+1])
+# print(HexList)
+
+# # Convert the HexList elements to ASCII and store it in a final_list
+# final_list = []
+# for i in range(len(HexList)):
+#     final_list.append(chr(int(HexList[i], 16)))
+# print(final_list)
+
+# final_list_hex_str = "".join(final_list)
+# print(final_list_hex_str)

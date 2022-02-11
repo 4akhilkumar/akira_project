@@ -101,6 +101,7 @@
     
         <form action="" method="POST">
             {% csrf_token %}
+            <input type="hidden" name="fingerprint" id="id_fingerprint" readonly>
             <div class="input app-input">
                 <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" onkeyup="isEmpty()" required>
                 <label for="username"><i class="far fa-user"></i> Username</label>
@@ -127,4 +128,5 @@
 </html>
 
 <script src='{% static "js/κρυπτογράφηση δεδομένων.js" %}'></script>
+<script src='{% static "js/BrowserFingerPrinting.js" %}'></script>
 <script src='{% static "js/login.js" %}'></script>

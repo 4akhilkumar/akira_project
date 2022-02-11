@@ -9,6 +9,8 @@ class UserLoginDetails(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     user_ip_address = models.GenericIPAddressField()
+    bfp = models.CharField(max_length=255, blank=True, null=True)
+    Logoutcookie = models.CharField(max_length=255, blank=True, null=True)
     os_details = models.CharField(max_length=100)
     browser_details = models.CharField(max_length=100)
     score = models.IntegerField(blank=True, null=True)
