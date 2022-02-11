@@ -5,11 +5,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{% static "js/jquery.min.js" %}"></script>
+    <meta name="theme-color" content="#317EFB"/>
+    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href='{% static "styles/confirmLogin.css" %}'>
+
+    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
+
+    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <title>Confirm your Login</title>
 </head>
 <body>
-    <h1>Please check your Email Inbox. We have sent an Email to confirm your login</h1>
+
+    {% include 'messages.html' %}
+
+    <div class="container">
+        <h1>Please check your Email Inbox. We have sent an Email to confirm your login</h1>
+    </div>
 
     <script>
         function ajaxCall() {
