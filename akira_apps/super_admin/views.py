@@ -96,14 +96,15 @@ def assign_user_group(request, staff_username):
 # new_group, created = Group.objects.get_or_create(name ='Assistant Professor')
 # new_group, created = Group.objects.get_or_create(name ='Student')
 
-# if User.objects.filter(username='4akhi').exists() is True:
-#     user = User.objects.get(username = '4akhi')
+# if User.objects.filter(username='4akhilkumar').exists() is True:
+#     user = User.objects.get(username = '4akhilkumar')
 # else:
-#     user = User.objects.create_user(username='4akhi')
+#     user = User.objects.create_user(username='4akhilkumar')
+# user.username = '4akhilkumar'
 # user.first_name = 'Sai Akhil Kumar Reddy'
 # user.last_name = 'N'
 # user.email = '4akhilkumar@gmail.com'
-# user.set_password("root")
+# user.set_password("AKIRAaccount@21")
 # user.is_active = True
 # user.is_staff = True
 # user.is_superuser = True
