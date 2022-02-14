@@ -25,6 +25,5 @@ class userPageTrackingMiddleware:
                     UserPageVisits.objects.create(user=request.user, currentPage=currentPageURL, userIPAddr=ip)
                 else:
                     UserPageVisits.objects.create(user=request.user, currentPage=currentPageURL, userIPAddr=ip)
-            # UserPageVisits.objects.all().delete()
 
         return self.get_response(request)
