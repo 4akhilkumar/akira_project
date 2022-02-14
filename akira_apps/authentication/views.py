@@ -255,7 +255,7 @@ def user_login(request):
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
-            if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False or DECookie is not None:
+            if (User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False) and (DECookie is not None):
                 if checkUserExists:
                     user = User.objects.get(username = username)
                     try:
