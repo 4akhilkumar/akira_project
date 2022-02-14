@@ -152,7 +152,7 @@ def UsernameEncryptedCookie(request, username):
     return ranStringList_str
 
 def DecryptEncryptedCookie(request, username, EncryptedCookie):
-    isEncryptedCookie = "Invalid Cookie"
+    isEncryptedCookie = False # For any worst scenario
     try:
         EncryptedCookieList = []
         for i in range(0,len(username)):
@@ -172,12 +172,22 @@ def DecryptEncryptedCookie(request, username, EncryptedCookie):
 
         final_list_hex_str = "".join(final_list)
         if username == final_list_hex_str:
-            isEncryptedCookie = True
+            if User.objects.filter(username = username).exists() is True:
+                currentULLCookieObj = UserLoginDetails.objects.filter(user__username = username).last()
+                if (currentULLCookieObj.Logoutcookie == EncryptedCookie) or (username == final_list_hex_str):
+                    isEncryptedCookie = True # Real User
+                else:
+                    isEncryptedCookie = False # This is not the cookie of the user
+            else:
+                isEncryptedCookie = False # User does not exist
         else:
-            isEncryptedCookie = "Invalid Cookie"
+            if User.objects.filter(username = final_list_hex_str).exists() is True:
+                isEncryptedCookie = None # Guest User
+            else:
+                isEncryptedCookie = False # User does not exist
         return isEncryptedCookie
     except Exception:
-        return isEncryptedCookie
+        return isEncryptedCookie # False - Because the cookie is not in my pattern/unable to decrypt
 
 @unauthenticated_user
 def user_login(request):
@@ -209,12 +219,20 @@ def user_login(request):
             return redirect('login')
 
         try:
-            url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
-            response = requests.get(url)
-            dataUsername = response.json()
+            getEncryptedCookie = request.COOKIES['access_token']
         except Exception:
-            messages.info(request, "Server under maintenance. Please try again later.")
-            return redirect('login')
+            getEncryptedCookie = None
+        try:
+            getEncryptedGuestCookie = request.COOKIES['guest_token']
+        except Exception:
+            getEncryptedGuestCookie = None
+
+        DECookie = ""
+        if getEncryptedCookie or getEncryptedGuestCookie:
+            if UserLoginDetails.objects.filter(user__username = username, Logoutcookie = getEncryptedCookie).last():
+                DECookie = DecryptEncryptedCookie(request, username, getEncryptedCookie)
+            elif UserLoginDetails.objects.filter(user__username = username, Logoutcookie = getEncryptedGuestCookie).last():
+                DECookie = DecryptEncryptedCookie(request, username, getEncryptedGuestCookie)
 
         try:
             checkUserExists = User.objects.get(username = username)
@@ -222,12 +240,12 @@ def user_login(request):
             checkUserExists = None
 
         try:
-            getEncryptedCookie = request.COOKIES['access_token']
+            url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
+            response = requests.get(url)
+            dataUsername = response.json()
         except Exception:
-            getEncryptedCookie = "Doesn't Exist"
-
-        if getEncryptedCookie:
-            DECookie = DecryptEncryptedCookie(request, username, getEncryptedCookie)
+            messages.info(request, "Server under maintenance. Please try again later.")
+            return redirect('login')
 
         if cap_json['success'] == True:
             try:
@@ -237,7 +255,7 @@ def user_login(request):
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
-            if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False or DECookie is True:
+            if User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False or DECookie is not None:
                 if checkUserExists:
                     user = User.objects.get(username = username)
                     try:
@@ -269,12 +287,7 @@ def user_login(request):
                                 dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username)
                                 if dataset_UserLoginDetails.count() > 1:
                                     current_user = User.objects.get(username = username)
-                                    currentULLCookieObj = UserLoginDetails.objects.filter(user__username = username).last()
-                                    if currentULLCookieObj.Logoutcookie == getEncryptedCookie:
-                                        LogoutCookie = True
-                                    else:
-                                        LogoutCookie = False
-                                    if UserLoginDetails.objects.filter(user__username = username, bfp = fingerprintID, attempt = "Success").exists() is True or LogoutCookie is True:
+                                    if UserLoginDetails.objects.filter(user__username = username, bfp = fingerprintID, attempt = "Success").exists() is True:
                                         login(request, user)
                                         get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
                                         update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
@@ -384,10 +397,10 @@ def user_login(request):
     random_number = random.randint(48, 68)
     ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=random_number))
     ranNumberLength = math.ceil((0.18) * len(ranKey))
-    ranNumbers = set(random.choices(string.digits, k=ranNumberLength))    
+    ranNumbers = set(random.choices(string.digits, k=ranNumberLength))
     cookie_max_age = 300
     expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
-    loginResponse.set_cookie(key='request_token', value=str(ranKey), max_age=cookie_max_age, expires=expire_time)
+    # loginResponse.set_cookie(key='request_token', value=str(ranKey), max_age=cookie_max_age, expires=expire_time)
     return loginResponse
 
 def save_login_details(request, user_name, user_ip_address, fingerprintID, attempt, reason):
@@ -1210,14 +1223,6 @@ def logoutUser(request):
     currentSDUAUCSDSDS = SwitchDevice.objects.filter(user = request.user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful").exists()
     currentSDPNA = SwitchDevice.objects.filter(user = request.user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending").exists()
     
-    logoutResponse = render(request, 'authentication/login.html')
-
-    ranKey = UsernameEncryptedCookie(request, request.user.username)
-    cookie_max_age = 604800
-    expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
-    
-    logoutResponse.set_cookie(key='access_token', value=ranKey, max_age=cookie_max_age, expires=expire_time)
-    
     if (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = False).exists() is True):
         UserPageVisits.objects.filter(user = request.user).delete()
         if currentSDUAUCSDSDS is True:
@@ -1232,11 +1237,8 @@ def logoutUser(request):
             updatecurrentSDPNA.status = "Terminated"
             updatecurrentSDPNA.save()
 
-        currentULObj = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
-        currentULObj.Logoutcookie = ranKey
-        currentULObj.save()
         logout(request)
-        return logoutResponse
+        return redirect('login')
     elif (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True):
         UserPageVisits.objects.filter(user = request.user).delete()
         if currentSDUAUCSDSDS is True:
@@ -1256,19 +1258,13 @@ def logoutUser(request):
                 messages.info(request, "Please Download Backup codes")
                 return redirect('account_settings')
             else:
-                currentULObj = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
-                currentULObj.Logoutcookie = ranKey
-                currentULObj.save()
                 logout(request)
-                return logoutResponse
+                return redirect('login')
         except User_BackUp_Codes.DoesNotExist:
             messages.info(request, "Please generate Backup codes")
             return redirect('account_settings')
     elif (request.user.is_authenticated):
-        currentULObj = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
-        currentULObj.Logoutcookie = ranKey
-        currentULObj.save()
         logout(request)
-        return logoutResponse
+        return redirect('login')
     else:
-        return logoutResponse
+        return redirect('login')
