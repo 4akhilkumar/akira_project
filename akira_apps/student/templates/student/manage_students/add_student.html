@@ -1,0 +1,60 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block add-students %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" id="id_username" placeholder="Username" required>
+        <input type="email" name="email" id="id_email" placeholder="Email" required>
+        <input type="text" name="firstname" id="id_firstname" placeholder="First name" required>
+        <input type="text" name="lastname" id="id_lastname" placeholder="Last name" required>
+
+        <select name="gender" id="id_gender">
+            {% for x,y in gender.fields.gender.choices %}
+            <option value="{{ x }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <input type="date" name="date_of_birth" id="id_date_of_birth" placeholder="Date of birth" required>
+        <input type="text" name="door_no" id="id_door_no" placeholder="Door No." required>
+        <input type="number" name="zip_code" id="id_zip_code" placeholder="Zip code." required>
+        <input type="text" name="city" id="id_city" placeholder="City" required>
+        <input type="text" name="state" id="id_state" placeholder="State" required>
+        <input type="text" name="country" id="id_country" placeholder="Country" required>
+        <select name="blood_group" id="id_blood_group">
+            {% for x,y in blood_groups.fields.bloodgroup.choices %}
+            <option value="{{ x }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <input type="file" name="photo" accept="image/*" id="id_photo">
+        <select name="branch" id="id_branch">
+            <option value="">Select Branch</option>
+            {% for i in branches %}
+            <option value="{{ i.id }}">{{ i.name }}</option>
+            {% endfor %}
+        </select>
+        <a href="{% url 'add_branch' %}" target="_blank" rel="noopener noreferrer">Create branch</a>
+        <div class="fetchBranches" id="fetchBranches">refresh</div>
+        
+        <input type="submit" value="Save" class="default" name="_save">
+        <input type="submit" value="Save and add another" name="_addanother">
+        <input type="submit" value="Save and continue editing" name="_continue">
+    </form>
+
+    <script>
+        $("[id = 'fetchBranches']").click(function () {
+            $.ajax({
+                type: "GET",
+                url: '{% url "getAllBranches" %}',
+                success: function (data) {
+                    let html_data = '<option value=""> Select Branch </option>';
+                    data.forEach(function (data) {
+                        html_data += `<option value="${data.id}">${data.name}</option>`
+                    });
+                    $("#id_branch").html(html_data);
+                }
+            });
+        });
+      </script>
+
+{% endblock %}
