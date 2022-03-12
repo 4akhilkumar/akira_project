@@ -9,8 +9,7 @@ from django.http import JsonResponse
 from datetime import datetime
 
 from akira_apps.super_admin.decorators import allowed_users
-from akira_apps.academic.models import (Semester)
-from akira_apps.academic.forms import (BranchForm)
+from akira_apps.academic.models import (Semester, Branch)
 from akira_apps.course.models import (CourseComponent, CourseExtraFields, CourseMC, CourseOfferingType, CourseFiles, CourseSubComponent, CourseTask, TaskAnswer)
 from akira_apps.specialization.models import (SpecializationsMC)
 
@@ -40,9 +39,10 @@ def first_letter_word(value):
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_course(request):
-    branch_list = BranchForm()
+    branch_list = Branch.objects.all()
     semester_list = Semester.objects.all()
     faculty_list = User.objects.all()
+    specialization_list = SpecializationsMC.objects.all()
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
         courseName = request.POST.get('course_name')
@@ -83,6 +83,7 @@ def create_course(request):
         "branch_list":branch_list,
         "semester_list":semester_list,
         "faculty_list":faculty_list,
+        "specialization_list":specialization_list,
     }
     return render(request, 'course/create_course.html', context)
 
@@ -193,13 +194,13 @@ def courseOfferingDelete(request, CourseOfferingID):
 @login_required(login_url=settings.LOGIN_URL)
 def view_course(request, course_code):
     try:
-        courseObj = CourseMC.objects.get(course_code=course_code)
+        courseObj = CourseMC.objects.get(code=course_code)
         courseFilesObjs = CourseFiles.objects.filter(course = courseObj)
     except Exception:
         messages.info(request, "No such course exist")
         return redirect('manage_courses')
     faculty_list = User.objects.all()
-    branch_list = BranchForm()
+    branch_list = Branch.objects.all()
     semester_list = Semester.objects.all()
     try:
         courseComponent = CourseComponent.objects.filter(course = courseObj)
@@ -265,10 +266,10 @@ def course_component(request):
             CourseComponent.objects.create(course = getCourseObj,
                                             name = component,
                                             desc = desc)
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('view_course', course_code = getCourseObj.code)
         except Exception:
             messages.info(request, "Failed to create component")
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('view_course', course_code = getCourseObj.code)
     else:
         messages.info(request, "We could process your request!")
         return redirect('manage_courses')
@@ -282,14 +283,15 @@ def sub_component(request):
         try:
             getCourseObj = CourseMC.objects.get(id=courseId)
             getComponentObj = CourseComponent.objects.get(id=componentId)
-            CourseSubComponent.objects.create(course = getCourseObj,
+            CourseSubComponent.objects.create(
+                                            # course = getCourseObj,
                                             component = getComponentObj,
                                             name = subComponent,
                                             desc = desc)
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('view_course', course_code = getCourseObj.code)
         except Exception:
             messages.info(request, "Failed to create sub component")
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('view_course', course_code = getCourseObj.code)
     else:
         messages.info(request, "We could process your request!")
         return redirect('manage_courses')
@@ -304,15 +306,16 @@ def course_task(request):
             getCourseObj = CourseMC.objects.get(id=courseId)
             getComponentObj = CourseComponent.objects.get(id=componentId)
             getSubComponentObj = CourseSubComponent.objects.get(id=subComponentId)
-            CourseTask.objects.create(course = getCourseObj,
-                                            component = getComponentObj,
-                                            sub_component = getSubComponentObj,
-                                            question = question)
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            CourseTask.objects.create(
+                                        # course = getCourseObj,
+                                        # component = getComponentObj,
+                                        sub_component = getSubComponentObj,
+                                        question = question)
+            return redirect('view_course', course_code = getCourseObj.code)
         except Exception as e:
-            print(e)
+            print(e, "Here")
             messages.info(request, "Failed to create course Task")
-            return redirect('view_course', course_code = getCourseObj.course_code)
+            return redirect('view_course', course_code = getCourseObj.code)
     else:
         messages.info(request, "We could process your request!")
         return redirect('manage_courses')
@@ -330,9 +333,9 @@ def task_answer(request):
             getSubComponentObj = CourseSubComponent.objects.get(id=subComponentId)
             getTaskObj = CourseTask.objects.get(id=questionId)
             TaskAnswer.objects.create(user = request.user,
-                                        course = getCourseObj,
-                                        component = getComponentObj,
-                                        sub_component = getSubComponentObj,
+                                        # course = getCourseObj,
+                                        # component = getComponentObj,
+                                        # sub_component = getSubComponentObj,
                                         task = getTaskObj,
                                         answer = answer)
             return redirect('submitSolutionPage', task_id = questionId)

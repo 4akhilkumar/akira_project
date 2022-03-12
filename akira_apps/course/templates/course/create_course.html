@@ -46,7 +46,7 @@
     <br>
     <label for="id_specialization">Specialization</label>
     <select name="specialization" id="id_specialization" required>
-        {% for i in specializations %}
+        {% for i in specialization_list %}
         <option value="{{ i.id }}"> {{ i }} </option>
         {% endfor %}
     </select>

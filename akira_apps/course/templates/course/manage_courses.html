@@ -82,13 +82,13 @@
     <li class="courses_item">
       <div class="course">
         <div class="course_image">
-          <h1 class="course-short_title">{{ i.course_code }} <sub class="custom_sub">{{ i.course_name|first_letter_word }}</sub> </h1>
+          <h1 class="course-short_title">{{ i.code }} <sub class="custom_sub">{{ i.name|first_letter_word }}</sub> </h1>
         </div>
         <div class="course_content">
-          <h2 class="course_title">{{ i.course_name }}</h2>
-          <p class="course_text">{{ i.course_desc }}</p>
+          <h2 class="course_title">{{ i.name }}</h2>
+          <p class="course_text">{{ i.desc }}</p>
           <div class="course-buttons">
-            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.course_code %}'" >Know More</button>
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.code %}'" >Know More</button>
             <!-- <button class="enrollCoursebtn course_btn">Enroll</button> -->
           </div>
         </div>  
