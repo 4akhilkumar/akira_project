@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import FileExtensionValidator
+
 import uuid
+
+from akira_apps.academic.models import (Branch)
 
 GENDER_CHOICES = [
     ("", "Select Gender"),
@@ -36,37 +40,37 @@ MOTHER_TOUNGE_CHOICES = [
     ("Punjabi","Punjabi"),
 ]
 
+Name_Prefix_Choices = [
+    ("","Select Name Prefix"),
+    ("Dean","University Dean"),
+    ("Dr","Doctor (Medical or Educator)"),
+    ("Hon","Honorable"),
+    ("Mr","Mister"),
+    ("Mrs","Married Woman"),
+    ("Ms","Single/Unmarried Women"),
+    ("Prof","Professor"),
+]
+
 class Staff(models.Model):
-    BRANCH_CHOICES = [
-        ("","Branch Name"),
-        ("Computer Science and Engineering","Computer Science and Engineering"),
-        ("Aerospace/aeronautical Engineering","Aerospace/aeronautical Engineering"),
-        ("Chemical Engineering","Chemical Engineering"),
-        ("Civil Engineering","Civil Engineering"),
-        ("Electronics and Communications Engineering","Electronics and Communications Engineering"),
-        ("Electrical and Electronics Engineering","Electrical and Electronics Engineering"),
-        ("Petroleum Engineering","Petroleum Engineering"),
-        ("Bio Technology","Bio Technology"),
-        ("Mechanical Engineering","Mechanical Engineering"),
-    ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, unique=True, on_delete = models.CASCADE)
-    name_prefix = models.CharField(max_length = 10, blank = True, null = True)
+    name_prefix = models.CharField(max_length = 35, choices = Name_Prefix_Choices, default=1)
     gender = models.CharField(max_length=14, choices = GENDER_CHOICES, default=1)
-    date_of_birth = models.DateField(default='1975-01-01')
-    door_no = models.CharField(max_length=100, default="A-BCD, On Earth")
-    zip_code = models.CharField(max_length=8, default="123456")
-    city_name = models.CharField(max_length=50, default="Vijayawada")
-    state_name = models.CharField(max_length=50, default="Andhra Pradesh")
-    country_name = models.CharField(max_length=50, default="India")
-    profile_pic = models.ImageField(null=True, blank=True, upload_to='staffs/')
-    current_medical_issue = models.TextField(max_length=50)
+    date_of_birth = models.DateField()
     blood_group = models.CharField(max_length=18, choices = BLOOD_GROUP_CHOICES, default=1)
-    branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
+    phone = models.CharField(max_length = 15)
+    door_no = models.CharField(max_length=10)
+    zip_code = models.IntegerField()
+    city = models.CharField(max_length=50)
+    district = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    country = models.CharField(max_length=50)
+    photo = models.ImageField(null=True, blank=True, upload_to='staff_photos/', validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])
+    branch = models.ForeignKey(Branch, on_delete = models.DO_NOTHING, blank = True, null = True)
+    resume = models.FileField(upload_to ='staff_resumes/', validators=[FileExtensionValidator(['pdf'])], blank = True, null = True)
 
     def __str__(self):
         return '%s %s %s' % (self.user, self.user.first_name.title(), self.user.last_name.title())
     
     class Meta:
-        ordering = ["created_at"]
+        ordering = ["user__first_name"]
