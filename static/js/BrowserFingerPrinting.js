@@ -201,12 +201,12 @@ try {
     document.getElementById('id_fingerprint').value = uid;
 }
 catch(err) {
-    console.log("None");
+
 }
 
 try {
     document.getElementById('fingerprint').innerHTML = uid;
 }
 catch(err) {
-    console.log("None");
+
 }
