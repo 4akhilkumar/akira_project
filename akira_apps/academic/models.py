@@ -1,64 +1,73 @@
 from django.db import models
+from django.contrib.auth.models import User
 import uuid
 
-BRANCH_CHOICES = [
-    ("","Branch Name"),
-    ("Computer Science and Engineering","Computer Science and Engineering"),
-    ("Aerospace/aeronautical Engineering","Aerospace/aeronautical Engineering"),
-    ("Chemical Engineering","Chemical Engineering"),
-    ("Civil Engineering","Civil Engineering"),
-    ("Electronics and Communications Engineering","Electronics and Communications Engineering"),
-    ("Electrical and Electronics Engineering","Electrical and Electronics Engineering"),
-    ("Petroleum Engineering","Petroleum Engineering"),
-    ("Bio Technology","Bio Technology"),
-    ("Mechanical Engineering","Mechanical Engineering"),
-]
+class Academy(models.Model):
+    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length = 10, unique = True)
+    name = models.CharField(max_length = 100)
+    address = models.CharField(max_length = 100)
+
+    def __str__(self):
+        return '%s - %s' % (self.code, self.name)
 
 class Block(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    block_name = models.CharField(max_length = 50, unique = True)
-    block_desc = models.CharField(max_length = 100, blank = True, null = True)
+    name = models.CharField(max_length = 50, unique = True)
+    desc = models.CharField(max_length = 100, blank = True, null = True)
 
     def __str__(self):
-        return '%s' % (self.block_name)
+        return '%s' % (self.name)
 
     class Meta:
-        ordering = ['block_name']
+        ordering = ['name']
 
 class Floor(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    floor_name = models.CharField(max_length = 50)
+    name = models.CharField(max_length = 50)
     block = models.ForeignKey(Block, on_delete = models.CASCADE)
 
     def __str__(self):
-        return '%s' % (self.floor_name)
+        return '%s' % (self.name)
 
     class Meta:
-        ordering = ['floor_name']
-        unique_together = ('floor_name', 'block')
+        ordering = ['name']
+        unique_together = ('name', 'block')
 
 class Room(models.Model):
     TYPE = [
-        ('Class Room','Class Room'),
-        ('Staff Room','Staff Room'),
-        ('Lab','Lab'),
-        ('Meeting Hall','Meeting Hall'),
-        ('Waiting Hall','Waiting Hall'),
+        ('Class Room', 'Class Room'),
+        ('Staff Room', 'Staff Room'),
+        ('Laboratory', 'Laboratory'),
+        ('Activity Room', 'Activity Room'),
+        ('Meeting Hall', 'Meeting Hall'),
+        ('Waiting Hall', 'Waiting Hall'),
         ('Other','Other'),
     ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    room_name = models.CharField(max_length = 50)
+    name = models.CharField(max_length = 50)
     block = models.ForeignKey(Block, on_delete = models.CASCADE)
     floor = models.ForeignKey(Floor, on_delete = models.CASCADE)
     type = models.CharField(max_length = 15, choices = TYPE, default = 1)
     capacity = models.IntegerField()
 
     def __str__(self):
-        return '%s' % (self.room_name)
+        return '%s' % (self.name)
     
     class Meta:
-        ordering = ['room_name']
-        unique_together = ('block', 'floor', 'room_name')
+        ordering = ['name']
+        unique_together = ('block', 'floor', 'name')
+
+class Branch(models.Model):
+    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+    name = models.CharField(max_length = 50, unique = True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+    
+    class Meta:
+        ordering = ['name']
 
 class Semester(models.Model):
     MODE = [
@@ -69,7 +78,7 @@ class Semester(models.Model):
     mode = models.CharField(max_length = 4, choices = MODE, default = 1)
     start_year = models.DateField()
     end_year = models.DateField()
-    branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
+    branch = models.ManyToManyField(Branch)
     is_active = models.BooleanField(default=False)
 
     def __str__(self):

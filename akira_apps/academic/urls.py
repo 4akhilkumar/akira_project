@@ -17,5 +17,10 @@ urlpatterns = [
     path('bulk_upload_academic_info_save/', views.bulk_upload_academic_info_save, name='bulk_upload_academic_info_save'),
     path('academic_info_csv/', views.academic_info_csv, name='academic_info_csv'),
 
+    path('add_branch/', views.add_branch, name='add_branch'),
+    path('getAllBranches/', views.getAllBranches, name='getAllBranches'),
+    # path('update_branch/<block_id>/', views.update_branch, name='update_branch'),
+    # path('delete_branch/<block_id>/', views.delete_branch, name='delete_branch'),
+
     path('TestingMet/', views.TestingMet, name='TestingMet'),
 ]

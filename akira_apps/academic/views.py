@@ -8,8 +8,36 @@ import csv
 import datetime as pydt
 
 from akira_apps.super_admin.decorators import allowed_users
-from .models import (Block, Floor, Room)
+from .models import (Block, Floor, Room, Branch)
 from akira_apps.academic.forms import (RoomTypeForm)
+
+# Branch.objects.all().delete()
+
+def getAllBranches(request):
+    try:
+        getBranches = Branch.objects.all()
+    except Exception as e:
+        print(e)
+    return JsonResponse(list(getBranches.values('id', 'name')), safe = False)
+
+def add_branch(request):
+    if request.method == "POST":
+        name = request.POST.get('branch')
+        save = request.POST.get('_save')
+        addanother = request.POST.get('_addanother')
+        if Branch.objects.filter(name = name).exists() is False:
+            branchObj = Branch.objects.create(name = name)            
+            if save:
+                return redirect('manage_branches')
+            elif addanother:
+                return redirect('add_branch')
+            else:
+                return redirect('edit_branch', stdID = branchObj.id)
+        else:
+            messages.info(request, "%s already exists!" % str(name))
+            return redirect('add_branch')
+    return render(request, "academic/manage_branches/add_branch.html")
+
 
 def returnBlockName(blockName):
     if not "block" in blockName:
@@ -44,14 +72,14 @@ def returnBlockName(blockName):
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_block_save(request):
     if request.method == 'POST':
-        blockName = request.POST.get('block_name')
+        blockName = request.POST.get('name')
         if "block" == blockName.lower() or blockName == None or blockName == "":
             messages.info(request, 'What Block is it?')
             return redirect('manage_academic')
         getblockName = returnBlockName(blockName)
         blockDesc = request.POST.get('block_desc')
         try:
-            Block.objects.create(block_name=getblockName, block_desc=blockDesc)
+            Block.objects.create(name=getblockName, block_desc=blockDesc)
         except Exception as e:
             if "UNIQUE constraint" in str(e):
                 messages.info(request, 'Block Name Already Exists!')
@@ -101,7 +129,7 @@ def create_floor_save(request):
             Floor.objects.create(floor_name = floorName, block = fetechBlock)
         except Exception as e:
             if "UNIQUE constraint" in str(e):
-                messages.info(request, '{} Already Exists in {}!'.format(floorName, fetechBlock.block_name))
+                messages.info(request, '{} Already Exists in {}!'.format(floorName, fetechBlock.name))
             else:
                 messages.info(request, e)
             return redirect('manage_academic')
@@ -118,7 +146,7 @@ def getFloorbyBlock(request):
         block_id = request.POST['block']
         try:
             blockObj = Block.objects.get(id = block_id)
-            getFloors = Floor.objects.filter(block__block_name=blockObj.block_name)
+            getFloors = Floor.objects.filter(block__name=blockObj.name)
             print(getFloors)
         except Exception as e:
             print(e)
@@ -157,15 +185,15 @@ def bulk_upload_academic_info_save(request):
         data = pd.read_csv(paramFile)
 
         for index, row in data.iterrows():
-            if Block.objects.filter(block_name = str(row['Block Name'])).exists() is False:
+            if Block.objects.filter(name = str(row['Block Name'])).exists() is False:
                 blockObj = Block.objects.create(
-                    block_name = row['Block Name'],
+                    name = row['Block Name'],
                     block_desc = row['Block Desc'],
                 )
             else:
-                blockObj = Block.objects.filter(block_name = str(row['Block Name']))[0]
+                blockObj = Block.objects.filter(name = str(row['Block Name']))[0]
             
-            if Floor.objects.filter(floor_name = str(row['Floor']), block__block_name = str(row['Block Name'])).exists() is False:
+            if Floor.objects.filter(floor_name = str(row['Floor']), block__name = str(row['Block Name'])).exists() is False:
                 floorObj = Floor.objects.create(
                     floor_name = row['Floor'],
                     block = blockObj,
@@ -173,7 +201,7 @@ def bulk_upload_academic_info_save(request):
             else:
                 floorObj = Floor.objects.filter(floor_name = str(row['Floor']))[0]
             
-            if Room.objects.filter(block__block_name = str(row['Block Name']), floor__floor_name = str(row['Floor']), room_name = str(row['Room'])).exists() is False:
+            if Room.objects.filter(block__name = str(row['Block Name']), floor__floor_name = str(row['Floor']), room_name = str(row['Room'])).exists() is False:
                 Room.objects.create(
                     room_name = row['Room'],
                     block = blockObj,
@@ -189,7 +217,7 @@ from .models import (Testing)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def manage_academic(request):
-    blocks = Block.objects.all().order_by('block_name')
+    blocks = Block.objects.all().order_by('name')
     floors = Floor.objects.all()
     rooms = Room.objects.all()
     roomTypeForm = RoomTypeForm()
@@ -217,7 +245,7 @@ def academic_info_csv(request):
     rooms = Room.objects.all()
 
     for i in rooms:
-        writer.writerow([i.block.block_name, i.block.block_desc, i.floor.floor_name,
+        writer.writerow([i.block.name, i.block.block_desc, i.floor.floor_name,
                         i.room_name, i.type, i.capacity])
     return response
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add branch</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name="branch" id="id_branch" placeholder="Branch" required>
+
+        <input type="submit" value="Save" class="default" name="_save">
+        <input type="submit" value="Save and add another" name="_addanother">
+        <input type="submit" value="Save and continue editing" name="_continue">
+    </form>
+</body>
+</html>
