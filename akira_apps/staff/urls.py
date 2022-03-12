@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('hod_dashboard/', views.hod_dashboard, name="hod_dashboard"),
     path('staff_dashboard/', views.staff_dashboard, name="staff_dashboard"),
+    path('applicant_dashboard/', views.applicant_dashboard, name="applicant_dashboard"),
     path('manage_staff/', views.manage_staff, name = 'manage_staff'),
     path('bulk_upload_staffs_save/', views.bulk_upload_staffs_save, name = 'bulk_upload_staffs_save'),
     path('staff_info_csv/', views.staff_info_csv, name = 'staff_info_csv'),

@@ -1,0 +1,126 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load user_group %}
+
+{% block analytics-text %}
+<h1>Analytics</h1>
+<p>Display analytics about your Academy <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-chalkboard-teacher"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Faculty</h4>
+          <h1>486 <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-user-graduate"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Total Students</h4>
+        <h1>1.4K <small class="text-success">12% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-book"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Courses</h4>
+          <h1>48 <small class="text-success">2% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Specializations</h4>
+        <h1>11 <small class="text-danger">5% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block revenue-card %}
+<div class="revenue-card">
+    <h3 class="section-head">Total Revenue</h3>
+    <div class="rev-content">
+        <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="">
+        <div class="rev-info">
+            <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+            <h1><small>{{ request.user.username|user_group }}</small></h1>
+        </div>
+        <div class="rev-sum">
+            <h4>Total income</h4>
+            <h2>$1,858</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block graph %}
+<div class="graph-card">
+    <h3 class="section-head">Graph</h3>
+    <div class="graph-content">
+        <div class="graph-head">
+            <div class="icons-wrapper">
+                <!-- <div class="icon">
+                    <span class="fas fa-eye text-main"></span>
+                </div> -->
+                <div class="icon">
+                    <span class="fas fa-clock text-success"></span>
+                </div>
+            </div>
+            <div class="graph-select">
+                <select name="" id="">
+                    <option value="">November</option>
+                </select>
+            </div>
+        </div>
+        <div class="graph-board">
+            <canvas id="revenueChart" width="100%" height="50px"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block chart-js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
+<script>
+    // Chart.defaults.global.defaultFontFamily = "Poppins";
+    let ctx = document.querySelector('#revenueChart');
+
+    let revChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: ["Nov 1", "Nov 3", "Nov 6", "Nov 9", "Nov 12", "Nov 15", "Nov 18", "Nov 21", "Nov 24", "Nov 27", "Nov 30"],
+            datasets: [
+                {
+                    label: "Views",
+                    borderColor: "#2ec3a3",
+                    borderWidth: "3",
+                    backgroundColor: "rgba(235, 247, 245, 0.5)",
+                    data: [0,30,60,25,60,25,50,10,50,90,120],
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            tooltips: {
+                intersect: false,
+                node: "index",
+            }
+        }
+    });
+</script>
+{% endblock %}

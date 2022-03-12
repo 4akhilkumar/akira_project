@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from akira_apps.super_admin.decorators import (allowed_users)
 from .models import (Staff)
 from akira_apps.course.models import (CourseMC)
-from akira_apps.academic.forms import (BranchForm)
+from akira_apps.academic.models import (Branch)
 from akira_apps.super_admin.forms import (BLOODGROUPForm)
 
 import secrets
@@ -15,6 +15,13 @@ import pandas as pd
 import io
 import csv
 import datetime as pydt
+
+@allowed_users(allowed_roles=['Applicant'])
+def applicant_dashboard(request):
+    context = {
+
+    }
+    return render(request, 'staff/applicant_dashboard.html', context)
 
 @allowed_users(allowed_roles=['Assistant Professor', 'Associate Professor', 'Professor'])
 def staff_dashboard(request):
@@ -166,11 +173,17 @@ def manage_staff(request):
     return render(request, 'staff/staff_templates/manage_staff/manage_faculty.html', context)
 
 def add_staff(request):
-    branch_list = BranchForm()
+    branch_list = Branch.objects.all()
     bloodgroup = BLOODGROUPForm()
     list_groups = Group.objects.all()
     if request.method == 'POST':
-        pass
+        date = request.POST.get('date_of_birth')
+        save = request.POST.get('_save')
+        addanother = request.POST.get('_addanother')
+        continuethis = request.POST.get('_continue')
+        print(save)
+        print(addanother)
+        print(continuethis)
     else:
         pass
     context = {

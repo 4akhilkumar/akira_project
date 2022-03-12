@@ -37,6 +37,11 @@ def unauthenticated_user(view_func):
                     return redirect(request.GET.get('next'))
                 else: 
                     return redirect('staff_dashboard')
+            elif group == 'Applicant':
+                if (request.GET.get('next')):
+                    return redirect(request.GET.get('next'))
+                else:
+                    return redirect('applicant_dashboard')
             elif group == 'Administrator':
                 if (request.GET.get('next')):
                     return redirect(request.GET.get('next'))

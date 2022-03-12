@@ -12,7 +12,7 @@
 
 <form action="" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <p><label for="id_username">Username:</label> <input type="text" name="username" maxlength="150" autofocus required id="id_username"> <span class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
+    <!-- <p><label for="id_username">Username:</label> <input type="text" name="username" maxlength="150" autofocus required id="id_username"> <span class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</span></p>
     <p><label for="id_email">Email address:</label> <input type="email" name="email" maxlength="254" id="id_email"></p>
     <p><label for="id_first_name">First name:</label> <input type="text" name="first_name" maxlength="150" id="id_first_name"></p>
     <p><label for="id_last_name">Last name:</label> <input type="text" name="last_name" maxlength="150" id="id_last_name"></p>
@@ -26,9 +26,9 @@
             <option value="Male">Male</option>
             <option value="Female">Female</option>
         </select>
-    </p>
-    <p><label for="id_date_of_birth">Date of birth:</label> <input type="text" name="date_of_birth" value="1975-01-01" required id="id_date_of_birth"></p>
-    <p><label for="id_door_no">Door no:</label> <input type="text" name="door_no" value="A-BCD, On Earth" maxlength="100" required id="id_door_no"></p>
+    </p> -->
+    <p><label for="id_date_of_birth">Date of birth:</label> <input type="date" name="date_of_birth" value="1975-01-01" required id="id_date_of_birth"></p>
+    <!-- <p><label for="id_door_no">Door no:</label> <input type="text" name="door_no" value="A-BCD, On Earth" maxlength="100" required id="id_door_no"></p>
     <p><label for="id_zip_code">Zip code:</label> <input type="number" name="zip_code" value="123456" maxlength="8" required id="id_zip_code"></p>
     <p><label for="id_city_name">City name:</label> <input type="text" name="city_name" value="Vijayawada" maxlength="50" required id="id_city_name"></p>
     <p><label for="id_state_name">State name:</label> <input type="text" name="state_name" value="Andhra Pradesh" maxlength="50" required id="id_state_name"></p>
@@ -57,8 +57,15 @@
         {% for i in list_groups %}
         <option value="{{ i }}">{{ i }}</option>
         {% endfor %}
-    </select>
-    <input type="submit">
+    </select> -->
+    <!-- <input type="submit"> -->
+    <div class="submit-row">
+
+      <input type="submit" value="Save" class="default" name="_save">
+      <input type="submit" value="Save and add another" name="_addanother">
+      <input type="submit" value="Save and continue editing" name="_continue">
+      
+    </div>
 </form>
 
 {% endblock %}
