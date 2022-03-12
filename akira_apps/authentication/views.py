@@ -26,12 +26,14 @@ from akira_apps.super_admin.decorators import unauthenticated_user
 from akira_apps.accounts.models import TwoFactorAuth
 from akira_apps.authentication.token import account_activation_token
 from . models import (User_BackUp_Codes, User_BackUp_Codes_Login_Attempts, 
-                        User_IP_S_List, UserLoginDetails, User_IP_B_List, 
+                        User_IP_List, UserLoginDetails, 
                         SwitchDevice, UserPageVisits)
 
 from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
 from akira_apps.academic_registration.urls import *
+
+UserLoginDetails.objects.all().delete()
 
 def TestingArea(request):
     decipherText = ''
@@ -255,7 +257,7 @@ def user_login(request):
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
-            if (User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is False) and (DECookie is not None):
+            if (User_IP_List.objects.filter(suspicious_list = user_ip_address).exists() is False) and (DECookie is not None):
                 if checkUserExists:
                     user = User.objects.get(username = username)
                     try:
@@ -359,6 +361,11 @@ def user_login(request):
                                             return redirect(request.GET.get('next'))
                                         else: 
                                             return redirect('staff_dashboard')
+                                    elif group == 'Applicant':
+                                        if (request.GET.get('next')):
+                                            return redirect(request.GET.get('next'))
+                                        else:
+                                            return redirect('applicant_dashboard')
                                     elif group == 'Administrator':
                                         if (request.GET.get('next')):
                                             return redirect(request.GET.get('next'))
@@ -378,7 +385,7 @@ def user_login(request):
                     messages.warning(request, 'No such account exist!')
                     save_login_details(request, None, user_ip_address, fingerprintID, "Failed", "No such account exist!")
                     return redirect('login')
-            elif  User_IP_S_List.objects.filter(suspicious_list = user_ip_address).exists() is True or DECookie is False:
+            elif  User_IP_List.objects.filter(suspicious_list = user_ip_address).exists() is True or DECookie is False:
                 messages.warning(request, 'Suspicious Activity Found!')
                 if checkUserExists:
                     getuserLoginObj = save_login_details(request, username, user_ip_address, fingerprintID, "Need to verify", "Suspicious Activity")
@@ -641,7 +648,7 @@ def verify_user_by_backup_codes(request, username, userLoginObj):
                                                             status = "Failed", 
                                                             created_at__gte=twenty_four_hrs).count()
                     if backup_code_attempt_status_count > 4:
-                        User_IP_S_List.objects.create(suspicious_list = ip)
+                        User_IP_List.objects.create(suspicious_list = ip)
                         messages.info("Please confirm it's you to login")
                         return redirect('login')
                     else:
@@ -661,12 +668,12 @@ def detect_spam_login(request, uid, spam_user_ip_address):
     twenty_four_hrs = pydt.datetime.now() - pydt.timedelta(days=1)
     if uid == None:
         if UserLoginDetails.objects.filter(user_ip_address = spam_user_ip_address, attempt = "Failed", reason = "Connection is NOT secured", created_at__gte=twenty_four_hrs).exists() is True:
-            User_IP_B_List.objects.create(black_list = spam_user_ip_address)
+            User_IP_List.objects.create(black_list = spam_user_ip_address)
         return http.HttpResponseForbidden('<h1>Forbidden</h1>')
     else:
         if UserLoginDetails.objects.filter(user__username = uid, user_ip_address = spam_user_ip_address, attempt = "Failed", reason = "Connection is NOT secured", created_at__gte = twenty_four_hrs).exists() is True:
             user = User.objects.get(username = uid)
-            User_IP_B_List.objects.create(black_list=spam_user_ip_address, login_user = user)
+            User_IP_List.objects.create(black_list=spam_user_ip_address, user = user)
             user.is_active = False
             user.save()
             current_site = get_current_site(request)
@@ -785,7 +792,7 @@ def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
                                                         status = "Failed", 
                                                         created_at__gte=twenty_four_hrs).count()
                 if backup_code_attempt_status_count > 4:
-                    User_IP_S_List.objects.create(suspicious_list = ip)
+                    User_IP_List.objects.create(suspicious_list = ip)
                     messages.info("Please confirm it's you to login")
                     return redirect('login')
                 else:
@@ -927,7 +934,7 @@ def requestSwitchDevice(request):
     res = re.findall(r'\(.*?\)', user_agent)
     OS_Details = res[0][1:-1]
 
-    if User_IP_S_List.objects.filter(suspicious_list = ip).exists() is True:
+    if User_IP_List.objects.filter(suspicious_list = ip).exists() is True:
         messages.warning(request, "We can't process your Switch Device request")
         return redirect('login')
     else:
@@ -1220,8 +1227,12 @@ def SyncDevice(request, switchDeviceID):
         return redirect('validateSwitchDevice')
 
 def logoutUser(request):
-    currentSDUAUCSDSDS = SwitchDevice.objects.filter(user = request.user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful").exists()
-    currentSDPNA = SwitchDevice.objects.filter(user = request.user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending").exists()
+    try:
+        currentSDUAUCSDSDS = SwitchDevice.objects.filter(user = request.user, userConfirm = "User Approved", reason = "User Confirmed the Switch Device", status = "Switch Device Successful").exists()
+        currentSDPNA = SwitchDevice.objects.filter(user = request.user, userConfirm = "Pending", reason = "Not Approved Yet", status = "Switch Device Pending").exists()
+    except Exception:
+        currentSDUAUCSDSDS = None
+        currentSDPNA = None
     
     if (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = False).exists() is True):
         UserPageVisits.objects.filter(user = request.user).delete()

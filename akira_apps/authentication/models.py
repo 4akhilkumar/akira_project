@@ -26,25 +26,15 @@ class UserLoginDetails(models.Model):
     class Meta:
         ordering = ['created_at']
 
-class User_IP_B_List(models.Model):
+class User_IP_List(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    login_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     black_list = models.GenericIPAddressField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return '%s' % (self.black_list)
-
-    class Meta:
-        ordering = ['created_at']
-
-class User_IP_S_List(models.Model):
-    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     suspicious_list = models.GenericIPAddressField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s | %s' % (self.suspicious_list, self.created_at.strftime("%Y-%m-%d %H:%M:%S"))
+        return '%s' % (self.black_list)
 
     class Meta:
         ordering = ['created_at']
