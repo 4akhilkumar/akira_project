@@ -10,22 +10,23 @@ import secrets
 import pandas as pd
 import io
 import csv
-from datetime import datetime
+import datetime as pydt
+import random
+import string
 
-from akira_apps.authentication.models import UserLoginDetails
-from akira_apps.student.models import Students
+from akira_apps.academic.models import (Branch)
+from akira_apps.student.models import (Students)
+from akira_apps.super_admin.forms import (BLOODGROUPForm, GENDERCHOICESForm)
 
-@login_required
+@login_required(login_url=settings.LOGIN_URL)
 def student_dashboard(request):
-    previous_user_login_details = UserLoginDetails.objects.filter(user__username = request.user)
     rAnd0m123 = secrets.token_urlsafe(16)
     context = {
-        "previous_user_login_details":previous_user_login_details,
         "rAnd0m123":rAnd0m123,
     }
     return render(request, 'student/dashboard.html', context)
 
-@login_required
+@login_required(login_url=settings.LOGIN_URL)
 def manage_students(request):
     students = Students.objects.all()
     context = {
@@ -33,6 +34,7 @@ def manage_students(request):
     }
     return render(request, 'student/manage_students/manage_students.html', context)
 
+@login_required(login_url=settings.LOGIN_URL)
 def view_student(request, student_username):
     student = Students.objects.get(user__username=student_username)
     user = User.objects.get(username=student_username)
@@ -45,10 +47,11 @@ def view_student(request, student_username):
     }
     return render(request, 'student/manage_students/view_student.html', context)
 
+@login_required(login_url=settings.LOGIN_URL)
 def students_info_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=students_info_record' + \
-        str(pydt.datetime.now()) + '.csv'
+        str(pydt.pydt.datetime.now()) + '.csv'
 
     writer = csv.writer(response)
     writer.writerow(['Username', 'First Name', 'Last Name', 'Email', 
@@ -65,6 +68,7 @@ def students_info_csv(request):
                         i.state_name, i.country_name, i.branch, i.current_medical_issue, ', '.join(map(str, i.user.groups.all()))])
     return response
 
+@login_required(login_url=settings.LOGIN_URL)
 def bulk_upload_students_save(request):
     if request.method == 'POST':
         student_from_db = User.objects.all()
@@ -113,7 +117,7 @@ def bulk_upload_students_save(request):
 def search_student(request):
     if request.method == 'POST':
         query = request.POST['search-student'].strip()
-        beforeSearch = datetime.now()
+        beforeSearch = pydt.datetime.now()
         students = Students.objects.filter(
             Q(user__username__icontains=query) | Q(user__email__icontains=query) | Q(user__first_name__icontains=query) |
             Q(user__last_name__icontains=query) | Q(gender__icontains=query) |
@@ -122,7 +126,7 @@ def search_student(request):
             Q(country_name__icontains=query) | Q(current_medical_issue__icontains=query) |
             Q(blood_group__icontains=query) | Q(branch__icontains=query)
         )
-        afterSearch = datetime.now()
+        afterSearch = pydt.datetime.now()
         totalTimeTaken = (afterSearch - beforeSearch).total_seconds()
         context = {
             'students': students,
@@ -133,3 +137,83 @@ def search_student(request):
     else:
         messages.info(request, "We could process your request!")
         return redirect('manage_students')
+
+def add_student(request):
+    gender = GENDERCHOICESForm()
+    blood_groups = BLOODGROUPForm()
+    branches = Branch.objects.all()
+    last_student = User.objects.filter(groups__name='Student').last()
+
+    if request.method == "POST":
+        username = request.POST.get('username')
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        email = request.POST.get('email')
+        password = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(random.randint(14, 18)))
+        gender = request.POST.get('gender')
+        date_of_birth = request.POST.get('date_of_birth')
+        door_no = request.POST.get('door_no')
+        zip_code = request.POST.get('zip_code')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        country = request.POST.get('country')
+        blood_group = request.POST.get('blood_group')
+        branch = request.POST.get('branch')
+        branch = Branch.objects.get(id=branch)
+        if 'photo' in request.FILES:
+            photo = request.FILES['photo']
+        else:
+            photo = False
+        save = request.POST.get('_save')
+        addanother = request.POST.get('_addanother')
+
+        if User.objects.filter(username = username).exists() is False:
+            try:
+                user = User.objects.create_user(
+                    username = username,
+                    email = email,
+                    first_name = firstname,
+                    last_name = lastname
+                )
+                user.set_password(password)
+                user.save()
+
+                student = Students.objects.create(
+                    user = user,
+                    gender = gender,
+                    date_of_birth = date_of_birth,
+                    door_no = door_no,
+                    zip_code = zip_code,
+                    city = city,
+                    state = state,
+                    country = country,
+                    blood_group = blood_group,
+                    photo = photo,
+                    branch = branch
+                )
+            except Exception as e1:
+                try:
+                    user.delete()
+                    student.delete()
+                except Exception as e2:
+                    messages.error(request, str(e2))
+                messages.error(request, str(e1))
+                return redirect('add_student')
+            if save:
+                messages.success(request, "Student added successfully!")
+                return redirect('manage_students')
+            elif addanother:
+                messages.success(request, "Student added successfully!")
+                return redirect('add_student')
+            else:
+                messages.success(request, "Student added successfully!")
+                return redirect('edit_student', stdID = user.id)
+        else:
+            messages.info(request, "%s already exists!" % username)
+            return redirect('add_student')
+    context = {
+        'gender': gender,
+        'blood_groups': blood_groups,
+        'branches': branches,
+    }
+    return render(request, "student/manage_students/add_student.html", context)

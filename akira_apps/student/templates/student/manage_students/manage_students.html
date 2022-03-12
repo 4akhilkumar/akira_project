@@ -54,7 +54,7 @@
 {% endblock %}
 
 {% block manage-students %}
-<button onClick='window.location="#"' class="add-faculty">Add Student</button>
+<button onClick='window.location="{% url "add_student" %}"' class="add-faculty">Add Student</button>
 <button id="showFormBulkImport" class="add-faculty">Bulk Import</button>
 
 
