@@ -223,6 +223,7 @@ img {
   justify-content: space-between;
   align-items: center;
   color: var(--normal-text-color);
+  column-gap: .25rem;
 }
 
 .avatar-text h4 {
@@ -407,6 +408,14 @@ main {
   font-weight: 400;
   color: var(--normal-text-color);
   font-size: .98rem;
+}
+
+span.admission_status {
+  font-size: 0.5rem;
+  background: #14c66f;
+  color: #FFF;
+  padding: 0.15rem;
+  border-radius: 24px;
 }
 
 .analytic-info h1 {
@@ -791,7 +800,9 @@ h1.small-size-text {
 .see-login-details-button button, 
 button.add-faculty, 
 .bulkUploadButton,
-button.create-block-btn {
+button.create-block-btn,
+button.add-opening,
+button.add-admission {
   outline: none;
   border: none;
   cursor: pointer;
@@ -808,6 +819,7 @@ button.create-block-btn {
   width: fit-content;
   gap: .4rem;
   flex-wrap: wrap;
+  margin-bottom: 1rem; /* Newly added */
 }
 
 .see-login-details {
@@ -820,7 +832,9 @@ button.create-block-btn {
 .setup-2fa, 
 .add-faculty, 
 .bulkUploadButton,
-.create-block-btn {
+.create-block-btn,
+.add-opening,
+.add-admission {
   background: var(--security-button-color);
   color: var(--color-main);
 }
@@ -2336,3 +2350,70 @@ input[type="radio"], .tab-section {
 }
 
 /* Tabs Styles */
+
+i.transform-angle-135 {
+  transform: rotate(135deg);
+}
+
+/* Adops Styles */
+
+.openings-container {
+  /* border: 1px solid #000; */
+  display: flex;
+}
+
+.opening-applicants {
+  display: flex;
+  min-width: 20rem;
+  max-width: 21rem;
+  flex-direction: column;
+  border-radius: .4rem;
+  background-color: #eeeeee;
+  padding: .75rem;
+}
+
+.oa-first-section {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+}
+
+.oa-second-section {
+  margin-top: 1rem;
+  height: 18.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  row-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.applicant-photo {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+  /* margin-bottom: 16px; */
+}
+.applicant-photo img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.applied-user {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-around;
+}
+
+.applicant-name-applied-for {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Adops Styles */
