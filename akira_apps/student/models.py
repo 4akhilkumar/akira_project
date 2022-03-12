@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
+
 
 import uuid
+import datetime as pydt
+
+from akira_apps.academic.models import (Branch)
 
 GENDER_CHOICES = [
     ("", "Select Gender"),
@@ -37,39 +43,43 @@ MOTHER_TOUNGE_CHOICES = [
     ("Punjabi","Punjabi"),
 ]
 
+def atLeastAgeofMajority(value):
+    inputDate = str(value)
+    inputDate = pydt.datetime.strptime(inputDate, '%Y-%m-%d')
+    today = pydt.datetime.today()
+    diff = today - inputDate
+    if not ((diff.days//365) >= 18):
+        raise ValidationError("You are not 18 years old.")
+    inputDate = str(value)
+    inputDate = pydt.datetime.strptime(inputDate, '%Y-%m-%d')
+    current_year = pydt.datetime.today().year
+    max_year = int(current_year) - 18
+    # min_year = int(max_year) - 3
+    year = inputDate.year
+    if year <= max_year:
+        today = pydt.datetime.today()
+        diff = today - inputDate
+        if not ((diff.days//365) >= 18):
+            raise ValidationError("You are not 18 years old.")
+    else:
+        raise ValidationError("Invalid DOB")
+
 class Students(models.Model):
-    BRANCH_CHOICES = [
-        ("","Branch Name"),
-        ("Computer Science and Engineering","Computer Science and Engineering"),
-        ("Aerospace/aeronautical Engineering","Aerospace/aeronautical Engineering"),
-        ("Chemical Engineering","Chemical Engineering"),
-        ("Civil Engineering","Civil Engineering"),
-        ("Electronics and Communications Engineering","Electronics and Communications Engineering"),
-        ("Electrical and Electronics Engineering","Electrical and Electronics Engineering"),
-        ("Petroleum Engineering","Petroleum Engineering"),
-        ("Bio Technology","Bio Technology"),
-        ("Mechanical Engineering","Mechanical Engineering"),
-    ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, unique=True, on_delete = models.CASCADE)
     gender = models.CharField(max_length=14, choices = GENDER_CHOICES, default=1)
-    date_of_birth = models.DateField(default='1975-01-01')
-    door_no = models.CharField(max_length=100, default="A-BCD, On Earth")
-    zip_code = models.CharField(max_length=8, default="123456")
-    city_name = models.CharField(max_length=50, default="Vijayawada")
-    state_name = models.CharField(max_length=50, default="Andhra Pradesh")
-    country_name = models.CharField(max_length=50, default="India")
-    profile_pic = models.ImageField(null=True, blank=True, upload_to='staffs/')
-    current_medical_issue = models.TextField(max_length=50)
+    date_of_birth = models.DateField(validators = [atLeastAgeofMajority])
     blood_group = models.CharField(max_length=18, choices = BLOOD_GROUP_CHOICES, default=1)
-    branch = models.CharField(max_length = 50, choices = BRANCH_CHOICES, default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
+    door_no = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=8)
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    country = models.CharField(max_length=50)
+    photo = models.ImageField(null=True, blank=True, upload_to='student_photos/', validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s %s %s' % (self.user, self.user.first_name.title(), self.user.last_name.title())
-    
-    class Meta:
-        ordering = ["created_at"]
 
 # class course_registration_student(models.Model):
 #     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
