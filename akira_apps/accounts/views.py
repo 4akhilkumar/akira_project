@@ -9,10 +9,11 @@ import re
 import secrets
 import datetime as pydt
 import datetime
+from akira_apps.staff.models import Staff
 import httpagentparser
 
 from akira_apps.accounts.models import TwoFactorAuth
-from akira_apps.authentication.models import User_BackUp_Codes, User_IP_S_List, UserLoginDetails
+from akira_apps.authentication.models import User_BackUp_Codes, User_IP_List, UserLoginDetails
 
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
@@ -20,6 +21,11 @@ def account_settings(request):
         current_user_2fa_status = 1
     else:
         current_user_2fa_status = 0
+
+    try:
+        staff = Staff.objects.get(user = request.user)
+    except Staff.DoesNotExist:
+        staff = None
 
     try:
         backup_codes = User_BackUp_Codes.objects.get(user = request.user)
@@ -104,6 +110,7 @@ def account_settings(request):
         thisDeviceCurrent = False
 
     context = {
+        "staff":staff,
         "backup_codes_status":backup_codes_status,
         "current_user_2fa_status":current_user_2fa_status,
         "current_month":current_month,
@@ -223,8 +230,7 @@ def deny_login_attempt(request, login_attempt_id):
         update_login_confirm.reason = "Login attempt confirmed via user manually"
         update_login_confirm.save()
         messages.success(request, "Login Activity Confirmed!")
-        if User_IP_S_List.objects.filter(suspicious_list=spam_ip_address).count() > 5:
-            User_IP_S_List.objects.create(suspicious_list=spam_ip_address)
+        User_IP_List.objects.create(suspicious_list=spam_ip_address)
         return redirect('account_settings')
     else:
         messages.warning(request, "Access Denied!")

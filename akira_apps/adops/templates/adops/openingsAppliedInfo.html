@@ -1,0 +1,21 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block analytics-text %}
+<h1>Appl. Applied Info</h1>
+<p>Manage your applied appl. <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block manage-user_applied_openings %}
+
+You applied for {{ appliedOpenings|length }} opening{{ appliedOpenings|length|pluralize }}
+
+{% for i in appliedOpenings %}
+<p>Job Name: {{ i.job }}</p>
+<a href="{% url 'withdrawAppl' i.id %}">Withdraw the application</a>
+<br>
+<br>
+{% endfor %}
+<hr>
+
+{% endblock %}

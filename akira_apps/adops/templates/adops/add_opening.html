@@ -1,0 +1,139 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block analytics-text %}
+
+{% if editOpeningID %}
+<h1>Edit Opening</h1>
+<p>{{ openingIDObj.job }}</p>
+{% else %}
+<h1>Create Opening(s)</h1>
+<p>Create the Opening(s) <span class="fas fa-chart-line"></span> </p>
+{% endif %}
+
+{% endblock %}
+
+{% block create-openings %}
+
+<form action="" id="add_opening" method="POST">
+    {% csrf_token %}
+    <label for="job">Job Title</label>
+    <input type="text" name="job" id="job" value="{{ openingIDObj.job }}" placeholder="Job Title" required>
+    <br>
+    <label for="overview">Overview</label>
+    <textarea name="overview" id="id_overview" cols="80" rows="10" placeholder="Overview. Seperate by #" required>{{ openingIDObj.overview }}</textarea>
+    <br>
+    <label for="description">Description</label>
+    <textarea name="description" id="description" cols="80" rows="10" placeholder="Description" required>{{ openingIDObj.description }}</textarea>
+    <br>
+    <label for="min_experience">Min Experience</label>
+    <input type="number" name="min_experience" id="min_experience" value="{{ openingIDObj.min_experience }}" placeholder="Min Experience" required>
+    <br>
+    <label for="max_experience">Max Experience</label>
+    <input type="number" name="max_experience" id="max_experience" value="{{ openingIDObj.max_experience }}" placeholder="Max Experience">
+    <br>
+    <label for="qualification">Qualification</label>
+    <input type="text" name="qualification" id="qualification" value="{{ openingIDObj.qualification }}" placeholder="Qualification" required>
+    <br>
+    <label for="locaion">Location</label>
+    <input type="text" name="location" id="location" value="{{ openingIDObj.location }}" placeholder="Location" required>
+    <br>
+    <label for="pay_scale">Pay Scale</label>
+    <input type="text" name="pay_scale" id="pay_scale" value="{{ openingIDObj.pay_scale }}" placeholder="Pay Scale" required>
+    <br>
+    <label for="job_type">Job Type</label>
+    <select name="job_type" id="id_job_type" required>
+        {% for x,y in job_type_list.fields.job_type.choices %}
+        <option value="{{ x }}" {% if x == openingIDObj.type %} selected {% endif %}>{{ y }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <!-- <label for="add_extra_field">Add Extra Field</label>
+    <select name="add_extra_field_type" id="id_add_extra_field_type" required>
+        {% for x,y in extra_field_value_type_list.fields.field_value_type.choices %}
+        <option value="{{ x }}">{{ y }}</option>
+        {% endfor %}
+    </select>
+    <br>     -->
+    <label for="contact_person">Contact Person</label>
+    <select name="contact_person" id="id_contact_person">
+        <option value="">Select Contact Person</option>
+        {% for i in contact_person %}
+        <option value="{{i.id}}" {% if i.id == openingIDObj.contact_person.id %} selected {% endif %}>{{i.first_name}} {{i.last_name}}</option>
+        {% endfor %}
+    </select>
+    <br>
+    {% comment %}
+    <div class="add_extra_field_container">
+        <a href="#" class="add_extra_field" data-href="{% url 'draft_opening_Ajax' %}">Add Extra Field</a>
+    </div>
+    <br>
+    {% endcomment %}
+
+    <input type="submit" value="Submit">
+</form>
+
+<div class="Add-here">
+
+</div>
+
+{% comment %}
+<script>
+    $(document).ready(function() {
+        $('.add_extra_field').click(function(e){
+            e.preventDefault();
+            var this_ = $(this)
+            var draft_opening_Ajax = this_.attr("data-href")
+            var serializedData = $(this).serialize();
+            $.ajax({
+                url: draft_opening_Ajax,
+                method: "POST",
+                data: $('#add_opening').serialize(),
+                success: function(response) {
+                    console.log(response.openingObj);
+                    var discard_opening = `
+                    <div class="discard_opening">
+                        {% if response.openingObj %}
+                        <a href="{% url 'deleteOpening' openingID=response.openingObj %}">Discard Opening</a>
+                        {% endif %}
+                    </div>
+                    `;
+
+                    $(document).ready(function () {
+                        console.log("Hereee1");
+                        $('.Add-here').append(discard_opening);
+                        console.log("Hereee2");
+                        // $('#id_add_extra_field_type').change(function () {
+                        //     var extra_field_type = $('#id_add_extra_field_type').val();
+                        //     if (extra_field_type == 'text') {
+                        //         $('.add_input_field').append('<label for="extra_field_text">Extra Field Text</label>');
+                        //         $('.add_input_field').append('<input type="text" name="extra_field_text" id="extra_field_text" placeholder="Extra Field Text" required>');
+                        //     } else if (extra_field_type == 'number') {
+                        //         $('.add_input_field').append('<label for="extra_field_number">Extra Field Number</label>');
+                        //         $('.add_input_field').append('<input type="number" name="extra_field_number" id="extra_field_number" placeholder="Extra Field Number" required>');
+                        //     }  else if (extra_field_type == 'textarea') {
+                        //         $('.add_input_field').append('<label for="extra_field_textarea">Extra Field Textarea</label>');
+                        //         $('.add_input_field').append('<textarea name="extra_field_textarea" id="extra_field_textarea" cols="30" rows="10" placeholder="Extra Field Textarea" required></textarea>');
+                        //     } else if (extra_field_type == 'select') {
+                        //         $('.add_input_field').append('<label for="extra_field_select">Extra Field Select</label>');
+                        //         $('.add_input_field').append('<select name="extra_field_select" id="extra_field_select" required>');
+                        //         $('.add_input_field').append('<option value="">Select Extra Field Select</option>');
+                        //         // {% for i in extra_field_value_list %}
+                        //         // $('.add_input_field').append('<option value="{{i.id}}">{{i.value}}</option>');
+                        //         // {% endfor %}
+                        //         $('.add_input_field').append('</select>');
+                        //     }
+                        // });
+                    });
+                }, 
+                error: function(response) {
+                    console.log('Here2', response);
+                }
+            });
+        });
+    });
+</script>
+{% endcomment %}
+
+
+{% endblock %}

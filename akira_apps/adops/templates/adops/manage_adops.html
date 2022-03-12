@@ -1,0 +1,181 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block analytics-text %}
+<h1>Manage Adops</h1>
+<p>Manage all the Admission(s) & Opening(s) <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-chalkboard-teacher"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Openings <a href="{% url 'openings' %}" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a></h4>
+          <h1>{{ openings|length }}</h1>
+        </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="fas fa-book"></span>
+    </div>
+    <div class="analytic-info">
+      <h4>Openings APPL. <a href="#openingsApplData"><i class="fa-solid fa-up-right-from-square transform-angle-135"></i></a></h4>
+      <h1>{{ applied_openings|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-user-graduate"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Admissions <span class="admission_status">active</span> </h4>
+        <h1>{{ admissions|length }}</h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>ADMIS. APPL. <a href="#openingsApplData"><i class="fa-solid fa-up-right-from-square transform-angle-135"></i></a></h4>
+        <h1>{{ applied_admissions|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block manage-adops %}
+
+<div class="btn-area">
+  <button class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
+  <button id="bulkOpeningForm" class="add-opening">Bulk openings</button>
+  <button class="add-admission">Add admission</button>
+  <button id="bulkAdmissionForm" class="add-admission">Bulk admissions</button>
+</div>
+
+<section>
+  <h3 class="section-head">Openings Info.</h3>
+</section>
+
+<div class="openings-container">
+  <div class="opening-applicants">
+    <div class="oa-first-section">
+      <h4>Applicants</h4>
+      <p>This week</p>
+    </div>
+    <div class="oa-second-section">
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+      <div class="applied-user">
+        <div class="applicant-photo">
+          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
+        </div>
+        <div class="applicant-name-applied-for">
+          <div class="applicant-name">
+            <h4>Mohan Vamsi Ch</h4>
+          </div>
+          <div class="applicant-applied-for">
+            <p>Applied for Google CEO</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+<div id="openingsApplData">
+  {% for i in openings %}
+  {{ i.job }}
+  <br>
+  <h4>Applicants - Count: {{ i.applied.all|length }}</h4>
+      {% for j in i.applied.all %}
+      {{ j.username }} - {{ j.first_name }} {{ j.last_name }}
+      <br>
+      {% endfor %}
+      <hr>
+  {% endfor %}
+</div>

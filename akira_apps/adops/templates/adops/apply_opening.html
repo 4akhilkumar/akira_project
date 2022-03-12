@@ -1,0 +1,392 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="theme-color" content="#FFF"/>
+    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+    
+    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet"> -->
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'styles/apply_openings.css' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <title>Opening{{ openings|pluralize }}</title>
+</head>
+<body>
+
+{% include 'messages.html' %}
+
+{% if openings %}
+<div class="job">
+ <div class="header">
+ </div>
+ <div class="wrapper">
+  <div class="main-container">
+   <div class="searched-jobs">
+     <div class="searched-bar">
+      <div class="searched-show">Showing {{ openings|length }} Job{{ openings|pluralize }}</div>
+    </div>
+    <div class="job-cards">
+     {% for eachopening in openings %}
+     <div class="job-card job-id" id="{{ eachopening.id }}">
+      <div class="job-card-header">
+       <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
+        <g fill="#feb0a5">
+         <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
+         <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
+        </g>
+        <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
+       </svg>
+      </div>
+      <div class="job-card-title">{{ eachopening.job }}</div>
+      <div class="job-card-subtitle">
+        {{ eachopening.description }}
+      </div>
+      <div class="job-detail-buttons">
+       <button class="search-buttons detail-button">{{ eachopening.type }}</button>
+       <button class="search-buttons detail-button">Min. {{ eachopening.min_experience }} Year</button>
+       <button class="search-buttons detail-button">{{ eachopening.qualification }}</button>
+       <button class="search-buttons detail-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</button>
+      </div>
+      <div class="job-card-buttons">
+       <button class="search-buttons card-buttons-msg know-more">Know more</button>
+      </div>
+     </div>
+     {% endfor %}
+    </div>
+    <div class="job-overview">
+      <div class="job-overview-cards">
+      {% for eachopening in openings %}
+      <div class="job-overview-card">
+      <div class="job-card overview-card job-id" id="{{ eachopening.id }}">
+        <div class="overview-wrapper">
+        <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
+        <g fill="#feb0a5" >
+         <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
+         <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
+        </g>
+        <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
+        </svg>
+         <div class="overview-detail">
+          <div class="job-card-title">{{ eachopening.job }}</div>
+          <div class="job-card-subtitle">
+            {{ eachopening.location }}
+          </div>
+         </div>
+         <!-- <svg class="heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+          <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" />
+         </svg> -->
+        </div>
+        <div class="job-overview-buttons">
+         <div class="search-buttons time-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</div>
+         <div class="search-buttons time-button">{{ eachopening.type }}</div>
+         <div class="search-buttons level-button">{{ eachopening.qualification }}</div>
+         {% comment %}
+         <!-- <div class="job-stat">New</div> -->
+         <!-- <div class="job-day">{{ eachopening.created_at|naturalday }}</div> -->
+         {% endcomment %}
+        </div>
+       </div>
+      </div>
+      {% endfor %}
+     </div>
+     <div class="job-explain">
+      <div class="view-all-jobs">
+        <button class="view-all-jobs-btn">
+          Back
+        </button>
+      </div>
+      <img class="job-bg" alt="">
+      <div class="job-logos">
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="background-color:#f76754">
+        <path xmlns="http://www.w3.org/2000/svg" d="M0 .5h4.2v23H0z" fill="#042b48" data-original="#212121"></path>
+        <path xmlns="http://www.w3.org/2000/svg" d="M15.4.5a8.6 8.6 0 100 17.2 8.6 8.6 0 000-17.2z" fill="#fefefe" data-original="#f4511e"></path></svg>
+      </div>
+      <div class="job-explain-content">
+      <div class="job-title-wrapper">
+       <div class="job-card-title"></div>
+       <div class="job-action">
+        <!-- <svg onclick="document.location='#'" class="add-to-fav" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+          <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" />
+        </svg> -->
+        {% if is_admin %}
+        <a href="" class="edit-job" id="edit-job-anchor_tag">
+          <span class="fa-solid fa-pen-to-square"></span>
+        </a>
+        {% comment %}
+        <form action="" id="edit-job-form" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="job_id" id="id_job_id" value="">
+          <button class="edit-job" type="submit"><span class="fa-solid fa-pen-to-square"></span></button>
+        </form>
+        {% endcomment %}
+        {% endif %}
+        <svg onclick="document.location='#'" class="share" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+       </div>
+       </div>
+       <div class="job-subtitle-wrapper">
+        <div class="company-name">{{ academy.name }} <span class="comp-location"></span></div>
+        <div class="posted" id="myList2">
+          <span class="app-number">0 Applications</span>
+        </div>
+       </div>
+       <div class="explain-bar">
+        <div class="explain-contents">
+          <div class="explain-title">Experience</div>
+          <div class="explain-subtitle job-experience"></div>
+        </div>
+        <div class="explain-contents">
+          <div class="explain-title">Qualification</div>
+          <div class="explain-subtitle job-qualification"></div>
+        </div>
+        <div class="explain-contents">
+          <div class="explain-title">Employee Type</div>
+          <div class="explain-subtitle job-type"></div>
+        </div>
+        <div class="explain-contents">
+          <div class="explain-title">Offer Salary</div>
+          <div class="explain-subtitle job-salary"></div>
+        </div>
+       </div>
+       <div class="overview-text">
+        <div class="overview-text-header">Overview</div>
+        <div class="overview-text-subheader each-job-overview"></div>
+       </div>
+       <div class="overview-text job-description-container">
+        <div class="overview-text-header">Job Description</div>
+        <div class="newly-added-item" id="myList">
+          
+        </div>
+      </div>
+      <div class="apply-job">
+        <div class="apply-job-btn">
+          <form action="" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" id="id_job_id" value="">
+            <button class="search-buttons card-buttons">Apply Now</button>
+          </form>
+        </div>
+      </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script>
+
+const wrapper = document.querySelector(".wrapper");
+const header = document.querySelector(".header");
+
+wrapper.addEventListener("scroll", (e) => {
+ e.target.scrollTop > 30
+  ? header.classList.add("header-shadow")
+  : header.classList.remove("header-shadow");
+});
+
+const viewAllJobs = document.querySelectorAll(".view-all-jobs");
+const jobCards = document.querySelectorAll(".job-card");
+const logo = document.querySelector(".logo");
+const jobLogos = document.querySelector(".job-logos");
+const jobDetailTitle = document.querySelector(
+ ".job-explain-content .job-card-title"
+);
+
+const jobKnowMore = document.querySelector(".job-card-buttons");
+
+const jobDetailCompanyName = document.querySelector(".company-name");
+const jobDetailLocation = document.querySelector(".comp-location");
+const jobDetailPosted = document.querySelector(".posted");
+const jobDetailApplications = document.querySelector(".app-number");
+
+const jobDetailExperience = document.querySelector(".job-experience");
+const jobDetailQualification = document.querySelector(".job-qualification");
+const jobDetailType = document.querySelector(".job-type");
+const jobDetailSalary = document.querySelector(".job-salary");
+
+const jobDetailOverview = document.querySelector(".each-job-overview");
+const jobDetailDescription = document.querySelector(".job-description");
+const jobDetaildescContainer = document.querySelector(".newly-added-item");
+
+const jobBg = document.querySelector(".job-bg");
+
+jobCards.forEach((jobCard) => {
+ jobCard.addEventListener("click", () => {
+  const jobId = jobCard.getAttribute("id");
+  const jobIdString = jobId.toString();
+
+  // In jobCard fetch the html content class="search-buttons time-button applicant-count-info"
+  const jobCardAppl = jobCard.querySelector(".applicant-count-info");
+  // From jobCardAppl fetch the html content
+  const jobCardApplCount = jobCardAppl.innerHTML;
+  // In jobCardApplCount extract only the number
+  const jobCardApplCountNumber = jobCardApplCount.match(/\d+/g);
+  // Convert the number to integer
+  const jobCardApplCountNumberInt = parseInt(jobCardApplCountNumber);
+
+  document.getElementById("id_job_id").value = jobIdString;
+
+  // add jobIdString to id="edit-job-anchor_tag"
+  {% if is_admin %}
+  const editJobAnchorTag = document.getElementById("edit-job-anchor_tag");
+  editJobAnchorTag.setAttribute("href", `/adops/editOpening/${jobIdString}/`);
+  {% endif %}
+
+  const number = Math.floor(Math.random() * 10);
+  const url = `https://unsplash.it/640/425?image=${number}`;
+  jobBg.src = url;
+
+  const logo = jobCard.querySelector("svg");
+
+  const bg = logo.style.backgroundColor;
+  jobBg.style.background = bg;
+
+  let jobTitle = "";
+  let jobDesc = "";
+  let min_exp = "";
+  let max_exp = "";
+  let qual = "";
+  let locaion = "";
+  let pay_scale = "";
+  let job_type = "";
+  let contact_person = "";
+  let posted = "";
+  let applicants = jobCardApplCountNumberInt; // Here I have to pass the applicant number
+  
+  $.ajax({
+    type: "POST",
+    async: false,
+    url: '{% url "fetch_each_opening_Ajax" %}',
+    data: {
+        'openingID': jobIdString,
+        'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+    },
+    success: function (data) {
+      data.forEach(function (eachdata) {
+        jobTitle = eachdata.job;
+        jobOverview = eachdata.overview;
+        jobDesc = eachdata.description;
+        min_exp = eachdata.min_experience;
+        max_exp = eachdata.max_experience;
+        qual = eachdata.qualification;
+        job_loc = eachdata.location;
+        pay_scale = eachdata.pay_scale;
+        job_type = eachdata.type;
+        contact_person = eachdata.contact_person;
+        posted = eachdata.created_at;
+        // applicants = eachdata.applied; // It is returning the last applicant number (User ID) // Karthik Sir told data.length
+      });
+    }
+  });
+
+  const postedDate = new Date(posted);
+  const today = new Date();
+  // Calculate the time difference between postedDate and today
+  const timeDiff = Math.abs(today.getTime() - postedDate.getTime());
+
+  // convert the timeDiff to minutes if it is less than or equal to 60 minutes
+  const diffMinutes = Math.ceil(timeDiff / (1000 * 60));
+
+  // convert the timeDiff to hours if it is greater then 60 minutes
+  const diffHours = Math.ceil(timeDiff / (1000 * 3600));
+
+  // create a variable eitherMinHrs
+  let eitherMinHrs = "";
+  if (diffMinutes <= 60) {
+    eitherMinHrs = diffMinutes + " Min ago";
+  } else {
+    eitherMinHrs = diffHours + " Hrs ago";
+  }
+
+  const diffDays = Math.floor((today.getTime() - postedDate.getTime()) / (1000 * 3600 * 24));
+  const postedDateString = diffDays === 0 ? eitherMinHrs : diffDays === 1 ? "Yesterday" : diffDays + " days ago";
+
+  // if applicants are plural then add s else no need
+  const applicantsString = applicants === 1 ? "Application" : "Applications";
+
+  jobDetailTitle.textContent = jobTitle;
+  jobDetailLocation.textContent = job_loc;
+  jobDetailPosted.textContent = postedDateString + " · " + applicants + " " + applicantsString;
+
+  if (max_exp === null) {
+    jobDetailExperience.textContent = min_exp  + " Year(s)";
+  } else {
+    jobDetailExperience.textContent = min_exp + " - " + max_exp  + " Year(s)";
+  }
+
+  // Which will remove the existing childs in the newly added item
+  const list = document.getElementById("myList");
+  while (list.hasChildNodes()) {
+    list.removeChild(list.firstChild);
+  }
+
+  // seperate the string in jobDesc by "#" and display the seprated string in div class="newly-added-item"
+  const jobDescArray = jobDesc.split("#");
+  jobDescArray.forEach((desc) => {
+    const descItem = document.createElement("div");
+    descItem.classList.add("overview-text-item");
+    descItem.classList.add("recently-added-item");
+    descItem.textContent = desc;
+
+    jobDetaildescContainer.appendChild(descItem);
+
+  });
+
+  jobDetailQualification.textContent = qual;
+  jobDetailType.textContent = job_type;
+  jobDetailSalary.textContent = pay_scale;
+  jobDetailOverview.textContent = jobOverview;
+
+  jobLogos.innerHTML = logo.outerHTML;
+
+  wrapper.classList.add("detail-page");
+  wrapper.scrollTop = 0;
+
+  const shareData = {
+    title: jobTitle,
+    text: jobOverview,
+    url: '{{ request.build_absolute_uri }}'
+  }
+
+  const btn = document.querySelector('.share');
+  btn.addEventListener('click', async () => {
+    await navigator.share(shareData)
+  });
+
+});
+});
+
+viewAllJobs.forEach((viewAllJob) => {
+ viewAllJob.addEventListener("click", () => {
+  wrapper.classList.remove("detail-page");
+ });
+});
+
+</script>
+
+{% else %}
+<div class="no-data">
+  <h1>Currently <u>No Openings</u> Available</h1>
+</div>
+{% endif %}
+
+</body>
+</html>
+
+<!-- // // Get the childNodes in jobDetaildescContainer and print it in console
+// const childNodesLength = jobDetaildescContainer.childNodes;
+// console.log(childNodesLength);
+// console.log(childNodesLength.length); -->
