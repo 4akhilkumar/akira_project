@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'akira_apps.authentication.middleware.filter_ip_middleware.FilterIPMiddleware',
     'akira_apps.authentication.middleware.userPageTracking_middleware.userPageTrackingMiddleware',
     'akira_apps.authentication.middleware.userDeviceCookie_middleware.userDeviceCookieMiddleware',
+    'akira_apps.super_admin.middleware.isAdminExist_middleware.isAdminExistMiddleware',
 ]
 
 ROOT_URLCONF = 'akira.urls'

@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="theme-color" content="#FFF"/>
+    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+
+    <link rel="stylesheet" href="{% static 'styles/dashboard.css' %}">
+    
+    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <title>{{ title }} | Notice.html</title>
+</head>
+<body>
+
+    {% include 'messages.html' %}
+
+    {% include 'check_internet_connection.html' %}
+
+    {{ message }}
+
+    <br>
+
+    {% if send_mail_again %}
+        {% if user_type == "applicant" %}
+        <a href="{% url 'send_applicant_reg_email_again' username %}">Resend confirmation Email</a>
+        {% else %}
+        <a href="{% url 'send_admin_reg_email_again' username %}">Resend confirmation Email</a>
+        {% endif %}
+    {% endif %}
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>
