@@ -5,12 +5,12 @@ import uuid
 
 class TwoFactorAuth(models.Model):
     id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, unique=True, on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.OneToOneField(User, unique=True, on_delete = models.CASCADE)
     twofa = models.BooleanField(default = False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '%s' % (self.user)
 
-    class Meta:
+    class Meta: 
         ordering = ['created_at']

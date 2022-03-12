@@ -2,8 +2,8 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 
 from akira_apps.super_admin.decorators import allowed_users
-from akira_apps.academic.models import (Semester)
-from akira_apps.academic.forms import (BranchForm, SemesterModeForm)
+from akira_apps.academic.models import (Semester, Branch)
+from akira_apps.academic.forms import (SemesterModeForm)
 from akira_apps.specialization.models import (SpecializationsMC)
 from akira_apps.academic_registration.models import (SpecEnrollStudent)
 
@@ -88,7 +88,7 @@ def unenrollSpec(request, speci_id):
     return redirect('manage_specializations')
 
 def sem_registration(request):
-    branch_list = BranchForm()
+    branch_list = Branch.objects.all()
     semesters = Semester.objects.all()
     semesterModeForm = SemesterModeForm()
     getActiveSemester = Semester.objects.filter(is_active=True)

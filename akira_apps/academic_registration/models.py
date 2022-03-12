@@ -5,19 +5,6 @@ import uuid
 
 from akira_apps.specialization.models import (SpecializationsMC)
 
-BRANCH_CHOICES = [
-    ("","Branch Name"),
-    ("Computer Science and Engineering","Computer Science and Engineering"),
-    ("Aerospace/aeronautical Engineering","Aerospace/aeronautical Engineering"),
-    ("Chemical Engineering","Chemical Engineering"),
-    ("Civil Engineering","Civil Engineering"),
-    ("Electronics and Communications Engineering","Electronics and Communications Engineering"),
-    ("Electrical and Electronics Engineering","Electrical and Electronics Engineering"),
-    ("Petroleum Engineering","Petroleum Engineering"),
-    ("Bio Technology","Bio Technology"),
-    ("Mechanical Engineering","Mechanical Engineering"),
-]
-
 class SpecEnrollStudent(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     user = models.ForeignKey(User, on_delete = models.SET_NULL, blank = True, null = True)
@@ -27,7 +14,7 @@ class SpecEnrollStudent(models.Model):
         return '%s - %s' % (self.user.username, self.enrolledSpec)
 
     class Meta:
-        unique_together = ('user','enrolledSpec')
+        unique_together = ['user','enrolledSpec']
 
 
 # class academic_registration_staff(models.Model):
