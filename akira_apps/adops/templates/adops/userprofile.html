@@ -1,0 +1,65 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load user_group %}
+
+{% block analytics-text %}
+<h1>Analytics</h1>
+<p>Display analytics about your Academy <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block user-profile %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> @{{ userObj.username }} | Profile</title>
+</head>
+<body>
+    <img style="width: 50px;"
+        {% if not staff.photo %}
+        src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
+        {% else %}
+        src="{{ staff.photo.url }}"
+        {% endif %}
+        alt="staff Profile Pic">
+    <hr>
+    <p>Name: {{ staff.name_prefix }} {{ userObj.first_name }} {{ userObj.last_name }} </p>
+    <p>Group: {{ userObj.username|user_group }}</p>
+    <p>Email: {{ userObj.email }}</p>
+
+    <hr>
+    <p>Gender: {{ staff.gender }}</p>
+    <p>DOB: {{ staff.date_of_birth }}</p>
+    <p>Blood group: {{ staff.blood_group }}</p>
+    <p>Phone: {{ staff.phone }}</p>
+    <p>Address: {{ staff.door_no }}, {{ staff.city }}, {{ staff.district }}, {{ staff.state }}, {{ staff.country }} - {{ staff.zip_code }}</p>
+    <p>Branch: {% if staff.branch is None %} NA {% else %} {{ staff.branch }} {% endif %} </p>
+    <p>About: {{ staff.about }}</p>
+    <p>Skills:
+        {% if staff.skills.all %}
+        {% for skill in staff.skills.all %}
+        {{ skill.name }}{% if forloop.last %}{% else %}, {% endif %}
+        {% endfor %}
+        {% else %}
+        NA
+        {% endif %}
+    </p>
+    <p>
+        {% comment %}
+        <a href="{{ staff.resume.url }}">Resume</a>
+        {% endcomment %}
+    </p>
+    <hr>
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <textarea name="skills" id="id_skills" cols="30" rows="10" placeholder="Skills | seperate by comma(,)">{% for skill in staff.skills.all %}{{ skill.name }}{% if forloop.last %}{% else %}, {% endif %}{% endfor %}</textarea>
+        <textarea name="about" id="id_about" cols="30" rows="10" placeholder="About you...">{{ staff.about }}</textarea>
+        <input type="file" name="photo" id="id_photo">
+        <input type="submit">
+    </form>
+</body>
+</html>
+{% endblock %}

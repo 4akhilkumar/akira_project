@@ -25,6 +25,7 @@ from akira_apps.authentication.token import (account_activation_token)
 from akira_apps.staff.models import (Staff)
 from akira_apps.super_admin.forms import (GENDERCHOICESForm, NAMEPREFIXForm)
 from akira_apps.super_admin.models import (MailLog)
+from akira_apps.staff.models import (Skills)
 
 def manage_adops(request):
     openings = Openings.objects.all()
@@ -555,3 +556,67 @@ def applicantsInfo(request, openingID):
         return redirect('userAppliedOpenings')
 
 def profile(request):
+    currentUser = request.user
+    if User.objects.filter(id = currentUser.id).exists() is True:
+        userObj = User.objects.get(id = currentUser.id)
+        try:
+            staff = Staff.objects.get(user = userObj)
+        except Exception.ObjectDoesNotExist:
+            staff = None
+        if request.method == "POST":
+            skills_list = request.POST.get('skills')
+            photo = request.FILES.get('photo')
+            print(photo)
+            about = request.POST.get('about').strip()
+            if about == '':
+                about = None
+            skills_list = skills_list.split(',')
+            staff.about = about
+            staff.photo = photo
+            staff.save()
+            for eachskill in skills_list:
+                eachskill = eachskill.strip()
+                if Skills.objects.filter(name = eachskill).exists() is False:
+                    skillObj = Skills.objects.create(name = eachskill)
+                    if staff.skills.filter(name = eachskill).exists() is False:
+                        staff.skills.add(skillObj)
+                    else:
+                        messages.info(request, "You already have this skill!")
+                else:
+                    skillObj = Skills.objects.get(name = eachskill)
+                    if staff.skills.filter(name = eachskill).exists() is False:
+                        staff.skills.add(skillObj)
+                    else:
+                        messages.info(request, "You already have this skill!")
+            return redirect('profile')
+        context = {
+            'staff': staff,
+            'userObj': userObj,
+        }
+        return render(request, 'adops/userprofile.html', context)
+    else:
+        messages.error(request, "User doesn't exist!")
+        return redirect('login')
+
+def fetch_each_applicant_Ajax(request):
+    if request.method == "POST":
+        userID = request.POST.get('applID')
+        try:
+            userObj = User.objects.get(id = userID)
+            staffObj = Staff.objects.filter(user = userObj)
+        except Exception as e:
+            print(e)
+        return JsonResponse(list(
+            staffObj.values(
+                'id',
+                'user__first_name',
+                'user__last_name',
+                'user__email',
+                'name_prefix',
+                'gender', 'date_of_birth',
+                'blood_group', 'phone',
+                'door_no', 'zip_code',
+                'city', 'district',
+                'state', 'country',
+                'skills', 'about'
+                )), safe = False)

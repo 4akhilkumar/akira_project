@@ -10,6 +10,8 @@ urlpatterns = [
     path('withdrawAppl/<str:openingID>/', views.withdrawAppl, name='withdrawAppl'),
     path('applicantsInfo/<str:openingID>/', views.applicantsInfo, name='applicantsInfo'),
 
+    path('profile/', views.profile, name='profile'),
+
     path('openings/', views.openings, name='openings'),
 
     path('applicantsAccount/', views.applicantsAccount, name='applicantsAccount'),
