@@ -33,8 +33,6 @@ from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
 from akira_apps.academic_registration.urls import *
 
-UserLoginDetails.objects.all().delete()
-
 def TestingArea(request):
     decipherText = ''
     plainPassword = ''
