@@ -29,10 +29,12 @@ from akira_apps.staff.models import (Skills)
 
 def manage_adops(request):
     openings = Openings.objects.all()
-    applied_openings = Openings.objects.filter(applied__isnull=False)
+    applied_openings = Openings.objects.filter(applied__isnull=False).distinct()
+    applied_openings_count = Openings.objects.filter(applied__isnull=False)
     context = {
         'openings': openings,
         'applied_openings': applied_openings,
+        'applied_openings_count': applied_openings_count,
     }
     return render(request, 'adops/manage_adops.html', context)
 
@@ -530,6 +532,7 @@ def withdrawAppl(request, openingID):
             messages.error(request, "You haven't applied for this opening!")
         return redirect('userAppliedOpenings')
     else:
+        return redirect('userAppliedOpenings')
     
 def applicantsInfo(request, openingID):
     if Openings.objects.filter(id = openingID, applied__isnull=False).exists() is True:

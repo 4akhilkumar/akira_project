@@ -16,7 +16,7 @@
           <span class="fas fa-chalkboard-teacher"></span>
       </div>
       <div class="analytic-info">
-          <h4>Openings <a href="{% url 'openings' %}" target="_blank"><i class="fa-solid fa-up-right-from-square"></i></a></h4>
+          <h4>Openings <a href="{% url 'openings' %}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-up-right-from-square"></i></a></h4>
           <h1>{{ openings|length }}</h1>
         </div>
   </div>
@@ -26,7 +26,7 @@
     </div>
     <div class="analytic-info">
       <h4>Openings APPL. <a href="#openingsApplData"><i class="fa-solid fa-up-right-from-square transform-angle-135"></i></a></h4>
-      <h1>{{ applied_openings|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      <h1>{{ applied_openings_count|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
     </div>
   </div>
   <div class="analytic">
@@ -63,106 +63,33 @@
   <h3 class="section-head">Openings Info.</h3>
 </section>
 
-<div class="openings-container">
-  <div class="opening-applicants">
-    <div class="oa-first-section">
-      <h4>Applicants</h4>
-      <p>This week</p>
+<div class="job-cards">
+  {% for eachopening in applied_openings %}
+  <div class="job-card job-id" id="{{ eachopening.id }}">
+    <div class="job-card-header">
+    <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
+      <g fill="#feb0a5">
+      <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
+      <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
+      </g>
+      <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
+    </svg>
     </div>
-    <div class="oa-second-section">
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
-      <div class="applied-user">
-        <div class="applicant-photo">
-          <img src="https://images.unsplash.com/photo-1543965170-4c01a586684e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2232&q=80" alt="">
-        </div>
-        <div class="applicant-name-applied-for">
-          <div class="applicant-name">
-            <h4>Mohan Vamsi Ch</h4>
-          </div>
-          <div class="applicant-applied-for">
-            <p>Applied for Google CEO</p>
-          </div>
-        </div>
-      </div>
+    <div class="job-card-title">{{ eachopening.job }}</div>
+    <div class="job-card-subtitle">
+      {{ eachopening.description }}
+    </div>
+    <div class="job-detail-buttons">
+    <button class="search-buttons detail-button">{{ eachopening.type }}</button>
+    <button class="search-buttons detail-button">Min. {{ eachopening.min_experience }} Year</button>
+    <button class="search-buttons detail-button">{{ eachopening.qualification }}</button>
+    <button class="search-buttons detail-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</button>
+    </div>
+    <div class="job-card-buttons">
+      <a href="{% url 'applicantsInfo' eachopening.id %}" class="search-buttons card-buttons-msg know-more" target="_blank" rel="noopener noreferrer">View Applicant{{ eachopening.applied.all|length|pluralize }} <i class="fa-solid fa-up-right-from-square"></i> </a>
     </div>
   </div>
+  {% endfor %}
 </div>
 
 {% endblock %}
