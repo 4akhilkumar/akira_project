@@ -529,4 +529,29 @@ def withdrawAppl(request, openingID):
             messages.error(request, "You haven't applied for this opening!")
         return redirect('userAppliedOpenings')
     else:
+    
+def applicantsInfo(request, openingID):
+    if Openings.objects.filter(id = openingID, applied__isnull=False).exists() is True:
+        openingApplicants = Openings.objects.get(id = openingID)
+        applicants = openingApplicants.applied.all()
+        for eachApplicant in applicants:
+            userID = eachApplicant.id
+            if User.objects.filter(id = userID).exists() is True:
+                userObj = User.objects.get(id = userID)
+                if Staff.objects.filter(user = userObj).exists() is True:
+                    context = {
+                        'openingApplicants': openingApplicants,
+                        'applicants':applicants,
+                    }
+                    return render(request, 'adops/openings/applicantsInfo.html', context)
+                else:
+                    messages.error(request, "Applicant doesn't exist!")
+                    return redirect('userAppliedOpenings')
+            else:
+                messages.error(request, "User doesn't exist!")
+                return redirect('userAppliedOpenings')
+    else:
+        messages.info(request, "No applicants for this opening")
         return redirect('userAppliedOpenings')
+
+def profile(request):
