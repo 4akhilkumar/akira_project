@@ -100,7 +100,7 @@
                     {% if request.user|user_group != "Student" %}
                     <li>
                         <a href="{% url 'manage_adops' %}"
-                        {% if "adops" in request.path %}
+                        {% if "manage_adops" in request.path %}
                         class="active"
                         {% endif %}
                         >
@@ -112,7 +112,7 @@
                         {% if request.user|user_group != "Student" %}
                         <li>
                             <a href="{% url 'userAppliedOpenings' %}"
-                            {% if "adops/userAppliedOpenings" in request.path %}
+                            {% if "userAppliedOpenings" in request.path %}
                             class="active"
                             {% endif %}
                             >
@@ -277,6 +277,8 @@
             
             {% block manage-faculty %} {% endblock %}
             {% block view-faculty %} {% endblock %}
+
+            {% block user-profile %} {% endblock %}
             
             {% block manage-students %} {% endblock %}
             {% block add-students %} {% endblock %}
