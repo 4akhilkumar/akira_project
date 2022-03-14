@@ -7,10 +7,10 @@
 <title>View Faculty Info.</title>
 
 <img
-{% if not staff.profile_pic %}
+{% if not staff.photo %}
 src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
 {% else %}
-src="{{ staff.profile_pic.url }}"
+src="{{ staff.photo.url }}"
 {% endif %}
 alt="staff Profile Pic">
 
