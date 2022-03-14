@@ -2357,63 +2357,161 @@ i.transform-angle-135 {
 
 /* Adops Styles */
 
-.openings-container {
-  /* border: 1px solid #000; */
-  display: flex;
+.job-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column-gap: 25px;
+  grid-row-gap: 25px;
+  -webkit-animation: slideY 0.6s both;
+          animation: slideY 0.6s both;
+}
+@media screen and (max-width: 1212px) {
+  .job-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (max-width: 930px) {
+  .job-cards {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 
-.opening-applicants {
-  display: flex;
-  min-width: 20rem;
-  max-width: 21rem;
-  flex-direction: column;
-  border-radius: .4rem;
-  background-color: #eeeeee;
-  padding: .75rem;
+/* @media screen and (max-width: 730px) {
+  .job-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+} */
+
+.job-card {
+  padding: 20px 16px;
+  background-color: #FFF;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: var(--shadow);
+}
+.job-card:hover {
+  transform: scale(1.02);
+}
+.job-card svg {
+  width: 46px;
+  padding: 10px;
+  border-radius: 8px;
 }
 
-.oa-first-section {
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: space-between;
-}
+/* .job-card img {
+  width: 46px;
+  padding: 10px;
+  border-radius: 8px;
+} */
 
-.oa-second-section {
-  margin-top: 1rem;
-  height: 18.5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  row-gap: 1rem;
+.job-card-header {
   display: flex;
-  flex-direction: column;
-}
-
-.applicant-photo {
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-  border-radius: 50%;
-  /* margin-bottom: 16px; */
-}
-.applicant-photo img {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-  object-fit: cover;
-}
-
-.applied-user {
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: space-around;
-}
-
-.applicant-name-applied-for {
-  display: flex;
-  flex-direction: column;
   align-items: flex-start;
+}
+
+.job-card-title {
+  font-weight: 600;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.job-title-wrapper .job-card-title {
+  font-size: 20px;
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.job-card-subtitle {
+  color: #83838e;
+  font-size: 13px;
+  margin-top: 14px;
+  line-height: 1.6em;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-buttons {
+  border: none;
+  color: #FFF;
+  background-color: #e1ebfb;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 14px;
+}
+
+.search-buttons.time-button,
+.search-buttons.level-button {
+  background-color: #575ad8;
+  color: #fff;
+}
+
+.job-overview-buttons .search-buttons {
+  background-color: #f0f0f0;
+  font-size: 11px;
+  padding: 6px 8px;
+  margin-top: 0;
+  font-weight: 500;
+}
+
+.job-overview-buttons .search-buttons.time-button {
+  color: #fc5757;
+  margin-right: 8px;
+}
+.job-overview-buttons .search-buttons.level-button {
+  color: #5052d5;
+}
+
+.detail-button {
+  background-color: #e1ebfb;
+  color: #0162ff;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+.detail-button + .detail-button {
+  margin-left: 4px;
+}
+
+.job-card-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.card-buttons,
+.card-buttons-msg {
+  padding: 10px;
+  width: 100%;
+  font-size: 12px;
+  cursor: pointer;
+  -webkit-transition: all 180ms ease-out;
+  -moz-transition: all 180ms ease-out;
+  -o-transition: all 180ms ease-out;
+  transition: all 180ms ease-out;
+}
+
+.card-buttons-msg {
+  background-color: #f0f0f0;
+  color: #83838e;
+  text-align: center;
+}
+
+.card-buttons-msg:hover {
+  color: #f0f0f0;
+  background-color: #83838e;
+}
+
+.applicant-count-info {
+  background: #0f9d5833;
+  color: #14c66f;
 }
 
 /* Adops Styles */
