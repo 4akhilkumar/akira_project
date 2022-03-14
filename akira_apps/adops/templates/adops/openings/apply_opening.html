@@ -225,6 +225,15 @@ const jobBg = document.querySelector(".job-bg");
 
 jobCards.forEach((jobCard) => {
  jobCard.addEventListener("click", () => {
+  // Allow user to click the job card only after 2 seconds of clicking event to avoid double click event to trigger
+  if (jobCard.classList.contains("job-card-clicked")) {
+   return;
+  }
+  jobCard.classList.add("job-card-clicked");
+  setTimeout(() => {
+   jobCard.classList.remove("job-card-clicked");
+  }, 8000);
+
   const jobId = jobCard.getAttribute("id");
   const jobIdString = jobId.toString();
 
@@ -265,7 +274,7 @@ jobCards.forEach((jobCard) => {
   let contact_person = "";
   let posted = "";
   let applicants = jobCardApplCountNumberInt; // Here I have to pass the applicant number
-  
+
   $.ajax({
     type: "POST",
     async: false,

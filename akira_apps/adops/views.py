@@ -67,7 +67,7 @@ def openings(request):
         'openings': openings,
         'is_admin': is_admin,
     }
-    return render(request, 'adops/apply_opening.html', context)
+    return render(request, 'adops/openings/apply_opening.html', context)
 
 def add_openings(request):
     contact_person = User.objects.filter(groups__name='Administrator')
@@ -118,7 +118,7 @@ def add_openings(request):
         'job_type_list':job_type_list,
         'extra_field_value_type_list':extra_field_value_type_list,
     }
-    return render(request, 'adops/add_opening.html', context)
+    return render(request, 'adops/openings/add_opening.html', context)
 
 # def draft_opening_Ajax(request):
 #     data_error = None
@@ -222,7 +222,7 @@ def editOpening(request, openingID):
         'job_type_list':job_type_list,
         'extra_field_value_type_list':extra_field_value_type_list,
     }
-    return render(request, 'adops/add_opening.html', context)
+    return render(request, 'adops/openings/add_opening.html', context)
 
 def deleteOpening(request, openingID):
     try:
@@ -394,7 +394,7 @@ def applicantsAccount(request):
                         current_site = get_current_site(request)
                         protocol = request.is_secure() and "https" or "http"
                         mail_subject = "Confirm your applicant registration - AkirA"
-                        message = render_to_string('adops/verify_applicant_email.html', {
+                        message = render_to_string('adops/openings/verify_applicant_email.html', {
                             'user': user,
                             'protocol': protocol,
                             'domain': current_site.domain,
@@ -430,7 +430,7 @@ def applicantsAccount(request):
         'name_prefix': name_prefix_list,
         'gender': gender_list,
     }
-    return render(request, 'adops/register_applicant.html', context)
+    return render(request, 'adops/openings/register_applicant.html', context)
 
 def send_applicant_reg_email_again(request, username):
     try:
@@ -459,7 +459,7 @@ def send_applicant_reg_email_again(request, username):
                 current_site = get_current_site(request)
                 protocol = request.is_secure() and "https" or "http"
                 mail_subject = "Confirm your applicant registration - AkirA"
-                message = render_to_string('adops/verify_applicant_email.html', {
+                message = render_to_string('adops/openings/verify_applicant_email.html', {
                     'user': user,
                     'protocol': protocol,
                     'domain': current_site.domain,
@@ -516,7 +516,7 @@ def userAppliedOpenings(request):
     context = {
         'appliedOpenings':appliedOpenings,
     }
-    return render(request, 'adops/openingsAppliedInfo.html', context)
+    return render(request, 'adops/openings/openingsAppliedInfo.html', context)
 
 def withdrawAppl(request, openingID):
     if Openings.objects.filter(id = openingID).exists() is True:
