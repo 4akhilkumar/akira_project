@@ -8,19 +8,14 @@
     <meta name="theme-color" content="#FFF"/>
     <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
 
-    <link rel="stylesheet" href="{% static 'styles/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/admin_register.css' %}">
     
-    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet">
 
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
 
-    <script src="{% static "js/jquery.min.js" %}"></script>
     <title>Admin Registration - AkirA</title>
 </head>
 <body>
@@ -28,82 +23,298 @@
 
     {% include 'check_internet_connection.html' %}
 
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="name_prefix">Name prefix</label>
-        <select name="name_prefix" id="id_name_prefix">
-            {% for x,y in name_prefix.fields.nameprefix.choices %}
-            <option value="{{ x }}">{{ y }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <label for="firstname">First name</label>
-        <input type="text" name="firstname" id="id_firstname" placeholder="First name" required>
-        <br>
-        <label for="lastname">Last name</label>
-        <input type="text" name="lastname" id="id_lastname" placeholder="Last name" required>
-        <br>
-        <label for="username">Username</label>
-        <input type="text" name="username" id="id_username" placeholder="Username" required>
-        <br>
-        <label for="password">Password</label>
-        <input type="password" name="password" id="id_password" placeholder="Password" required>
-        <br>
-        <label for="confirm_password">Confirm password</label>
-        <input type="password" name="confirm_password" id="id_confirm_password" placeholder="Confirm password" required>
-        <br>
-        <label for="email">Email</label>
-        <input type="email" name="email" id="id_email" placeholder="Email" required>
-        <br>
-        <label for="phone">Phone number</label>
-        <input type="phone" name="phone" id="id_phone" placeholder="Phone number" required>
-        <br>
+    <div class="main">
+        <div class="container-fluid">
+            <div class="regiserformcontainer">
+                <h2 id="heading">Create Your Admin. Account</h2>
+                <p class="note">Fill all the required(*) fields to create account</p>
+                <form id="msform" action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- progressbar -->
+                    <ul id="progressbar">
+                        <li class="active" id="account"><strong>Account</strong></li>
+                        <li id="personal"><strong>Personal</strong></li>
+                        <li id="institute"><strong>Institute</strong></li>
+                        <li id="confirm"><strong>T&C</strong></li>
+                    </ul>
+                    <!-- fieldsets -->
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Account Information:</h2>
+                                </div>
+                            </div> 
 
-        <label for="date_of_birth">Date of birth</label>
-        <input type="date" name="date_of_birth" id="id_date_of_birth" placeholder="Date of birth" required>
-        <br>
-        <label for="gender">Gender</label>
-        <select name="gender" id="id_gender">
-            {% for x,y in gender.fields.gender.choices %}
-            <option value="{{ x }}">{{ y }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <label for="door_no">Door No.</label>
-        <input type="text" name="door_no" id="id_door_no" placeholder="Door No." required>
-        <br>
-        <label for="zip_code">Zip code</label>
-        <input type="text" name="zip_code" id="id_zip_code" placeholder="Zip code" required>
-        <br>
-        <label for="city">City name</label>
-        <input type="text" name="city" id="id_city" placeholder="City name" required>
-        <br>
-        <label for="district">District name</label>
-        <input type="text" name="district" id="id_district" placeholder="District name" required>
-        <br>
-        <label for="state">State name</label>
-        <input type="text" name="state" id="id_state" placeholder="State name" required>
-        <br>
-        <label for="country">Country</label>
-        <input type="text" name="country" id="id_country" placeholder="Country" required>
-        <br>
-        <label for="photo">Photo</label>
-        <input type="file" name="photo" id="id_photo" required>
-        <br>
-        <label for="institute_code">Institute code</label>
-        <input type="text" name="institute_code" id="id_institute_code" placeholder="Institute Code" required>
-        <br>
-        <label for="institute_name">Institute name</label>
-        <input type="text" name="institute_name" id="id_institute_name" placeholder="Institute name" required>
-        <br>
-        <label for="institute_address">Institute address</label>
-        <input type="text" name="institute_address" id="id_institute_address" placeholder="Institute Address" required>
-        <br>
-        <p>By registering, You agree to our terms, condition and policies.</p>
-        <br>
-        <input type="submit" value="Register">
-    </form>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label">Email</label>
+                                <input type="email" name="email" id="id_email" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" />
+                                <span class="help-text">Please use legitimate email only</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label">Username</label>
+                                <input type="text" name="username" id="id_username" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" />
+                                <span class="help-text">You can use letters, numbers & periods</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label">Password</label>
+                                <input type="password" name="password" id="id_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" />
+                                <span class="help-text">Use 8 or more characters with a mix of letters, numbers & symbols</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label">Confirm password</label>
+                                <input type="password" name="confirm_password" id="id_confirm_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" />
+                                <span class="error-text">Those passwords didn’t match. Try again.</span>
+                            </div>
+                        </div> 
+                        <input type="button" name="next" id="account-next" class="next action-button" value="Next" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Personal Information:</h2>
+                                </div>
+                            </div> 
 
-    <script src="{% static 'js/dashboard.js' %}"></script>
+                            <div class="input-box active-grey">
+                                <label class="fieldlabels input-label">Name prefix</label>
+                                <select name="name_prefix" id="id_name_prefix" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)">
+                                    {% for x,y in name_prefix.fields.nameprefix.choices %}
+                                    <option value="{{ x }}">{{ y }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="first-last-name">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label">First name</label>
+                                    <input type="text" name="firstname" id="id_firstname" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" />
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label">Last name</label> 
+                                    <input type="text" name="lastname" id="id_lastname" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" />
+                                </div>
+                            </div>
+                            
+                            <div class="input-box active-grey">
+                                <label class="fieldlabels input-label" for="date_of_birth">Date of birth</label>
+                                <input type="date" name="date_of_birth" id="id_date_of_birth" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            </div>
+                                
+                            <div class="gender-phone">
+                                <div class="input-box active-grey">
+                                    <label class="fieldlabels input-label" for="gender">Gender</label>
+                                    <select name="gender" class="input-1" id="id_gender">
+                                        {% for x,y in gender.fields.gender.choices %}
+                                        <option value="{{ x }}">{{ y }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="input-box">    
+                                    <label class="fieldlabels input-label" for="phone">Phone number</label>
+                                    <input type="phone" name="phone" id="id_phone" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>                    
+                                </div>
+                            </div>
+                            
+                            <div class="door-flat-no-zip-code">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="door_no">Door No./Flat No.</label>
+                                    <input type="text" name="door_no" id="id_door_no" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="zip_code">Zip code</label>
+                                    <input type="text" name="zip_code" id="id_zip_code" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                </div>
+                            </div>
+                            
+                            <div class="city-district">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="city">City</label>
+                                    <input type="text" name="city" id="id_city" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="district">District</label>
+                                    <input type="text" name="district" id="id_district" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                </div>
+                            </div>
+                            
+                            <div class="state-country">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="state">State</label>
+                                    <input type="text" name="state" id="id_state" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="country">Country</label>
+                                    <input type="text" name="country" id="id_country" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                </div>
+                            </div>
+                            <div class="input-box active-grey">
+                                <label class="fieldlabels input-label">Upload Your Photo</label> 
+                                <input type="file" name="photo" accept="image/*" id="id_photo" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            </div>
+                        </div> 
+                        <input type="button" name="next" id="personal-next" class="next action-button" value="Next" /> 
+                        <input type="button" name="previous" id="personal-previous" class="previous action-button-previous" value="Previous" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">About Institute</h2>
+                                </div>
+                            </div> 
+                            
+                            <div class="input-box">
+                                <label class="fieldlabels input-label">Institute code</label> 
+                                <input type="text" name="institute_code" id="id_institute_code" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="institute_name">Institute name</label>
+                                <input type="text" name="institute_name" id="id_institute_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="institute_address">Institute address</label>
+                                <input type="text" name="institute_address" id="id_institute_address" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            </div>
+                        </div> 
+                        <input type="button" name="next" id="institute-next" class="next action-button last-next" value="Next" /> 
+                        <input type="button" name="previous" id="institute-previous" class="previous action-button-previous" value="Previous" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Terms and Conditions</h2>
+                                </div>
+                            </div> 
+                            <div class="">
+                                <div class="">
+                                    <h4 class="purple-text tandc">
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                    </h4>
+                                    <h4 class="purple-text bold">By creating the account in AkirA application, you agree to the T&C.</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="submit" name="submit" class="action-button register-btn" value="Register" /> 
+                        <input type="button" name="previous" id="tandc-previous" class="previous action-button-previous last-previous" value="Previous" />
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setFocus(on) {
+            var element = document.activeElement;
+            if (on) {
+                setTimeout(function () {
+                element.parentNode.classList.add("focus");
+                });
+            } else {
+                let box = document.querySelector(".input-box");
+                box.classList.remove("focus");
+                $("input").each(function () {
+                var $input = $(this);
+                var $parent = $input.closest(".input-box");
+                if ($input.val()) $parent.addClass("focus");
+                else $parent.removeClass("focus");
+                });
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            var current_fs, next_fs, previous_fs; //fieldsets
+            var opacity;
+            var steps = $("fieldset").length;
+
+            $(".next").click(function() {
+                current_fs = $(this).parent();
+                next_fs = $(this).parent().next();
+
+                //Add Class Active
+                // $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+                // If user clicks next button id is account-next then add class personal-section
+                // And if user click on the button id is personal-previous then remove class personal-section
+                if ($(this).attr('id') == 'account-next') {
+                    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("personal-section");
+                } else if ($(this).attr('id') == 'personal-next') {
+                    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("institute-section");
+                } else if ($(this).attr('id') == 'institute-next') {
+                    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("tandc-section");
+                }
+
+                //show the next fieldset
+                next_fs.show();
+                //hide the current fieldset with style
+                current_fs.animate({opacity: 0}, {
+                    step: function(now) {
+                        // for making fielset appear animation
+                        opacity = 1 - now;
+
+                        current_fs.css({
+                            'display': 'none',
+                            'position': 'relative'
+                        });
+                        next_fs.css({'opacity': opacity});
+                    }, duration: 500
+                });
+            });
+
+            $(".previous").click(function(){
+                current_fs = $(this).parent();
+                previous_fs = $(this).parent().prev();
+
+                //Remove class active
+                // $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+                if ($(this).attr('id') == 'personal-previous') {
+                    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("personal-section");
+                } else if ($(this).attr('id') == 'institute-previous') {
+                    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("institute-section");
+                } else if ($(this).attr('id') == 'tandc-previous') {
+                    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("tandc-section");
+                }
+
+
+                //show the previous fieldset
+                previous_fs.show();
+
+                //hide the current fieldset with style
+                current_fs.animate({opacity: 0}, {
+                    step: function(now) {
+                        // for making fielset appear animation
+                        opacity = 1 - now;
+
+                        current_fs.css({
+                            'display': 'none',
+                            'position': 'relative'
+                        });
+                        previous_fs.css({'opacity': opacity});
+                    }, duration: 500
+                });
+            });
+
+            // If the user clicks the button class "last-next" then hide the class note and if user clicks the button class "last-previous" then show the class note
+            $(".last-next").click(function(){
+                $(".note").hide();
+                // scroll page to bottom
+                $('html, body').animate({
+                    scrollTop: $(document).height()
+                }, 'slow');
+            });
+            
+            $(".last-previous").click(function(){
+                $(".note").show();
+            });
+
+        });
+    </script>
 </body>
 </html>
