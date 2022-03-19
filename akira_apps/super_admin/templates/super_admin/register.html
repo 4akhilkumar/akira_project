@@ -26,7 +26,7 @@
     <div class="main">
         <div class="container-fluid">
             <div class="regiserformcontainer">
-                <h2 id="heading">Create Your AkirA Admin. Account</h2>
+                <h2 id="heading">Create Your <span class="akira">AkirA</span> Admin. Account</h2>
                 <p class="note">Fill all the fields to create admin. account</p>
                 <form id="msform" action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -198,7 +198,7 @@
                                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
                                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
                                     </h4>
-                                    <h4 class="purple-text bold">By creating the account in AkirA application, you agree to the T&C.</h4>
+                                    <h4 class="purple-text bold">By creating the admin. account in <span class="akira">AkirA</span> application, you agree to the T&C.</h4>
                                 </div>
                             </div>
                         </div>
@@ -241,9 +241,6 @@
                 next_fs = $(this).parent().next();
 
                 //Add Class Active
-                // $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-                // If user clicks next button id is personal-next then add class personal-section
-                // And if user click on the button id is personal-previous then remove class personal-section
                 if ($(this).attr('id') == 'personal-next') {
                     $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("account-section");
                 } else if ($(this).attr('id') == 'account-next') {
@@ -274,7 +271,6 @@
                 previous_fs = $(this).parent().prev();
 
                 //Remove class active
-                // $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
                 if ($(this).attr('id') == 'account-previous') {
                     $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("account-section");
                 } else if ($(this).attr('id') == 'institute-previous') {
