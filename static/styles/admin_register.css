@@ -55,7 +55,6 @@
 }
 
 #heading {
-    text-transform: uppercase;
     color: #673AB7;
     font-weight: normal;
     text-align: center;
@@ -81,27 +80,35 @@
     width: 100%;
     margin: 0;
     padding-bottom: 20px;
-    position: relative
+    position: relative;
 }
 
 .form-card {
-    text-align: left
+    text-align: left;
 }
 
 #msform fieldset:not(:first-of-type) {
-    display: none
+    display: none;
 }
 
 #msform select {
     padding: 8px 15px 8px 8px;
 }
 
-#msform input,
+#msform input[type="text"],
+#msform input[type="phone"],
+#msform input[type="date"],
+#msform input[type="email"],
+#msform input[type="password"],
 #msform textarea {
     padding: 8px 15px 8px 15px;
 }
 
-#msform input,
+#msform input[type="text"],
+#msform input[type="phone"],
+#msform input[type="date"],
+#msform input[type="email"],
+#msform input[type="password"],
 #msform textarea,
 #msform select {
     border: 1px solid #ccc;
@@ -113,31 +120,36 @@
     font-family: 'Poppins', sans-serif;
     color: #2C3E50;
     font-size: 16px;
-    letter-spacing: 1px
+    letter-spacing: 1px;
 }
 
-#msform input:focus,
+#msform input[type="text"]:focus,
+#msform input[type="phone"]:focus,
+#msform input[type="date"]:focus,
+#msform input[type="email"]:focus,
+#msform input[type="password"]:focus,
 #msform textarea:focus,
 #msform select:focus {
     -moz-box-shadow: none !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
     border: 2px solid #673AB7;
-    outline-width: 0
+    outline-width: 0;
 }
 
 #msform .action-button {
-    width: 100px;
     background: #673AB7;
     font-weight: 400;
     color: white;
     border-radius: 4px;
     cursor: pointer;
-    padding: 10px 5px;
+    font-size: 1rem;
+    padding: 8px 28px;
     margin: 10px 0px 10px 5px;
     float: right;
     font-family: 'Poppins', sans-serif;
     border: 2px solid #673AB7;
+    box-shadow: 0 3px 1px -2px #0003,0 2px 2px #00000024,0 1px 5px #0000001f;
     -webkit-transition: all 180ms ease-out;
     -moz-transition: all 180ms ease-out;
     -o-transition: all 180ms ease-out;
@@ -152,17 +164,18 @@
 }
 
 #msform .action-button-previous {
-    width: 100px;
-    background: #616161;
     font-weight: 400;
-    color: white;
-    border: 2px solid #673AB7;
+    background: #FFF;
+    color: #616161;
+    border: 2px solid #616161;
     border-radius: 4px;
     cursor: pointer;
-    padding: 10px 5px;
+    font-size: 1rem;
+    padding: 8px 18px;
     margin: 10px 5px 10px 0px;
     float: right;
     font-family: 'Poppins', sans-serif;
+    box-shadow: 0 3px 1px -2px #0003,0 2px 2px #00000024,0 1px 5px #0000001f;
     -webkit-transition: all 180ms ease-out;
     -moz-transition: all 180ms ease-out;
     -o-transition: all 180ms ease-out;
@@ -171,9 +184,9 @@
 
 #msform .action-button-previous:hover,
 #msform .action-button-previous:focus {
-    color: #000;
-    background-color: #FFF;
-    border: 2px solid #000;
+    background: #616161;
+    color: #FFF;
+    border: 2px solid #616161;
 }
 
 .fs-title {
@@ -181,39 +194,39 @@
     color: #673AB7;
     margin-bottom: 15px;
     font-weight: normal;
-    text-align: left
+    text-align: left;
 }
 
 .purple-text {
     color: #673AB7;
-    font-weight: normal
+    font-weight: normal;
 }
 
 .fieldlabels {
     color: gray;
-    text-align: left
+    text-align: left;
 }
 
 #progressbar {
     margin-bottom: 30px;
     overflow: hidden;
-    color: lightgrey
+    color: lightgrey;
 }
 
 #progressbar .active {
     color: #4285F4;
 }
 
-#progressbar .personal-section {
-    color: #DB4437;
+#progressbar .account-section {
+    color: #F96167;
 }
 
 #progressbar .institute-section {
-    color: #F4B400;
+    color: #fbbc05;
 }
 
 #progressbar .tandc-section {
-    color: #0F9D58;
+    color: #15c06d;
 }
 
 #progressbar li {
@@ -271,7 +284,7 @@
     background: lightgray;
     border-radius: 50%;
     margin: 0 auto 10px auto;
-    padding: 2px
+    padding: 2px;
 }
 
 #progressbar li:after {
@@ -288,21 +301,25 @@
 #progressbar li.active:before,
 #progressbar li.active:after {
     background: #4285F4;
+    box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
 }
 
-#progressbar li.personal-section:before,
-#progressbar li.personal-section:after {
-    background: #DB4437;
+#progressbar li.account-section:before,
+#progressbar li.account-section:after {
+    background: #F96167;
+    box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
 }
 
 #progressbar li.institute-section:before,
 #progressbar li.institute-section:after {
-    background: #F4B400;
+    background: #fbbc05;
+    box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
 }
 
 #progressbar li.tandc-section:before,
 #progressbar li.tandc-section:after {
-    background: #0F9D58;
+    background: #15c06d;
+    box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
 }
 
 .bold {
@@ -397,13 +414,23 @@
 .input-box.active-grey .input-1 {
   border: 1px solid #dadce0;
 }
+
 .input-box.active-grey .input-label {
     color: #80868b;
-    top: -7px;
+    top: -8px;
     background: #fff;
     font-size: 14px;
     transition: 250ms;
 }
+
+.input-box.active-grey-1 .input-label {
+    color: #80868b;
+    top: -11px;
+    background: #fff;
+    font-size: 14px;
+    transition: 250ms;
+}
+
 .input-box.active-grey .input-label svg {
   position: relative;
   width: 11px;
@@ -422,4 +449,22 @@
 .error-text {
     display: none;
     color: #d93025;
+}
+
+input[type=file].custom-input-file::file-selector-button {
+    border: 1px solid #616161;
+    padding: .25rem 0.5rem;
+    border-radius: .2rem;
+    background-color: #616161;
+    color: #FFF;
+    -webkit-transition: all 180ms ease-out;
+    -moz-transition: all 180ms ease-out;
+    -o-transition: all 180ms ease-out;
+    transition: all 180ms ease-out;
+}
+
+input[type=file].custom-input-file::file-selector-button:hover {
+    border: 1px solid #616161;
+    background-color: #FFF;
+    color: #616161;
 }
