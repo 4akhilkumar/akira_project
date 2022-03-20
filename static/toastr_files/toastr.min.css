@@ -108,7 +108,7 @@ button.toast-close-button{
     background-position:15px center;
     background-repeat:no-repeat;
     color:#FFF;
-    opacity:.8;
+    /* opacity:.8; */
     -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
     filter:alpha(opacity=80);
     -webkit-transition: -webkit-box-shadow 0.2s ease-out;
@@ -145,19 +145,35 @@ button.toast-close-button{
 }
 
 #toast-container>.toast-info::before {
-    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f05a";
+    font-family: 'Material Icons';
+    content: "info";
+    -webkit-font-feature-settings: 'liga' 1;
+    -moz-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga' 1;
 }
 
 #toast-container>.toast-error::before {
-    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f7ba";
+    font-family: 'Material Icons';
+    content: "error";
+    -webkit-font-feature-settings: 'liga' 1;
+    -moz-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga' 1;
 }
 
 #toast-container>.toast-success::before {
-    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f058";
+    font-family: 'Material Icons';
+    content: "task_alt";
+    -webkit-font-feature-settings: 'liga' 1;
+    -moz-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga' 1;
 }
 
 #toast-container > .toast-warning::before {
-    font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f071";
+    font-family: 'Material Icons';
+    content: "warning";
+    -webkit-font-feature-settings: 'liga' 1;
+    -moz-font-feature-settings: 'liga' 1;
+    font-feature-settings: 'liga' 1;
 }
 #toast-container.toast-bottom-center>div,#toast-container.toast-top-center>div{
     width:300px;
