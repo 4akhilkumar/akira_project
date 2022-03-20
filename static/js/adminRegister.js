@@ -41,12 +41,12 @@ $(document).ready(function() {
 
     $('#id_firstname').on('keyup keypress blur change', function() {
         if($("#id_firstname").val() == "") {
-            $("#id_firstname").parent().find(".error-text").html("Enter your first name.");
+            $("#id_firstname").parent().find(".error-text").html("Enter your first name");
             $("#id_firstname").parent().find(".error-text").css("display", "block");
             firstname = false;
         }
         else if (!$("#id_firstname").val().match(/^[A-Za-z\s]*$/)) {
-            $("#id_firstname").parent().find(".error-text").html("Are you sure that you've entered your name correctly?");
+            $("#id_firstname").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your name correctly&#x0003F;");
             $("#id_firstname").parent().find(".error-text").css("display", "block");
             firstname = false;
         } 
@@ -58,12 +58,12 @@ $(document).ready(function() {
 
     $('#id_lastname').on('keyup keypress blur change', function() {
         if($("#id_lastname").val() == "") {
-            $("#id_lastname").parent().find(".error-text").html("Enter your last name.");
+            $("#id_lastname").parent().find(".error-text").html("Enter your last name");
             $("#id_lastname").parent().find(".error-text").css("display", "block");
             lastname = false;
         }
         else if (!$("#id_lastname").val().match(/^[A-Za-z\s]*$/)) {
-            $("#id_lastname").parent().find(".error-text").html("Are you sure that you've entered your surname correctly?");
+            $("#id_lastname").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your surname correctly&#x0003F;");
             $("#id_lastname").parent().find(".error-text").css("display", "block");
             lastname = false;
         }
@@ -96,12 +96,12 @@ $(document).ready(function() {
 
     $('#id_phone').on('keyup keypress blur change', function() {
         if ($("#id_phone").val() == "") {
-            $("#id_phone").parent().find(".error-text").html("Enter your phone number.");
+            $("#id_phone").parent().find(".error-text").html("Enter your phone number");
             $("#id_phone").parent().find(".error-text").css("display", "block");
             phone = false;
         }
         else if (!/^\d{10}$/.test($("#id_phone").val())) {
-            $("#id_phone").parent().find(".error-text").html("Are you sure that you've entered your phone no. correctly?");
+            $("#id_phone").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your phone no. correctly&#x0003F;");
             $("#id_phone").parent().find(".error-text").css("display", "block");
             phone = false;
         }
@@ -117,7 +117,7 @@ $(document).ready(function() {
             doorno = false;
         }
         else if (!/^[A-Za-z0-9-\s]*$/.test($("#id_door_no").val())) {
-            $("#id_door_no").parent().find(".error-text").html("Are you sure that you've entered your door no./flat no. correctly?");
+            $("#id_door_no").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your door no./flat no. correctly&#x0003F;");
             $("#id_door_no").parent().find(".error-text").css("display", "block");
             doorno = false;
         }
@@ -133,7 +133,7 @@ $(document).ready(function() {
             zipcode = false;
         }
         else if (!/^\d{6}$/.test($("#id_zip_code").val())) {
-            $("#id_zip_code").parent().find(".error-text").html("Are you sure that you've entered your zip code correctly?");
+            $("#id_zip_code").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your zip code correctly&#x0003F;");
             $("#id_zip_code").parent().find(".error-text").css("display", "block");
             zipcode = false;
         }
@@ -149,7 +149,7 @@ $(document).ready(function() {
             city = false;
         }
         else if (!$("#id_city").val().match(/^[A-Za-z\s]*$/)) {
-            $("#id_city").parent().find(".error-text").html("Are you sure that you've entered your city name correctly?");
+            $("#id_city").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your city name correctly&#x0003F;");
             $("#id_city").parent().find(".error-text").css("display", "block");
             city = false;
         }
@@ -165,7 +165,7 @@ $(document).ready(function() {
             district = false;
         }
         else if (!$("#id_district").val().match(/^[A-Za-z\s]*$/)) {
-            $("#id_district").parent().find(".error-text").html("Are you sure that you've entered your district name correctly?");
+            $("#id_district").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your district name correctly&#x0003F;");
             $("#id_district").parent().find(".error-text").css("display", "block");
             district = false;
         }
@@ -181,7 +181,7 @@ $(document).ready(function() {
             state = false;
         }
         else if (!$("#id_state").val().match(/^[A-Za-z\s]*$/)) {
-            $("#id_state").parent().find(".error-text").html("Are you sure that you've entered your state name correctly?");
+            $("#id_state").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your state name correctly&#x0003F;");
             $("#id_state").parent().find(".error-text").css("display", "block");
             state = false;
         }
@@ -197,7 +197,7 @@ $(document).ready(function() {
             country = false;
         }
         else if (!$("#id_country").val().match(/^[A-Za-z\s]*$/)) {
-            $("#id_country").parent().find(".error-text").html("Are you sure that you've entered your country name correctly?");
+            $("#id_country").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your country name correctly&#x0003F;");
             $("#id_country").parent().find(".error-text").css("display", "block");
             country = false;
         }
@@ -243,7 +243,7 @@ $(document).ready(function() {
             email = false;
         }
         else if (!$("#id_email").val().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)) {
-            $("#id_email").parent().find(".error-text").html("Are you sure that you've entered your email address correctly?");
+            $("#id_email").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your email address correctly&#x0003F;");
             $("#id_email").parent().find(".error-text").css("display", "block");
             email = false;
         } 
@@ -289,7 +289,7 @@ $(document).ready(function() {
 
     $('#id_confirm_password').on('keyup keypress blur change', function() {
         if ($("#id_confirm_password").val() != $("#id_password").val()) {
-            $("#id_confirm_password").parent().find(".error-text").html("Those passwords didn’t match. Try again.");
+            $("#id_confirm_password").parent().find(".error-text").html("Those passwords didn&#x00027;t match. Try again.");
             $("#id_confirm_password").parent().find(".error-text").css("display", "block");
             confirmpassword = false;
         }
@@ -325,7 +325,7 @@ $(document).ready(function() {
             institutecode = false;
         }
         else if (!$("#id_institute_code").val().match(/^[A-Za-z0-9-\s]*$/)) {
-            $("#id_institute_code").parent().find(".error-text").html("Are you sure that you've entered your institute code correctly?");
+            $("#id_institute_code").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your institute code correctly&#x0003F;");
             $("#id_institute_code").parent().find(".error-text").css("display", "block");
             institutecode = false;
         }
@@ -341,7 +341,7 @@ $(document).ready(function() {
             institutename = false;
         }
         else if(!$("#id_institute_name").val().match(/^[a-z0-9\d\-_\s]+$/i)) {
-            $("#id_institute_name").parent().find(".error-text").html("Are you sure that you've entered your institute name correctly?");
+            $("#id_institute_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your institute name correctly&#x0003F;");
             $("#id_institute_name").parent().find(".error-text").css("display", "block");
             institutename = false;
         }
@@ -357,12 +357,12 @@ $(document).ready(function() {
             instituteaddress = false;
         }
         else if ($("#id_institute_address").val().length < 8) {
-            $("#id_institute_address").parent().find(".error-text").html("Enter a valid address.");
+            $("#id_institute_address").parent().find(".error-text").html("Enter a valid address");
             $("#id_institute_address").parent().find(".error-text").css("display", "block");
             instituteaddress = false;
         }
         else if(!$("#id_institute_address").val().match(/^[a-z\d\-_\s]+$/i)) {
-            $("#id_institute_address").parent().find(".error-text").html("Are you sure that you've entered your institute address correctly?");
+            $("#id_institute_address").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your institute address correctly&#x0003F;");
             $("#id_institute_address").parent().find(".error-text").css("display", "block");
             instituteaddress = false;
         }
