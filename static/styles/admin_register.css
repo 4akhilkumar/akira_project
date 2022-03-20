@@ -81,7 +81,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 40rem;
-    max-width: calc(100vh - 10%);
+    /* max-width: calc(100vh - 10%); */
     align-items: center;
 }
 
@@ -176,6 +176,7 @@ body {
     color: #2C3E50;
     font-size: 16px;
     letter-spacing: 1px;
+    background: #FFF;
 }
 
 #msform input[type="text"]:focus,
@@ -495,6 +496,7 @@ body {
     background: #fff;
     font-size: 14px;
     transition: 250ms;
+    border-radius: .25rem;
 }
 
 .input-box.active-grey-1 .input-label {
