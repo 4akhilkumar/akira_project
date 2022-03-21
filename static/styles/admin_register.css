@@ -193,7 +193,7 @@ body {
     outline-width: 0;
 }
 
-#msform input[type="button"]:disabled {
+#msform input[type="button"]:disabled, #msform input[type="submit"]:disabled {
     background: #ccc;
     color: white;
     font-weight: 500;
@@ -393,7 +393,13 @@ body {
   color: transparent;
   background-size: 300%;
   background-position: -100%;  
-  animation: animatedText 1s infinite alternate-reverse;
+  animation: animatedText 2.8s infinite alternate-reverse;
+}
+
+@keyframes animatedText{
+  to{
+    background-position: 100%; 
+  }
 }
 
 .bold {

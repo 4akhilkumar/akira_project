@@ -59,12 +59,12 @@
                             <div class="first-last-name">
                                 <div class="input-box">
                                     <label class="fieldlabels input-label" for="id_firstname">First name</label>
-                                    <input type="text" name="firstname" id="id_firstname" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <input type="text" name="firstname" id="id_firstname" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                                     <span class="error-text">Enter your first name</span>
                                 </div>
                                 <div class="input-box">
                                     <label class="fieldlabels input-label" for="id_lastname">Last name</label> 
-                                    <input type="text" name="lastname" id="id_lastname" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <input type="text" name="lastname" id="id_lastname" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                                     <span class="error-text">Enter your last name</span>
                                 </div>
                             </div>
@@ -107,9 +107,11 @@
                             </div>
                             
                             <div class="city-district">
-                                <div class="input-box">
+                                <div class="input-box active-grey">
                                     <label class="fieldlabels input-label" for="id_city">City</label>
-                                    <input type="text" name="city" id="id_city" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <select name="city" class="input-1" id="id_city" required>
+                                        <option value="">Select your City</option>
+                                    </select>
                                     <span class="error-text">Enter your city</span>
                                 </div>
                                 <div class="input-box">
@@ -221,7 +223,7 @@
                                 </div>
                             </div>
                         </div>
-                        <input type="submit" name="submit" class="action-button register-btn" value="Register" />
+                        <input type="submit" name="submit" id="register-btn" class="action-button register-btn" value="Register" />
                         <input type="button" name="previous" id="tandc-previous" class="previous action-button-previous last-previous" value="Previous" />
                     </fieldset>
                 </form>
