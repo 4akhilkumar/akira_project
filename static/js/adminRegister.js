@@ -72,7 +72,12 @@ $(document).ready(function() {
             $("#id_firstname").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your name correctly&#x0003F;");
             $("#id_firstname").parent().find(".error-text").css("display", "block");
             firstname = false;
-        } 
+        }
+        else if ($("#id_firstname").val().match(/^\s+$/)) {
+            $("#id_firstname").parent().find(".error-text").html("Sorry, but your first name cannot be empty");
+            $("#id_firstname").parent().find(".error-text").css("display", "block");
+            firstname = false;
+        }
         else {
             $("#id_firstname").parent().find(".error-text").css("display", "none");
             firstname = true;
@@ -87,6 +92,11 @@ $(document).ready(function() {
         }
         else if (!$("#id_lastname").val().match(/^[A-Za-z\s]*$/)) {
             $("#id_lastname").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your surname correctly&#x0003F;");
+            $("#id_lastname").parent().find(".error-text").css("display", "block");
+            lastname = false;
+        }
+        else if ($("#id_lastname").val().match(/^\s+$/)) {
+            $("#id_lastname").parent().find(".error-text").html("Sorry, but your last name cannot be empty");
             $("#id_lastname").parent().find(".error-text").css("display", "block");
             lastname = false;
         }
@@ -144,6 +154,11 @@ $(document).ready(function() {
             $("#id_door_no").parent().find(".error-text").css("display", "block");
             doorno = false;
         }
+        else if ($("#id_door_no").val().match(/^\s+$/)) {
+            $("#id_door_no").parent().find(".error-text").html("Sorry, but your door no./flat no. cannot be empty");
+            $("#id_door_no").parent().find(".error-text").css("display", "block");
+            doorno = false;
+        }
         else {
             $("#id_door_no").parent().find(".error-text").css("display", "none");
             doorno = true;
@@ -169,7 +184,6 @@ $(document).ready(function() {
     });
 
     function reset_fields() {
-        console.log("reset");
         $("#id_zip_code").parent().find(".error-text").html("Enter a valid zip code");
         $("#id_zip_code").parent().find(".error-text").css("display", "block");
 
@@ -188,9 +202,20 @@ $(document).ready(function() {
         $("#id_country").attr("readonly", false);
     }
 
-    $('#id_zip_code').on('keyup change', function() {
+    function changeSelectInputCity() {
+        var city_parent = $("#id_city_parent").get(0);
+        city_parent.classList.remove("active-grey");
+    
+        var select_city = $("#id_city").get(0);
+        select_city.setAttribute("hidden", '');
+
+        var new_city = $("#id_new_city").get(0);
+        new_city.removeAttribute("hidden");
+    }
+
+    $('#id_zip_code').on('keyup', function() {
         if(zipcode == true) {
-            $.getJSON("https://api.postalpincode.in/pincode/" + $("#id_zip_code").val(), function (data) {
+            var dataByZipCode = $.getJSON("https://api.postalpincode.in/pincode/" + $("#id_zip_code").val(), function (data) {
                 if (data[0].Status == "Success") {
                     let html_data = '<option value="">Select your City</option>';
                     for (let i = 0; i < data[0].PostOffice.length; i++) {
@@ -225,6 +250,9 @@ $(document).ready(function() {
                     reset_fields();
                 }
             })
+            dataByZipCode.fail(function(data) {
+            changeSelectInputCity();
+            })
         }
     });
 
@@ -233,13 +261,30 @@ $(document).ready(function() {
             $("#id_city").parent().find(".error-text").css("display", "block");
             city = false;
         }
-        // else if (!$("#id_city").val().match(/^[A-Za-z\s]*$/)) {
-        //     $("#id_city").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your city name correctly&#x0003F;");
-        //     $("#id_city").parent().find(".error-text").css("display", "block");
-        //     city = false;
-        // }
         else {
             $("#id_city").parent().find(".error-text").css("display", "none");
+            city = true;
+        }
+    });
+
+    $('#id_new_city').on('keyup keydown blur change', function() {
+        if ($("#id_new_city").val() == "") {
+            $("#id_new_city").parent().find(".error-text").html("Enter your city");
+            $("#id_new_city").parent().find(".error-text").css("display", "block");
+            city = false;
+        }
+        else if (!$("#id_new_city").val().match(/^[A-Za-z\s]*$/)) {
+            $("#id_new_city").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your city name correctly&#x0003F;");
+            $("#id_new_city").parent().find(".error-text").css("display", "block");
+            city = false;
+        }
+        else if ($("#id_new_city").val().match(/^\s+$/)) {
+            $("#id_new_city").parent().find(".error-text").html("Sorry, but your city name cannot be empty");
+            $("#id_new_city").parent().find(".error-text").css("display", "block");
+            city = false;
+        }
+        else {
+            $("#id_new_city").parent().find(".error-text").css("display", "none");
             city = true;
         }
     });
@@ -249,11 +294,16 @@ $(document).ready(function() {
             $("#id_district").parent().find(".error-text").css("display", "block");
             district = false;
         }
-        // else if (!$("#id_district").val().match(/^[A-Za-z\s]*$/)) {
-        //     $("#id_district").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your district name correctly&#x0003F;");
-        //     $("#id_district").parent().find(".error-text").css("display", "block");
-        //     district = false;
-        // }
+        else if (!$("#id_district").val().match(/^[A-Za-z\s]*$/)) {
+            $("#id_district").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your district name correctly&#x0003F;");
+            $("#id_district").parent().find(".error-text").css("display", "block");
+            district = false;
+        }
+        else if ($("#id_district").val().match(/^\s+$/)) {
+            $("#id_district").parent().find(".error-text").html("Sorry, but your district name cannot be empty");
+            $("#id_district").parent().find(".error-text").css("display", "block");
+            district = false;
+        }
         else {
             $("#id_district").parent().find(".error-text").css("display", "none");
             district = true;
@@ -265,11 +315,16 @@ $(document).ready(function() {
             $("#id_state").parent().find(".error-text").css("display", "block");
             state = false;
         }
-        // else if (!$("#id_state").val().match(/^[A-Za-z\s]*$/)) {
-        //     $("#id_state").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your state name correctly&#x0003F;");
-        //     $("#id_state").parent().find(".error-text").css("display", "block");
-        //     state = false;
-        // }
+        else if (!$("#id_state").val().match(/^[A-Za-z\s]*$/)) {
+            $("#id_state").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your state name correctly&#x0003F;");
+            $("#id_state").parent().find(".error-text").css("display", "block");
+            state = false;
+        }
+        else if ($("#id_state").val().match(/^\s+$/)) {
+            $("#id_state").parent().find(".error-text").html("Sorry, but your state name cannot be empty");
+            $("#id_state").parent().find(".error-text").css("display", "block");
+            state = false;
+        }
         else {
             $("#id_state").parent().find(".error-text").css("display", "none");
             state = true;
@@ -281,11 +336,16 @@ $(document).ready(function() {
             $("#id_country").parent().find(".error-text").css("display", "block");
             country = false;
         }
-        // else if (!$("#id_country").val().match(/^[A-Za-z\s]*$/)) {
-        //     $("#id_country").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your country name correctly&#x0003F;");
-        //     $("#id_country").parent().find(".error-text").css("display", "block");
-        //     country = false;
-        // }
+        else if (!$("#id_country").val().match(/^[A-Za-z\s]*$/)) {
+            $("#id_country").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your country name correctly&#x0003F;");
+            $("#id_country").parent().find(".error-text").css("display", "block");
+            country = false;
+        }
+        else if ($("#id_country").val().match(/^\s+$/)) {
+            $("#id_country").parent().find(".error-text").html("Sorry, but your country name cannot be empty");
+            $("#id_country").parent().find(".error-text").css("display", "block");
+            country = false;
+        }
         else {
             $("#id_country").parent().find(".error-text").css("display", "none");
             country = true;
@@ -331,7 +391,12 @@ $(document).ready(function() {
             $("#id_email").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your email address correctly&#x0003F;");
             $("#id_email").parent().find(".error-text").css("display", "block");
             email = false;
-        } 
+        }
+        else if ($("#id_email").val().match(/^\s+$/)) {
+            $("#id_email").parent().find(".error-text").html("Sorry, but your email cannot be empty");
+            $("#id_email").parent().find(".error-text").css("display", "block");
+            email = false;
+        }
         else {
             $("#id_email").parent().find(".error-text").css("display", "none");
             email = true;
@@ -369,7 +434,12 @@ $(document).ready(function() {
             $("#id_username").parent().find(".error-text").css("display", "block");
             $("#id_username").parent().find(".error-text").html("Sorry, only letters (a-z), numbers (0-9), and periods (.) are allowed.");
             username = false;
-        }            
+        }
+        else if ($("#id_username").val().match(/^\s+$/)) {
+            $("#id_username").parent().find(".error-text").html("Sorry, but your username cannot be empty");
+            $("#id_username").parent().find(".error-text").css("display", "block");
+            username = false;
+        }
         else {
             $("#id_username").parent().find(".error-text").css("display", "none");
             username = true;
@@ -435,6 +505,11 @@ $(document).ready(function() {
             $("#id_institute_code").parent().find(".error-text").css("display", "block");
             institutecode = false;
         }
+        else if ($("#id_institute_code").val().match(/^\s+$/)) {
+            $("#id_institute_code").parent().find(".error-text").html("Sorry, but your institute code cannot be empty");
+            $("#id_institute_code").parent().find(".error-text").css("display", "block");
+            institutecode = false;
+        }
         else {
             $("#id_institute_code").parent().find(".error-text").css("display", "none");
             institutecode = true;
@@ -448,6 +523,11 @@ $(document).ready(function() {
         }
         else if(!$("#id_institute_name").val().match(/^[a-z0-9\d\-_\s]+$/i)) {
             $("#id_institute_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your institute name correctly&#x0003F;");
+            $("#id_institute_name").parent().find(".error-text").css("display", "block");
+            institutename = false;
+        }
+        else if ($("#id_institute_name").val().match(/^\s+$/)) {
+            $("#id_institute_name").parent().find(".error-text").html("Sorry, but your institute name cannot be empty");
             $("#id_institute_name").parent().find(".error-text").css("display", "block");
             institutename = false;
         }
@@ -469,6 +549,11 @@ $(document).ready(function() {
         }
         else if(!$("#id_institute_address").val().match(/^[a-z\d\-,_\s]+$/i)) {
             $("#id_institute_address").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your institute address correctly&#x0003F;");
+            $("#id_institute_address").parent().find(".error-text").css("display", "block");
+            instituteaddress = false;
+        }
+        else if ($("#id_institute_address").val().match(/^\s+$/)) {
+            $("#id_institute_address").parent().find(".error-text").html("Sorry, but your institute address cannot be empty");
             $("#id_institute_address").parent().find(".error-text").css("display", "block");
             instituteaddress = false;
         }

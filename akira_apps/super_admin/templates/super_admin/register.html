@@ -107,12 +107,13 @@
                             </div>
                             
                             <div class="city-district">
-                                <div class="input-box active-grey">
+                                <div class="input-box active-grey" id="id_city_parent">
                                     <label class="fieldlabels input-label" for="id_city">City</label>
                                     <select name="city" class="input-1" id="id_city" required>
                                         <option value="">Select your City</option>
                                     </select>
-                                    <span class="error-text">Enter your city</span>
+                                    <input type="text" name="new_city" id="id_new_city" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" hidden required>
+                                    <span class="error-text">Select your city</span>
                                 </div>
                                 <div class="input-box">
                                     <label class="fieldlabels input-label" for="id_district">District</label>
