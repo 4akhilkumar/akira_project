@@ -27,7 +27,6 @@ class CourseMC(models.Model):
     specialization = models.ForeignKey(SpecializationsMC, on_delete=models.SET_NULL, blank=True, null=True)
     type = models.CharField(max_length = 50, choices = COURSE_TYPE, default=1)
     pre_requisite = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
-    extra_field = models.ForeignKey('CourseExtraFields', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return '%s - %s' % (self.code, self.name)
