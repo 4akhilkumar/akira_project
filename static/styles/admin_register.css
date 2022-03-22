@@ -535,10 +535,10 @@ body {
 }
 
 input[type=file].custom-input-file::file-selector-button {
-    border: 1px solid #616161;
+    border: 1px solid #4285f4;
     padding: .25rem 0.5rem;
     border-radius: .2rem;
-    background-color: #616161;
+    background-color: #4285f4;
     color: #FFF;
     -webkit-transition: all 180ms ease-out;
     -moz-transition: all 180ms ease-out;
