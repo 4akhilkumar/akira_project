@@ -15,7 +15,7 @@ class userDeviceCookieMiddleware:
         if request.user.is_authenticated:
             try:
                 getDeviceCCookieObj = UserLoginDetails.objects.get(user = request.user, sessionKey = request.session.session_key)
-            except Exception.DoesNotExist:
+            except Exception:
                 getDeviceCCookieObj = None
             
             ranKey = UsernameEncryptedCookie(request, request.user.username)
