@@ -406,6 +406,10 @@ body {
     font-weight: 500;
 }
 
+.mgl-p5rem {
+    margin-left: .5rem;
+}
+
 .tandc {
     background-color: #fff;
     height: 20rem;

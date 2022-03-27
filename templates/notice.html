@@ -37,7 +37,7 @@
         {% if user_type == "applicant" %}
         <a href="{% url 'send_applicant_reg_email_again' username %}">Resend confirmation Email</a>
         {% else %}
-        <a href="{% url 'send_admin_reg_email_again' username %}">Resend confirmation Email</a>
+        <a href="{% url 'send_admin_reg_email' username %}">Resend confirmation Email</a>
         {% endif %}
     {% endif %}
 

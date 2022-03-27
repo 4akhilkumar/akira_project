@@ -14,16 +14,11 @@
     {% block custom-video-css %}{% endblock %}
     
     <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
-    <!-- <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet"> -->
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
-
-    <script src="{% static "js/jquery.min.js" %}"></script>
     
     <title>Dashboard</title>
 </head>
@@ -100,7 +95,7 @@
                     {% if request.user|user_group != "Student" %}
                     <li>
                         <a href="{% url 'manage_adops' %}"
-                        {% if "manage_adops" in request.path %}
+                        {% if "manage_adops" in request.path or "add_openings" in request.path %}
                         class="active"
                         {% endif %}
                         >
