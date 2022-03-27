@@ -196,7 +196,8 @@ def user_login(request):
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
-    current_time = pydt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    protocol = 'https' if request.is_secure() else 'http'
+    domain_name = get_current_site(request).domain
     if request.method == 'POST':
         username = request.POST.get('username')
         ep = request.POST.get('password')
@@ -286,7 +287,6 @@ def user_login(request):
                             else:
                                 dataset_UserLoginDetails = UserLoginDetails.objects.filter(user__username = username)
                                 if dataset_UserLoginDetails.count() > 1:
-                                    current_user = User.objects.get(username = username)
                                     if UserLoginDetails.objects.filter(user__username = username, bfp = fingerprintID, attempt = "Success").exists() is True:
                                         login(request, user)
                                         get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
@@ -297,27 +297,11 @@ def user_login(request):
                                         update_attempt_ncy.save()
                                         return redirect('login')
                                     else:
+                                        update_attempt_ncy = UserLoginDetails.objects.get(id = getuserLoginObj.id)
+                                        update_attempt_ncy.attempt = "Need to verify"
+                                        update_attempt_ncy.reason = "Unrecognized device"
+                                        update_attempt_ncy.save()
                                         return redirect('verify_its_you', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                                        # get_attempt_ncy = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
-                                        # update_attempt_ncy = UserLoginDetails.objects.get(id = get_attempt_ncy.id)
-                                        # update_attempt_ncy.attempt = "Manual Confirmation Required"
-                                        # update_attempt_ncy.reason = "Login is unusual"
-                                        # update_attempt_ncy.user_confirm = "Pending due to unusual login"
-                                        # update_attempt_ncy.save()
-                                        # current_site = get_current_site(request)
-                                        # template = render_to_string('authentication/login_alert_email.html', context)
-                                        # try:
-                                        #     send_mail('Akira Account Login Alert', template, settings.EMAIL_HOST_USER, [current_user.email], html_message=template)
-                                        #     messages.info(request, "Please check your email inbox")
-                                        #     return redirect('confirmUserLogin', username = dataUsername['EncryptedUsername'], userLoginObj = getuserLoginObj.id)
-                                        # except Exception:
-                                        #     deleteLoginDetails = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, 
-                                        #                                                         attempt = "Manual Confirmation Required", 
-                                        #                                                         reason = "Login is unusual",
-                                        #                                                         user_confirm = "Pending due to unusual login")
-                                        #     deleteLoginDetails.delete()
-                                        #     messages.warning(request, "Check your internet connection")
-                                        #     return redirect('login')
                                 else:
                                     login(request, user)
                                     current_userlogindetailsObject = UserLoginDetails.objects.filter(id = getuserLoginObj.id, user__username = username, attempt = "Not Confirmed Yet!").order_by('-created_at')[0]
@@ -397,14 +381,15 @@ def user_login(request):
             return redirect('login')
     context = {
         "GOOGLE_RECAPTCHA_PUBLIC_KEY": settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
+        "protocol_current_domain": protocol + '://' + domain_name
     }
     loginResponse = render(request, 'authentication/login.html', context)
-    random_number = random.randint(48, 68)
-    ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=random_number))
-    ranNumberLength = math.ceil((0.18) * len(ranKey))
-    ranNumbers = set(random.choices(string.digits, k=ranNumberLength))
-    cookie_max_age = 300
-    expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
+    # random_number = random.randint(48, 68)
+    # ranKey = ''.join(random.choices(string.ascii_letters + string.digits, k=random_number))
+    # ranNumberLength = math.ceil((0.18) * len(ranKey))
+    # ranNumbers = set(random.choices(string.digits, k=ranNumberLength))
+    # cookie_max_age = 300
+    # expire_time = pydt.datetime.strftime(pydt.datetime.utcnow() + pydt.timedelta(seconds=cookie_max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
     # loginResponse.set_cookie(key='request_token', value=str(ranKey), max_age=cookie_max_age, expires=expire_time)
     return loginResponse
 
