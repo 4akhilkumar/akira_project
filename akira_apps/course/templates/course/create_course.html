@@ -5,56 +5,126 @@
 
 {% block analytics-text %}
 <h1>Create Course</h1>
-<p>Create the Course <span class="fas fa-chart-line"></span> </p>
+<p>An integrated course prepared for academic studies <span class="fas fa-chart-line"></span> </p>
 {% endblock %}
 
 {% block create-course %}
 
-<form action="" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="id_course_code">Course Code</label> 
-    <input type="text" name="course_code" maxlength="100" value="19CS1900P" id="id_course_code" required>
-    <br>
-    <label for="id_course_name">Course Name</label>
-    <input type="text" name="course_name" maxlength="100" value="Analysis & Design Alogorithm" id="id_course_name" required>
-    <br>
-    <label for="id_course_desc">Course Description</label>
-    <textarea name="course_desc" cols="40" rows="10" maxlength="500" id="id_course_desc" required>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, facilis.
-    </textarea>
-    <br>
-    <label for="id_course_coordinator">Course Co-Ordinator</label>
-    <select name="course_coordinator" id="id_course_coordinator" required>
-        {% for i in faculty_list %}
-        <option value="{{ i.id }}"> {{ i }} </option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="id_branch">Branch</label>
-    <select name="branch" id="id_branch" required>
-        {% for x,y in branch_list.fields.branch.choices %}
-        <option value="{{ x }}">{{ y }}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="id_semester">Semester</label>
-    <select name="semester" id="id_semester" required>
-        {% for i in semester_list %}
-        <option value="{{ i.id }}"> {{ i }} </option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="id_specialization">Specialization</label>
-    <select name="specialization" id="id_specialization" required>
-        {% for i in specialization_list %}
-        <option value="{{ i.id }}"> {{ i }} </option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="Upload Files">Upload Files</label>
-    <input type="file" name="course_files" id="id_course_files" multiple>
-    <input type="submit">
-</form>
+<div class="regiserformcontainer">
+    <form id="msform" action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset>
+            <div class="form-card">
+                <div class="field-container">
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_course_code">Code</label>
+                        <input type="text" name="course_code" id="id_course_code" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="error-text">Enter course code</span>
+                    </div>
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_course_name">Name</label> 
+                        <input type="text" name="course_name" id="id_course_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="error-text">Enter course name</span>
+                    </div>
+                </div>
+
+                <div class="field-container mb-1rem">
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_course_desc">Description</label>
+                        <textarea name="course_desc" maxlength="500" id="id_course_desc" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                        <span class="help-text">Maximum characters allowed is 500 only.</span>
+                        <span class="error-text">Enter course description</span>
+                        <span class="info-text"></span>
+                    </div>
+                </div>
+
+                <div class="field-container mb-1rem">
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_branch">Branch</label>
+                        <select name="branch" class="input-1" id="id_branch" required>
+                            {% for x,y in branch_list.fields.branch.choices %}
+                            <option value="{{ x }}">{{ y }}</option>
+                            {% empty %}
+                            <option value="">Data Not Available</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select branch</span>
+                        <span class="redirect">
+                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
+                            <a href="#" id="fetchBranches">
+                                <i class="fa-solid fa-arrows-rotate"></i> refresh
+                            </a>
+                        </span>
+                    </div>
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_semester">Semester</label>
+                        <select name="semester" class="input-1" id="id_semester" required>
+                            {% for i in semester_list %}
+                            <option value="{{ i.id }}"> {{ i }} </option>
+                            {% empty %}
+                            <option value="">Data Not Available</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select semester</span>
+                        <span class="redirect">
+                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
+                            <a href="#" id="fetchSemester">
+                                <i class="fa-solid fa-arrows-rotate"></i> refresh
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="field-container mb-2rem">
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
+                        <select name="specialization" class="input-1" id="id_specialization">
+                            {% for i in specialization_list %}
+                            <option value="{{ i.id }}"> {{ i }} </option>
+                            {% empty %}
+                            <option value="">Data Not Available</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select specialization</span>
+                        <span class="redirect">
+                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
+                            <a href="#" id="fetchSpec">
+                                <i class="fa-solid fa-arrows-rotate"></i> refresh
+                            </a>
+                        </span>
+                    </div>
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_course_coordinator">Course Co-Ordinator</label>
+                        <select name="course_coordinator" class="input-1" id="id_course_coordinator">
+                            <option value="">Select Faculty</option>
+                            {% for i in faculty_list %}
+                            <option value="{{ i.id }}"> {{ i }} </option>
+                            {% empty %}
+                            <option value="">Data Not Available</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select Course Co-Ordinator</span>
+                        <span class="redirect">
+                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
+                            <a href="#" id="fetchFaculty">
+                                <i class="fa-solid fa-arrows-rotate"></i> refresh
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="input-box active-grey-1">
+                    <label class="fieldlabels input-label" for="id_course_files">Upload files</label>
+                    <input type="file" name="course_files" id="id_course_files" class="input-1 custom-input-file" multiple>
+                    <span class="help-text">Uploading files is optional</span>
+                </div>
+            </div>
+            <input type="submit" name="submit" id="course-btn" class="action-button course-btn" value="Create" />
+        </fieldset>
+    </form>
+</div>
+
+<script src="{% static 'js/course.js' %}"></script>
 
 {% endblock %}
 

@@ -11,13 +11,8 @@ from akira_apps.super_admin.decorators import allowed_users
 from .models import (Block, Floor, Room, Branch)
 from akira_apps.academic.forms import (RoomTypeForm)
 
-# Branch.objects.all().delete()
-
 def getAllBranches(request):
-    try:
-        getBranches = Branch.objects.all()
-    except Exception as e:
-        print(e)
+    getBranches = Branch.objects.all()
     return JsonResponse(list(getBranches.values('id', 'name')), safe = False)
 
 def add_branch(request):
@@ -38,48 +33,16 @@ def add_branch(request):
             return redirect('add_branch')
     return render(request, "academic/manage_branches/add_branch.html")
 
-
-def returnBlockName(blockName):
-    if not "block" in blockName:
-        blockName = blockName.capitalize() + " Block"
-    if "block" in blockName.lower() and " " not in blockName[:blockName.lower().index("block")]:
-        if "-" not in blockName[:blockName.lower().index("block")]:
-            blockName = blockName.replace("block", " Block")
-    if " " in blockName:
-        splitbyspace = blockName.split(" ")
-        splitbyspace = [x.capitalize() for x in splitbyspace]
-        blockName = "-".join(splitbyspace)
-    if "," in blockName:
-        splitbycomma = blockName.split(",")
-        splitbycomma = [x.capitalize() for x in splitbycomma]
-        blockName = ",".join(splitbycomma)
-    if "#" in blockName:
-        splitbyhash = blockName.split("#")
-        splitbyhash = [x.capitalize() for x in splitbyhash]
-        blockName = "#".join(splitbyhash)
-    if "-" in blockName:
-        splitbydash = blockName.split("-")
-        splitbydash = [x.capitalize() for x in splitbydash]
-        blockName = "-".join(splitbydash)
-    if "&" in blockName:
-        splitbyampersand = blockName.split("&")
-        splitbyampersand = [x.capitalize() for x in splitbyampersand]
-        blockName = "&".join(splitbyampersand)
-    if "block" in blockName:
-        blockName = blockName.replace("block", " Block")
-    return blockName
-
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def create_block_save(request):
+def create_block(request):
     if request.method == 'POST':
         blockName = request.POST.get('name')
         if "block" == blockName.lower() or blockName == None or blockName == "":
             messages.info(request, 'What Block is it?')
             return redirect('manage_academic')
-        getblockName = returnBlockName(blockName)
-        blockDesc = request.POST.get('block_desc')
+        blockDesc = request.POST.get('desc')
         try:
-            Block.objects.create(name=getblockName, block_desc=blockDesc)
+            Block.objects.create(name=blockName, desc=blockDesc)
         except Exception as e:
             if "UNIQUE constraint" in str(e):
                 messages.info(request, 'Block Name Already Exists!')
@@ -105,12 +68,6 @@ def ordinal(n):
 def returnFloorName(floorName):
     if floorName.isnumeric():
         floorName = ordinal(int(floorName)) + " Floor"
-    if " " in floorName:
-        splitbyspace = floorName.split(" ")
-        splitbyspace = [x.capitalize() for x in splitbyspace]
-        floorName = " ".join(splitbyspace)
-    if " " not in floorName[:floorName.lower().index("floor")]:
-        floorName = floorName.replace("floor", " Floor")
     if any(char.isdigit() for char in floorName):
         for i, char in enumerate(floorName):
             if char.isdigit():
@@ -119,14 +76,14 @@ def returnFloorName(floorName):
     return floorName
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def create_floor_save(request):
+def create_floor(request):
     if request.method == 'POST':
-        floorName = request.POST.get('floor_name')
+        floorName = request.POST.get('name')
         floorName = returnFloorName(floorName)
         blockID = request.POST.get('block_id')
         fetechBlock = Block.objects.get(id = blockID)
         try:
-            Floor.objects.create(floor_name = floorName, block = fetechBlock)
+            Floor.objects.create(name = floorName, block = fetechBlock)
         except Exception as e:
             if "UNIQUE constraint" in str(e):
                 messages.info(request, '{} Already Exists in {}!'.format(floorName, fetechBlock.name))
@@ -236,6 +193,23 @@ def manage_academic(request):
 def academic_info_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=academic_info_record' + \
+        str(pydt.datetime.now()) + '.csv'
+
+    writer = csv.writer(response)
+    writer.writerow(['Block Name', 'Block Desc', 'Floor', 'Room', 
+                    'Room Type', 'Room Capacity'])
+
+    rooms = Room.objects.all()
+
+    for i in rooms:
+        writer.writerow([i.block.name, i.block.block_desc, i.floor.floor_name,
+                        i.room_name, i.type, i.capacity])
+    return response
+
+@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
+def sample_academic_info_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=sample_academic_info_file' + \
         str(pydt.datetime.now()) + '.csv'
 
     writer = csv.writer(response)
