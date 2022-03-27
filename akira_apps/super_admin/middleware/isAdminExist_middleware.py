@@ -11,7 +11,6 @@ class isAdminExistMiddleware:
     def __call__(self, request):
         # Code to be executed for each request before the view (and later middleware) are called.
         
-        # print(request.get_full_path())
         currentPageURL = str(request.build_absolute_uri())
 
         WHITELISTURL = ["adminInstituteRegistration", "confirm_admin_email"]
@@ -21,6 +20,6 @@ class isAdminExistMiddleware:
                 pass
             else:
                 messages.info(request, "In order to utilize the AkirA Application, please create an Admininstrator account.")
-                return redirect('/super_admin/adminInstituteRegistration/')
+                return redirect('adminInstituteRegistration')
 
         return self.get_response(request)
