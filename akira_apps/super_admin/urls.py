@@ -9,5 +9,7 @@ urlpatterns = [
     path('save_my_profile/', views.save_my_profile, name = 'save_my_profile'),
     path('assign_group/', views.assign_group, name = 'assign_group'),
     path('assign_user_group/<staff_username>/', views.assign_user_group, name = 'assign_user_group'),
-    path('send_admin_reg_email_again/<username>/', views.send_admin_reg_email_again, name = 'send_admin_reg_email_again'),
+    path('send_admin_reg_email/<str:EnUsername>/', views.send_admin_reg_email, name = 'send_admin_reg_email'),
+    path('waitingAdminConfirm/<str:EnUsername>/', views.waitingAdminConfirm, name = 'waitingAdminConfirm'),
+    path('isAdminRegConfirmed/', views.isAdminRegConfirmed, name = 'isAdminRegConfirmed'),
 ]

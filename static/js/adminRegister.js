@@ -1,3 +1,9 @@
+$('.register-btn').click(function() {
+    $(this).attr('disabled', true);
+    $(this).val('Please wait...');
+    $(this).closest('form').submit();
+});
+
 function setMinMaxDateOfBirth() {
     var today = new Date();
     var dd = today.getDate();

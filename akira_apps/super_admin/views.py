@@ -1,13 +1,14 @@
+from ipaddress import ip_address
 from django import http
 from django.http import request
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils.encoding import force_bytes, force_text  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -28,7 +29,7 @@ from akira_apps.staff.models import (Staff)
 from akira_apps.student.models import Students
 from akira_apps.super_admin.forms import (GENDERCHOICESForm, NAMEPREFIXForm)
 from akira_apps.super_admin.decorators import (allowed_users)
-from akira_apps.super_admin.models import (MailLog)
+from akira_apps.super_admin.models import (MailLog, AdminAccountVerificationStatus)
 
 class Date:
 	def __init__(self, d, m, y):
@@ -135,7 +136,7 @@ def adminInstituteRegistration(request):
 
         doorno = request.POST.get('door_no')
         zipcode = request.POST.get('zip_code')
-        city = request.POST.get('city')
+        city = request.POST.get('city') or request.POST.get('new_city')
         district = request.POST.get('district')
         state = request.POST.get('state')
         country = request.POST.get('country')
@@ -146,75 +147,66 @@ def adminInstituteRegistration(request):
         institutename = request.POST.get('institute_name').title()
         instituteaddress = request.POST.get('institute_address')
 
+        if User.objects.filter(groups__name = "Administrator", is_staff = True, is_active = True, is_superuser = True).exists() is True:
+            messages.info(request, "Administrator & Institute already registered")
+            return redirect('login')
+
+        # # convert the request.POST to dict
+        # request_dict = request.POST.dict()
+        # print(all(request_dict))
+        # print(request_dict)
+
         validatedUserDOB = validateUserDOB(dob)
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        try:
+            url = 'https://akira-rest-api.herokuapp.com/getEmail/{}/?format=json'.format(email)
+            response = requests.get(url)
+            dataEmail = response.json()
+        except Exception:
+            messages.info(request, "Server under maintenance. Please try again later.")
+            return redirect('adminInstituteRegistration')
 
         if validatedUserDOB[0] is True:
-            if not User.objects.filter(username=username).exists():
-                if password == confirm_password:
-                    user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
-                    admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
-                    user.groups.add(Group.objects.get(name = str(admin_group)))
-                    user.is_active = False
-                    user.is_staff = False
-                    user.is_superuser = False
-                    user.save()
-                    Staff.objects.create(
-                        user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
-                        door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
-                        photo = photo)
-                    Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
-
-                    try:
-                        current_user = User.objects.get(username = user.username)
+            if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
+                if not User.objects.filter(username=username).exists():
+                    if password == confirm_password:
+                        user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
+                        admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
+                        user.groups.add(Group.objects.get(name = str(admin_group)))
+                        user.is_active = False
+                        user.is_staff = False
+                        user.is_superuser = False
+                        user.save()
+                        Staff.objects.create(
+                            user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
+                            door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
+                            photo = photo)
+                        Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
+                        AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip)
                         try:
                             url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
                             response = requests.get(url)
                             dataUsername = response.json()
                         except Exception:
                             messages.info(request, "Server under maintenance. Please try again later.")
-                            return redirect('login')
-                        EncryptedUsername = dataUsername['EncryptedUsername']
-                        current_site = get_current_site(request)
-                        protocol = request.is_secure() and "https" or "http"
-                        mail_subject = "Confirm your registration - AkirA"
-                        message = render_to_string('super_admin/verify_admin_email.html', {
-                            'user': user,
-                            'protocol': protocol,
-                            'domain': current_site.domain,
-                            'uid': urlsafe_base64_encode(force_bytes(EncryptedUsername)),
-                            'token': account_activation_token.make_token(user),
-                        })
-                        to_email = current_user.email
-                        email = EmailMessage(mail_subject, message, to=[to_email])
-                        email.send()
-                        MailLog.objects.create(user=current_user, subject = mail_subject)
-                        messages.success(request, "Registration Successful...!")
-                        messages.info(request, "Please check you email inbox")
-                        about_receiveing_email = "If you didn't recieve any email, please check your spam folder \
-                                    or change your internet connection"
-                        notice_context1 = {
-                            'title': 'Registration confirmation is pending',
-                            'message': about_receiveing_email,
-                            'send_mail_again': True,
-                            'username': user.username,
-                        }
-                        return render(request, 'notice.html', notice_context1)
-                    except Exception as e1:
-                        messages.error(request, str(e1))
-                        try:
-                            Group.objects.filter(name=admin_group).delete()
-                            User.objects.filter(username=user.username).delete()
-                            Staff.objects.filter(user=user).delete()
-                            Academy.objects.filter(user=user).delete()
-                        except Exception as e2:
-                            messages.error(request, str(e2))
                             return redirect('adminInstituteRegistration')
+                        return redirect('send_admin_reg_email', EnUsername = dataUsername['EncryptedUsername'])
+                    else:
+                        messages.info(request, "Password didn't Match")
                         return redirect('adminInstituteRegistration')
                 else:
-                    messages.info(request, "Password Didn't Match")
+                    messages.error(request, "Username Already Exists...!")
                     return redirect('adminInstituteRegistration')
+            elif dataEmail['Disposable'] is True:
+                messages.error(request, "Don't use disposable email address")
+                return redirect('adminInstituteRegistration')
             else:
-                messages.error(request, "Username Already Exists...!")
+                messages.error(request, "Please use legitimate email address only")
                 return redirect('adminInstituteRegistration')
         elif "not in YYYY-MM-DD format" in validatedUserDOB[1] :
             messages.error(request, str(validatedUserDOB[1]))
@@ -231,31 +223,26 @@ def adminInstituteRegistration(request):
     }
     return render(request, "super_admin/register.html", context)
 
-def send_admin_reg_email_again(request, username):
+def send_admin_reg_email(request, EnUsername):
     try:
-        user = User.objects.get(username = username)
+        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
+        response = requests.get(url)
+        dataUsername = response.json()
+    except Exception:
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('adminInstituteRegistration')
+    
+    isMailSent = False
+    try:
+        user = User.objects.get(username = dataUsername['DecryptedUsername'])
     except Exception as e:
         messages.error(request, str(e))
         return redirect('adminInstituteRegistration')
-    get_last_mail_sent = MailLog.objects.filter(user__username = "4akhilkumar", subject = "Confirm your registration - AkirA").order_by('-created_at')[0]
-    last_mail_time = get_last_mail_sent.created_at
-    current_time = pydt.datetime.now()
-    difference = current_time - last_mail_time
-    difference_in_minutes = int(difference.seconds / 60)
-    about_receiveing_email = "If you didn't recieve any email, please check your spam folder \
-                                                or change your internet connection"
 
-    if User.objects.filter(username = username, is_active = False, is_staff = False, is_superuser = False).exists() is True:
-        if difference_in_minutes > 10:
+    if User.objects.filter(username = dataUsername['DecryptedUsername'], is_active = False, is_staff = False, is_superuser = False).exists() is True:        
+        ten_minutes_ago = pydt.datetime.now() - pydt.timedelta(minutes=10)
+        if MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your registration - AkirA", created_at__gte=ten_minutes_ago).exists() is False:
             try:
-                try:
-                    url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
-                    response = requests.get(url)
-                    dataUsername = response.json()
-                except Exception:
-                    messages.info(request, "Server under maintenance. Please try again later.")
-                    return redirect('login')
-                EncryptedUsername = dataUsername['EncryptedUsername']
                 current_site = get_current_site(request)
                 protocol = request.is_secure() and "https" or "http"
                 mail_subject = "Confirm your registration - AkirA"
@@ -263,39 +250,61 @@ def send_admin_reg_email_again(request, username):
                     'user': user,
                     'protocol': protocol,
                     'domain': current_site.domain,
-                    'uid': urlsafe_base64_encode(force_bytes(EncryptedUsername)),
+                    'uid': urlsafe_base64_encode(force_bytes(EnUsername)),
                     'token': account_activation_token.make_token(user),
                 })
                 to_email = user.email
-                email = EmailMessage(mail_subject, message, to=[to_email])
-                email.send()
-                MailLog.objects.create(user=user, subject = mail_subject)
+                send_mail(
+                    subject = mail_subject,
+                    message=None,
+                    html_message = message,
+                    from_email = settings.EMAIL_HOST_USER,
+                    recipient_list = [to_email],
+                    fail_silently = False,
+                )
+                isMailSent = True
+                if isMailSent is True:
+                    MailLog.objects.create(user=user, subject = mail_subject)
+                    messages.success(request, "Confirmation email sent!")
+                else:
+                    messages.error(request, "Unable to send confirmation email!")
+                return redirect("waitingAdminConfirm", EnUsername = EnUsername)
             except Exception as e1:
+                isMailSent = False
                 messages.error(request, str(e1))
-                try:
-                    admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
-                    Group.objects.filter(name=admin_group).delete()
-                    User.objects.filter(username=user.username).delete()
-                    Staff.objects.filter(user=user).delete()
-                    Academy.objects.filter(user=user).delete()
-                except Exception as e2:
-                    messages.error(request, str(e2))
-            notice_context1 = {
-                'title': 'Registration confirmation is pending',
-                'message': about_receiveing_email,
-                'send_mail_again': True,
-                'username': user.username,
-            }
-            return render(request, 'notice.html', notice_context1)
+                return redirect("waitingAdminConfirm", EnUsername = EnUsername)
         else:
-            messages.error(request, "You can't send mail again within 10 minutes")
-            notice_context = {
-                'title': 'Registration confirmation is pending',
-                'message': about_receiveing_email,
-                'send_mail_again': True,
-                'username': user.username,
-            }
-            return render(request, 'notice.html', notice_context)
+            messages.error(request, "You can't request confirm email within 10 minutes")
+            return redirect("waitingAdminConfirm", EnUsername = EnUsername)
+    else:
+        messages.info(request, "Your account registration is already confirmed")
+        return redirect('login')
+
+def waitingAdminConfirm(request, EnUsername):
+    try:
+        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
+        response = requests.get(url)
+        dataUsername = response.json()
+    except Exception:
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('adminInstituteRegistration')
+    ten_minutes_ago = pydt.datetime.now() - pydt.timedelta(minutes=1000)
+    last_mail_time = ''
+    if MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your registration - AkirA", created_at__gte=ten_minutes_ago).exists() is True:
+        getlast_mail_time = MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your registration - AkirA", created_at__gte=ten_minutes_ago)
+        lastObject = getlast_mail_time.last()
+        last_mail_time = lastObject.created_at
+    try:
+        user = User.objects.get(username = dataUsername['DecryptedUsername'])
+    except User.DoesNotExist:
+        messages.error(request, "User doesn't exist")
+        return redirect('adminInstituteRegistration')
+    if user.is_active is False:
+        notice_context = {
+            'EnUsername': EnUsername,
+            'last_mail_time': last_mail_time,
+        }
+        return render(request, 'super_admin/waitingAdminConfirm.html', notice_context)
     else:
         messages.info(request, "Your account registration is already confirmed")
         return redirect('login')
@@ -319,10 +328,52 @@ def confirm_admin_email(request, uidb64, token):
         user.is_staff = True
         user.is_superuser = True
         user.save()
+        updateAAVS = AdminAccountVerificationStatus.objects.get(user=user)
+        updateAAVS.verificationStatus = True
+        updateAAVS.save()
         messages.success(request, "Thank you for your email confirmation. Now you can login your account.")
         return redirect('login')
     else:
         return HttpResponse(status = 404)
+
+def isAdminRegConfirmed(request):
+    if request.method == 'POST':
+        uid = request.POST.get('bfpID')
+        EnUsername = request.POST.get('EnUsername')
+        try:
+            url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
+            response = requests.get(url)
+            dataUsername = response.json()
+        except Exception:
+            messages.info(request, "Server under maintenance. Please try again later.")
+
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        dataResponse = {
+                'status': 'failed',
+        }
+        isAdminAccountCreated = User.objects.filter(username = dataUsername['DecryptedUsername'], is_active = True, is_staff = True, is_superuser = True).exists()
+        if isAdminAccountCreated is True:
+            print("Here0")
+            try:
+                getAAVIPAddr = AdminAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'])
+                print("Here1")
+            except Exception:
+                getAAVIPAddr = None
+                print("Here2")
+            if str(ip) == str(getAAVIPAddr.ipaddress) or str(uid) == str(getAAVIPAddr.bfpID):
+                print("Here3")
+                dataResponse = {
+                    'status': 'success',
+                }
+                print("Here4")
+            print("Here5")
+        print("Here6")
+        print(dataResponse)
+        return JsonResponse(dataResponse)
 
 def my_profile(request):
     user = User.objects.get(id=request.user.id)

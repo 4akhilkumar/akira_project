@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="theme-color" content="#FFF"/>
+    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">    
+    <link rel="stylesheet" href="{% static 'styles/waitingadminconfirm.css' %}">
+
+    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <title>Registration confirmation is pending - AkirA</title>
+</head>
+<body>
+
+    {% include 'messages.html' %}
+
+    {% include 'check_internet_connection.html' %}
+
+    <h1>Almost there!</h1>
+    <h2>Let's confirm your email address</h2>
+    <p>We've sent you an email with a link to confirm your email address. Please check your email and click the link to confirm your AkirA account signup.</p>
+
+    <div id="demo"></div>
+    <div id="resendEmailOption">
+        <a href="{% url 'send_admin_reg_email' EnUsername %}">Resend confirmation Email</a>
+    </div>
+
+    <script src='{% static "js/BrowserFingerPrinting.js" %}'></script>
+    <script>
+        document.getElementById("resendEmailOption").style.display = "none";
+        var last_mail_time = new Date("{{ last_mail_time|date:"D M d Y H:i:s" }}");
+        // calculate the time 10 minutes from last_mail_time
+        var time_to_wait = new Date(last_mail_time.getTime() + 600000);
+        // make a count down timer to wait for 10 minutes from last_mail_time
+        var countDownDate = new Date(time_to_wait).getTime();
+        // Update the count down every 1 second and if the time is up then show the div id="resendEmailOption"
+        var x = setInterval(function() {
+            // Get todays date and time
+            var now = new Date().getTime();
+            // Find the distance between now an the count down date
+            var distance = countDownDate - now;
+            // Time calculations for days, hours, minutes and seconds
+
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Output the result in an element with id="demo"
+            // If minutes and seconds are less than 10, add a 0 in front of them
+            if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            document.getElementById("demo").innerHTML = minutes + " min"+ " : " + seconds + " sec";
+
+            // If the count down is over, write some text 
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("demo").innerHTML = "If you didn't recieve any email, please check your spam folder or change your internet connection";
+                document.getElementById("resendEmailOption").style.display = "block";
+            }
+        }, 1000);
+
+        function isAdminRegConfirmed() {
+            $.ajax({
+                url: "{% url 'isAdminRegConfirmed' %}",
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: {
+                    bfpID: uid,
+                    EnUsername: '{{ EnUsername }}'
+                },
+                success: function(dataResponse) {
+                    console.log(dataResponse.status);
+                    if (dataResponse.status == "success") {
+                        window.location.href = "{% url 'login' %}";
+                    }
+                }
+            });
+        }
+        setInterval(isAdminRegConfirmed, 10000);
+    </script>
+</body>
+</html>
