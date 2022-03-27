@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'akira_apps.specialization.apps.SpecializationConfig',
     'akira_apps.shigen.apps.ShigenConfig',
     'akira_apps.adops.apps.AdopsConfig',
+    'akira_apps.URLShortener.apps.UrlshortenerConfig',
 ]
 
 MIDDLEWARE = [
@@ -196,3 +197,5 @@ PASSWORD_RESET_TIMEOUT_DAYS = 0.00694444
 
 GOOGLE_RECAPTCHA_SECRET_KEY = '6LfmDxMdAAAAAI9NEfnM3BUqHfF-zAMLLJOwSRw8'
 GOOGLE_RECAPTCHA_PUBLIC_KEY = '6LfmDxMdAAAAACs6hML3Ev6wOrB18ZkXSPjNWEvL'
+
+VIRUS_TOTAL_API_KEY = '63dfb3bee91bda2513ac5bea5569608992b485e8ceb2cbdc985d5df1c5cd1086'

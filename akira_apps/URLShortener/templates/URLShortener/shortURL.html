@@ -1,0 +1,72 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+</head>
+<body>
+    {% include 'messages.html' %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="long_url">Long URL</label>
+        <textarea name="long_url" id="id_long_url" cols="30" rows="10" required>iakira.herokuapp.com</textarea>
+        <br>
+        <label for="long_url_alias">Customize your link</label>
+        <input type="text" name="long_url_alias" id="id_long_url_alias">
+        <br>
+        <label for="expire_status">Never Expire!</label>
+        <input type="checkbox" name="expire_status" id="id_expire_status" checked>
+        <br>
+        <input type="date" name="expire_date" id="id_expire_date">
+        <input type="time" name="expire_time" id="id_expire_time">
+        <br>
+        <input type="hidden" name="fingerprint" id="id_fingerprint" readonly>
+
+        <input type="hidden" name="protocol_current_domain" id="id_protocol_current_domain" data-protocol_current_domain="{{ protocol_current_domain }}">
+
+        <input type="submit" value="Shorten">
+    </form>
+
+    <hr>
+    <h3>Shortened URL</h3>
+    <a href="{{ shorterner_url }}" target="_blank">{{ shorterner_url }}</a>
+    {% for eachObj in getShortedURLs %}
+        <a href="{{shorterner_url_prefix}}{{ eachObj.short_url }}" target="_blank">{{ eachObj.short_url }}</a>
+        <br>
+    {% endfor %}
+    <hr>
+
+    <script src='{% static "js/BrowserFingerPrinting.js" %}'></script>
+    <script>
+        var expire_status = document.getElementById('id_expire_status');
+        var expire_date = document.getElementById('id_expire_date');
+        var expire_time = document.getElementById('id_expire_time');
+        expire_date.style.display = 'none';
+        expire_time.style.display = 'none';
+        expire_status.addEventListener('click', function() {
+            if (expire_status.checked) {
+                expire_date.style.display = 'none';
+                expire_time.style.display = 'none';
+            } else {
+                expire_date.style.display = 'block';
+                expire_time.style.display = 'block';
+            }
+        });
+
+        $(document).ready(function(){
+            var deviceID = uid;
+            var protocolDomain = document.getElementById('id_protocol_current_domain').getAttribute('data-protocol_current_domain');
+            $.ajax({
+                url: protocolDomain,
+                headers: {
+                    'Browser-Fignerprint-ID': deviceID
+                }
+            });
+        });
+    </script>
+</body>
+</html>

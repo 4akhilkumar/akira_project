@@ -31,5 +31,6 @@ urlpatterns = [
     path('specialization/', include('akira_apps.specialization.urls')),
     path('shigen/', include('akira_apps.shigen.urls')),
     path('adops/', include('akira_apps.adops.urls')),
+    path('', include('akira_apps.URLShortener.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
