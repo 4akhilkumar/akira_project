@@ -16,6 +16,9 @@
   --grey-700: #374151;
   --white: #fff;
 }
+canvas {
+  display: none;
+}
 body {
   margin: 0;
   padding: 30px;
