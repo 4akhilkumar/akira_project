@@ -204,10 +204,6 @@ def user_login(request):
         fingerprintID = request.POST.get('fingerprint')
         user_ip_address = ip
 
-        if not re.match(r'[a-zA-Z0-9]{8,}$', username) and re.match(r'[a-zA-Z0-9]{8,}$', ep):
-            messages.info(request, 'Please enter a valid credentials.')
-            return redirect('login')
-
         try:
             captcha_token = request.POST.get("g-recaptcha-response")
             cap_url = "https://www.google.com/recaptcha/api/siteverify"
@@ -250,8 +246,12 @@ def user_login(request):
 
         if cap_json['success'] == True:
             try:
-                getMetaDataUrl = 'https://akira-rest-api.herokuapp.com/getMetaData/{}/{}/?format=json'.format(username, ep)
-                getMetaDataUrlResponse = requests.get(getMetaDataUrl)
+                data = {
+                    'MetaKey':username,
+                    'EncryptedMetaKey': ep
+                }
+                AKIRA_API_END_POINT = 'https://akira-rest-api.herokuapp.com/fetchKey/'
+                getMetaDataUrlResponse = requests.post(url = AKIRA_API_END_POINT, data = data)
                 getMetaDataUrlResponsedata = getMetaDataUrlResponse.json()
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
