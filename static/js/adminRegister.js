@@ -197,15 +197,15 @@ $(document).ready(function() {
         
         $("#id_district").parent().removeClass("focus");
         $("#id_district").val("");
-        $("#id_district").attr("readonly", false);
+        $("#id_district").prop("readonly", false);
         
         $("#id_state").parent().removeClass("focus");
         $("#id_state").val("");
-        $("#id_state").attr("readonly", false);
+        $("#id_state").prop("readonly", false);
         
         $("#id_country").parent().removeClass("focus");
         $("#id_country").val("");
-        $("#id_country").attr("readonly", false);
+        $("#id_country").prop("readonly", false);
     }
 
     function changeSelectInputCity() {
@@ -233,21 +233,21 @@ $(document).ready(function() {
                     if (data[0].PostOffice[0].District != "" || data[0].PostOffice[0].District != null) {
                         $("#id_district").parent().addClass("focus");
                         $("#id_district").val(data[0].PostOffice[0].District);
-                        $("#id_district").attr("readonly", true);
+                        $("#id_district").prop("readonly", true);
                         district = true;
                     }
 
                     if (data[0].PostOffice[0].District != "" || data[0].PostOffice[0].District != null) {
                         $("#id_state").parent().addClass("focus");
                         $("#id_state").val(data[0].PostOffice[0].State);
-                        $("#id_state").attr("readonly", true);
+                        $("#id_state").prop("readonly", true);
                         state = true;
                     }
 
                     if (data[0].PostOffice[0].District != "" || data[0].PostOffice[0].District != null) {
                         $("#id_country").parent().addClass("focus");
                         $("#id_country").val(data[0].PostOffice[0].Country);
-                        $("#id_country").attr("readonly", true);
+                        $("#id_country").prop("readonly", true);
                         country = true;
                     }
                     return;
@@ -598,15 +598,15 @@ $(document).ready(function() {
         next_fs = $(this).parent().next();
 
         //Add Class Active
-        if ($(this).attr('id') == 'personal-next') {
+        if ($(this).prop('id') == 'personal-next') {
             $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("account-section");
             $("body").removeClass();
             $("body").addClass("accountsection");
-        } else if ($(this).attr('id') == 'account-next') {
+        } else if ($(this).prop('id') == 'account-next') {
             $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("institute-section");
             $("body").removeClass();
             $("body").addClass("institutesection");
-        } else if ($(this).attr('id') == 'institute-next') {
+        } else if ($(this).prop('id') == 'institute-next') {
             $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("tandc-section");
             $("body").removeClass();
             $("body").addClass("tandcsection");
@@ -636,15 +636,15 @@ $(document).ready(function() {
         previous_fs = $(this).parent().prev();
 
         //Remove class active
-        if ($(this).attr('id') == 'account-previous') {
+        if ($(this).prop('id') == 'account-previous') {
             $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("account-section");
             $("body").removeClass();
             $("body").addClass("personalsection");
-        } else if ($(this).attr('id') == 'institute-previous') {
+        } else if ($(this).prop('id') == 'institute-previous') {
             $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("institute-section");
             $("body").removeClass();
             $("body").addClass("accountsection");
-        } else if ($(this).attr('id') == 'tandc-previous') {
+        } else if ($(this).prop('id') == 'tandc-previous') {
             $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("tandc-section");
             $("body").removeClass();
             $("body").addClass("institutesection");
