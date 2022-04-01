@@ -193,7 +193,15 @@ body {
     outline-width: 0;
 }
 
-#msform input[type="button"]:disabled, #msform input[type="submit"]:disabled {
+#msform input[type="button"]:disabled {
+    background: #ccc;
+    color: white;
+    font-weight: 500;
+    cursor: not-allowed;
+    border: none;
+}
+
+#msform button.action-button:disabled, button[disabled] {
     background: #ccc;
     color: white;
     font-weight: 500;
@@ -482,6 +490,7 @@ body {
   background: #fff;
   font-size: 14px;
   transition: 250ms;
+  border-radius: .2rem;
 }
 .input-box.focus .input-label svg,
 .input-box.active .input-label svg {
