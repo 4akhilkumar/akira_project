@@ -1,7 +1,5 @@
-from django import http
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 
 class isAdminExistMiddleware:
@@ -13,9 +11,9 @@ class isAdminExistMiddleware:
         
         currentPageURL = str(request.build_absolute_uri())
 
-        WHITELISTURL = ["adminInstituteRegistration", "confirm_admin_email"]
+        WHITELISTURL = ["adminInstituteRegistration", "send_admin_reg_email", "waitingAdminConfirm", "confirm_admin_email"]
 
-        if not User.objects.filter(groups__name='Administrator').exists():
+        if not User.objects.filter(groups__name='Administrator', is_superuser=True, is_staff=True, is_active=True).exists():
             if any(ext in currentPageURL for ext in WHITELISTURL):
                 pass
             else:
