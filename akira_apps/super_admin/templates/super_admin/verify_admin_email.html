@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>AkirA Signup Confirmation</title>
+	<title>Confirmation of AkirA Account Registration</title>
 	<style media="all" type="text/css">
     @media only screen and (max-width: 480px) {
         table[class=body] h1 {
@@ -85,7 +85,7 @@
 			    <td class="container" style="box-sizing: border-box; padding: 0; font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 16px; vertical-align: top; display: block; width: 600px; max-width: 600px; margin: 0 auto !important;" valign="top" width="600">
                     <div class="content" style="box-sizing: border-box; display: block; max-width: 600px; margin: 0 auto; padding: 10px;">
                         <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">
-                            Let's confirm your email address.
+                            Let's confirm your account registration.
                         </span>
                         <div class="header" style="box-sizing: border-box; width: 100%; margin-bottom: 30px; margin-top: 15px;">
                             <table style="box-sizing: border-box; width: 100%; border-spacing: 0; mso-table-rspace: 0pt; mso-table-lspace: 0pt; border-collapse: separate !important;" width="100%">
@@ -115,11 +115,11 @@
                                                             <h2 style="margin: 0; margin-bottom: 30px; font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-weight: 300; line-height: 1.5; font-size: 24px; color: #294661 !important;">
                                                                 Hi {{ user.first_name }} {{ user.last_name }}!
                                                                 <br>
-                                                                Let's confirm your email address.
+                                                                Let's confirm your account registration
                                                             </h2>
 
                                                             <p style="margin: 0; margin-bottom: 30px; color: #294661; font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 300;">
-                                                                By clicking on the following link, you are confirming your email address and agreeing to AkirA's 
+                                                                By clicking on the following link, you are confirming your account registration, email address and agreeing to AkirA's 
                                                                 <a href="#" style="box-sizing: border-box; color: #42a5f5; font-weight: 400; text-decoration: none;" target="_blank">
                                                                     Terms of Service
                                                                 </a>.
@@ -140,7 +140,7 @@
                                                                                     <tr>
                                                                                         <td align="center" bgcolor="#42a5f5" style="box-sizing: border-box; padding: 0; font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 16px; vertical-align: top; background-color: #42a5f5; border-radius: 2px; text-align: center;" valign="top">
                                                                                             <a href="{{ protocol }}://{{ domain }}{% url 'confirm_admin_email' uidb64=uid token=token %}" style="box-sizing: border-box; border-color: #42a5f5; font-weight: 400; text-decoration: none; display: inline-block; margin: 0; color: #ffffff; background-color: #42a5f5; border: solid 1px #42a5f5; border-radius: 2px; cursor: pointer; font-size: 14px; padding: 12px 45px;" target="_blank">
-                                                                                                Confirm Email Address
+                                                                                                Confirm Account Registration
                                                                                             </a>
                                                                                         </td>
                                                                                     </tr>
@@ -171,7 +171,8 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        
+                        {% comment %}
                         <div class="footer" style="box-sizing: border-box; clear: both; width: 100%;">
                             <table style="box-sizing: border-box; width: 100%; border-spacing: 0; mso-table-rspace: 0pt; mso-table-lspace: 0pt; font-size: 12px; border-collapse: separate !important;" width="100%">
                                 <tbody>
@@ -203,6 +204,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        {% endcomment %}
                     </div>
                 </td>
                 <td style="box-sizing: border-box; padding: 0; font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 16px; vertical-align: top;" valign="top">&nbsp;</td>
