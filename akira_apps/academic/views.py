@@ -104,23 +104,22 @@ def getFloorbyBlock(request):
         try:
             blockObj = Block.objects.get(id = block_id)
             getFloors = Floor.objects.filter(block__name=blockObj.name)
-            print(getFloors)
         except Exception as e:
-            print(e)
-        return JsonResponse(list(getFloors.values('id', 'floor_name')), safe = False) 
+            return JsonResponse(list({'error': str(e)}), safe = False)
+        return JsonResponse(list(getFloors.values('id', 'name')), safe = False) 
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_room_save(request):
     if request.method == 'POST':
-        roomName = request.POST.get('room_name')
+        roomName = request.POST.get('name')
         roomBlockID = request.POST.get('get_block_id')
         fetchedBlock = Block.objects.get(id = roomBlockID)
         roomFloorID = request.POST.get('floor_id')
         fetchedFloor = Floor.objects.get(id = roomFloorID)
-        roomCapacity = request.POST.get('capacity')
         roomType = request.POST.get('room_type')
+        roomCapacity = request.POST.get('capacity')
         try:
-            Room.objects.create(room_name=roomName,
+            Room.objects.create(name=roomName,
                                 block=fetchedBlock,
                                 floor=fetchedFloor,
                                 type=roomType,

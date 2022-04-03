@@ -2608,6 +2608,14 @@ i.transform-angle-135 {
   border: none;
 }
 
+#msform button.action-button:disabled, button[disabled] {
+  background: #ccc;
+  color: white;
+  font-weight: 500;
+  cursor: not-allowed;
+  border: none;
+}
+
 #msform .action-button {
   background: #673AB7;
   font-weight: 400;

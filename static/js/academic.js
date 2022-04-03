@@ -165,6 +165,7 @@ $(document).ready(function() {
   });
   // Block form validation END
 
+  // Floor form validation Begin
   $("#floor-btn").prop("disabled", true);
   var floor_btn = false;
 
@@ -216,5 +217,123 @@ $(document).ready(function() {
       $("#floor-btn").prop("disabled", true);
     }
   });
+  // Floor Form Validation End
 
+  // Room form validation Begin
+  $("#room-btn").prop("disabled", true);
+  var room_btn = false;
+
+  var room_name = false; var id_room_block = false; var room_floor = false;
+  var room_room_type = false; var capacity = false;
+
+  $('#id_room_name').on('keyup keydown blur change', function() {
+    if($("#id_room_name").val() == "") {
+      $("#id_room_name").parent().find(".error-text").html("Enter the room name");
+      $("#id_room_name").parent().find(".error-text").css("display", "block");
+      room_name = false;
+    }
+    else if (!$("#id_room_name").val().match(/^[A-Za-z0-9&\-\s]*$/)) {
+      $("#id_room_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the room name correctly&#x0003F;");
+      $("#id_room_name").parent().find(".error-text").css("display", "block");
+      room_name = false;
+    }
+    else if ($("#id_room_name").val().match(/^\s+$/)) {
+      $("#id_room_name").parent().find(".error-text").html("Sorry, but the room name cannot be empty");
+      $("#id_room_name").parent().find(".error-text").css("display", "block");
+      room_name = false;
+    }
+    else {
+      $("#id_room_name").parent().find(".error-text").css("display", "none");
+      room_name = true;
+    }
+  });
+
+  $('#id_room_block').on('keyup keydown blur change', function() {
+    if ($("#id_room_block").val() == "") {
+      $("#id_room_block").parent().find(".error-text").css("display", "block");
+      id_room_block = false;
+    } else {
+      $("#id_room_block").parent().find(".error-text").css("display", "none");
+      id_room_block = true;
+    }
+  });
+
+  $('#id_room_floor_name_no').on('keyup keydown blur change', function() {
+    if ($("#id_room_floor_name_no").val() == "") {
+      $("#id_room_floor_name_no").parent().find(".error-text").css("display", "block");
+      room_floor = false;
+    } else {
+      $("#id_room_floor_name_no").parent().find(".error-text").css("display", "none");
+      room_floor = true;
+    }
+  });
+
+  $('#id_room_room_type').on('keyup keydown blur change', function() {
+    if ($("#id_room_room_type").val() == "") {
+      $("#id_room_room_type").parent().find(".error-text").css("display", "block");
+      room_room_type = false;
+    } else {
+      $("#id_room_room_type").parent().find(".error-text").css("display", "none");
+      room_room_type = true;
+    }
+  });
+
+  $('#id_room_capacity').on('keyup keydown blur change', function() {
+    if ($("#id_room_capacity").val() == "") {
+      $("#id_room_capacity").parent().find(".error-text").html("Enter room capacity");
+      $("#id_room_capacity").parent().find(".error-text").css("display", "block");
+      capacity = false;
+    }
+    else if ($("#id_room_capacity").val() >= 200) {
+      $("#id_room_capacity").parent().find(".error-text").html("Room capacity can be more than 200&#x0003F;");
+      $("#id_room_capacity").parent().find(".error-text").css("display", "block");
+      capacity = false;
+    }
+    else {
+      $("#id_room_capacity").parent().find(".error-text").css("display", "none");
+      capacity = true;
+    }
+  });
+
+  $('input, select').on('keyup keydown blur change', function() {
+    if (room_name == true && id_room_block == true && room_floor == true && room_room_type == true && capacity == true) {
+      room_btn = true;
+    }
+    else {
+      room_btn = false;
+    }
+    if (room_btn == true) {
+      $("#room-btn").prop("disabled", false);
+    }
+    else {
+      $("#room-btn").prop("disabled", true);
+    }
+  });
+  // Room Form Validation End
+
+});
+
+
+$('.block-btn').click(function() {
+  $(this).prop('disabled', true);
+  $(this).html('Please wait...');
+  $(this).closest('form').submit();
+});
+
+$('.floor-btn').click(function() {
+  $(this).prop('disabled', true);
+  $(this).html('Please wait...');
+  $(this).closest('form').submit();
+});
+
+$('.room-btn').click(function() {
+  $(this).prop('disabled', true);
+  $(this).html('Please wait...');
+  $(this).closest('form').submit();
+});
+
+$('.academic-bulk-btn').click(function() {
+  $(this).prop('disabled', true);
+  $(this).html('Please wait...');
+  $(this).closest('form').submit();
 });
