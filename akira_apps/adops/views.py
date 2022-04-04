@@ -80,11 +80,7 @@ def add_openings(request):
         job = request.POST.get('job')
         overview = request.POST.get('overview').strip()
         description = request.POST.get('description').strip()
-        min_experience = request.POST.get('min_experience')
-        if request.POST.get('max_experience'):
-            max_experience = request.POST.get('max_experience')
-        else:
-            max_experience = None
+        experience = request.POST.get('experience')
         qualification = request.POST.get('qualification')
         location = request.POST.get('location')
         pay_scale = request.POST.get('pay_scale')
@@ -101,8 +97,7 @@ def add_openings(request):
                 job=job,
                 overview=overview,
                 description=description,
-                min_experience=min_experience,
-                max_experience=max_experience,
+                experience=experience,
                 qualification=qualification,
                 location=location,
                 pay_scale=pay_scale,
@@ -169,10 +164,8 @@ def add_openings(request):
 #         return response
 
 def editOpening(request, openingID):
-    editOpeningID = True
     contact_person = User.objects.filter(groups__name='Administrator')
     job_type_list = OpeningsJobTypeForm()
-    extra_field_value_type_list = ExtraFieldValueTypeForm()
     try:
         openingIDObj = Openings.objects.get(id=openingID)
     except Exception:
@@ -182,11 +175,7 @@ def editOpening(request, openingID):
         job = request.POST.get('job')
         overview = request.POST.get('overview').strip()
         description = request.POST.get('description').strip()
-        min_experience = request.POST.get('min_experience')
-        if request.POST.get('max_experience'):
-            max_experience = request.POST.get('max_experience')
-        else:
-            max_experience = None
+        experience = request.POST.get('experience')
         qualification = request.POST.get('qualification')
         location = request.POST.get('location')
         pay_scale = request.POST.get('pay_scale')
@@ -203,8 +192,7 @@ def editOpening(request, openingID):
                 job=job,
                 overview=overview,
                 description=description,
-                min_experience=min_experience,
-                max_experience=max_experience,
+                experience=experience,
                 qualification=qualification,
                 location=location,
                 pay_scale=pay_scale,
@@ -219,13 +207,11 @@ def editOpening(request, openingID):
                 messages.error(request, str(e))
         return redirect('openings')
     context = {
-        'editOpeningID': editOpeningID,
         'openingIDObj': openingIDObj,
         'contact_person': contact_person,
         'job_type_list':job_type_list,
-        'extra_field_value_type_list':extra_field_value_type_list,
     }
-    return render(request, 'adops/openings/add_opening.html', context)
+    return render(request, 'adops/openings/edit_opening.html', context)
 
 def deleteOpening(request, openingID):
     try:
@@ -246,8 +232,8 @@ def fetch_each_opening_Ajax(request):
             openingObj.values(
                 'id', 'job',
                 'overview',
-                'description', 'min_experience',
-                'max_experience', 'qualification',
+                'description',
+                'experience', 'qualification',
                 'location', 'pay_scale',
                 'type', 'contact_person',
                 'applied',
