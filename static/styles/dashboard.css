@@ -2668,6 +2668,32 @@ i.transform-angle-135 {
   border: 2px solid #616161;
 }
 
+.regiserformcontainer .action-button-cancel {
+  font-weight: 400;
+  background: #FFF;
+  color: #616161;
+  border: 2px solid #616161;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 8px 18px;
+  margin: 10px 5px 10px 10px;
+  float: right;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 3px 1px -2px #0003,0 2px 2px #00000024,0 1px 5px #0000001f;
+  -webkit-transition: all 180ms ease-out;
+  -moz-transition: all 180ms ease-out;
+  -o-transition: all 180ms ease-out;
+  transition: all 180ms ease-out;
+}
+
+.regiserformcontainer .action-button-cancel:hover,
+.regiserformcontainer .action-button-cancel:focus {
+  background: #616161;
+  color: #FFF;
+  border: 2px solid #616161;
+}
+
 .fs-title {
   font-size: 25px;
   color: #673AB7;

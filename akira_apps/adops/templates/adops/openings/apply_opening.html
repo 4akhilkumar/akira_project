@@ -10,9 +10,6 @@
     <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
     
     <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
-    <!-- <link href="{% static 'fontawesome/css/fontawesome.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/brands.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawesome/css/solid.css' %}" rel="stylesheet"> -->
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -55,7 +52,7 @@
       </div>
       <div class="job-detail-buttons">
        <button class="search-buttons detail-button">{{ eachopening.type }}</button>
-       <button class="search-buttons detail-button">Min. {{ eachopening.min_experience }} Year</button>
+       <button class="search-buttons detail-button">{{ eachopening.experience }}</button>
        <button class="search-buttons detail-button">{{ eachopening.qualification }}</button>
        <button class="search-buttons detail-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</button>
       </div>
@@ -265,8 +262,7 @@ jobCards.forEach((jobCard) => {
 
   let jobTitle = "";
   let jobDesc = "";
-  let min_exp = "";
-  let max_exp = "";
+  let exp = "";
   let qual = "";
   let locaion = "";
   let pay_scale = "";
@@ -288,8 +284,7 @@ jobCards.forEach((jobCard) => {
         jobTitle = eachdata.job;
         jobOverview = eachdata.overview;
         jobDesc = eachdata.description;
-        min_exp = eachdata.min_experience;
-        max_exp = eachdata.max_experience;
+        exp = eachdata.experience;
         qual = eachdata.qualification;
         job_loc = eachdata.location;
         pay_scale = eachdata.pay_scale;
@@ -330,11 +325,7 @@ jobCards.forEach((jobCard) => {
   jobDetailLocation.textContent = job_loc;
   jobDetailPosted.textContent = postedDateString + " · " + applicants + " " + applicantsString;
 
-  if (max_exp === null) {
-    jobDetailExperience.textContent = min_exp  + " Year(s)";
-  } else {
-    jobDetailExperience.textContent = min_exp + " - " + max_exp  + " Year(s)";
-  }
+  jobDetailExperience.textContent = exp;
 
   // Which will remove the existing childs in the newly added item
   const list = document.getElementById("myList");

@@ -2,18 +2,11 @@
 {% load static %}
 
 {% block analytics-text %}
-
-{% if editOpeningID %}
 <h1>Edit Opening</h1>
 <p>{{ openingIDObj.job }}</p>
-{% else %}
-<h1>Create Opening</h1>
-<p>Create the Opening <span class="fas fa-chart-line"></span> </p>
-{% endif %}
-
 {% endblock %}
 
-{% block create-openings %}
+{% block edit-openings %}
 <div class="regiserformcontainer">
     <form id="msform" class="block_form" autocomplete="off" action="" method="POST">
       {% csrf_token %}
@@ -22,7 +15,7 @@
           <div class="field-container">
             <div class="input-box">
               <label class="fieldlabels input-label" for="id_job_name">Job name</label> 
-              <input type="text" name="job" id="id_job_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+              <input type="text" name="job" id="id_job_name" class="input-1" value="{{ openingIDObj.job }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
               <span class="error-text">Enter job title</span>
             </div>
           </div>
@@ -30,7 +23,7 @@
           <div class="field-container">
             <div class="input-box">
               <label class="fieldlabels input-label" for="id_job_overview">Overview</label>
-              <textarea name="overview" maxlength="400" id="id_job_overview" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+              <textarea name="overview" maxlength="400" id="id_job_overview" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>{{ openingIDObj.overview }}</textarea>
               <span class="help-text">Seperate sentence by '#'.</span>
               <span class="help-text">Maximum characters allowed is 400 only.</span>
               <span class="error-text">Enter job overview</span>
@@ -41,7 +34,7 @@
           <div class="field-container">
             <div class="input-box">
               <label class="fieldlabels input-label" for="id_job_description">Description</label>
-              <textarea name="description" maxlength="2000" id="id_job_description" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+              <textarea name="description" maxlength="2000" id="id_job_description" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>{{ openingIDObj.description }}</textarea>
               <span class="help-text">Seperate sentence by '#'.</span>
               <span class="help-text">Maximum characters allowed is 2000 only.</span>
               <span class="error-text">Enter job description</span>
@@ -52,12 +45,12 @@
           <div class="field-container">
             <div class="input-box">
                 <label class="fieldlabels input-label" for="id_experience">Experience</label> 
-                <input type="text" name="experience" id="id_experience" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                <input type="text" name="experience" id="id_experience" class="input-1" value="{{ openingIDObj.experience }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                 <span class="error-text">Enter experience</span>
             </div>
             <div class="input-box">
                 <label class="fieldlabels input-label" for="id_qualification">Qualification</label> 
-                <input type="text" name="qualification" id="id_qualification" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                <input type="text" name="qualification" id="id_qualification" class="input-1" value="{{ openingIDObj.qualification }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                 <span class="error-text">Enter qualification</span>
             </div>
           </div>
@@ -65,12 +58,12 @@
           <div class="field-container">
               <div class="input-box">
                   <label class="fieldlabels input-label" for="id_location">Location</label> 
-                  <input type="text" name="location" id="id_location" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <input type="text" name="location" id="id_location" class="input-1" value="{{ openingIDObj.location }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                   <span class="error-text">Enter location</span>
               </div>
             <div class="input-box">
                 <label class="fieldlabels input-label" for="id_pay_scale">Pay scale</label> 
-                <input type="text" name="pay_scale" id="id_pay_scale" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                <input type="text" name="pay_scale" id="id_pay_scale" class="input-1" value="{{ openingIDObj.pay_scale }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                 <span class="error-text">Enter pay scale</span>
             </div>
           </div>
@@ -101,11 +94,11 @@
             </div>
           </div>
         </div>
-        <button id="create_opening-btn" class="action-button create_opening-btn">Create</button>
-        <button type="button" id="cancel-btn" data-redirect-url="{% url 'manage_adops' %}" class="action-button-cancel">Cancel</button>
+        <button type="submit" id="edit_opening-btn" class="action-button edit_opening-btn">Update</button>
+        <button type="button" id="cancel-btn" data-redirect-url="{% url 'openings' %}" class="action-button-cancel">Cancel</button>
       </fieldset>
     </form>
 </div>
 
-<script src="{% static 'js/add-opening.js' %}"></script>
+<script src="{% static 'js/edit-opening.js' %}"></script>
 {% endblock %}
