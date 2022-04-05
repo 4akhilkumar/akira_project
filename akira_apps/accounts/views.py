@@ -1,19 +1,20 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.db.models import Q
 
 import re
 import secrets
 import datetime as pydt
 import datetime
-from akira_apps.staff.models import Staff
 import httpagentparser
 
 from akira_apps.accounts.models import TwoFactorAuth
-from akira_apps.authentication.models import User_BackUp_Codes, User_IP_List, UserLoginDetails
+from akira_apps.authentication.models import (User_BackUp_Codes, User_IP_List, UserLoginDetails)
+from akira_apps.staff.models import Staff
+from akira_apps.student.models import Students
 
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
@@ -22,10 +23,12 @@ def account_settings(request):
     else:
         current_user_2fa_status = 0
 
-    try:
-        staff = Staff.objects.get(user = request.user)
-    except Staff.DoesNotExist:
-        staff = None
+    if Staff.objects.filter(user = request.user).exists() is True:
+        current_user_details = Staff.objects.get(user = request.user)
+    elif Students.objects.filter(user = request.user).exists() is True:
+        current_user_details = Students.objects.get(user = request.user)
+    else:
+        current_user_details = None
 
     try:
         backup_codes = User_BackUp_Codes.objects.get(user = request.user)
@@ -81,36 +84,18 @@ def account_settings(request):
     get_unconfirmed_login_attempts = UserLoginDetails.objects.filter(Q(user__username = request.user.username, attempt = "Not Confirmed Yet!") | Q(user__username = request.user.username, attempt = "Need to verify")).order_by('-created_at')
     
     get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = request.user, attempt = "Failed", user_confirm = 'Pending', score__lte = 15, created_at__range=(start_month,end_month)).count()
-    get_currentLoginInfo = UserLoginDetails.objects.filter(user__username = request.user.username, attempt="Success").order_by('-created_at')[0]
-    
-    user_agent = request.META['HTTP_USER_AGENT']
-    browser = httpagentparser.detect(user_agent)
-    if not browser:
-        browser = user_agent.split('/')[0]
-    else:
-        browser = browser['browser']['name']
-    res = re.findall(r'\(.*?\)', user_agent)
-    OS_Details = res[0][1:-1]
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    
-    if UserLoginDetails.objects.filter(user = request.user, attempt = "Success").count() >= 2:
-        get_PreviousLoginInfo = UserLoginDetails.objects.filter(user__username = request.user.username, attempt="Success").order_by('-created_at')[1]
-    else:
-        get_PreviousLoginInfo = None
-    
-    if get_currentLoginInfo.user_ip_address == ip and \
-        get_currentLoginInfo.browser_details == browser and \
-        get_currentLoginInfo.os_details == OS_Details:
+    get_currentLoginInfo = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
+
+    thisDeviceCurrent = False
+    try:
+        getU53R_876_10 = request.COOKIES['U53R_876_10']
+    except Exception:
+        getU53R_876_10 = None
+    if str(get_currentLoginInfo.bfp) == str(getU53R_876_10):
         thisDeviceCurrent = True
-    else:
-        thisDeviceCurrent = False
 
     context = {
-        "staff":staff,
+        "current_user_details":current_user_details,
         "backup_codes_status":backup_codes_status,
         "current_user_2fa_status":current_user_2fa_status,
         "current_month":current_month,
@@ -120,7 +105,6 @@ def account_settings(request):
         "get_unconfirmed_login_attempts":get_unconfirmed_login_attempts,
         "get_failed_attempt_in_a_month":get_failed_attempt_in_a_month,
         "get_currentLoginInfo":get_currentLoginInfo,
-        "get_PreviousLoginInfo":get_PreviousLoginInfo,
         "thisDeviceCurrent":thisDeviceCurrent,
     }
     return render(request, 'accounts/manage_account.html', context)

@@ -73,6 +73,10 @@
   }
 }
 
+canvas {
+  display: none;
+}
+
 .akira {
   background-image: linear-gradient(to right, #4285F4, #DB4437, #F4B400);
   -webkit-background-clip: text; 
@@ -916,6 +920,13 @@ button.add-admission {
 
 .recovery-phone p, .recovery-email p {
   color: var(--normal-text-color);
+}
+
+a.more-login-details {
+  font-size: .8rem;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: underline;
+  letter-spacing: normal;
 }
 
 hr {

@@ -72,7 +72,7 @@
                 <hr>
                 <div class="recovery-phone">
                     <h4>Recovery phone</h4>
-                    <p>{{ staff.phone }}</p>
+                    <p>{{ current_user_details.phone }}</p>
                 </div>
                 <hr>
                 <div class="two-step-verfication">
@@ -126,7 +126,7 @@
         </div>
     </div>
     <div class="user-login-details" id="Current-Previous-Login_Details">
-        <h4>Login Info</h4>
+        <h4>Login Info <a href="#" class="more-login-details">Details <i class="fa-solid fa-up-right-from-square"></i></a></h4>
         <div class="outer-container">
             <div class="each-login-details">
                 <div class="device-icon-login-details">
@@ -163,38 +163,7 @@
                 </div>
                 {% endif %}
             </div>
-            {% if get_PreviousLoginInfo %}
-            <div class="each-login-details">
-                <div class="device-icon-login-details">
-                    <div class="device-icon">
-                        {% if "Windows" in get_PreviousLoginInfo.os_details %}
-                        <span class="fab fa-windows"></span>
-                        {% elif "iPhone" in get_PreviousLoginInfo.os_details or "Macintosh" in get_PreviousLoginInfo.os_details %}
-                        <span class="fab fa-apple"></span>
-                        {% elif "Ubuntu" in get_PreviousLoginInfo.os_details %}
-                        <span class="fab fa-ubuntu"></span>
-                        {% elif "Android" in get_PreviousLoginInfo.os_details %}
-                        <span class="fab fa-android"></span>
-                        {% elif "CrOS" in get_PreviousLoginInfo.os_details %}
-                        <span class="fab fa-chrome"></span>
-                        {% else %}
-                        <span class="fas fa-exclamation-circle"></span>
-                        {% endif %}
-                    </div>
-                    <div class="device-platform_ip_addr-location-time">
-                        <div class="platform-name">
-                            <h4>{{ get_PreviousLoginInfo.os_details }} - {{ get_PreviousLoginInfo.user_ip_address }}</h4>
-                        </div>
-                        <div class="location_name">
-                            <p>{{ get_PreviousLoginInfo.user_ip_address|ip_location }} &#183; {{ get_PreviousLoginInfo.browser_details }}</p>
-                        </div>
-                        <div class="time-date">
-                            <p>{{ get_PreviousLoginInfo.created_at|date:"h:i A" }} &#183; {{ get_PreviousLoginInfo.created_at|date:"d M" }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+            
         </div>
     </div>
     <div class="user-login-details" id="login-attempts">
@@ -327,11 +296,17 @@
                 });
             }
         });
-    });
-</script>
-<script>
-    $( document ).ready(function () {
-      $(".show-details-login-info").slice(0, 3).show();
+
+        // var protocolDomain = "{{ protocol_current_domain }}";
+        // console.log(sha256(m));
+        // $.ajax({
+        //     url: protocolDomain,
+        //     headers: {
+        //         'Browser-Fignerprint-ID': sha256(m)
+        //     }
+        // });
+
+        $(".show-details-login-info").slice(0, 3).show();
         if ($(".show-details-login-info:hidden").length != 0) {
           $("#loadMore").show();
         }   

@@ -52,12 +52,6 @@ window.onclick = function(event) {
   }
 }
 
-$('.block-btn').click(function() {
-  $(this).attr('disabled', true);
-  $(this).val('Please wait...');
-  $(this).closest('form').submit();
-});
-
 function setFocus(on) {
   var element = document.activeElement;
   if (on) {

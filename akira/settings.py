@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'akira_apps.accounts.middleware.deviceBFPID_middleware.DeviceBFPIDMiddleware',
     'akira_apps.authentication.middleware.filter_ip_middleware.FilterIPMiddleware',
     'akira_apps.authentication.middleware.userPageTracking_middleware.userPageTrackingMiddleware',
     'akira_apps.authentication.middleware.userDeviceCookie_middleware.userDeviceCookieMiddleware',

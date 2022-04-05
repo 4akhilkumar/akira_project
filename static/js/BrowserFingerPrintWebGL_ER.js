@@ -49,7 +49,14 @@ var n = new Uint8Array(width * height * 4);
 ctx.readPixels(0, 0, width, height, ctx.RGBA, ctx.UNSIGNED_BYTE, n);
 m = JSON.stringify(n).replace(/,?"[0-9]+":/g, "");
 
-document.getElementById('id_fingerprint').value = sha256(m);
+$.ajax({
+    url: "http://127.0.0.1:8000",
+    mode: 'same-origin',
+    headers: {
+        'Browser-Fignerprint-ID': sha256(m)
+    }
+});
+
 }
 
 var sha256 = (function(){
