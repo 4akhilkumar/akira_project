@@ -8,6 +8,7 @@ import uuid
 import datetime as pydt
 
 from akira_apps.academic.models import (Branch)
+from akira_apps.staff.models import (Skills)
 
 GENDER_CHOICES = [
     ("", "Select Gender"),
@@ -70,13 +71,18 @@ class Students(models.Model):
     gender = models.CharField(max_length=14, choices = GENDER_CHOICES, default=1)
     date_of_birth = models.DateField(validators = [atLeastAgeofMajority])
     blood_group = models.CharField(max_length=18, choices = BLOOD_GROUP_CHOICES, default=1)
-    door_no = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=8)
+    phone = models.CharField(max_length = 15)
+    door_no = models.CharField(max_length=10)
+    zip_code = models.IntegerField()
     city = models.CharField(max_length=50)
+    district = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
     photo = models.ImageField(null=True, blank=True, upload_to='student_photos/', validators=[FileExtensionValidator(['jpg', 'png', 'jpeg'])])
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete = models.DO_NOTHING, blank = True, null = True)
+    about = models.TextField(max_length=500, null=True, blank=True)
+    skills = models.ManyToManyField(Skills, blank = True)
+    resume = models.FileField(upload_to ='student_resumes/', validators=[FileExtensionValidator(['pdf'])], blank = True, null = True)
 
     def __str__(self):
         return '%s %s %s' % (self.user, self.user.first_name.title(), self.user.last_name.title())
