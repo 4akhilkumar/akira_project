@@ -1,6 +1,6 @@
-$('.course-btn').click(function() {
-    $(this).attr('disabled', true);
-    $(this).val('Please wait...');
+$('#course-btn').click(function() {
+    $(this).prop('disabled', true);
+    $(this).html('Please wait...');
     $(this).closest('form').submit();
 });
 
