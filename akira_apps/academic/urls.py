@@ -19,6 +19,7 @@ urlpatterns = [
     path('academic_info_csv/', views.academic_info_csv, name='academic_info_csv'),
 
     path('add_branch/', views.add_branch, name='add_branch'),
+    path('createbranch/', views.createbranch, name='createbranch'),
     path('getAllBranches/', views.getAllBranches, name='getAllBranches'),
     # path('update_branch/<block_id>/', views.update_branch, name='update_branch'),
     # path('delete_branch/<block_id>/', views.delete_branch, name='delete_branch'),

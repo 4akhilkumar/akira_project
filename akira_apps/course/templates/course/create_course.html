@@ -9,7 +9,6 @@
 {% endblock %}
 
 {% block create-course %}
-
 <div class="regiserformcontainer">
     <form id="msform" action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -42,15 +41,18 @@
                     <div class="input-box active-grey">
                         <label class="fieldlabels input-label" for="id_branch">Branch</label>
                         <select name="branch" class="input-1" id="id_branch" required>
-                            {% for x,y in branch_list.fields.branch.choices %}
-                            <option value="{{ x }}">{{ y }}</option>
+                            {% if branch_list %}
+                            <option value="">Select Branch</option>
+                            {% endif %}
+                            {% for branch in branch_list %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
                             {% empty %}
                             <option value="">Data Not Available</option>
                             {% endfor %}
                         </select>
                         <span class="error-text">Select branch</span>
                         <span class="redirect">
-                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
+                            <a href="#" id="showFormCreateBranch"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
                             <a href="#" id="fetchBranches">
                                 <i class="fa-solid fa-arrows-rotate"></i> refresh
                             </a>
@@ -124,8 +126,126 @@
     </form>
 </div>
 
-<script src="{% static 'js/course.js' %}"></script>
+<div id="myModal" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Create <span class="underline">Branch</span></h3>
+        <span id="close-model" class="close">&times;</span>
+      </div>
+      <div class="regiserformcontainer">
+        <form id="msform" class="branch_form" action="" method="POST">
+          {% csrf_token %}
+          <fieldset>
+            <div class="form-card">
+              <div class="field-container">
+                <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_branch_name">Name</label> 
+                  <input type="text" name="name" id="id_branch_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <span class="error-text">Enter branch name</span>
+                </div>
+              </div>
+  
+              <div class="field-container mb-1rem">
+                <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_branch_desc">Description</label>
+                  <textarea name="desc" maxlength="500" id="id_branch_desc" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                  <span class="help-text">Maximum characters allowed is 500 only.</span>
+                  <span class="error-text">Enter branch description</span>
+                  <span class="info-text"></span>
+                </div>
+              </div>
+            </div>
+            <button type="button" id="branch-btn" data-create-branch-url="{% url 'createbranch' %}" class="action-button branch-btn">Create</button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script src="{% static 'js/course.js' %}"></script>
+<script>
+$(document).ready(function() {
+    function getAllBranchesFunc() {
+
+        if($(this).hasClass('anchor-disabled')){
+            return false;
+        }
+        $(this).addClass('anchor-disabled');
+        setTimeout(function(){
+            $("#fetchBranches").removeClass('anchor-disabled');
+        }, 5000);
+
+        $.ajax({
+            type: "GET",
+            url: '{% url "getAllBranches" %}',
+            success: function (data) {
+                if(data.length == 0) {
+                    toastr.info("No branches available")
+                }
+                else {
+                    toastr.success("Branches list fetched successfully")
+                    let html_data = '<option value=""> Select Branch </option>';
+                    data.forEach(function (data) {
+                        html_data += `<option value="${data.id}">${data.name}</option>`
+                    });
+                    $("#id_branch").html(html_data);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+
+    function createBranchFunc() {
+        var branch_name = $('#id_branch_name').val();
+        var branch_desc = $('#id_branch_desc').val();
+        
+        if($(this).hasClass('create-branch-disabled')){
+            return false;
+        }
+        $(this).addClass('create-branch-disabled');
+        setTimeout(function(){
+            $("#branch-btn").removeClass('create-branch-disabled');
+        }, 5000);
+
+        $.ajax({
+            type: "POST",
+            url: '{% url "createbranch" %}',
+            data: {
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+                'name': branch_name,
+                'desc': branch_desc,
+            },
+            success: function (data) {
+                if(data.status == 'success') {
+                    toastr.success(data.message)
+                    getAllBranchesFunc.call(this);
+                    setTimeout(function(){
+                        $("#myModal").fadeOut(500);
+                    }, 1000);
+                }
+                else {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                console.log(data.message);
+            }
+        }); 
+    }
+
+    $("#branch-btn").click(function(){
+        createBranchFunc.call(this);
+    });
+
+    $("#fetchBranches").click(function(){
+        getAllBranchesFunc.call(this);
+    });
+});
+</script>
 {% endblock %}
 
 {% endblock %}

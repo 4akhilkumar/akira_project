@@ -62,6 +62,7 @@ class Room(models.Model):
 class Branch(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     name = models.CharField(max_length = 50, unique = True)
+    description = models.CharField(max_length = 500, blank = True, null = True)
 
     def __str__(self):
         return '%s' % (self.name)

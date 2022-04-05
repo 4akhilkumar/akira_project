@@ -33,6 +33,24 @@ def add_branch(request):
             return redirect('add_branch')
     return render(request, "academic/manage_branches/add_branch.html")
 
+def createbranch(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        desc = request.POST.get('desc')
+        if Branch.objects.filter(name__contains = name).exists() is False:
+            Branch.objects.create(name = name, description = desc)
+            message = "Branch %s created successfully!" % str(name)
+            status = "success"
+        else:
+            message = "Branch %s already exists!" % str(name)
+            status = "failed"
+        return JsonResponse({
+            'message': message,
+            'status': status
+            }, safe = False)
+    else:
+        return JsonResponse({'message': "Invalid request"}, safe = False)
+
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_block(request):
     if request.method == 'POST':
