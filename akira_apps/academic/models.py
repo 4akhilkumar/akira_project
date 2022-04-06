@@ -79,7 +79,7 @@ class Semester(models.Model):
     mode = models.CharField(max_length = 4, choices = MODE, default = 1)
     start_year = models.DateField()
     end_year = models.DateField()
-    branch = models.ManyToManyField(Branch)
+    branch = models.ForeignKey(Branch, on_delete = models.CASCADE)
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
