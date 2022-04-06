@@ -1,11 +1,43 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
+from django.http import JsonResponse
 
 from akira_apps.super_admin.decorators import allowed_users
 from akira_apps.academic.models import (Semester, Branch)
 from akira_apps.academic.forms import (SemesterModeForm)
 from akira_apps.specialization.models import (SpecializationsMC)
 from akira_apps.academic_registration.models import (SpecEnrollStudent)
+
+def createsemester(request):
+    if request.method == "POST":
+        semesterMode = request.POST.get('mode')
+        semesterStartYear = request.POST.get('start_year')
+        semesterEndYear = request.POST.get('end_year')
+        semesterBranch = request.POST.get('branch')
+        semesterisActive = request.POST.get('is_active')
+        if semesterisActive == 'on':
+            semesterisActive = True 
+        else:
+            semesterisActive = False
+        if Semester.objects.filter(mode=semesterMode, start_year=semesterStartYear, end_year=semesterEndYear, branch = semesterBranch, is_active=semesterisActive).exists() is False:
+            Semester.objects.create(mode=semesterMode, start_year=semesterStartYear,
+                                    end_year=semesterEndYear, branch = semesterBranch,
+                                    is_active=semesterisActive)
+            message = "Semester created successfully!"
+            status = "success"
+        else:
+            message = "Semester %s already exists!" % str(semesterStartYear) + str(semesterEndYear)
+            status = "failed"
+        return JsonResponse({
+            'message': message,
+            'status': status
+            }, safe = False)
+    else:
+        return JsonResponse({'message': "Invalid request"}, safe = False)
+
+def getAllSemesters(request):
+    getSemesters = Semester.objects.all()
+    return JsonResponse(list(getSemesters.values('id', 'mode', 'start_year', 'end_year', 'branch', 'is_active')), safe = False)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_semester_save(request):

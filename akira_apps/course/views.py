@@ -8,10 +8,11 @@ from django.http import JsonResponse
 
 from datetime import datetime
 
-from akira_apps.super_admin.decorators import allowed_users
+from akira_apps.academic.forms import (SemesterModeForm)
 from akira_apps.academic.models import (Semester, Branch)
 from akira_apps.course.models import (CourseComponent, CourseExtraFields, CourseMC, CourseOfferingType, CourseFiles, CourseSubComponent, CourseTask, TaskAnswer)
 from akira_apps.specialization.models import (SpecializationsMC)
+from akira_apps.super_admin.decorators import allowed_users
 
 @login_required(login_url=settings.LOGIN_URL)
 def manage_courses(request):
@@ -42,6 +43,7 @@ def create_course(request):
     branch_list = Branch.objects.all()
     semester_list = Semester.objects.all()
     faculty_list = User.objects.all()
+    semesterModeForm = SemesterModeForm()
     specialization_list = SpecializationsMC.objects.all()
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
@@ -81,6 +83,7 @@ def create_course(request):
             messages.error(request, e)
     context = {
         "branch_list":branch_list,
+        "semesterModeForm":semesterModeForm,
         "semester_list":semester_list,
         "faculty_list":faculty_list,
         "specialization_list":specialization_list,

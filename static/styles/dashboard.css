@@ -2734,6 +2734,13 @@ i.transform-angle-135 {
     }
 }
 
+.input-box-toggle {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .input-box {
   position: relative;
   margin: 10px 0;
