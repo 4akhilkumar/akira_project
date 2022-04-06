@@ -27,7 +27,7 @@
             <div class="regiserformcontainer">
                 <h2 id="heading">Create Your <span class="akira">AkirA</span> Admin. Account</h2>
                 <p class="note">Fill all the fields to create admin. account</p>
-                <form id="msform" action="" autocomplete="off" method="POST" enctype="multipart/form-data">
+                <form id="msform" action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <!-- progressbar -->
                     <ul id="progressbar">
@@ -171,6 +171,13 @@
                                 <label class="fieldlabels input-label" for="id_confirm_password">Confirm password</label>
                                 <input type="password" name="confirm_password" id="id_confirm_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                                 <span class="error-text">Those passwords didn&apos;t match. Try again.</span>
+                            </div>
+                            <div class="gs-checkbox checkbox-ripple">
+                                <label class="input-checkbox checkbox-lightBlue">
+                                  <input type="checkbox" id="id_show_password">
+                                  <span class="checkbox"></span>
+                                </label>
+                                <label for="id_show_password" class="label">Show password</label>
                             </div>
                         </div> 
                         <input type="button" name="next" id="account-next" class="next action-button" value="Next" /> 

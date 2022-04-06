@@ -4,6 +4,16 @@ $('.register-btn').click(function() {
     $(this).closest('form').submit();
 });
 
+$('#id_show_password').change(function() {
+    if ($(this).is(':checked')) {
+        $('#id_password').prop('type', 'text');
+        $('#id_confirm_password').prop('type', 'text');
+    } else {
+        $('#id_password').prop('type', 'password');
+        $('#id_confirm_password').prop('type', 'password');
+    }
+});
+
 function setMinMaxDateOfBirth() {
     var today = new Date();
     var dd = today.getDate();

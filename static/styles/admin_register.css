@@ -5,6 +5,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -563,4 +564,80 @@ input[type=file].custom-input-file::file-selector-button:hover {
     border: 1px solid #616161;
     background-color: #FFF;
     color: #616161;
+}
+
+.gs-checkbox {
+  color: #818181;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: "Roboto", sans-serif;
+  letter-spacing: 0.5px;
+}
+.gs-checkbox .input-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  vertical-align: -9px;
+}
+.gs-checkbox .input-checkbox input[type=checkbox] {
+  visibility: hidden;
+  position: absolute;
+  left: 7px;
+  bottom: 7px;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  opacity: 0;
+}
+.gs-checkbox .input-checkbox input[type=checkbox] + .checkbox:before {
+  position: absolute;
+  left: 4px;
+  bottom: 8px;
+  width: 18px;
+  height: 18px;
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  vertical-align: -6px;
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+  /* Support for IE. */
+  font-feature-settings: "liga";
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+.gs-checkbox .input-checkbox input[type=checkbox] + .checkbox:before {
+  content: "";
+  color: #717171;
+}
+.gs-checkbox .input-checkbox input[type=checkbox]:checked + .checkbox:before {
+  content: "";
+}
+.gs-checkbox .input-checkbox input[type=checkbox]:active:not(:disabled) + .checkbox:before {
+  transform: scale3d(0.88, 0.88, 1);
+}
+.gs-checkbox .input-checkbox input[type=checkbox]:disabled + .checkbox:before {
+  color: rgba(0, 0, 0, 0.157) !important;
+}
+.gs-checkbox label, .gs-checkbox .label {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.gs-checkbox:not(.checkbox-rotate) .checkbox-lightBlue input[type=checkbox]:checked + .checkbox:before {
+  color: #03a9f4;
 }
