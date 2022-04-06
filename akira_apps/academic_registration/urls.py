@@ -10,6 +10,6 @@ urlpatterns = [
     path('update_semester_save/<semester_id>/', views.update_semester_save, name='update_semester_save'),
     path('delete_semester/<semester_id>/', views.delete_semester, name='delete_semester'),
 
-    path('createsemester/', views.createsemester, name='createsemester'),
-    path('getAllSemesters/', views.getAllSemesters, name='getAllSemesters')
+    path('createsemesterAjax/', views.createsemesterAjax, name='createsemesterAjax'),
+    path('getAllSemestersAjax/', views.getAllSemestersAjax, name='getAllSemestersAjax')
 ]

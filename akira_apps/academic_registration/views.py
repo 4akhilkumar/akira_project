@@ -8,12 +8,21 @@ from akira_apps.academic.forms import (SemesterModeForm)
 from akira_apps.specialization.models import (SpecializationsMC)
 from akira_apps.academic_registration.models import (SpecEnrollStudent)
 
-def createsemester(request):
+def getAllSemestersAjax(request):
+    getSemesters = Semester.objects.all()
+    return JsonResponse(list(getSemesters.values('id', 'mode', 'start_year', 'end_year', 'branch', 'is_active')), safe = False)
+
+def createsemesterAjax(request):
     if request.method == "POST":
         semesterMode = request.POST.get('mode')
         semesterStartYear = request.POST.get('start_year')
         semesterEndYear = request.POST.get('end_year')
         semesterBranch = request.POST.get('branch')
+        try:
+            semesterBranch = Branch.objects.get(id=semesterBranch)
+        except Branch.DoesNotExist:
+            message = "Branch does not exist!"
+            status = "failed"
         semesterisActive = request.POST.get('is_active')
         if semesterisActive == 'on':
             semesterisActive = True 
@@ -34,10 +43,6 @@ def createsemester(request):
             }, safe = False)
     else:
         return JsonResponse({'message': "Invalid request"}, safe = False)
-
-def getAllSemesters(request):
-    getSemesters = Semester.objects.all()
-    return JsonResponse(list(getSemesters.values('id', 'mode', 'start_year', 'end_year', 'branch', 'is_active')), safe = False)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_semester_save(request):
