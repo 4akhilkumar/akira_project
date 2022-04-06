@@ -132,16 +132,6 @@ $(document).ready(function() {
         }
     });
 
-    $('#id_specialization').on('keyup keydown blur change', function() {
-        if ($("#id_specialization").val() == "") {
-            $("#id_specialization").parent().find(".error-text").css("display", "block");
-            specialization = false;
-        } else {
-            $("#id_specialization").parent().find(".error-text").css("display", "none");
-            specialization = true;
-        }
-    });
-
     $('#id_course_coordinator').on('keyup keydown blur change', function() {
         if ($("#id_course_coordinator").val() == "") {
             $("#id_course_coordinator").parent().find(".error-text").css("display", "block");
@@ -153,7 +143,7 @@ $(document).ready(function() {
     });
 
     $('input, select, textarea').on('keyup keydown blur change', function() {
-        if (code == true && name == true && description == true && branch == true && semester == true && specialization == true && faculty == true) {
+        if (code == true && name == true && description == true && branch == true && semester == true && faculty == true) {
             course_btn = true;
         }
         else {
@@ -221,3 +211,213 @@ window.onclick = function(event) {
 //     modal4.style.display = "none";
 //   }
 }
+
+$(document).ready(function() {
+    function createBranchFunc() {
+        var branch_name = $('#id_branch_name').val();
+        var branch_desc = $('#id_branch_desc').val();
+        
+        if($(this).hasClass('create-branch-disabled')){
+            return false;
+        }
+        $(this).addClass('create-branch-disabled');
+        setTimeout(function(){
+            $("#branch-btn").removeClass('create-branch-disabled');
+        }, 5000);
+
+        var create_branch_url = $("#branch-btn").data('create-branch-url');
+
+        $.ajax({
+            type: "POST",
+            url: create_branch_url,
+            data: {
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+                'name': branch_name,
+                'desc': branch_desc,
+            },
+            success: function (data) {
+                if(data.status == 'success') {
+                    toastr.success(data.message)
+                    getAllBranchesFunc.call(this);
+                    getAllBranchesForSemesterFunccall.call(this);
+                    setTimeout(function(){
+                        $("#myModal").fadeOut(500);
+                    }, 1000);
+                }
+                else {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                console.log(data.message);
+            }
+        }); 
+    }
+
+    function getAllBranchesFunc() {
+
+        if($(this).hasClass('anchor-disabled')){
+            return false;
+        }
+        $(this).addClass('anchor-disabled');
+        setTimeout(function(){
+            $("#fetchBranches").removeClass('anchor-disabled');
+        }, 5000);
+
+        var get_branches_url = $("#fetchBranches").data('get-branch-url');
+
+        $.ajax({
+            type: "GET",
+            url: get_branches_url,
+            success: function (data) {
+                if(data.length == 0) {
+                    toastr.info("No branches available")
+                }
+                else {
+                    toastr.success("Branches list fetched successfully")
+                    let html_data = '<option value=""> Select Branch </option>';
+                    data.forEach(function (data) {
+                        html_data += `<option value="${data.id}">${data.name}</option>`
+                    });
+                    $("#id_branch").html(html_data);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+
+    function getAllBranchesForSemesterFunc() {
+
+        if($(this).hasClass('anchor-disabled')){
+            return false;
+        }
+        $(this).addClass('anchor-disabled');
+        setTimeout(function(){
+            $("#fetchBranchesforSemester").removeClass('anchor-disabled');
+        }, 5000);
+
+        var get_branches_url = $("#fetchBranchesforSemester").data('get-branch-url');
+
+        $.ajax({
+            type: "GET",
+            url: get_branches_url,
+            success: function (data) {
+                if(data.length == 0) {
+                    toastr.info("No branches available")
+                }
+                else {
+                    toastr.success("Branches list fetched successfully")
+                    let html_data = '<option value=""> Select Branch </option>';
+                    data.forEach(function (data) {
+                        html_data += `<option value="${data.id}">${data.name}</option>`
+                    });
+                    $("#id_semester_branch").html(html_data);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+
+    function createSemesterFunc() {
+        var semester_mode = $('#id_semester_mode').val();
+        var start_year = $('#id_start_year').val();
+        var end_year = $('#id_end_year').val();
+        var semester_branch = $('#id_semester_branch').val();
+        var semester_is_active = $('#id_semester_is_active').val();
+        
+        if($(this).hasClass('create-semester-disabled')){
+            return false;
+        }
+        $(this).addClass('create-semester-disabled');
+        setTimeout(function(){
+            $("#semester-btn").removeClass('create-semester-disabled');
+        }, 5000);
+
+        var create_semester_url = $("#semester-btn").data('create-semester-url');
+
+        $.ajax({
+            type: "POST",
+            url: create_semester_url,
+            data: {
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+                'mode': semester_mode,
+                'start_year': start_year,
+                'end_year': end_year,
+                'branch': semester_branch,
+                'is_active': semester_is_active,
+            },
+            success: function (data) {
+                if(data.status == 'success') {
+                    toastr.success(data.message)
+                    getAllSemestersFunc.call(this);
+                    setTimeout(function(){
+                        $("#myModal2").fadeOut(500);
+                    }, 1000);
+                }
+                else {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                console.log(data.message);
+            }
+        });
+    }
+
+    function getAllSemestersFunc() {
+
+        if($(this).hasClass('anchor-disabled')){
+            return false;
+        }
+        $(this).addClass('anchor-disabled');
+        setTimeout(function(){
+            $("#fetchSemester").removeClass('anchor-disabled');
+        }, 5000);
+
+        var get_semesters_url = $("#fetchSemester").data('get-semester-url');
+
+        $.ajax({
+            type: "GET",
+            url: get_semesters_url,
+            success: function (data) {
+                if(data.length == 0) {
+                    html_data = '<option value=""> Data Not Available </option>';
+                    $("#id_semester").html(html_data);
+                    toastr.info("No semesters available")
+                }
+                else {
+                    toastr.success("Semesters list fetched successfully")
+                    let html_data = '<option value=""> Select Semester </option>';
+                    data.forEach(function (data) {
+                        html_data += `<option value="${data.id}">${data.mode} ${data.start_year.substring(0, 4)}</option>`
+                    });
+                    $("#id_semester").html(html_data);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+
+    $("#branch-btn").click(function(){
+        createBranchFunc.call(this);
+    });
+    $("#fetchBranches").click(function(){
+        getAllBranchesFunc.call(this);
+    });
+    $("#fetchBranchesforSemester").click(function(){
+        getAllBranchesForSemesterFunc.call(this);
+    });
+
+    $("#semester-btn").click(function(){
+        createSemesterFunc.call(this);
+    });
+    $("#fetchSemester").click(function(){
+        getAllSemestersFunc.call(this);
+    });
+});
