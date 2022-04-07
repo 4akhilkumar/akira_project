@@ -361,7 +361,7 @@ img {
   margin-left: 345px;
   width: calc(100vw - 345px);
   padding: 1rem 1.2rem;
-  padding-right: 2rem;
+  padding-right: 1.4rem;
   transition: margin-left 300ms;
 }
 
@@ -2517,7 +2517,6 @@ i.transform-angle-135 {
 }
 
 #msform fieldset {
-  background-color: var(--card-color);
   border: 0 none;
   border-radius: 0.5rem;
   box-sizing: border-box;
@@ -2527,27 +2526,10 @@ i.transform-angle-135 {
   position: relative;
 }
 
-#msform fieldset::before {
-  content: "";
+.container-fluid {
+  padding: 1rem;
   background-color: var(--card-color);
-  position: absolute;
-  height: 105%;
-  width: 100%;
-  left: 1rem;
-  top: -1rem;
-  z-index: -1;
-  border-radius: .5rem;
-}
-
-#msform fieldset::after {
-  content: "";
-  background-color: var(--card-color);
-  position: absolute;
-  height: 105%;
-  width: 100%;
-  left: -1rem;
-  top: -1rem;
-  z-index: -1;
+  max-width: fit-content;
   border-radius: .5rem;
 }
 

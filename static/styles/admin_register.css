@@ -115,7 +115,14 @@ body {
     position: relative;
 }
 
-#msform fieldset::before {
+.container-fluid {
+  padding: 1rem;
+  background-color: white;
+  max-width: fit-content;
+  border-radius: .5rem;
+}
+
+/* #msform fieldset::before {
     content: "";
     background-color: white;
     position: absolute;
@@ -137,7 +144,7 @@ body {
     top: -1rem;
     z-index: -1;
     border-radius: .5rem;
-}
+} */
 
 .form-card {
     text-align: left;
