@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 
 from datetime import datetime
 
@@ -24,20 +24,6 @@ def manage_courses(request):
         "specializations":specializations,
     }
     return render(request, 'course/manage_courses.html', context)
-
-def first_letter_word(value):
-    lst = value.split(" ")
-    chindex=1
-    arr = []
-    if "and" in lst:
-        lst.remove("and")
-    for letter in lst:
-        if chindex==1:
-            arr.append(letter[0].upper().strip("&"))
-        else:
-            arr.append(letter)
-    out = "".join(arr)
-    return out
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_course(request):
@@ -87,6 +73,7 @@ def create_course(request):
                         for file in courseFiles:
                             CourseFiles.objects.create(course = getCourseObj, course_files = file)
                         messages.success(request, "Course created successfully")
+                        return redirect('create_course')
                     except Exception as e:
                         messages.error(request, e)
                 else:
@@ -95,6 +82,7 @@ def create_course(request):
                 messages.info(request, "Branch does not exist")
         else:
             messages.info(request, "User does not exist!")
+        return redirect('create_course')
     context = {
         "branch_list":branch_list,
         "semesterModeForm":semesterModeForm,
