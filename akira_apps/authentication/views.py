@@ -1230,7 +1230,6 @@ def logoutUser(request):
             updatecurrentSDPNA.reason = "User Logged Out"
             updatecurrentSDPNA.status = "Terminated"
             updatecurrentSDPNA.save()
-
         logout(request)
         return redirect('login')
     elif (request.user.is_authenticated) and (TwoFactorAuth.objects.filter(user = request.user, twofa = True).exists() is True):
@@ -1258,6 +1257,7 @@ def logoutUser(request):
             messages.info(request, "Please generate Backup codes")
             return redirect('account_settings')
     elif (request.user.is_authenticated):
+        UserPageVisits.objects.filter(user = request.user).delete()
         logout(request)
         return redirect('login')
     else:
