@@ -79,44 +79,75 @@
                         </span>
                     </div>
                 </div>
+
+                <div class="field-container mb-1rem">
+                  <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_course_coordinator">Course Co-Ordinator</label>
+                    <select name="course_coordinator" class="input-1" id="id_course_coordinator">
+                        <option value="">Select Faculty</option>
+                        {% for i in faculty_list %}
+                        <option value="{{ i.id }}"> {{ i }} </option>
+                        {% empty %}
+                        <option value="">Data Not Available</option>
+                        {% endfor %}
+                    </select>
+                    <span class="error-text">Select Course Co-Ordinator</span>
+                    <span class="redirect">
+                        <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
+                        <a href="#" id="fetchFaculty">
+                            <i class="fa-solid fa-arrows-rotate"></i> refresh
+                        </a>
+                    </span>
+                  </div>
+                  <div class="input-box active-grey">
+                      <label class="fieldlabels input-label" for="id_course_type">Course type</label>
+                      <select name="course_type" class="input-1" id="id_course_type">
+                        <option value="">Select Type</option>
+                        {% for x,y in courseTypeForm.fields.type.choices %}
+                        <option value="{{ x }}"> {{ y }} </option>
+                        {% empty %}
+                        <option value="">Data Not Available</option>
+                        {% endfor %}
+                      </select>
+                      <span class="error-text">Select Course type</span>
+                  </div>
+                </div>
                 
-                <div class="field-container mb-2rem">
-                    <div class="input-box active-grey">
-                        <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
-                        <select name="specialization" class="input-1" id="id_specialization">
-                            {% for i in specialization_list %}
-                            <option value="{{ i.id }}"> {{ i }} </option>
-                            {% empty %}
-                            <option value="">Data Not Available</option>
-                            {% endfor %}
-                        </select>
-                        <span class="help-text">Allocating to specialization is optional</span>
-                        <span class="error-text">Select specialization</span>
-                        <span class="redirect">
-                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
-                            <a href="#" id="fetchSpec">
-                                <i class="fa-solid fa-arrows-rotate"></i> refresh
-                            </a>
-                        </span>
-                    </div>
-                    <div class="input-box active-grey">
-                        <label class="fieldlabels input-label" for="id_course_coordinator">Course Co-Ordinator</label>
-                        <select name="course_coordinator" class="input-1" id="id_course_coordinator">
-                            <option value="">Select Faculty</option>
-                            {% for i in faculty_list %}
-                            <option value="{{ i.id }}"> {{ i }} </option>
-                            {% empty %}
-                            <option value="">Data Not Available</option>
-                            {% endfor %}
-                        </select>
-                        <span class="error-text">Select Course Co-Ordinator</span>
-                        <span class="redirect">
-                            <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
-                            <a href="#" id="fetchFaculty">
-                                <i class="fa-solid fa-arrows-rotate"></i> refresh
-                            </a>
-                        </span>
-                    </div>
+                <div class="field-container mb-1rem">
+                  <div class="input-box active-grey">
+                      <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
+                      <select name="specialization" class="input-1" id="id_specialization">
+                        {% for i in specialization_list %}
+                        <option value="{{ i.id }}"> {{ i }} </option>
+                        {% empty %}
+                        <option value="">Data Not Available</option>
+                        {% endfor %}
+                      </select>
+                      <span class="help-text">Allocating to specialization is optional</span>
+                      <span class="error-text">Select specialization</span>
+                      <span class="redirect">
+                          <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
+                          <a href="#" id="fetchSpec">
+                              <i class="fa-solid fa-arrows-rotate"></i> refresh
+                          </a>
+                      </span>
+                  </div>
+                  <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_prerequisite">Prerequisite</label>
+                    <select name="prerequisite" class="input-1" id="id_prerequisite">
+                        {% if prerequisiteList %}
+                        <option value="">Select prerequisite</option>
+                        {% endif %}
+                        {% for i in prerequisiteList %}
+                        <option value="{{ i.id }}"> {{ i }} </option>
+                        {% empty %}
+                        <option value="">Data Not Available</option>
+                        {% endfor %}
+                        <option value="None">No Need</option>
+                    </select>
+                    <span class="help-text">Prerequisite is optional</span>
+                    <span class="error-text">Select prerequisite</span>
+                  </div>
                 </div>
                 
                 <div class="input-box active-grey-1">

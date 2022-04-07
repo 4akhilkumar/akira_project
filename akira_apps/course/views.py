@@ -1,15 +1,16 @@
-from django.shortcuts import redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.db.models import Q
 from django.http import JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
 
 from datetime import datetime
 
 from akira_apps.academic.forms import (SemesterModeForm)
 from akira_apps.academic.models import (Semester, Branch)
+from akira_apps.course.forms import (CourseTypeForm)
 from akira_apps.course.models import (CourseComponent, CourseExtraFields, CourseMC, CourseOfferingType, CourseFiles, CourseSubComponent, CourseTask, TaskAnswer)
 from akira_apps.specialization.models import (SpecializationsMC)
 from akira_apps.super_admin.decorators import allowed_users
@@ -42,51 +43,66 @@ def first_letter_word(value):
 def create_course(request):
     branch_list = Branch.objects.all()
     semester_list = Semester.objects.all()
-    faculty_list = User.objects.all()
     semesterModeForm = SemesterModeForm()
+    courseTypeForm = CourseTypeForm()
+    faculty_list = User.objects.all()
     specialization_list = SpecializationsMC.objects.all()
+    prerequisiteList = CourseMC.objects.all()
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
         courseName = request.POST.get('course_name')
-        courseCC = request.POST.get('course_coordinator')
         courseDesc = request.POST.get('course_desc')
-        courseCC = User.objects.get(id=courseCC)
         courseBranch = request.POST.get('branch')
         courseSemester = request.POST.get('semester')
-        courseSpecialization_id = request.POST.get('specialization')
-        courseSpecializationObj = SpecializationsMC.objects.get(id=courseSpecialization_id)
-        courseSemester = Semester.objects.get(id=courseSemester)
+        courseCC = request.POST.get('course_coordinator')
+        course_type = request.POST.get('course_type')
+        courseSpecialization_id = request.POST.get('specialization', None)
+        pre_requisite = request.POST.get('prerequisite')
         courseFiles = request.FILES.getlist('course_files')
-        try:
-            CourseMC.objects.create(
-                code=courseCode,
-                name=courseName,
-                short_name=first_letter_word(courseName),
-                desc = courseDesc,
-                course_coordinator=courseCC,
-                branch=courseBranch,
-                semester=courseSemester,
-                specialization=courseSpecializationObj,
-                )
-            getCourseObj = CourseMC.objects.get(code = courseCode)
-            try:
-                for file in courseFiles:
-                    CourseFiles.objects.create(course = getCourseObj, course_files = file)
-                messages.success(request, "Course created successfully")
-            except Exception as e:
-                messages.error(request, e)
-            try:
-                pass
-            except Exception:
-                pass
-        except Exception as e:
-            messages.error(request, e)
+
+        if User.objects.filter(id=courseCC).exists() is True:
+            courseCC = User.objects.get(id=courseCC)
+            if Branch.objects.filter(id = courseBranch).exists() is True:
+                courseBranch = Branch.objects.get(id = courseBranch)
+                if Semester.objects.filter(id = courseSemester).exists() is True:
+                    courseSemester = Semester.objects.get(id = courseSemester)
+                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
+                        pre_requisite = None
+                    if courseSpecialization_id is not None:
+                        if SpecializationsMC.objects.get(id = courseSpecialization_id).exists() is True:
+                            courseSpecializationObj = SpecializationsMC.objects.get(id = courseSpecialization_id)
+                    CourseMC.objects.create(
+                        code=courseCode,
+                        name=courseName,
+                        desc = courseDesc,
+                        course_coordinator=courseCC,
+                        branch=courseBranch,
+                        semester=courseSemester,
+                        specialization=courseSpecializationObj,
+                        type = course_type,
+                        pre_requisite = pre_requisite,
+                    )
+                    getCourseObj = CourseMC.objects.get(code = courseCode)
+                    try:
+                        for file in courseFiles:
+                            CourseFiles.objects.create(course = getCourseObj, course_files = file)
+                        messages.success(request, "Course created successfully")
+                    except Exception as e:
+                        messages.error(request, e)
+                else:
+                    messages.info(request, "Semester does not exist")
+            else:
+                messages.info(request, "Branch does not exist")
+        else:
+            messages.info(request, "User does not exist!")
     context = {
         "branch_list":branch_list,
         "semesterModeForm":semesterModeForm,
         "semester_list":semester_list,
         "faculty_list":faculty_list,
+        "courseTypeForm": courseTypeForm,
         "specialization_list":specialization_list,
+        "prerequisiteList": prerequisiteList,
     }
     return render(request, 'course/create_course.html', context)
 
