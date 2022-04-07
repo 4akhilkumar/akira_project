@@ -84,8 +84,10 @@ def account_settings(request):
     get_unconfirmed_login_attempts = UserLoginDetails.objects.filter(Q(user__username = request.user.username, attempt = "Not Confirmed Yet!") | Q(user__username = request.user.username, attempt = "Need to verify")).order_by('-created_at')
     
     get_failed_attempt_in_a_month = UserLoginDetails.objects.filter(user = request.user, attempt = "Failed", user_confirm = 'Pending', score__lte = 15, created_at__range=(start_month,end_month)).count()
-    get_currentLoginInfo = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
-
+    try:
+        get_currentLoginInfo = UserLoginDetails.objects.get(user__username = request.user.username, sessionKey = request.session.session_key)
+    except Exception as e:
+        get_currentLoginInfo = None
     thisDeviceCurrent = False
     try:
         getU53R_876_10 = request.COOKIES['U53R_876_10']

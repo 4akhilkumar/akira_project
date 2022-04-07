@@ -125,6 +125,7 @@
             </div>
         </div>
     </div>
+    {% if get_currentLoginInfo %}
     <div class="user-login-details" id="Current-Previous-Login_Details">
         <h4>Login Info <a href="#" class="more-login-details">Details <i class="fa-solid fa-up-right-from-square"></i></a></h4>
         <div class="outer-container">
@@ -166,6 +167,7 @@
             
         </div>
     </div>
+    {% endif %}
     <div class="user-login-details" id="login-attempts">
         <h4>Login attempts</h4>
         <p>Help us to serve you better in securing your account. 
