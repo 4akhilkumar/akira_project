@@ -28,14 +28,14 @@ def createsemesterAjax(request):
             semesterisActive = True 
         else:
             semesterisActive = False
-        if Semester.objects.filter(mode=semesterMode, start_year=semesterStartYear, end_year=semesterEndYear, branch = semesterBranch, is_active=semesterisActive).exists() is False:
+        if Semester.objects.filter(mode=semesterMode, start_year=semesterStartYear, end_year=semesterEndYear, branch = semesterBranch).exists() is False:
             Semester.objects.create(mode=semesterMode, start_year=semesterStartYear,
                                     end_year=semesterEndYear, branch = semesterBranch,
                                     is_active=semesterisActive)
             message = "Semester created successfully!"
             status = "success"
         else:
-            message = "Semester %s already exists!" % str(semesterStartYear) + str(semesterEndYear)
+            message = "{} Semester {} already exists!".format(str(semesterMode), str(semesterStartYear))
             status = "failed"
         return JsonResponse({
             'message': message,
