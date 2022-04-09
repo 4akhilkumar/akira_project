@@ -2723,6 +2723,28 @@ i.transform-angle-135 {
   flex-wrap: wrap;
 }
 
+.input-box-footer-part {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+a.save_dynamic_field_value {
+  padding: .1rem .4rem;
+  border-radius: 1rem;
+  background: #03a9f4;
+  color: var(--main-accent);
+  font-size: small;
+}
+
+a.delete_dynamic_field {
+  padding: .1rem .4rem;
+  border-radius: 1rem;
+  background: #e91e63;
+  color: var(--main-accent);
+  font-size: small;
+}
+
 .input-box {
   position: relative;
   margin: 10px 0;
