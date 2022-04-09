@@ -32,10 +32,18 @@ class CourseMC(models.Model):
         return '%s - %s' % (self.code, self.name)
 
 class CourseExtraFields(models.Model):
+    FIELD_TYPE = [
+        ("", "Select Field type"),
+        ("text", "Short text"),
+        ("textarea", "Long text"),
+        ("number", "Number"),
+    ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     course = models.ForeignKey(CourseMC, on_delete=models.CASCADE)
     field_name = models.CharField(max_length = 100)
-    field_value = models.TextField(max_length = 500)
+    field_type = models.CharField(max_length = 100, choices = FIELD_TYPE, default="")
+    field_value = models.TextField(max_length = 50000)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '%s - %s' % (self.course, self.field_name)

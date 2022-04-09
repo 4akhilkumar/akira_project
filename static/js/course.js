@@ -4,6 +4,71 @@ $('#course-btn').click(function() {
     $(this).closest('form').submit();
 });
 
+// If user clicked on anchor tag then get the data-save-dynamic-field_id attribute value
+$(document).on('click', 'a[data-save-dynamic-field_id]', function() {
+    var field_id = $(this).data('save-dynamic-field_id');
+    console.log(field_id);
+    // Now get the value of the field having same value data-dynamic-field-value attribute 
+    var field_value = $('[data-dynamic-field-value="' + field_id + '"]').val();
+    console.log(field_value);
+    
+    // Now get the value in data-dynamic-field-value attribute of anchor tag
+    var setDynamicValueURL = $(this).data('set-dynamic-value-url');
+    console.log(setDynamicValueURL);
+
+    $.ajax({
+        type: "POST",
+        url: setDynamicValueURL,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'course_extra_field_id': field_id,
+            'course_extra_field_value': field_value,
+        },
+        success: function (data) {
+            if(data.status == 'success') {
+                toastr.success(data.message)
+                $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
+            }
+            else {
+                toastr.warning(data.message)
+            }
+        },
+        error: function (data) {
+            toastr.error(data.message)
+        }
+    }); 
+});
+
+$(document).on('click', 'a[data-delete-dynamic-field_id]', function() {
+    var field_id = $(this).data('delete-dynamic-field_id');
+    console.log(field_id);
+    
+    // Now get the value in data-dynamic-field-value attribute of anchor tag
+    var deleteDynamicValueURL = $(this).data('delete-dynamic-value-url');
+    console.log(deleteDynamicValueURL);
+
+    $.ajax({
+        type: "POST",
+        url: deleteDynamicValueURL,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'course_extra_field_id': field_id,
+        },
+        success: function (data) {
+            if(data.status == 'success') {
+                toastr.success(data.message)
+                $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
+            }
+            else {
+                toastr.warning(data.message)
+            }
+        },
+        error: function (data) {
+            toastr.error(data.message)
+        }
+    }); 
+});
+
 function setFocus(on) {
     var element = document.activeElement;
     if (on) {
@@ -29,13 +94,94 @@ function setFocus(on) {
 }
 
 $(document).ready(function() {
+    var current_fs, next_fs, previous_fs; //fieldsets
+    var opacity;
+
+    function nextFieldSet() {
+        current_fs = $(this).parent();
+        next_fs = $(this).parent().next();
+
+        //Add Class Active
+        if ($(this).prop('id') == 'create-design-course-next') {
+            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("account-section");
+            $(".main-container-fluid").removeClass();
+            $(".main-container-fluid").addClass("accountsection");
+        } else if ($(this).prop('id') == 'account-next') {
+            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("institute-section");
+            $(".main-container-fluid").removeClass();
+            $(".main-container-fluid").addClass("institutesection");
+        }
+
+        //show the next fieldset
+        next_fs.show();
+        //hide the current fieldset with style
+        current_fs.animate({opacity: 0}, {
+            step: function(now) {
+                // for making fielset appear animation
+                opacity = 1 - now;
+
+                current_fs.css({
+                    'display': 'none',
+                    'position': 'relative'
+                });
+                next_fs.css({'opacity': opacity});
+            }, duration: 500
+        });
+    }
+
+    function previousFieldSet() {
+        current_fs = $(this).parent();
+        previous_fs = $(this).parent().prev();
+
+        //Remove class active
+        if ($(this).prop('id') == 'account-previous') {
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("account-section");
+            $(".main-container-fluid").removeClass();
+            $(".main-container-fluid").addClass("personalsection");
+        } else if ($(this).prop('id') == 'institute-previous') {
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("institute-section");
+            $(".main-container-fluid").removeClass();
+            $(".main-container-fluid").addClass("accountsection");
+        } else if ($(this).prop('id') == 'tandc-previous') {
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("tandc-section");
+            $(".main-container-fluid").removeClass();
+            $(".main-container-fluid").addClass("institutesection");
+        }
+
+        //show the previous fieldset
+        previous_fs.show();
+
+        //hide the current fieldset with style
+        current_fs.animate({opacity: 0}, {
+            step: function(now) {
+                // for making fielset appear animation
+                opacity = 1 - now;
+
+                current_fs.css({
+                    'display': 'none',
+                    'position': 'relative'
+                });
+                previous_fs.css({'opacity': opacity});
+            }, duration: 500
+        });
+    }
+
+    $(".next").click(function() {
+        nextFieldSet.call(this);
+    });
+
+    $(".previous").click(function(){
+        previousFieldSet.call(this);
+    });
+    
+    $("input[data-create-design='true']").prop('disabled', true);
     $("#course-btn").prop("disabled", true);
     var course_btn = false;
 
     var code = false; var name = false;
     var description = false;
     var branch = false; var semester = false;
-    var specialization = false; var faculty = false;
+    var faculty = false; var course_type = false;
 
     $('#id_course_code').on('keyup keydown blur change', function() {
         if ($("#id_course_code").val() == "") {
@@ -91,7 +237,7 @@ $(document).ready(function() {
             $("#id_course_desc").parent().find(".error-text").css("display", "block");
             description = false;
         }
-        else if (!$("#id_course_desc").val().match(/^[A-Za-z0-9-/\s]*$/)) {
+        else if (!$("#id_course_desc").val().match(/^[A-Za-z0-9-,.-/\s]*$/)) {
             $("#id_course_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course description correctly&#x0003F;");
             $("#id_course_desc").parent().find(".error-text").css("display", "block");
             description = false;
@@ -142,8 +288,18 @@ $(document).ready(function() {
         }
     });
 
+    $('#id_course_type').on('keyup keydown blur change', function() {
+        if ($("#id_course_type").val() == "") {
+            $("#id_course_type").parent().find(".error-text").css("display", "block");
+            course_type = false;
+        } else {
+            $("#id_course_type").parent().find(".error-text").css("display", "none");
+            course_type = true;
+        }
+    });
+
     $('input, select, textarea').on('keyup keydown blur change', function() {
-        if (code == true && name == true && description == true && branch == true && semester == true && faculty == true) {
+        if (code == true && name == true && description == true && branch == true && semester == true && faculty == true && course_type == true) {
             course_btn = true;
         }
         else {
@@ -151,68 +307,209 @@ $(document).ready(function() {
         }
         if (course_btn == true) {
             $("#course-btn").prop("disabled", false);
+            $("input[data-create-design='true']").prop('disabled', false);
         }
         else {
             $("#course-btn").prop("disabled", true);
+            $("input[data-create-design='true']").prop('disabled', true);
         }
     });
-});
 
-var modal = document.getElementById("myModal"); 
-var modal2 = document.getElementById("myModal2");
-// var modal3 = document.getElementById("myModal3");
-// var modal4 = document.getElementById("myModal4");
-var btn = document.getElementById("showFormCreateBranch");
-var btn2 = document.getElementById("showFormCreateSemester");
-// var btn3 = document.getElementById("showFormCreateRoom");
-// var btn4 = document.getElementById("showFormCreateBulk");
-var span = document.getElementById("close-model");
-var span2 = document.getElementById("close-model2");
-// var span3 = document.getElementById("close-model3");
-// var span4 = document.getElementById("close-model4");
+    $("#branch-btn").prop("disabled", true);
+    var branch_btn = false;
+    var branch_name = false; var branch_description = false;
 
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-btn2.onclick = function() {
-  modal2.style.display = "block";
-}
-// btn3.onclick = function() {
-//   modal3.style.display = "block";
-// }
-// btn4.onclick = function() {
-//   modal4.style.display = "block";
-// }
+    $('#id_branch_name').on('keyup keydown blur change', function() {
+        if($("#id_branch_name").val() == "") {
+            $("#id_branch_name").parent().find(".error-text").html("Enter the branch name");
+            $("#id_branch_name").parent().find(".error-text").css("display", "block");
+            branch_name = false;
+        }
+        else if (!$("#id_branch_name").val().match(/^[A-Za-z&\-\s]*$/)) {
+            $("#id_branch_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the branch name correctly&#x0003F;");
+            $("#id_branch_name").parent().find(".error-text").css("display", "block");
+            branch_name = false;
+        }
+        else if ($("#id_branch_name").val().match(/^\s+$/)) {
+            $("#id_branch_name").parent().find(".error-text").html("Sorry, but the branch name cannot be empty");
+            $("#id_branch_name").parent().find(".error-text").css("display", "block");
+            branch_name = false;
+        }
+        else {
+            $("#id_branch_name").parent().find(".error-text").css("display", "none");
+            branch_name = true;
+        }
+    });
 
-span.onclick = function() {
-  modal.style.display = "none";
-}
-span2.onclick = function() {
-  modal2.style.display = "none";
-}
-// span3.onclick = function() {
-//   modal3.style.display = "none";
-// }
-// span4.onclick = function() {
-//   modal4.style.display = "none";
-// }
+    $('#id_branch_desc').on('keyup keydown change', function() {
+        if (!$("#id_branch_desc").val().match(/^\s+$/)) {
+            var chars = $('#id_branch_desc').val().length;
+            var max = $('#id_branch_desc').attr('maxlength');
+            var remaining = max - chars;
+            var char_text = remaining == 1 ? 'character' : 'characters';
+            $('#id_branch_desc').parent().find(".info-text").html("You have " + remaining + " " + char_text + " remaining");
+            $('#id_branch_desc').parent().find(".info-text").css("display", "block");
+        }
+    });
 
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-  if (event.target == modal2) {
-    modal2.style.display = "none";
-  }
-//   if (event.target == modal3) {
-//     modal3.style.display = "none";
-//   }
-//   if (event.target == modal4) {
-//     modal4.style.display = "none";
-//   }
-}
+    $('#id_branch_desc').on('keyup keydown blur change', function() {
+        if($("#id_branch_desc").val() == "") {
+            $("#id_branch_desc").parent().find(".error-text").html("Enter the branch description");
+            $("#id_branch_desc").parent().find(".error-text").css("display", "block");
+            branch_description = false;
+        }
+        else if (!$("#id_branch_desc").val().match(/^[A-Za-z0-9-/\s]*$/)) {
+            $("#id_branch_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the branch description correctly&#x0003F;");
+            $("#id_branch_desc").parent().find(".error-text").css("display", "block");
+            branch_description = false;
+        }
+        else if ($("#id_branch_desc").val().match(/^\s+$/)) {
+            $("#id_branch_desc").parent().find(".error-text").html("Sorry, but the branch description cannot be empty");
+            $("#id_branch_desc").parent().find(".error-text").css("display", "block");
+            branch_description = false;
+        }        
+        else if ($("#id_branch_desc").val().length > 500) {
+            $("#id_branch_desc").parent().find(".error-text").html("Sorry, but the branch description cannot be more than 500 characters");
+            $("#id_branch_desc").parent().find(".error-text").css("display", "block");
+            branch_description = false;
+        }
+        else {
+            $("#id_branch_desc").parent().find(".error-text").css("display", "none");
+            branch_description = true;
+        }
+    });
 
-$(document).ready(function() {
+    $('input, textarea').on('keyup keydown blur change', function() {
+        if (branch_name == true && branch_description == true) {
+            branch_btn = true;
+        }
+        else {
+            branch_btn = false;
+        }
+        if (branch_btn == true) {
+            $("#branch-btn").prop("disabled", false);
+        }
+        else {
+            $("#branch-btn").prop("disabled", true);
+        }
+    });
+
+    $("#semester-btn").prop("disabled", true);
+    var semester_btn = false;
+    var sem_mode = false; var sem_sy = false; var sem_ey = false;
+    var sem_branch = false;
+
+    $('#id_semester_mode').on('keyup keydown blur change', function() {
+        if ($("#id_semester_mode").val() == "") {
+            $("#id_semester_mode").parent().find(".error-text").css("display", "block");
+            sem_mode = false;
+        } else {
+            $("#id_semester_mode").parent().find(".error-text").css("display", "none");
+            sem_mode = true;
+        }
+    });
+
+    $('#id_start_year').on('keyup keydown blur change', function() {
+        if ($("#id_start_year").val() == "") {
+            $("#id_start_year").parent().find(".error-text").css("display", "block");
+            sem_sy = false;
+        }
+        else {
+            $("#id_start_year").parent().find(".error-text").css("display", "none");
+            sem_sy = true;
+        }
+    });
+
+    $('#id_end_year').on('keyup keydown blur change', function() {
+        if ($("#id_end_year").val() == "") {
+            $("#id_end_year").parent().find(".error-text").css("display", "block");
+            sem_ey = false;
+        }
+        else {
+            $("#id_end_year").parent().find(".error-text").css("display", "none");
+            sem_ey = true;
+        }
+    });
+
+    $('#id_semester_branch').on('keyup keydown blur change', function() {
+        if ($("#id_semester_branch").val() == "") {
+            $("#id_semester_branch").parent().find(".error-text").css("display", "block");
+            sem_branch = false;
+        } else {
+            $("#id_semester_branch").parent().find(".error-text").css("display", "none");
+            sem_branch = true;
+        }
+    });
+
+    $('input, select, textarea').on('keyup keydown blur change', function() {
+        if (sem_mode == true && sem_sy == true && sem_ey == true && sem_branch == true) {
+            semester_btn = true;
+        }
+        else {
+            semester_btn = false;
+        }
+        if (semester_btn == true) {
+            $("#semester-btn").prop("disabled", false);
+        }
+        else {
+            $("#semester-btn").prop("disabled", true);
+        }
+    });
+
+    function createDesignCourse() {
+        if($(this).hasClass('createCourseAjax-disabled')){
+            return false;
+        }
+        $(this).addClass('createCourseAjax-disabled');
+        setTimeout(function(){
+            $("#create-design-course-next").removeClass('createCourseAjax-disabled');
+        }, 5000);
+
+        var getCreateDesignCourseURL = $("#create-design-course-next").data('create-course-ajax');
+        var form = $('.create-course-form')[0];
+        var form_data = new FormData(form);
+
+        $.ajax({
+            method: "POST",
+            enctype: 'multipart/form-data',
+            url: getCreateDesignCourseURL,
+            data: form_data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                if(data.status == 'success') {
+                    toastr.success(data.message)
+                    var course_id = data.course_id;
+                    var course_id_cookie = "course_id=" + course_id + "; path=/";
+                    if(document.cookie.indexOf("course_id") != -1) {
+                        document.cookie = "course_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    document.cookie = course_id_cookie;
+                    var before_value = $(".create-course-form").data('created-course-id');
+                    console.log(before_value);
+                    $(".create-course-form").data('created-course-id', course_id);
+                    var after_value = $(".create-course-form").data('created-course-id');
+                    console.log(after_value);
+
+                    document.getElementById("id_course_id").value = course_id;
+                    var inputincourse_id = document.getElementById("id_course_id").value;
+                    console.log(inputincourse_id);
+
+
+                    var next = document.getElementsByClassName('next')[0];
+                    nextFieldSet.call(next);
+                }
+                else if(data.status == 'error') {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                toastr.error(data.message)
+            }
+        }); 
+    }
+
     function createBranchFunc() {
         var branch_name = $('#id_branch_name').val();
         var branch_desc = $('#id_branch_desc').val();
@@ -249,7 +546,7 @@ $(document).ready(function() {
                 }
             },
             error: function (data) {
-                console.log(data.message);
+                toastr.error(data.message)
             }
         }); 
     }
@@ -283,7 +580,7 @@ $(document).ready(function() {
                 }
             },
             error: function (data) {
-                console.log(data);
+                toastr.error(data);
             }
         });
     }
@@ -317,7 +614,7 @@ $(document).ready(function() {
                 }
             },
             error: function (data) {
-                console.log(data);
+                toastr.error(data);
             }
         });
     }
@@ -363,7 +660,7 @@ $(document).ready(function() {
                 }
             },
             error: function (data) {
-                console.log(data.message);
+                toastr.error(data.message);
             }
         });
     }
@@ -399,9 +696,48 @@ $(document).ready(function() {
                 }
             },
             error: function (data) {
-                console.log(data);
+                toastr.error(data);
             }
         });
+    }
+
+    function createExtraFieldFunc() {
+        if($(this).hasClass('create-extra-field-disabled')){
+            return false;
+        }
+        $(this).addClass('create-extra-field-disabled');
+        setTimeout(function(){
+            $("#extrafield-btn").removeClass('create-extra-field-disabled');
+        }, 5000);
+
+        var getCreateExtraFieldURL = $("#extrafield-btn").data('create-externalfield-url');
+        var createCourseExtraField = $('.create-course-extra-field')[0];
+        var createCourseExtraFieldform_data = new FormData(createCourseExtraField);
+
+        $.ajax({
+            method: "POST",
+            enctype: 'multipart/form-data',
+            url: getCreateExtraFieldURL,
+            data: createCourseExtraFieldform_data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                if(data.status == 'success') {
+                    toastr.success(data.message)
+                    $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
+                    setTimeout(function(){
+                        $("#myModal3").fadeOut(500);
+                    }, 1000);
+                }
+                else if(data.status == 'error') {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                toastr.error(data.message)
+            }
+        }); 
     }
 
     $("#branch-btn").click(function(){
@@ -420,4 +756,73 @@ $(document).ready(function() {
     $("#fetchSemester").click(function(){
         getAllSemestersFunc.call(this);
     });
+
+    $("#create-design-course-next").click(function(){
+        if($(".create-course-form").data('created-course-id') == 'empty') {
+            createDesignCourse.call(this);
+        }
+        else {
+            var next = document.getElementsByClassName('next')[0];
+            nextFieldSet.call(next);
+        }
+    });
+
+    $("#extrafield-btn").click(function() {
+        createExtraFieldFunc.call(this);
+    });
+
 });
+
+var modal = document.getElementById("myModal"); 
+var modal2 = document.getElementById("myModal2");
+var modal3 = document.getElementById("myModal3");
+// var modal4 = document.getElementById("myModal4");
+var btn = document.getElementById("showFormCreateBranch");
+var btn2 = document.getElementById("showFormCreateSemester");
+var btn3 = document.getElementById("showFormCreateExternalField");
+// var btn4 = document.getElementById("showFormCreateBulk");
+var span = document.getElementById("close-model");
+var span2 = document.getElementById("close-model2");
+var span3 = document.getElementById("close-model3");
+// var span4 = document.getElementById("close-model4");
+
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+btn2.onclick = function() {
+  modal2.style.display = "block";
+}
+btn3.onclick = function() {
+  modal3.style.display = "block";
+}
+// btn4.onclick = function() {
+//   modal4.style.display = "block";
+// }
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+span2.onclick = function() {
+  modal2.style.display = "none";
+}
+span3.onclick = function() {
+  modal3.style.display = "none";
+}
+// span4.onclick = function() {
+//   modal4.style.display = "none";
+// }
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+  if (event.target == modal2) {
+    modal2.style.display = "none";
+  }
+  if (event.target == modal3) {
+    modal3.style.display = "none";
+  }
+//   if (event.target == modal4) {
+//     modal4.style.display = "none";
+//   }
+}

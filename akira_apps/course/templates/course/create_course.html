@@ -9,141 +9,141 @@
 {% endblock %}
 
 {% block create-course %}
-<div class="regiserformcontainer">
-    <form id="msform" action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <fieldset>
-            <div class="form-card">
+
+<div class="main-container-fluid">
+  <div class="container-fluid">
+    <div class="regiserformcontainer">
+        <form id="msform" class="create-course-form" action="" autocomplete="off" method="POST" enctype="multipart/form-data" data-created-course-id="empty">
+            {% csrf_token %}
+            <fieldset>
+              <div class="form-card">
                 <div class="field-container">
-                    <div class="input-box">
-                        <label class="fieldlabels input-label" for="id_course_code">Code</label>
-                        <input type="text" name="course_code" id="id_course_code" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                        <span class="error-text">Enter course code</span>
-                    </div>
-                    <div class="input-box">
-                        <label class="fieldlabels input-label" for="id_course_name">Name</label> 
-                        <input type="text" name="course_name" id="id_course_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                        <span class="error-text">Enter course name</span>
-                    </div>
+                  <div class="input-box">
+                    <label class="fieldlabels input-label" for="id_course_code">Code</label>
+                    <input type="text" name="course_code" id="id_course_code" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="error-text">Enter course code</span>
+                  </div>
+                  <div class="input-box">
+                    <label class="fieldlabels input-label" for="id_course_name">Name</label> 
+                    <input type="text" name="course_name" id="id_course_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="error-text">Enter course name</span>
+                  </div>
                 </div>
-
+  
+                <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_course_desc">Description</label>
+                  <textarea name="course_desc" data-check-input-value="True" maxlength="500" id="id_course_desc" data-dynamic-field-value="1" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                  <span class="help-text">Maximum characters allowed is 500 only.</span>
+                  <span class="error-text">Enter course description</span>
+                  <span class="info-text"></span>
+                </div>
+  
                 <div class="field-container mb-1rem">
-                    <div class="input-box">
-                        <label class="fieldlabels input-label" for="id_course_desc">Description</label>
-                        <textarea name="course_desc" maxlength="500" id="id_course_desc" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
-                        <span class="help-text">Maximum characters allowed is 500 only.</span>
-                        <span class="error-text">Enter course description</span>
-                        <span class="info-text"></span>
-                    </div>
+                  <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_branch">Branch</label>
+                    <select name="branch" class="input-1" id="id_branch" required>
+                      {% if branch_list %}
+                      <option value="">Select Branch</option>
+                      {% endif %}
+                      {% for branch in branch_list %}
+                      <option value="{{ branch.id }}">{{ branch.name }}</option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
+                    </select>
+                    <span class="error-text">Select branch</span>
+                    <span class="redirect">
+                      <a href="#" id="showFormCreateBranch"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
+                      <a href="#" id="fetchBranches" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
+                        <i class="fa-solid fa-arrows-rotate"></i> refresh
+                      </a>
+                    </span>
+                  </div>
+                  <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_semester">Semester</label>
+                    <select name="semester" class="input-1" id="id_semester" required>
+                      {% if semester_list %}
+                      <option value="">Select Semester</option>
+                      {% endif %}
+                      {% for i in semester_list %}
+                      <option value="{{ i.id }}"> {{ i }} </option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
+                    </select>
+                    <span class="error-text">Select semester</span>
+                    <span class="redirect">
+                      <a href="#" id="showFormCreateSemester"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
+                      <a href="#" id="fetchSemester" data-get-semester-url="{% url 'getAllSemestersAjax' %}">
+                        <i class="fa-solid fa-arrows-rotate"></i> refresh
+                      </a>
+                    </span>
+                  </div>
                 </div>
-
-                <div class="field-container mb-1rem">
-                    <div class="input-box active-grey">
-                        <label class="fieldlabels input-label" for="id_branch">Branch</label>
-                        <select name="branch" class="input-1" id="id_branch" required>
-                            {% if branch_list %}
-                            <option value="">Select Branch</option>
-                            {% endif %}
-                            {% for branch in branch_list %}
-                            <option value="{{ branch.id }}">{{ branch.name }}</option>
-                            {% empty %}
-                            <option value="">Data Not Available</option>
-                            {% endfor %}
-                        </select>
-                        <span class="error-text">Select branch</span>
-                        <span class="redirect">
-                            <a href="#" id="showFormCreateBranch"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
-                            <a href="#" id="fetchBranches" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
-                                <i class="fa-solid fa-arrows-rotate"></i> refresh
-                            </a>
-                        </span>
-                    </div>
-                    <div class="input-box active-grey">
-                        <label class="fieldlabels input-label" for="id_semester">Semester</label>
-                        <select name="semester" class="input-1" id="id_semester" required>
-                            {% if semester_list %}
-                            <option value="">Select Semester</option>
-                            {% endif %}
-                            {% for i in semester_list %}
-                            <option value="{{ i.id }}"> {{ i }} </option>
-                            {% empty %}
-                            <option value="">Data Not Available</option>
-                            {% endfor %}
-                        </select>
-                        <span class="error-text">Select semester</span>
-                        <span class="redirect">
-                            <a href="#" id="showFormCreateSemester"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
-                            <a href="#" id="fetchSemester" data-get-semester-url="{% url 'getAllSemestersAjax' %}">
-                                <i class="fa-solid fa-arrows-rotate"></i> refresh
-                            </a>
-                        </span>
-                    </div>
-                </div>
-
+  
                 <div class="field-container mb-1rem">
                   <div class="input-box active-grey">
                     <label class="fieldlabels input-label" for="id_course_coordinator">Course Co-Ordinator</label>
                     <select name="course_coordinator" class="input-1" id="id_course_coordinator">
-                        <option value="">Select Faculty</option>
-                        {% for i in faculty_list %}
-                        <option value="{{ i.id }}"> {{ i }} </option>
-                        {% empty %}
-                        <option value="">Data Not Available</option>
-                        {% endfor %}
+                      <option value="">Select Faculty</option>
+                      {% for i in faculty_list %}
+                      <option value="{{ i.id }}"> {{ i }} </option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
                     </select>
                     <span class="error-text">Select Course Co-Ordinator</span>
                     <span class="redirect">
-                        <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
-                        <a href="#" id="fetchFaculty">
-                            <i class="fa-solid fa-arrows-rotate"></i> refresh
-                        </a>
+                      <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
+                      <a href="#" id="fetchFaculty">
+                        <i class="fa-solid fa-arrows-rotate"></i> refresh
+                      </a>
                     </span>
                   </div>
                   <div class="input-box active-grey">
-                      <label class="fieldlabels input-label" for="id_course_type">Course type</label>
-                      <select name="course_type" class="input-1" id="id_course_type">
-                        <option value="">Select Type</option>
-                        {% for x,y in courseTypeForm.fields.type.choices %}
-                        <option value="{{ x }}"> {{ y }} </option>
-                        {% empty %}
-                        <option value="">Data Not Available</option>
-                        {% endfor %}
-                      </select>
-                      <span class="error-text">Select Course type</span>
+                    <label class="fieldlabels input-label" for="id_course_type">Course type</label>
+                    <select name="course_type" class="input-1" id="id_course_type">
+                      {% for x,y in courseTypeForm.fields.type.choices %}
+                      <option value="{{ x }}"> {{ y }} </option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
+                    </select>
+                    <span class="error-text">Select Course type</span>
                   </div>
                 </div>
                 
                 <div class="field-container mb-1rem">
                   <div class="input-box active-grey">
-                      <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
-                      <select name="specialization" class="input-1" id="id_specialization">
-                        {% for i in specialization_list %}
-                        <option value="{{ i.id }}"> {{ i }} </option>
-                        {% empty %}
-                        <option value="">Data Not Available</option>
-                        {% endfor %}
-                      </select>
-                      <span class="help-text">Allocating to specialization is optional</span>
-                      <span class="error-text">Select specialization</span>
-                      <span class="redirect">
-                          <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
-                          <a href="#" id="fetchSpec">
-                              <i class="fa-solid fa-arrows-rotate"></i> refresh
-                          </a>
-                      </span>
+                    <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
+                    <select name="specialization" class="input-1" id="id_specialization">
+                      {% for i in specialization_list %}
+                      <option value="{{ i.id }}"> {{ i }} </option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
+                    </select>
+                    <span class="help-text">Allocating to specialization is optional</span>
+                    <span class="error-text">Select specialization</span>
+                    <span class="redirect">
+                      <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
+                      <a href="#" id="fetchSpec">
+                        <i class="fa-solid fa-arrows-rotate"></i> refresh
+                      </a>
+                    </span>
                   </div>
                   <div class="input-box active-grey">
                     <label class="fieldlabels input-label" for="id_prerequisite">Prerequisite</label>
                     <select name="prerequisite" class="input-1" id="id_prerequisite">
-                        {% if prerequisiteList %}
-                        <option value="">Select prerequisite</option>
-                        {% endif %}
-                        {% for i in prerequisiteList %}
-                        <option value="{{ i.id }}"> {{ i }} </option>
-                        {% empty %}
-                        <option value="">Data Not Available</option>
-                        {% endfor %}
-                        <option value="None">No Need</option>
+                      {% if prerequisiteList %}
+                      <option value="">Select prerequisite</option>
+                      {% endif %}
+                      <option value="None">No Need</option>
+                      {% for i in prerequisiteList %}
+                      <option value="{{ i.id }}"> {{ i }} </option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
                     </select>
                     <span class="help-text">Prerequisite is optional</span>
                     <span class="error-text">Select prerequisite</span>
@@ -155,10 +155,96 @@
                     <input type="file" name="course_files" id="id_course_files" class="input-1 custom-input-file" multiple>
                     <span class="help-text">Uploading files is optional</span>
                 </div>
-            </div>
-            <button id="course-btn" class="action-button course-btn">Create</button>
-        </fieldset>
-    </form>
+              </div>
+              <button id="course-btn" class="action-button course-btn">Create Course</button>
+              <input type="button" name="next" data-create-design="true" data-create-course-ajax="{% url 'createCourseAjax' %}" id="create-design-course-next" class="next action-button" value="Create & design" />
+            </fieldset>
+            <fieldset>
+                <div class="form-card">
+                  <div class="">
+                      <div class="">
+                          <h2 class="fs-title">Course Offering</h2>
+                      </div>
+                  </div>
+                  <!-- Course Offering Start -->
+                  <div class="field-container">
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_mode_of_study">Mode of study</label>
+                      <input type="text" name="mode_of_study" id="id_mode_of_study" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <span class="error-text">Enter course mode of study</span>
+                    </div>
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_course_ltps">L-T-P-S</label>
+                      <input type="text" name="course_ltps" id="id_course_ltps" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <span class="help-text">Seperate the L-T-P-S points by "-".</span>
+                      <br>
+                      <span class="help-text">E.g: 4-2-1-4</span>
+                      <span class="error-text">Enter course L-T-P-S points</span>
+                    </div>
+                  </div>
+                  <a href="#" id="showFormCreateCMOSField">Add another MOS</a>
+                  <span id="id_append_external_fields">
+                    <!-- Append Here -->
+                    {% for each in courseExtraFields %}
+                      {% if each.field_type == "textarea" %}
+                      <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                        <textarea name="{{ each.field_name }}" data-dynamic-field-value="{{ each.id }}" maxlength="5000" id="id_{{ each.field_name }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>{{ each.field_value }}</textarea>
+                        <div class="input-box-footer-part">
+                          <div class="ibfp-1">
+                            <span class="help-text">Maximum characters allowed is 500 only.</span>
+                            <span class="help-text">Please click on the save button after done.</span>
+                          </div>
+                          <div class="ibfp-2">
+                            <a href="#" data-delete-dynamic-value-url="{% url 'deleteCourseExtraFieldValueAjax' %}" data-delete-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                            <a href="#" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-save-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a>
+                          </div>
+                        </div>
+                      </div>
+                      {% endif %}
+                      {% if each.field_type == "text" %}
+                      <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                        <input type="text" name="{{ each.field_name }}" onload="setFocus(true)" data-dynamic-field-value="{{ each.id }}" id="id_{{ each.field_name }}" class="input-1" value="{{ each.field_value }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <div class="input-box-footer-part">
+                          <div class="ibfp-1">
+                            <span class="help-text">Maximum characters allowed is 500 only.</span>
+                            <span class="help-text">Please click on the save button after done.</span>
+                          </div>
+                          <div class="ibfp-2">
+                            <a href="#" data-delete-dynamic-value-url="{% url 'deleteCourseExtraFieldValueAjax' %}" data-delete-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                            <a href="#" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-save-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a>
+                          </div>
+                        </div>
+                      </div>
+                      {% endif %}
+                      {% if each.field_type == "number" %}
+                      <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                        <input type="number" name="{{ each.field_name }}" data-dynamic-field-value="{{ each.id }}" id="id_{{ each.field_name }}" value="{{ each.field_value }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <div class="input-box-footer-part">
+                          <div class="ibfp-1">
+                            <span class="help-text">Maximum characters allowed is 500 only.</span>
+                            <span class="help-text">Please click on the save button after done.</span>
+                          </div>
+                          <div class="ibfp-2">
+                            <a href="#" data-delete-dynamic-value-url="{% url 'deleteCourseExtraFieldValueAjax' %}" data-delete-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                            <a href="#" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-save-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a>
+                          </div>
+                        </div>
+                      </div>
+                      {% endif %}
+                    {% endfor %}
+                    <!-- Append Here -->
+                  </span>
+                  <a href="#" id="showFormCreateExternalField">Add extra field</a>
+                </div>
+                <button id="course-btn" class="action-button course-btn">Finalize!</button>
+                <input type="button" name="previous" id="account-previous" class="previous action-button-previous" value="Previous" />
+            </fieldset>
+        </form>
+    </div>
+  </div>
 </div>
 
 <div id="myModal" class="modal">
@@ -169,7 +255,7 @@
         <span id="close-model" class="close">&times;</span>
       </div>
       <div class="regiserformcontainer">
-        <form id="msform" class="branch_form" action="" method="POST">
+        <form id="msform" action="" method="POST">
           {% csrf_token %}
           <fieldset>
             <div class="form-card">
@@ -181,14 +267,12 @@
                 </div>
               </div>
   
-              <div class="field-container mb-1rem">
-                <div class="input-box">
-                  <label class="fieldlabels input-label" for="id_branch_desc">Description</label>
-                  <textarea name="desc" maxlength="500" id="id_branch_desc" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
-                  <span class="help-text">Maximum characters allowed is 500 only.</span>
-                  <span class="error-text">Enter branch description</span>
-                  <span class="info-text"></span>
-                </div>
+              <div class="input-box">
+                <label class="fieldlabels input-label" for="id_branch_desc">Description</label>
+                <textarea name="desc" maxlength="500" id="id_branch_desc" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                <span class="help-text">Maximum characters allowed is 500 only.</span>
+                <span class="error-text">Enter branch description</span>
+                <span class="info-text"></span>
               </div>
             </div>
             <button type="button" id="branch-btn" data-create-branch-url="{% url 'createbranchAjax' %}" class="action-button branch-btn">Create</button>
@@ -211,7 +295,6 @@
           {% csrf_token %}
           <fieldset>
             <div class="form-card"> 
-              
               <div class="field-container">
                 <div class="input-box active-grey">
                   <label class="fieldlabels input-label" for="id_semester_mode">Semester mode</label>
@@ -273,9 +356,51 @@
                     <span class="error-text">Select semester</span>
                 </div>
               </div>
-
             </div>
             <button type="button" id="semester-btn" data-create-semester-url="{% url 'createsemesterAjax' %}" class="action-button semester-btn">Create</button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="myModal3" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Create <span class="underline">Extra Field</span></h3>
+        <span id="close-model3" class="close">&times;</span>
+      </div>
+      <div class="regiserformcontainer">
+        <form id="msform" action="" class="create-course-extra-field" method="POST">
+          {% csrf_token %}
+          <fieldset>
+            <div class="form-card">
+              <div class="field-container">
+                <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_course_extra_field_name">Field Name</label> 
+                  <input type="text" name="course_extra_field_name" id="id_course_extra_field_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <input type="hidden" name="course_id" id="id_course_id">
+                  <span class="error-text">Enter field name</span>
+                </div>
+              </div>
+  
+              <div class="field-container mb-1rem">
+                <div class="input-box active-grey">
+                  <label class="fieldlabels input-label" for="id_course_extra_field_type">Course type</label>
+                  <select name="course_extra_field_type" class="input-1" id="id_course_extra_field_type">
+                    {% for x,y in courseExtraFieldTypeForm.fields.fieldtype.choices %}
+                    <option value="{{ x }}" {% if courseObj.type == x %} selected {% endif %}> {{ y }} </option>
+                    {% empty %}
+                    <option value="">Data Not Available</option>
+                    {% endfor %}
+                  </select>
+                  <span class="error-text">Select Course type</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" id="extrafield-btn" data-create-externalfield-url="{% url 'createCourseExtraFieldAjax' %}" class="action-button extrafield-btn">Create</button>
           </fieldset>
         </form>
       </div>
