@@ -536,7 +536,7 @@ $(document).ready(function() {
                 if(data.status == 'success') {
                     toastr.success(data.message)
                     getAllBranchesFunc.call(this);
-                    getAllBranchesForSemesterFunccall.call(this);
+                    getAllBranchesForSemesterFunc.call(this);
                     setTimeout(function(){
                         $("#myModal").fadeOut(500);
                     }, 1000);
