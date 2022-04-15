@@ -92,7 +92,7 @@ class UserPageVisits(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s' % (self.user)
+        return '%s - %s' % (self.user, self.currentPage)
 
     class Meta:
         ordering = ['created_at']
