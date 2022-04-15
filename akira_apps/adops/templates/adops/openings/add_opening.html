@@ -14,97 +14,101 @@
 {% endblock %}
 
 {% block create-openings %}
-<div class="regiserformcontainer">
-    <form id="msform" class="block_form" autocomplete="off" action="" method="POST">
-      {% csrf_token %}
-      <fieldset>
-        <div class="form-card">
-          <div class="field-container">
-            <div class="input-box">
-              <label class="fieldlabels input-label" for="id_job_name">Job name</label> 
-              <input type="text" name="job" id="id_job_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-              <span class="error-text">Enter job title</span>
-            </div>
-          </div>
-
-          <div class="field-container">
-            <div class="input-box">
-              <label class="fieldlabels input-label" for="id_job_overview">Overview</label>
-              <textarea name="overview" maxlength="400" id="id_job_overview" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
-              <span class="help-text">Seperate sentence by '#'.</span>
-              <span class="help-text">Maximum characters allowed is 400 only.</span>
-              <span class="error-text">Enter job overview</span>
-              <span class="info-text"></span>
-            </div>
-          </div>
-
-          <div class="field-container">
-            <div class="input-box">
-              <label class="fieldlabels input-label" for="id_job_description">Description</label>
-              <textarea name="description" maxlength="2000" id="id_job_description" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
-              <span class="help-text">Seperate sentence by '#'.</span>
-              <span class="help-text">Maximum characters allowed is 2000 only.</span>
-              <span class="error-text">Enter job description</span>
-              <span class="info-text"></span>
-            </div>
-          </div>
-
-          <div class="field-container">
-            <div class="input-box">
-                <label class="fieldlabels input-label" for="id_experience">Experience</label> 
-                <input type="text" name="experience" id="id_experience" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                <span class="error-text">Enter experience</span>
-            </div>
-            <div class="input-box">
-                <label class="fieldlabels input-label" for="id_qualification">Qualification</label> 
-                <input type="text" name="qualification" id="id_qualification" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                <span class="error-text">Enter qualification</span>
-            </div>
-          </div>
-
-          <div class="field-container">
+<div class="main-container-fluid">
+  <div class="container-fluid">
+  <div class="regiserformcontainer">
+      <form id="msform" class="block_form" autocomplete="off" action="" method="POST">
+        {% csrf_token %}
+        <fieldset>
+          <div class="form-card">
+            <div class="field-container">
               <div class="input-box">
-                  <label class="fieldlabels input-label" for="id_location">Location</label> 
-                  <input type="text" name="location" id="id_location" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                  <span class="error-text">Enter location</span>
+                <label class="fieldlabels input-label" for="id_job_name">Job name</label> 
+                <input type="text" name="job" id="id_job_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                <span class="error-text">Enter job title</span>
               </div>
-            <div class="input-box">
-                <label class="fieldlabels input-label" for="id_pay_scale">Pay scale</label> 
-                <input type="text" name="pay_scale" id="id_pay_scale" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                <span class="error-text">Enter pay scale</span>
             </div>
-          </div>
 
-          <div class="field-container mb-1rem">
-            <div class="input-box active-grey">
-                <label class="fieldlabels input-label" for="id_job_type">Job type</label>
-                <select name="job_type" class="input-1" id="id_job_type" required>
-                    {% for x,y in job_type_list.fields.job_type.choices %}
-                    <option value="{{ x }}" {% if x == openingIDObj.type %} selected {% endif %}>{{ y }}</option>
-                    {% empty %}
-                    <option value="">Data Not Available</option>
-                    {% endfor %}
-                </select>
-                <span class="error-text">Select Job type</span>
+            <div class="field-container">
+              <div class="input-box">
+                <label class="fieldlabels input-label" for="id_job_overview">Overview</label>
+                <textarea name="overview" maxlength="400" id="id_job_overview" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                <span class="help-text">Seperate sentence by '#'.</span>
+                <span class="help-text">Maximum characters allowed is 400 only.</span>
+                <span class="error-text">Enter job overview</span>
+                <span class="info-text"></span>
+              </div>
             </div>
-            <div class="input-box active-grey">
-                <label class="fieldlabels input-label" for="id_contact_person">Contact person</label>
-                <select name="contact_person" class="input-1" id="id_contact_person" required>
-                    <option value="">Select Contact Person</option>
-                    {% for i in contact_person %}
-                    <option value="{{i.id}}" {% if i.id == openingIDObj.contact_person.id %} selected {% endif %}>{{i.first_name}} {{i.last_name}}</option>
-                    {% empty %}
-                    <option value="">Data Not Available</option>
-                    {% endfor %}
-                </select>
-                <span class="error-text">Select contact person</span>
+
+            <div class="field-container">
+              <div class="input-box">
+                <label class="fieldlabels input-label" for="id_job_description">Description</label>
+                <textarea name="description" maxlength="2000" id="id_job_description" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                <span class="help-text">Seperate sentence by '#'.</span>
+                <span class="help-text">Maximum characters allowed is 2000 only.</span>
+                <span class="error-text">Enter job description</span>
+                <span class="info-text"></span>
+              </div>
+            </div>
+
+            <div class="field-container">
+              <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_experience">Experience</label> 
+                  <input type="text" name="experience" id="id_experience" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <span class="error-text">Enter experience</span>
+              </div>
+              <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_qualification">Qualification</label> 
+                  <input type="text" name="qualification" id="id_qualification" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <span class="error-text">Enter qualification</span>
+              </div>
+            </div>
+
+            <div class="field-container">
+                <div class="input-box">
+                    <label class="fieldlabels input-label" for="id_location">Location</label> 
+                    <input type="text" name="location" id="id_location" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="error-text">Enter location</span>
+                </div>
+              <div class="input-box">
+                  <label class="fieldlabels input-label" for="id_pay_scale">Pay scale</label> 
+                  <input type="text" name="pay_scale" id="id_pay_scale" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <span class="error-text">Enter pay scale</span>
+              </div>
+            </div>
+
+            <div class="field-container mb-1rem">
+              <div class="input-box active-grey">
+                  <label class="fieldlabels input-label" for="id_job_type">Job type</label>
+                  <select name="job_type" class="input-1" id="id_job_type" required>
+                      {% for x,y in job_type_list.fields.job_type.choices %}
+                      <option value="{{ x }}" {% if x == openingIDObj.type %} selected {% endif %}>{{ y }}</option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
+                  </select>
+                  <span class="error-text">Select Job type</span>
+              </div>
+              <div class="input-box active-grey">
+                  <label class="fieldlabels input-label" for="id_contact_person">Contact person</label>
+                  <select name="contact_person" class="input-1" id="id_contact_person" required>
+                      <option value="">Select Contact Person</option>
+                      {% for i in contact_person %}
+                      <option value="{{i.id}}" {% if i.id == openingIDObj.contact_person.id %} selected {% endif %}>{{i.first_name}} {{i.last_name}}</option>
+                      {% empty %}
+                      <option value="">Data Not Available</option>
+                      {% endfor %}
+                  </select>
+                  <span class="error-text">Select contact person</span>
+              </div>
             </div>
           </div>
-        </div>
-        <button id="create_opening-btn" class="action-button create_opening-btn">Create</button>
-        <button type="button" id="cancel-btn" data-redirect-url="{% url 'manage_adops' %}" class="action-button-cancel">Cancel</button>
-      </fieldset>
-    </form>
+          <button id="create_opening-btn" class="action-button create_opening-btn">Create</button>
+          <button type="button" id="cancel-btn" data-redirect-url="{% url 'manage_adops' %}" class="action-button-cancel">Cancel</button>
+        </fieldset>
+      </form>
+  </div>
+</div>
 </div>
 
 <script src="{% static 'js/add-opening.js' %}"></script>
