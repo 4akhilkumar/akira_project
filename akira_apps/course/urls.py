@@ -4,11 +4,21 @@ from . import views
 urlpatterns = [
     path('manage_courses/', views.manage_courses, name='manage_courses'),
     path('createCourseAjax/', views.createCourseAjax, name='createCourseAjax'),
-    path('create_course/', views.create_course, name='create_course'),
+    path('createCourse/', views.updateCourse, name='updateCourse'),
     path('editCourse/<course_id>/', views.editCourse, name='editCourse'),
     path('createCourseExtraFieldAjax/', views.createCourseExtraFieldAjax, name='createCourseExtraFieldAjax'),
     path('setCourseExtraFieldValueAjax/', views.setCourseExtraFieldValueAjax, name='setCourseExtraFieldValueAjax'),
     path('deleteCourseExtraFieldValueAjax/', views.deleteCourseExtraFieldValueAjax, name='deleteCourseExtraFieldValueAjax'),
+
+    path('createCourseCOTAjax/', views.createCourseCOTAjax, name='createCourseCOTAjax'),
+    path('getAllCurrentCOTAjax/', views.getAllCurrentCOTAjax, name='getAllCurrentCOTAjax'),
+    # path('deleteCourseCOTAjax/', views.deleteCourseCOTAjax, name='deleteCourseCOTAjax'),
+
+    path('createCourseCOTExtraFieldAjax/', views.createCourseCOTExtraFieldAjax, name='createCourseCOTExtraFieldAjax'),
+    path('setCourseCOTExtraFieldValueAjax/', views.setCourseCOTExtraFieldValueAjax, name='setCourseCOTExtraFieldValueAjax'),
+    path('deleteCourseCOTExtraFieldValueAjax/', views.deleteCourseCOTExtraFieldValueAjax, name='deleteCourseCOTExtraFieldValueAjax'),
+
+    path('submitcourseformAjax/', views.submitcourseformAjax, name='submitcourseformAjax'),
     
     path('view_course/<course_code>/', views.view_course, name='view_course'),
     path('search_course/', views.search_course, name='search_course'),

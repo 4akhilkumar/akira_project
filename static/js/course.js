@@ -1,9 +1,3 @@
-$('#course-btn').click(function() {
-    $(this).prop('disabled', true);
-    $(this).html('Please wait...');
-    $(this).closest('form').submit();
-});
-
 // If user clicked on anchor tag then get the data-save-dynamic-field_id attribute value
 $(document).on('click', 'a[data-save-dynamic-field_id]', function() {
     var field_id = $(this).data('save-dynamic-field_id');
@@ -58,6 +52,69 @@ $(document).on('click', 'a[data-delete-dynamic-field_id]', function() {
             if(data.status == 'success') {
                 toastr.success(data.message)
                 $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
+            }
+            else {
+                toastr.warning(data.message)
+            }
+        },
+        error: function (data) {
+            toastr.error(data.message)
+        }
+    }); 
+});
+
+$(document).on('click', 'a[data-save-cot-dynamic-field_id]', function() {
+    var cot_field_id = $(this).data('save-cot-dynamic-field_id');
+    console.log(cot_field_id);
+    // Now get the value of the field having same value data-dynamic-field-value attribute 
+    var cot_field_value = $('[data-cot-dynamic-field-value="' + cot_field_id + '"]').val();
+    console.log(cot_field_value);
+    
+    // Now get the value in data-dynamic-field-value attribute of anchor tag
+    var setCOTDynamicValueURL = $(this).data('set-cot-dynamic-value-url');
+    console.log(setCOTDynamicValueURL);
+
+    $.ajax({
+        type: "POST",
+        url: setCOTDynamicValueURL,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'cot_extra_field_id': cot_field_id,
+            'cot_extra_field_value': cot_field_value,
+        },
+        success: function (data) {
+            if(data.status == 'success') {
+                toastr.success(data.message)
+                $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
+            }
+            else {
+                toastr.warning(data.message)
+            }
+        },
+        error: function (data) {
+            toastr.error(data.message)
+        }
+    }); 
+});
+
+$(document).on('click', 'a[data-delete-cot-dynamic-field_id]', function() {
+    var cot_extra_field_id = $(this).data('delete-cot-dynamic-field_id');
+    console.log(cot_extra_field_id);
+
+    var deleteCOTExtraFieldURL = $(this).data('delete-cot-dynamic-value-url');
+    console.log(deleteCOTExtraFieldURL);
+
+    $.ajax({
+        type: "POST",
+        url: deleteCOTExtraFieldURL,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'cot_extra_field_id': cot_extra_field_id,
+        },
+        success: function (data) {
+            if(data.status == 'success') {
+                toastr.success(data.message)
+                $("#id_append_cot_external_fields").load(location.href + " #id_append_cot_external_fields");
             }
             else {
                 toastr.warning(data.message)
@@ -496,6 +553,21 @@ $(document).ready(function() {
                     var inputincourse_id = document.getElementById("id_course_id").value;
                     console.log(inputincourse_id);
 
+                    document.getElementById("id_course_cot_id").value = course_id;
+                    var inputincoursecot_id = document.getElementById("id_course_cot_id").value;
+                    console.log(inputincoursecot_id);
+
+                    $(".get-all-current-cot").data('current_course_id', course_id);
+                    var data_current_course_id = $(".get-all-current-cot").data('current_course_id');
+                    console.log(data_current_course_id);
+
+                    $('#id_course_code').prop('readonly', true);
+                    $("#id_course_code").parent().find(".help-text").html("Can be modified while editing course");
+                    $("#id_course_code").parent().find(".help-text").css("display", "block");
+                    
+                    $('#id_course_name').prop('readonly', true);
+                    $("#id_course_name").parent().find(".help-text").html("Can be modified while editing course");
+                    $("#id_course_name").parent().find(".help-text").css("display", "block");
 
                     var next = document.getElementsByClassName('next')[0];
                     nextFieldSet.call(next);
@@ -539,7 +611,7 @@ $(document).ready(function() {
                     getAllBranchesForSemesterFunc.call(this);
                     setTimeout(function(){
                         $("#myModal").fadeOut(500);
-                    }, 1000);
+                    }, 250);
                 }
                 else {
                     toastr.warning(data.message)
@@ -653,7 +725,7 @@ $(document).ready(function() {
                     getAllSemestersFunc.call(this);
                     setTimeout(function(){
                         $("#myModal2").fadeOut(500);
-                    }, 1000);
+                    }, 250);
                 }
                 else {
                     toastr.warning(data.message)
@@ -728,7 +800,186 @@ $(document).ready(function() {
                     $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
                     setTimeout(function(){
                         $("#myModal3").fadeOut(500);
-                    }, 1000);
+                    }, 250);
+                }
+                else if(data.status == 'error') {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                toastr.error(data.message)
+            }
+        }); 
+    }
+
+    function getAllCOTFunc() {
+        if($(this).hasClass('anchor-disabled')){
+            return false;
+        }
+        $(this).addClass('anchor-disabled');
+        setTimeout(function(){
+            $("#fetchcurrentcot").removeClass('anchor-disabled');
+        }, 5000);
+
+        var get_current_cot_url = $("#fetchcurrentcot").data('get-currentcot-url');
+        console.log(get_current_cot_url);
+        var current_cot = $(this).data('current_course_id');
+        console.log(current_cot);
+
+        $.ajax({
+            type: "POST",
+            url: get_current_cot_url,
+            data: {
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+                'course_id': current_cot,
+            },
+            success: function (data) {
+                if(data.length == 0) {
+                    html_data = '<option value=""> Data Not Available </option>';
+                    $("#id_current_course_cot").html(html_data);
+                    toastr.info("No COT available")
+                }
+                else {
+                    toastr.success("COT list fetched successfully")
+                    let html_data = '<option value=""> Select field for...? </option>';
+                    data.forEach(function (data) {
+                        console.log(data);
+                        html_data += `<option value="${data.id}">${data.final_obj}</option>`
+                    });
+                    $("#id_current_course_cot").html(html_data);
+                }
+            },
+            error: function (data) {
+                toastr.error(data);
+            }
+        });
+    }
+
+    function createCOTFunc() {
+        if($(this).hasClass('create-cot-disabled')){
+            return false;
+        }
+        $(this).addClass('create-cot-disabled');
+        setTimeout(function(){
+            $("#cotfield-btn").removeClass('create-cot-disabled');
+        }, 5000);
+
+        var getCreateCOTURL = $("#cotfield-btn").data('create-cot-url');
+        var createCourseCOT = $('.create-course-cot')[0];
+        var createCourseCOTform_data = new FormData(createCourseCOT);
+
+        $.ajax({
+            method: "POST",
+            enctype: 'multipart/form-data',
+            url: getCreateCOTURL,
+            data: createCourseCOTform_data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                if(data.status == 'success') {
+                    var coursecot_id = data.courseCOTObjID;
+                    var course_cot_id_cookie = "course_cot_id=" + coursecot_id + "; path=/";
+                    if(document.cookie.indexOf("course_cot_id") != -1) {
+                        document.cookie = "course_cot_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    }
+                    document.cookie = course_cot_id_cookie;
+                    var cot_before_value = $(".create-course-cot-form").data('created-course-cot-id');
+                    console.log(cot_before_value);
+                    $(".create-course-cot-form").data('created-course-cot-id', coursecot_id);
+                    var cot_after_value = $(".create-course-cot-form").data('created-course-cot-id');
+                    console.log(cot_after_value);
+                    
+                    var cotfield_btn_as_this = document.getElementsByClassName('get-all-current-cot')[0];
+                    getAllCOTFunc.call(cotfield_btn_as_this);
+                    
+                    toastr.success(data.message)
+                    $("#id_append_course_cot").load(location.href + " #id_append_course_cot");
+                    setTimeout(function(){
+                        $("#myModal4").fadeOut(500);
+                    }, 250);
+                }
+                else if(data.status == 'error') {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                toastr.error(data.message)
+            }
+        }); 
+    }
+
+    function createCOTExtraFieldFunc() {
+        if($(this).hasClass('create-cot-extra-field-disabled')){
+            return false;
+        }
+        $(this).addClass('create-cot-extra-field-disabled');
+        setTimeout(function(){
+            $("#cotextrafield-btn").removeClass('create-cot-extra-field-disabled');
+        }, 5000);
+
+        var getCreateCOTExtraFieldURL = $("#cotextrafield-btn").data('create-cot-externalfield-url');
+        var createCOTExtraField = $('.create-course-cot-extra-field')[0];
+        var createCOTExtraFieldform_data = new FormData(createCOTExtraField);
+        console.log(getCreateCOTExtraFieldURL)
+        console.log(createCOTExtraField)
+        console.log(createCOTExtraFieldform_data)
+
+        $.ajax({
+            method: "POST",
+            url: getCreateCOTExtraFieldURL,
+            data: createCOTExtraFieldform_data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                if(data.status == 'success') {
+                    toastr.success(data.message)
+                    $("#id_append_cot_external_fields").load(location.href + " #id_append_cot_external_fields");
+                    setTimeout(function(){
+                        $("#myModal5").fadeOut(500);
+                    }, 250);
+                }
+                else if(data.status == 'error') {
+                    toastr.warning(data.message)
+                }
+            },
+            error: function (data) {
+                toastr.error(data.message)
+            }
+        }); 
+    }
+
+    function submitCourseFormFunc() {
+        if($(this).hasClass('submit_course_form_disabled')){
+            return false;
+        }
+        $(this).addClass('submit_course_form_disabled');
+        setTimeout(function(){
+            $("#course-btn").removeClass('submit_course_form_disabled');
+        }, 5000);
+
+        var submitCourseForm = $("#course-btn").data('submit-course-url');
+        var submitCourseFormObject = $('.create-course-form')[0];
+        var submitCourseFormData = new FormData(submitCourseFormObject);
+        var submitCourseSuccessURL = $("#course-btn").data('course-create-success-url');
+
+        $.ajax({
+            method: "POST",
+            enctype: 'multipart/form-data',
+            url: submitCourseForm,
+            data: submitCourseFormData,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                if(data.status == 'success') {
+                    console.log(data)
+                    toastr.success(data.message)
+                    setTimeout(function(){
+                        window.location.href = submitCourseSuccessURL;
+                    }
+                    , 3000);
                 }
                 else if(data.status == 'error') {
                     toastr.warning(data.message)
@@ -771,20 +1022,37 @@ $(document).ready(function() {
         createExtraFieldFunc.call(this);
     });
 
+    $("#fetchcurrentcot").click(function(){
+        getAllCOTFunc.call(this);
+    });
+    $("#cotfield-btn").click(function() {
+        createCOTFunc.call(this);
+    });
+    $("#cotextrafield-btn").click(function() {
+        createCOTExtraFieldFunc.call(this);
+    });
+    $("#course-btn").click(function() {
+        $(this).html('Please wait...');
+        submitCourseFormFunc.call(this);
+    });
+
 });
 
 var modal = document.getElementById("myModal"); 
 var modal2 = document.getElementById("myModal2");
 var modal3 = document.getElementById("myModal3");
-// var modal4 = document.getElementById("myModal4");
+var modal4 = document.getElementById("myModal4");
+var modal5 = document.getElementById("myModal5");
 var btn = document.getElementById("showFormCreateBranch");
 var btn2 = document.getElementById("showFormCreateSemester");
 var btn3 = document.getElementById("showFormCreateExternalField");
-// var btn4 = document.getElementById("showFormCreateBulk");
+var btn4 = document.getElementById("showFormCreateCOTField");
+var btn5 = document.getElementById("showFormCreateCOTExtraField");
 var span = document.getElementById("close-model");
 var span2 = document.getElementById("close-model2");
 var span3 = document.getElementById("close-model3");
-// var span4 = document.getElementById("close-model4");
+var span4 = document.getElementById("close-model4");
+var span5 = document.getElementById("close-model5");
 
 btn.onclick = function() {
   modal.style.display = "block";
@@ -795,9 +1063,12 @@ btn2.onclick = function() {
 btn3.onclick = function() {
   modal3.style.display = "block";
 }
-// btn4.onclick = function() {
-//   modal4.style.display = "block";
-// }
+btn4.onclick = function() {
+  modal4.style.display = "block";
+}
+btn5.onclick = function() {
+    modal5.style.display = "block";
+}
 
 span.onclick = function() {
   modal.style.display = "none";
@@ -808,9 +1079,12 @@ span2.onclick = function() {
 span3.onclick = function() {
   modal3.style.display = "none";
 }
-// span4.onclick = function() {
-//   modal4.style.display = "none";
-// }
+span4.onclick = function() {
+  modal4.style.display = "none";
+}
+span5.onclick = function() {
+  modal5.style.display = "none";
+}
 
 window.onclick = function(event) {
   if (event.target == modal) {
@@ -822,7 +1096,10 @@ window.onclick = function(event) {
   if (event.target == modal3) {
     modal3.style.display = "none";
   }
-//   if (event.target == modal4) {
-//     modal4.style.display = "none";
-//   }
+  if (event.target == modal4) {
+    modal4.style.display = "none";
+  }  
+  if (event.target == modal5) {
+    modal5.style.display = "none";
+  }
 }
