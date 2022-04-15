@@ -26,10 +26,10 @@ function toggleClass(element, className) {
 $(".toggle-password").click(function() {
     $(this).toggleClass("fa-eye-slash");
     input = $(this).parent().find("input");
-    if (input.attr("type") == "password") {
-        input.attr("type", "text");
+    if (input.prop("type") == "password") {
+        input.prop("type", "text");
     } else {
-        input.attr("type", "password");
+        input.prop("type", "password");
     }
 });
 
@@ -48,11 +48,11 @@ function isEmpty() {
 }
 
 $('.app-login-button').click(function() {
-    $(this).attr('disabled', true);
-    $('.app-input input').attr('readonly', true);
+    $(this).prop('disabled', true);
+    $('.app-input input').prop('readonly', true);
     $('.toggle-password').remove();
-    if ($('#id_password').attr('type') != 'password') {
-        $('#id_password').attr('type', 'password');
+    if ($('#id_password').prop('type') != 'password') {
+        $('#id_password').prop('type', 'password');
     }
     $(this).html('<i class="fas fa-spinner fa-spin"></i>');
     $(this).closest('form').submit();
