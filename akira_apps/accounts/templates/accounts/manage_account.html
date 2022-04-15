@@ -271,11 +271,10 @@
 <script>
     $(document).ready(function() {
         $('input[name="checkbox_backup_code"]').click(function(){
-            var this_ = $(this)
-            var status_2fa = this_.attr("data-href")
+            var status_2fa_url = $(this).data('href');
             if($(this).prop("checked") == true){
                 $.ajax({
-                    url: status_2fa,
+                    url: status_2fa_url,
                     method: "GET",
                     data: {},
                     success: function(data) {
@@ -287,7 +286,7 @@
             }
             else if($(this).prop("checked") == false){
                 $.ajax({
-                    url: status_2fa,
+                    url: status_2fa_url,
                     method: "GET",
                     data: {},
                     success: function(data) {
@@ -298,15 +297,6 @@
                 });
             }
         });
-
-        // var protocolDomain = "{{ protocol_current_domain }}";
-        // console.log(sha256(m));
-        // $.ajax({
-        //     url: protocolDomain,
-        //     headers: {
-        //         'Browser-Fignerprint-ID': sha256(m)
-        //     }
-        // });
 
         $(".show-details-login-info").slice(0, 3).show();
         if ($(".show-details-login-info:hidden").length != 0) {
