@@ -979,7 +979,7 @@ $(document).ready(function() {
                     setTimeout(function(){
                         window.location.href = submitCourseSuccessURL;
                     }
-                    , 3000);
+                    , 2500);
                 }
                 else if(data.status == 'error') {
                     toastr.warning(data.message)
