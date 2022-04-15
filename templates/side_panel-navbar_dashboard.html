@@ -291,7 +291,9 @@
     </div>
 
     <script src="{% static 'js/dashboard.js' %}"></script>
+    {% comment %}
     <script src='{% static "js/BrowserFingerPrintWebGL_ER.js" %}'></script>
+    {% endcomment %}
     {% block custom_video_editor_js %}{% endblock %}
     <script>
         $(document).ready(function() {
