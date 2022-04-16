@@ -1,5 +1,6 @@
 {% load static %}
 {% load user_group %}
+{% load image_tag %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +55,11 @@
             
             <div class="sidebar-avatar">
                 <div class="avatar-img">
+                    {% if request.user|getUserProfile is False %}
                     <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="">
+                    {% else %}
+                    <img src="{{ request.user|getUserProfile }}" alt="">
+                    {% endif %}
                 </div>
                 <div class="avatar-info">
                     <div class="avatar-text">
