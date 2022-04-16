@@ -117,7 +117,7 @@
         <h4>@{{ staff.user.username }}</h4>
       </div>
       <p class="staff-profile-text">
-        I'm {% if staff.user|user_group == "Head of the Department" %} the {% else %} a {% endif %} {{ staff.user|user_group }} in {{ staff.branch }} department.
+        I'm {% if staff.user|user_group == "Head of the Department" %} the {% else %} a {% endif %} {{ staff.user|user_group }} {% if staff.branch %} in {{ staff.branch }} department.{% endif %}
       </p>
       <ul class="staff-profile-stats">
         <li>
