@@ -125,72 +125,23 @@
             </div>
         </div>
     </div>
-    {% if get_currentLoginInfo %}
-    <div class="user-login-details" id="Current-Previous-Login_Details">
-        <h4>Login Info <a href="#" class="more-login-details">Details <i class="fa-solid fa-up-right-from-square"></i></a></h4>
-        <div class="outer-container">
-            <div class="each-login-details">
-                <div class="device-icon-login-details">
-                    <div class="device-icon">
-                        {% if "Windows" in get_currentLoginInfo.os_details %}
-                        <span class="fab fa-windows"></span>
-                        {% elif "iPhone" in get_currentLoginInfo.os_details or "Macintosh" in get_currentLoginInfo.os_details %}
-                        <span class="fab fa-apple"></span>
-                        {% elif "Ubuntu" in get_currentLoginInfo.os_details %}
-                        <span class="fab fa-ubuntu"></span>
-                        {% elif "Android" in get_currentLoginInfo.os_details %}
-                        <span class="fab fa-android"></span>
-                        {% elif "CrOS" in get_currentLoginInfo.os_details %}
-                        <span class="fab fa-chrome"></span>
-                        {% else %}
-                        <span class="fas fa-exclamation-circle"></span>
-                        {% endif %}
-                    </div>
-                    <div class="device-platform_ip_addr-location-time">
-                        <div class="platform-name">
-                            <h4>{{ get_currentLoginInfo.os_details }} - {{ get_currentLoginInfo.user_ip_address }}</h4>
-                        </div>
-                        <div class="location_name">
-                            <p>{{ get_currentLoginInfo.user_ip_address|ip_location }} &#183; {{ get_currentLoginInfo.browser_details }}</p>
-                        </div>
-                        <div class="time-date">
-                            <p>{{ get_currentLoginInfo.created_at|date:"h:i A" }} &#183; {{ get_currentLoginInfo.created_at|date:"d M" }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% if thisDeviceCurrent == True %}
-                <div class="login-attempt-action">
-                    <button class="confirmed-button"><span class="fas fa-check-circle"></span> This Device</button>
-                </div>
-                {% endif %}
-            </div>
-            
-        </div>
-    </div>
-    {% endif %}
-    <div class="user-login-details" id="login-attempts">
-        <h4>Login attempts</h4>
-        <p>Help us to serve you better in securing your account. 
-            {% if get_unconfirmed_login_attempts %}
-            Please confirm the authentication which was done by you.
-            {% endif %}
-        </p>
-        {% if get_unconfirmed_login_attempts %}
-        <div class="outer-container">
-            {% for i in get_unconfirmed_login_attempts|slice:":4" %}
-            <div class="show-details-login-info">
+    <div class="login-info-login-attempts">
+        {% if get_currentLoginInfo %}
+        <div class="user-login-details lila_grid_1" id="Current-Previous-Login_Details">
+            <h4>Login Info <a href="#" class="more-login-details">Details <i class="fa-solid fa-up-right-from-square"></i></a></h4>
+            <div class="outer-container">
                 <div class="each-login-details">
                     <div class="device-icon-login-details">
                         <div class="device-icon">
-                            {% if "Windows" in i.os_details %}
+                            {% if "Windows" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-windows"></span>
-                            {% elif "iPhone" in i.os_details or "Macintosh" in i.os_details %}
+                            {% elif "iPhone" in get_currentLoginInfo.os_details or "Macintosh" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-apple"></span>
-                            {% elif "Ubuntu" in i.os_details %}
+                            {% elif "Ubuntu" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-ubuntu"></span>
-                            {% elif "Android" in i.os_details %}
+                            {% elif "Android" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-android"></span>
-                            {% elif "CrOS" in i.os_details %}
+                            {% elif "CrOS" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-chrome"></span>
                             {% else %}
                             <span class="fas fa-exclamation-circle"></span>
@@ -198,36 +149,87 @@
                         </div>
                         <div class="device-platform_ip_addr-location-time">
                             <div class="platform-name">
-                                <h4>{{ i.os_details }} - {{ i.user_ip_address }}</h4>
+                                <h4>{{ get_currentLoginInfo.os_details }} - {{ get_currentLoginInfo.user_ip_address }}</h4>
                             </div>
                             <div class="location_name">
-                                <p>{{ i.user_ip_address|ip_location }} &#183; {{ i.browser_details }}</p>
+                                <p>{{ get_currentLoginInfo.user_ip_address|ip_location }} &#183; {{ get_currentLoginInfo.browser_details }}</p>
                             </div>
                             <div class="time-date">
-                                <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
+                                <p>{{ get_currentLoginInfo.created_at|date:"h:i A" }} &#183; {{ get_currentLoginInfo.created_at|date:"d M" }}</p>
                             </div>
                         </div>
                     </div>
+                    {% if thisDeviceCurrent == True %}
                     <div class="login-attempt-action">
-                        {% if i.user_confirm == "Login Confirmed" %}
-                        <button class="confirmed-button"><span class="fas fa-check-circle"></span> Confirmed</button>
-                        {% elif i.user_confirm == "User Denied" %}
-                        <button class="suspicious-button"><span class="fas fa-exclamation-circle"></span> Suspicious</button>
-                        {% else %}
-                        <button class="true-button" onclick="window.location='{% url 'agree_login_attempt' i.id %}'"><span class="fas fa-check"></span> It was me</button>
-                        <button class="false-button" onclick="window.location='{% url 'deny_login_attempt' i.id %}'"><span class="fas fa-exclamation-triangle"></span> It wasn't me</button>
-                        {% endif %}
+                        <button class="confirmed-button"><span class="fas fa-check-circle"></span> This Device</button>
+                    </div>
+                    {% endif %}
+                </div>
+                
+            </div>
+        </div>
+        {% endif %}
+        <div class="user-login-details lila_grid_2" id="login-attempts">
+            <h4>Login attempts</h4>
+            <p>Help us to serve you better in securing your account. 
+                {% if get_unconfirmed_login_attempts %}
+                Please confirm the authentication which was done by you.
+                {% endif %}
+            </p>
+            {% if get_unconfirmed_login_attempts %}
+            <div class="outer-container">
+                {% for i in get_unconfirmed_login_attempts|slice:":4" %}
+                <div class="show-details-login-info">
+                    <div class="each-login-details">
+                        <div class="device-icon-login-details">
+                            <div class="device-icon">
+                                {% if "Windows" in i.os_details %}
+                                <span class="fab fa-windows"></span>
+                                {% elif "iPhone" in i.os_details or "Macintosh" in i.os_details %}
+                                <span class="fab fa-apple"></span>
+                                {% elif "Ubuntu" in i.os_details %}
+                                <span class="fab fa-ubuntu"></span>
+                                {% elif "Android" in i.os_details %}
+                                <span class="fab fa-android"></span>
+                                {% elif "CrOS" in i.os_details %}
+                                <span class="fab fa-chrome"></span>
+                                {% else %}
+                                <span class="fas fa-exclamation-circle"></span>
+                                {% endif %}
+                            </div>
+                            <div class="device-platform_ip_addr-location-time">
+                                <div class="platform-name">
+                                    <h4>{{ i.os_details }} - {{ i.user_ip_address }}</h4>
+                                </div>
+                                <div class="location_name">
+                                    <p>{{ i.user_ip_address|ip_location }} &#183; {{ i.browser_details }}</p>
+                                </div>
+                                <div class="time-date">
+                                    <p>{{ i.created_at|date:"h:i A" }} &#183; {{ i.created_at|date:"d M" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="login-attempt-action">
+                            {% if i.user_confirm == "Login Confirmed" %}
+                            <button class="confirmed-button"><span class="fas fa-check-circle"></span> Confirmed</button>
+                            {% elif i.user_confirm == "User Denied" %}
+                            <button class="suspicious-button"><span class="fas fa-exclamation-circle"></span> Suspicious</button>
+                            {% else %}
+                            <button class="true-button" onclick="window.location='{% url 'agree_login_attempt' i.id %}'"><span class="fas fa-check"></span> It was me</button>
+                            <button class="false-button" onclick="window.location='{% url 'deny_login_attempt' i.id %}'"><span class="fas fa-exclamation-triangle"></span> It wasn't me</button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
+                {% if get_unconfirmed_login_attempts|length > 3 %}
+                <button href="#" id="loadMore"><i class="fa-solid fa-spinner"></i> Load More</button>
+                {% endif %}
             </div>
-            {% endfor %}
-            {% if get_unconfirmed_login_attempts|length > 3 %}
-            <button href="#" id="loadMore"><i class="fa-solid fa-spinner"></i> Load More</button>
+            {% else %}
+            <p>Hurray! No security activity or alerts in the last 28 days. Everything is Safe&#44 Secure &amp; Ideal</p>
             {% endif %}
         </div>
-        {% else %}
-        <p>Hurray! No security activity or alerts in the last 28 days. Everything is Safe&#44 Secure &amp; Ideal</p>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
