@@ -164,7 +164,7 @@
               <div class="form-card">
                 <div class="">
                     <div class="">
-                        <h2 class="fs-title">Design the course</h2>
+                      <h2 class="fs-title">Design the course</h2>
                     </div>
                 </div>
                 <!-- Course Offering Start -->
@@ -173,11 +173,20 @@
                   <div class="field-container">
                     <div class="input-box">
                       <label class="fieldlabels input-label" for="id_mode_of_study">Mode of study</label>
-                      <input type="text" name="mode_of_study" id="id_mode_of_study" value="{{ each.name }}" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <input type="text" name="mode_of_study" id="id_mode_of_study" value="{{ each.name }}" data-created-cot-mos="{{ each.id }}" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                     </div>
                     <div class="input-box">
                       <label class="fieldlabels input-label" for="id_course_ltps">L-T-P-S</label>
-                      <input type="text" name="course_ltps" id="id_course_ltps" value="{{ each.l }}-{{ each.t }}-{{ each.p }}-{{ each.s }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <input type="text" name="course_ltps" id="id_course_ltps" value="{{ each.l }}-{{ each.t }}-{{ each.p }}-{{ each.s }}" data-created-cot-ltps="{{ each.id }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    </div>
+                  </div>
+                  <div class="input-box-footer-part">
+                    <div class="ibfp-1">
+                      <span class="help-text">Please click on the save button after done.</span>
+                    </div>
+                    <div class="ibfp-2">
+                      <a href="#" data-delete-cot-field-url="{% url 'deleteCreatedCOTFieldAjax' %}" data-delete-cot-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_cot_dynamic_field">Delete</a>
+                      <a href="#" data-set-cot-field-url="{% url 'setCreatedCOTFieldAjax' %}" data-set-cot-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_set_cot_dynamic_field">Save</a>
                     </div>
                   </div>
                   {% endfor %}
@@ -295,7 +304,7 @@
                   <!-- Append Here -->
                 </span>
                 <span class="redirect">
-                  <a href="#" id="showFormCreateExternalField"><i class="fa-solid fa-circle-plus"></i> Add an extra field</a>
+                  <a href="#" id="showFormCreateExternalField"><i class="fa-solid fa-circle-plus"></i> Add an extra field for the course</a>
                 </span>
               </div>
               <button type="button" id="course-btn" class="action-button course-btn" data-submit-course-url="{% url 'submitcourseformAjax' %}" data-course-create-success-url="{% url 'manage_courses' %}">Submit</button>

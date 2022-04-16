@@ -12,7 +12,8 @@ urlpatterns = [
 
     path('createCourseCOTAjax/', views.createCourseCOTAjax, name='createCourseCOTAjax'),
     path('getAllCurrentCOTAjax/', views.getAllCurrentCOTAjax, name='getAllCurrentCOTAjax'),
-    # path('deleteCourseCOTAjax/', views.deleteCourseCOTAjax, name='deleteCourseCOTAjax'),
+    path('setCreatedCOTFieldAjax/', views.setCreatedCOTFieldAjax, name='setCreatedCOTFieldAjax'),
+    path('deleteCreatedCOTFieldAjax/', views.deleteCreatedCOTFieldAjax, name='deleteCreatedCOTFieldAjax'),
 
     path('createCourseCOTExtraFieldAjax/', views.createCourseCOTExtraFieldAjax, name='createCourseCOTExtraFieldAjax'),
     path('setCourseCOTExtraFieldValueAjax/', views.setCourseCOTExtraFieldValueAjax, name='setCourseCOTExtraFieldValueAjax'),

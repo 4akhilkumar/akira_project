@@ -286,55 +286,6 @@ def updateCourse(request):
     faculty_list = User.objects.all()
     specialization_list = SpecializationsMC.objects.all()
     prerequisiteList = CourseMC.objects.all()
-    if request.method == 'POST':
-        courseCode = request.POST.get('course_code')
-        courseName = request.POST.get('course_name')
-        courseDesc = request.POST.get('course_desc')
-        courseBranch = request.POST.get('branch')
-        courseSemester = request.POST.get('semester')
-        courseCC = request.POST.get('course_coordinator')
-        course_type = request.POST.get('course_type')
-        courseSpecialization_id = request.POST.get('specialization', None)
-        pre_requisite = request.POST.get('prerequisite')
-        courseFiles = request.FILES.getlist('course_files')
-
-        if User.objects.filter(id=courseCC).exists() is True:
-            courseCC = User.objects.get(id=courseCC)
-            if Branch.objects.filter(id = courseBranch).exists() is True:
-                courseBranch = Branch.objects.get(id = courseBranch)
-                if Semester.objects.filter(id = courseSemester).exists() is True:
-                    courseSemester = Semester.objects.get(id = courseSemester)
-                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
-                        pre_requisite = None
-                    if courseSpecialization_id is not None:
-                        if SpecializationsMC.objects.get(id = courseSpecialization_id).exists() is True:
-                            courseSpecializationObj = SpecializationsMC.objects.get(id = courseSpecialization_id)
-                    CourseMC.objects.create(
-                        code=courseCode,
-                        name=courseName,
-                        desc = courseDesc,
-                        course_coordinator=courseCC,
-                        branch=courseBranch,
-                        semester=courseSemester,
-                        specialization=courseSpecializationObj,
-                        type = course_type,
-                        pre_requisite = pre_requisite,
-                    )
-                    getCourseObj = CourseMC.objects.get(code = courseCode)
-                    try:
-                        for file in courseFiles:
-                            CourseFiles.objects.create(course = getCourseObj, course_files = file)
-                        messages.success(request, "Course created successfully")
-                        return redirect('updateCourse')
-                    except Exception as e:
-                        messages.error(request, e)
-                else:
-                    messages.info(request, "Semester does not exist")
-            else:
-                messages.info(request, "Branch does not exist")
-        else:
-            messages.info(request, "User does not exist!")
-        return redirect('updateCourse')
     context = {
         "courseExtraFields": courseExtraFields,
         "cots": current_courseCOTObjs,
@@ -475,6 +426,65 @@ def createCourseCOTAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+def setCreatedCOTFieldAjax(request):
+    if request.method == "POST":
+        setCreatedCOTFieldID = request.POST.get('setCreatedCOTFieldID')
+        created_cot_mos_value = request.POST.get('created_cot_mos_value')
+        created_cot_ltps_value = request.POST.get('created_cot_ltps_value')
+
+        if CourseOfferingType.objects.filter(id = setCreatedCOTFieldID).exists() is True:
+            try:
+                l,t,p,s = created_cot_ltps_value.split("-")
+                getCourseExtraFieldObj = CourseOfferingType.objects.get(id = setCreatedCOTFieldID)
+                getCourseExtraFieldObj.name = created_cot_mos_value
+                getCourseExtraFieldObj.l = l
+                getCourseExtraFieldObj.t = t
+                getCourseExtraFieldObj.p = p
+                getCourseExtraFieldObj.s = s
+                getCourseExtraFieldObj.save()
+                message = "Data saved successfully"
+                status = "success"
+            except Exception as e:
+                message = e
+                status = "failed"
+            return JsonResponse({
+                'message': message, 
+                'status': status
+                })
+        else:
+            message = "Course extra field does not exist!"
+            status = "failed"
+            return JsonResponse({'message': message, 'status': status})
+    else:
+        message = "Method not allowed!"
+        status = "failed"
+        return JsonResponse({'message': message, 'status': status})
+
+def deleteCreatedCOTFieldAjax(request):
+    if request.method == "POST":
+        created_cot_fieldID = request.POST.get('created_cot_field_id')
+
+        if CourseOfferingType.objects.filter(id = created_cot_fieldID).exists() is True:
+            try:
+                CourseOfferingType.objects.get(id = created_cot_fieldID).delete()
+                message = "Data deleted successfully"
+                status = "success"
+            except Exception as e:
+                message = e
+                status = "failed"
+            return JsonResponse({
+                'message': message, 
+                'status': status
+                })
+        else:
+            message = "Course extra field does not exist!"
+            status = "failed"
+            return JsonResponse({'message': message, 'status': status})
+    else:
+        message = "Method not allowed!"
+        status = "failed"
+        return JsonResponse({'message': message, 'status': status})
+
 def getAllCurrentCOTAjax(request):
     if request.method == "POST":
         courseID = request.POST.get('course_id')
@@ -583,110 +593,6 @@ def deleteCourseCOTExtraFieldValueAjax(request):
         message = "Method not allowed!"
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
-
-@login_required(login_url=settings.LOGIN_URL)
-def courseExtraFieldsCreate(request, courseID):
-    if request.method == "POST":
-        if CourseMC.objects.filter(id = courseID).exists() is True:
-            getCourseObj = CourseMC.objects.get(id=courseID)
-            course_field = request.POST.get('course_field')
-            course_value = request.POST.get('course_value')
-            try:
-                CourseExtraFields.objects.create(
-                    course = getCourseObj,
-                    field_name = course_field,
-                    field_value = course_value
-                )
-            except Exception as e:
-                messages.info(request, e)
-            return redirect('view_course', course_code = getCourseObj.course_code)
-        else:
-            messages.info(request, "Course does not exist")
-            return redirect('manage_courses')
-    else:
-        messages.info(request, "We could process your request!")
-        return redirect('manage_courses')
-
-@login_required(login_url=settings.LOGIN_URL)
-def courseExtraFieldsEdit(request, courseEFVID):
-    if request.method == "POST":
-        if CourseExtraFields.objects.filter(id = courseEFVID).exists() is True:
-            course_field = request.POST.get('course_field')
-            course_value = request.POST.get('course_value')
-            getCEFObj = CourseExtraFields.objects.get(id = courseEFVID)
-            getCEFObj.field_name = course_field
-            getCEFObj.field_value = course_value
-            getCEFObj.save()
-            return redirect('view_course', course_code = getCEFObj.course.code)
-        else:
-            messages.info(request, "EF does not exist")
-            return redirect('manage_courses')
-    else:
-        messages.info(request, "We couldn't process your request!")
-        return redirect('manage_courses')
-
-@login_required(login_url=settings.LOGIN_URL)
-def courseExtraFieldsDelete(request, courseEFVID):
-    getCEFObj = CourseExtraFields.objects.get(id = courseEFVID)
-    getCEFObj.delete()
-    messages.info(request, "Exrtra field deleted successfully")
-    return redirect('view_course', course_code = getCEFObj.course.code)
-
-@login_required(login_url=settings.LOGIN_URL)
-def courseOfferingCreate(request, courseID):
-    if CourseMC.objects.filter(id = courseID).exists() is True:
-        getCourseObj = CourseMC.objects.get(id=courseID)
-        if request.method == "POST":
-            name = request.POST.get('name')
-            ltps = request.POST.get('ltps')
-            l,t,p,s = ltps.split("-")
-            CourseOfferingType.objects.create(
-                course = getCourseObj,
-                name = name,
-                l = l,
-                t = t,
-                p = p,
-                s = s
-            )
-            return redirect('view_course', course_code = getCourseObj.code)
-        else:
-            messages.info(request, "We could process your request!")
-            return redirect('view_course', course_code = getCourseObj.code)
-    else:
-        messages.info(request, "Course does not exist")
-        return redirect('manage_courses')
-
-@login_required(login_url=settings.LOGIN_URL)
-def courseOfferingEdit(request, cOTID):
-    if CourseOfferingType.objects.filter(id = cOTID).exists() is True:
-        getCoursOTeObj = CourseOfferingType.objects.get(id=cOTID)
-        if request.method == "POST":
-            name = request.POST.get('name')
-            ltps = request.POST.get('ltps')
-            l,t,p,s = ltps.split("-")
-            getCoursOTeObj.name = name
-            getCoursOTeObj.l = l,
-            getCoursOTeObj.t = t,
-            getCoursOTeObj.p = p,
-            getCoursOTeObj.s = s
-            getCoursOTeObj.save()
-            return redirect('view_course', course_code = getCoursOTeObj.course.code)
-        else:
-            messages.info(request, "We could process your request!")
-            return redirect('view_course', course_code = getCoursOTeObj.course.code)
-    else:
-        messages.info(request, "COT does not exist")
-        return redirect('manage_courses')
-
-@login_required(login_url=settings.LOGIN_URL)
-def courseOfferingDelete(request, CourseOfferingID):
-    try:
-        getCOTbj = CourseOfferingType.objects.get(id = CourseOfferingID)
-        getCOTbj.delete()
-        messages.info(request, "Course Offering deleted successfully")
-    except Exception:
-        messages.info(request, "Course Offering does not exist")
-    return redirect('manage_courses')
 
 @login_required(login_url=settings.LOGIN_URL)
 def view_course(request, course_code):

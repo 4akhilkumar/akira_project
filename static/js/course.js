@@ -1,3 +1,43 @@
+function getAllCOTFunc() {
+    if($(this).hasClass('anchor-disabled')){
+        return false;
+    }
+    $(this).addClass('anchor-disabled');
+    setTimeout(function(){
+        $("#fetchcurrentcot").removeClass('anchor-disabled');
+    }, 5000);
+
+    var get_current_cot_url = $("#fetchcurrentcot").data('get-currentcot-url');
+    var current_cot = $(this).data('current_course_id');
+
+    $.ajax({
+        type: "POST",
+        url: get_current_cot_url,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'course_id': current_cot,
+        },
+        success: function (data) {
+            if(data.length == 0) {
+                html_data = '<option value=""> Data Not Available </option>';
+                $("#id_current_course_cot").html(html_data);
+                toastr.info("No COT available")
+            }
+            else {
+                toastr.success("COT list fetched successfully")
+                let html_data = '<option value=""> Select field for...? </option>';
+                data.forEach(function (data) {
+                    html_data += `<option value="${data.id}">${data.final_obj}</option>`
+                });
+                $("#id_current_course_cot").html(html_data);
+            }
+        },
+        error: function (data) {
+            toastr.error(data);
+        }
+    });
+}
+
 // If user clicked on anchor tag then get the data-save-dynamic-field_id attribute value
 $(document).on('click', 'a[data-save-dynamic-field_id]', function() {
     var field_id = $(this).data('save-dynamic-field_id');
@@ -104,6 +144,70 @@ $(document).on('click', 'a[data-delete-cot-dynamic-field_id]', function() {
         success: function (data) {
             if(data.status == 'success') {
                 toastr.success(data.message)
+                $("#id_append_cot_external_fields").load(location.href + " #id_append_cot_external_fields");
+            }
+            else {
+                toastr.warning(data.message)
+            }
+        },
+        error: function (data) {
+            toastr.error(data.message)
+        }
+    }); 
+});
+
+$(document).on('click', 'a[data-set-cot-field_id]', function() {
+    var setCreatedCOTFieldID = $(this).data('set-cot-field_id');
+    var created_cot_mos_value = $('[data-created-cot-mos="' + setCreatedCOTFieldID + '"]').val();
+    var created_cot_ltps_value = $('[data-created-cot-ltps="' + setCreatedCOTFieldID + '"]').val();
+    
+    var setCreatedCOTFieldURL = $(this).data('set-cot-field-url');
+
+    $.ajax({
+        type: "POST",
+        url: setCreatedCOTFieldURL,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'setCreatedCOTFieldID': setCreatedCOTFieldID,
+            'created_cot_mos_value': created_cot_mos_value,
+            'created_cot_ltps_value': created_cot_ltps_value,
+        },
+        success: function (data) {
+            if(data.status == 'success') {
+                toastr.success(data.message)
+                var cotfield_btn_as_this = document.getElementsByClassName('get-all-current-cot')[0];
+                getAllCOTFunc.call(cotfield_btn_as_this);
+                $("#id_append_course_cot").load(location.href + " #id_append_course_cot");
+                $("#id_append_cot_external_fields").load(location.href + " #id_append_cot_external_fields");
+            }
+            else {
+                toastr.warning(data.message)
+            }
+        },
+        error: function (data) {
+            toastr.error(data.message)
+        }
+    }); 
+});
+
+$(document).on('click', 'a[data-delete-cot-field_id]', function() {
+    var created_cot_field_id = $(this).data('delete-cot-field_id');
+
+    var deleteCreatedCOTField = $(this).data('delete-cot-field-url');
+
+    $.ajax({
+        type: "POST",
+        url: deleteCreatedCOTField,
+        data: {
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+            'created_cot_field_id': created_cot_field_id,
+        },
+        success: function (data) {
+            if(data.status == 'success') {
+                toastr.success(data.message)
+                var cotfield_btn_as_this = document.getElementsByClassName('get-all-current-cot')[0];
+                getAllCOTFunc.call(cotfield_btn_as_this);
+                $("#id_append_course_cot").load(location.href + " #id_append_course_cot");
                 $("#id_append_cot_external_fields").load(location.href + " #id_append_cot_external_fields");
             }
             else {
@@ -795,46 +899,6 @@ $(document).ready(function() {
                 toastr.error(data.message)
             }
         }); 
-    }
-
-    function getAllCOTFunc() {
-        if($(this).hasClass('anchor-disabled')){
-            return false;
-        }
-        $(this).addClass('anchor-disabled');
-        setTimeout(function(){
-            $("#fetchcurrentcot").removeClass('anchor-disabled');
-        }, 5000);
-
-        var get_current_cot_url = $("#fetchcurrentcot").data('get-currentcot-url');
-        var current_cot = $(this).data('current_course_id');
-
-        $.ajax({
-            type: "POST",
-            url: get_current_cot_url,
-            data: {
-                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
-                'course_id': current_cot,
-            },
-            success: function (data) {
-                if(data.length == 0) {
-                    html_data = '<option value=""> Data Not Available </option>';
-                    $("#id_current_course_cot").html(html_data);
-                    toastr.info("No COT available")
-                }
-                else {
-                    toastr.success("COT list fetched successfully")
-                    let html_data = '<option value=""> Select field for...? </option>';
-                    data.forEach(function (data) {
-                        html_data += `<option value="${data.id}">${data.final_obj}</option>`
-                    });
-                    $("#id_current_course_cot").html(html_data);
-                }
-            },
-            error: function (data) {
-                toastr.error(data);
-            }
-        });
     }
 
     function createCOTFunc() {
