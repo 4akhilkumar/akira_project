@@ -1,6 +1,3 @@
-from ipaddress import ip_address
-from django import http
-from django.http import request
 from django.http.response import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -30,24 +27,6 @@ from akira_apps.student.models import Students
 from akira_apps.super_admin.forms import (GENDERCHOICESForm, NAMEPREFIXForm)
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.super_admin.models import (MailLog, AdminAccountVerificationStatus)
-
-def validateAdminInstFormData(dict):
-    formData = []
-    dict.pop('csrfmiddlewaretoken')
-    if len(dict) == 20:
-        for key, value in dict.items():
-            if value == '' or value is None or len(value) == 0:
-                if key == 'new_city':
-                    pass
-                else:
-                    formData.append(None)
-                    print(key)
-            elif key == 'email':
-                if re.match("^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", value):
-                    pass
-                else:
-                    formData.append(False)
-    return formData
 
 class Date:
 	def __init__(self, d, m, y):
@@ -175,71 +154,60 @@ def adminInstituteRegistration(request):
         else:
             ip = request.META.get('REMOTE_ADDR')
 
-        request_dict = request.POST.dict()
-        getFormDataResponse = validateAdminInstFormData(request_dict)
-        if (None in getFormDataResponse) or (False in getFormDataResponse):
-            formData = False
-        else:
-            formData = True
-        
-        if formData is True:
-            validatedUserDOB = validateUserDOB(dob)
-            if validatedUserDOB[0] is True:
-                try:
-                    url = 'https://akira-rest-api.herokuapp.com/getEmail/{}/?format=json'.format(email)
-                    response = requests.get(url)
-                    dataEmail = response.json()
-                except Exception:
-                    messages.info(request, "Server under maintenance. Please try again later.")
-                    return redirect('adminInstituteRegistration')
-                if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
-                    if not User.objects.filter(username=username).exists():
-                        if password == confirm_password:
-                            user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
-                            admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
-                            user.groups.add(Group.objects.get(name = str(admin_group)))
-                            user.is_active = False
-                            user.is_staff = False
-                            user.is_superuser = False
-                            user.save()
-                            Staff.objects.create(
-                                user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
-                                door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
-                                photo = photo)
-                            Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
-                            AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip)
-                            try:
-                                url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
-                                response = requests.get(url)
-                                dataUsername = response.json()
-                            except Exception:
-                                messages.info(request, "Server under maintenance. Please try again later.")
-                                return redirect('adminInstituteRegistration')
-                            return redirect('send_admin_reg_email', EnUsername = dataUsername['EncryptedUsername'])
-                        else:
-                            messages.info(request, "Password didn't Match")
-                            return redirect('adminInstituteRegistration')
-                    else:
-                        messages.error(request, "Username Already Exists...!")
-                        return redirect('adminInstituteRegistration')
-                elif dataEmail['Disposable'] is True:
-                    messages.error(request, "Don't use disposable email address")
-                    return redirect('adminInstituteRegistration')
-                else:
-                    messages.error(request, "Please use legitimate email address only")
-                    return redirect('adminInstituteRegistration')
-            elif "not in YYYY-MM-DD format" in validatedUserDOB[1] :
-                messages.error(request, str(validatedUserDOB[1]))
+        validatedUserDOB = validateUserDOB(dob)
+        if validatedUserDOB[0] is True:
+            try:
+                url = 'https://akira-rest-api.herokuapp.com/getEmail/{}/?format=json'.format(email)
+                response = requests.get(url)
+                dataEmail = response.json()
+            except Exception:
+                messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('adminInstituteRegistration')
-            elif validatedUserDOB[1] == "False":
-                notice_context2 = {
-                    'title': 'Not Eligible',
-                    'message': 'You are not eligible to register as a Admininstrator',
-                }
-                return render(request, 'notice.html', notice_context2)
-        else:
-            messages.warning(request, "Please provide legitimate data!")
+            if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
+                if not User.objects.filter(username=username).exists():
+                    if password == confirm_password:
+                        user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
+                        admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
+                        user.groups.add(Group.objects.get(name = str(admin_group)))
+                        user.is_active = False
+                        user.is_staff = False
+                        user.is_superuser = False
+                        user.save()
+                        Staff.objects.create(
+                            user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
+                            door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
+                            photo = photo)
+                        Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
+                        AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip)
+                        try:
+                            url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
+                            response = requests.get(url)
+                            dataUsername = response.json()
+                        except Exception:
+                            messages.info(request, "Server under maintenance. Please try again later.")
+                            return redirect('adminInstituteRegistration')
+                        return redirect('send_admin_reg_email', EnUsername = dataUsername['EncryptedUsername'])
+                    else:
+                        messages.info(request, "Password didn't Matched")
+                        return redirect('adminInstituteRegistration')
+                else:
+                    messages.error(request, "Username Already Exists...!")
+                    return redirect('adminInstituteRegistration')
+            elif dataEmail['Disposable'] is True:
+                messages.error(request, "Don't use disposable email address")
+                return redirect('adminInstituteRegistration')
+            else:
+                messages.error(request, "Please use legitimate email address only")
+                return redirect('adminInstituteRegistration')
+        elif "not in YYYY-MM-DD format" in validatedUserDOB[1] :
+            messages.error(request, str(validatedUserDOB[1]))
             return redirect('adminInstituteRegistration')
+        elif validatedUserDOB[1] == "False":
+            notice_context2 = {
+                'title': 'Not Eligible',
+                'message': 'You are not eligible to register as a Admininstrator',
+            }
+            return render(request, 'notice.html', notice_context2)
     context = {
         'name_prefix': name_prefix_list,
         'gender': gender_list,
@@ -468,33 +436,3 @@ def assign_user_group(request, staff_username):
         return redirect('manage_staff')
     else:
         return redirect('manage_staff')
-
-# new_group, created = Group.objects.get_or_create(name ='Administrator')
-# new_group, created = Group.objects.get_or_create(name ='Head of the Department')
-# new_group, created = Group.objects.get_or_create(name ='Professor')
-# new_group, created = Group.objects.get_or_create(name ='Associate Professor')
-# new_group, created = Group.objects.get_or_create(name ='Assistant Professor')
-# new_group, created = Group.objects.get_or_create(name ='Student')
-
-# if User.objects.filter(username='4akhilkumar').exists() is True:
-#     user = User.objects.get(username = '4akhilkumar')
-# else:
-#     user = User.objects.create_user(username='4akhilkumar')
-# user.username = '4akhilkumar'
-# user.first_name = 'Sai Akhil Kumar Reddy'
-# user.last_name = 'N'
-# user.email = '4akhilkumar@gmail.com'
-# user.set_password("AKIRAaccount@21")
-# user.is_active = True
-# user.is_staff = True
-# user.is_superuser = True
-# user.save()
-
-# group_name = 'Administrator'
-# my_group = Group.objects.get(name='%s' % str(group_name))
-# my_group.user_set.add(user)
-# print("Success")
-
-# my_group = Group.objects.get(name='%s' % str(group_name))
-# my_group.user_set.remove(user)
-# print("Success")
