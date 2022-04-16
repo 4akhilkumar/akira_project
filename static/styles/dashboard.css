@@ -259,6 +259,11 @@ img {
 
 .avatar-text small {
   color: var(--normal-text-color);
+  cursor: pointer;
+}
+
+.avatar-text small:hover {
+  text-decoration: underline;
 }
 
 .sidebar-menu li {
@@ -1615,6 +1620,7 @@ button.search-icon:hover {
   font-size: 4.5rem;
   text-align: center;
   color: var(--icons-color);
+  margin-top: 1rem;
 }
 
 .course-short_title {
@@ -2703,7 +2709,7 @@ i.transform-angle-135 {
 .fs-title {
   font-size: 25px;
   color: #673AB7;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
   font-weight: normal;
   text-align: left;
 }
@@ -2763,6 +2769,11 @@ a.delete_dynamic_field {
   margin: 10px 0;
   width: 100%;
 }
+
+.input-box-mg {
+  margin-top: 2rem;
+}
+
 .input-box .input-label {
 position: absolute;
 color: var(--label-color);
@@ -2852,6 +2863,11 @@ transition: 250ms;
   font-size: .75rem;
   margin-top: 5px;
   margin-left: 5px;
+}
+
+.about-text {
+  color: #80868b;
+  font-size: .75rem;
 }
 
 .error-text {
