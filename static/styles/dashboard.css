@@ -503,11 +503,7 @@ span.admission_status {
   margin-bottom: 1rem;
 }
 
-.block-grid {
-  display: grid;
-  grid-template-columns: 30% auto;
-  grid-gap: 3rem;
-}
+
 
 .rev-content {
   background: var(--card-color);
@@ -663,14 +659,6 @@ span.admission_status {
 @media only screen and (max-width: 860px) {
   .analytics {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .block-grid {
-    grid-template-columns: 100%;
-  }
-
-  .revenue-card {
-    order: 2;
   }
 }
 
@@ -1236,8 +1224,18 @@ input:checked + .slider:before {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .graph-card {
+  .graph-card-security {
     grid-column: 1/5;
+  }
+
+  .block-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1.4rem;
+  }
+
+  .graph-card-dashboard {
+    grid-column: 2/4;
   }
 }
 
