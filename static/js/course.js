@@ -1,14 +1,11 @@
 // If user clicked on anchor tag then get the data-save-dynamic-field_id attribute value
 $(document).on('click', 'a[data-save-dynamic-field_id]', function() {
     var field_id = $(this).data('save-dynamic-field_id');
-    console.log(field_id);
     // Now get the value of the field having same value data-dynamic-field-value attribute 
     var field_value = $('[data-dynamic-field-value="' + field_id + '"]').val();
-    console.log(field_value);
     
     // Now get the value in data-dynamic-field-value attribute of anchor tag
     var setDynamicValueURL = $(this).data('set-dynamic-value-url');
-    console.log(setDynamicValueURL);
 
     $.ajax({
         type: "POST",
@@ -35,11 +32,9 @@ $(document).on('click', 'a[data-save-dynamic-field_id]', function() {
 
 $(document).on('click', 'a[data-delete-dynamic-field_id]', function() {
     var field_id = $(this).data('delete-dynamic-field_id');
-    console.log(field_id);
     
     // Now get the value in data-dynamic-field-value attribute of anchor tag
     var deleteDynamicValueURL = $(this).data('delete-dynamic-value-url');
-    console.log(deleteDynamicValueURL);
 
     $.ajax({
         type: "POST",
@@ -65,14 +60,11 @@ $(document).on('click', 'a[data-delete-dynamic-field_id]', function() {
 
 $(document).on('click', 'a[data-save-cot-dynamic-field_id]', function() {
     var cot_field_id = $(this).data('save-cot-dynamic-field_id');
-    console.log(cot_field_id);
     // Now get the value of the field having same value data-dynamic-field-value attribute 
     var cot_field_value = $('[data-cot-dynamic-field-value="' + cot_field_id + '"]').val();
-    console.log(cot_field_value);
     
     // Now get the value in data-dynamic-field-value attribute of anchor tag
     var setCOTDynamicValueURL = $(this).data('set-cot-dynamic-value-url');
-    console.log(setCOTDynamicValueURL);
 
     $.ajax({
         type: "POST",
@@ -99,10 +91,8 @@ $(document).on('click', 'a[data-save-cot-dynamic-field_id]', function() {
 
 $(document).on('click', 'a[data-delete-cot-dynamic-field_id]', function() {
     var cot_extra_field_id = $(this).data('delete-cot-dynamic-field_id');
-    console.log(cot_extra_field_id);
 
     var deleteCOTExtraFieldURL = $(this).data('delete-cot-dynamic-value-url');
-    console.log(deleteCOTExtraFieldURL);
 
     $.ajax({
         type: "POST",
@@ -294,11 +284,11 @@ $(document).ready(function() {
             $("#id_course_desc").parent().find(".error-text").css("display", "block");
             description = false;
         }
-        else if (!$("#id_course_desc").val().match(/^[A-Za-z0-9-,.-/\s]*$/)) {
-            $("#id_course_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course description correctly&#x0003F;");
-            $("#id_course_desc").parent().find(".error-text").css("display", "block");
-            description = false;
-        }
+        // else if (!$("#id_course_desc").val().match(/^[A-Za-z0-9-,.-/\s]*$/)) {
+        //     $("#id_course_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course description correctly&#x0003F;");
+        //     $("#id_course_desc").parent().find(".error-text").css("display", "block");
+        //     description = false;
+        // }
         else if ($("#id_course_desc").val().match(/^\s+$/)) {
             $("#id_course_desc").parent().find(".error-text").html("Sorry, but the course description cannot be empty");
             $("#id_course_desc").parent().find(".error-text").css("display", "block");
@@ -543,23 +533,18 @@ $(document).ready(function() {
                         document.cookie = "course_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     }
                     document.cookie = course_id_cookie;
-                    var before_value = $(".create-course-form").data('created-course-id');
-                    console.log(before_value);
+                    // var before_value = $(".create-course-form").data('created-course-id');
                     $(".create-course-form").data('created-course-id', course_id);
-                    var after_value = $(".create-course-form").data('created-course-id');
-                    console.log(after_value);
+                    // var after_value = $(".create-course-form").data('created-course-id');
 
                     document.getElementById("id_course_id").value = course_id;
-                    var inputincourse_id = document.getElementById("id_course_id").value;
-                    console.log(inputincourse_id);
+                    // var inputincourse_id = document.getElementById("id_course_id").value;
 
                     document.getElementById("id_course_cot_id").value = course_id;
-                    var inputincoursecot_id = document.getElementById("id_course_cot_id").value;
-                    console.log(inputincoursecot_id);
+                    // var inputincoursecot_id = document.getElementById("id_course_cot_id").value;
 
                     $(".get-all-current-cot").data('current_course_id', course_id);
-                    var data_current_course_id = $(".get-all-current-cot").data('current_course_id');
-                    console.log(data_current_course_id);
+                    // var data_current_course_id = $(".get-all-current-cot").data('current_course_id');
 
                     $('#id_course_code').prop('readonly', true);
                     $("#id_course_code").parent().find(".help-text").html("Can be modified while editing course");
@@ -822,9 +807,7 @@ $(document).ready(function() {
         }, 5000);
 
         var get_current_cot_url = $("#fetchcurrentcot").data('get-currentcot-url');
-        console.log(get_current_cot_url);
         var current_cot = $(this).data('current_course_id');
-        console.log(current_cot);
 
         $.ajax({
             type: "POST",
@@ -843,7 +826,6 @@ $(document).ready(function() {
                     toastr.success("COT list fetched successfully")
                     let html_data = '<option value=""> Select field for...? </option>';
                     data.forEach(function (data) {
-                        console.log(data);
                         html_data += `<option value="${data.id}">${data.final_obj}</option>`
                     });
                     $("#id_current_course_cot").html(html_data);
@@ -884,11 +866,9 @@ $(document).ready(function() {
                         document.cookie = "course_cot_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     }
                     document.cookie = course_cot_id_cookie;
-                    var cot_before_value = $(".create-course-cot-form").data('created-course-cot-id');
-                    console.log(cot_before_value);
+                    // var cot_before_value = $(".create-course-cot-form").data('created-course-cot-id');
                     $(".create-course-cot-form").data('created-course-cot-id', coursecot_id);
-                    var cot_after_value = $(".create-course-cot-form").data('created-course-cot-id');
-                    console.log(cot_after_value);
+                    // var cot_after_value = $(".create-course-cot-form").data('created-course-cot-id');
                     
                     var cotfield_btn_as_this = document.getElementsByClassName('get-all-current-cot')[0];
                     getAllCOTFunc.call(cotfield_btn_as_this);
@@ -921,9 +901,6 @@ $(document).ready(function() {
         var getCreateCOTExtraFieldURL = $("#cotextrafield-btn").data('create-cot-externalfield-url');
         var createCOTExtraField = $('.create-course-cot-extra-field')[0];
         var createCOTExtraFieldform_data = new FormData(createCOTExtraField);
-        console.log(getCreateCOTExtraFieldURL)
-        console.log(createCOTExtraField)
-        console.log(createCOTExtraFieldform_data)
 
         $.ajax({
             method: "POST",
@@ -974,7 +951,6 @@ $(document).ready(function() {
             cache: false,
             success: function (data) {
                 if(data.status == 'success') {
-                    console.log(data)
                     toastr.success(data.message)
                     setTimeout(function(){
                         window.location.href = submitCourseSuccessURL;
