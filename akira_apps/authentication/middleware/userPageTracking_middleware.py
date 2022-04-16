@@ -18,7 +18,7 @@ class userPageTrackingMiddleware:
 
             DONT_SAVE_LIST = ["Device", "admin", "logout"]
             if any(ext in currentPageURL for ext in DONT_SAVE_LIST):
-                print(currentPageURL)
+                pass
             else:
                 if UserPageVisits.objects.filter(user=request.user, currentPage=currentPageURL, userIPAddr=ip).exists() is True:
                     UserPageVisits.objects.filter(user=request.user, currentPage=currentPageURL, userIPAddr=ip).delete()
