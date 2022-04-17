@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <meta name="theme-color" content="#FFF"/>
-    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+    <meta name="description" content="AkirA is a kind of Education Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
 
     <link rel="stylesheet" href="{% static 'styles/admin_register.css' %}">
     
@@ -23,7 +23,7 @@
     {% include 'check_internet_connection.html' %}
 
     <div class="main">
-        <div class="container-fluid">
+        <!-- <div class="container-fluid"> -->
             <div class="regiserformcontainer">
                 <h2 id="heading">Create Your <span class="akira">AkirA</span> Admin. Account</h2>
                 <p class="note">Fill all the fields to create admin. account</p>
@@ -174,7 +174,7 @@
                             </div>
                             <div class="gs-checkbox checkbox-ripple">
                                 <label class="input-checkbox checkbox-lightBlue">
-                                  <input type="checkbox" id="id_show_password">
+                                  <input type="checkbox" name="show_password" id="id_show_password">
                                   <span class="checkbox"></span>
                                 </label>
                                 <label for="id_show_password" class="label">Show password</label>
@@ -235,7 +235,7 @@
                     </fieldset>
                 </form>
             </div>
-        </div>
+        <!-- </div> -->
     </div>
     <script src="{% static 'js/adminRegister.js' %}"></script>
 </body>
