@@ -480,7 +480,12 @@ $(document).ready(function() {
     });
 
     $('#id_confirm_password').on('keyup keydown blur change', function() {
-        if ($("#id_confirm_password").val() != $("#id_password").val()) {
+        if ($("#id_confirm_password").val() == "") {
+            $("#id_confirm_password").parent().find(".error-text").css("display", "block");
+            $("#id_confirm_password").parent().find(".error-text").html("Enter your password");
+            confirmpassword = false;
+        }
+        else if ($("#id_confirm_password").val() != $("#id_password").val()) {
             $("#id_confirm_password").parent().find(".error-text").html("Those passwords didn&#x00027;t match. Try again.");
             $("#id_confirm_password").parent().find(".error-text").css("display", "block");
             confirmpassword = false;
