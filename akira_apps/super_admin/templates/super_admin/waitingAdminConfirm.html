@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <meta name="theme-color" content="#FFF"/>
-    <meta name="description" content="AkirA is a kind of Education Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">    
     <link rel="stylesheet" href="{% static 'styles/waitingadminconfirm.css' %}">
@@ -28,10 +28,11 @@
 
     <div id="demo"></div>
     <div id="resendEmailOption">
+        <input type="hidden" name="fingerprint" id="id_fingerprint">
         <a href="{% url 'send_admin_reg_email' EnUsername %}">Resend confirmation Email</a>
     </div>
 
-    <script src='{% static "js/BrowserFingerPrinting.js" %}'></script>
+    <script src='{% static "js/BrowserFingerPrintWebGL.js" %}'></script>
     <script>
         document.getElementById("resendEmailOption").style.display = "none";
         var last_mail_time = new Date("{{ last_mail_time|date:"D M d Y H:i:s" }}");
