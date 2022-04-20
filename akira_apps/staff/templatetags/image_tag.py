@@ -7,7 +7,10 @@ register = template.Library()
 
 @register.filter
 def getUserProfile(value):
-    user = User.objects.get(username=value)
+    try:
+        user = User.objects.get(username=value)
+    except User.DoesNotExist:
+        return False
     groupList = ', '.join(map(str, user.groups.all()))
     userImagePath = False
     if groupList is not None:
