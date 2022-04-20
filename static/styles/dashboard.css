@@ -2858,7 +2858,7 @@ top: 2px;
 transition: 250ms;
 }
 
-.help-text, .error-text, .info-text {
+.help-text, .error-text, .info-text, .data-status {
   color: #80868b;
   font-size: .75rem;
   margin-top: 5px;
@@ -2879,6 +2879,12 @@ transition: 250ms;
 .info-text {
   display: none;
   color: #ffb300;
+  font-weight: 500;
+}
+
+.data-status {
+  display: none;
+  color: #03a9f4;
   font-weight: 500;
 }
 

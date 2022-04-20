@@ -102,75 +102,48 @@ def createCourseAjax(request):
             })
 
 def editCourse(request, course_id):
+
     try:
-        courseObj = CourseMC.objects.get(id=course_id)
+        current_courseObj = CourseMC.objects.get(code=course_id)
     except CourseMC.DoesNotExist:
+        current_courseObj = None
+        messages.info(request, "Course doesn't exists!")
         return redirect('manage_courses')
+    courseExtraFields = CourseExtraFields.objects.filter(course = current_courseObj)
+
+    try:
+        getCreatedCourseCotCookie = request.COOKIES['course_cot_id']
+    except Exception:
+        getCreatedCourseCotCookie = None
+    current_courseCOTObjs = None
+    if getCreatedCourseCotCookie is not None:
+        try:
+            current_courseCOTObjs = CourseOfferingType.objects.get(id=getCreatedCourseCotCookie)
+        except CourseOfferingType.DoesNotExist:
+            current_courseCOTObjs = None
+    current_courseCOTObjs = CourseOfferingType.objects.filter(course = current_courseObj)
+
+    courseCOTExtraFields = CourseCOTExtraFields.objects.filter(course__course = current_courseObj)
+
     branch_list = Branch.objects.all()
     semester_list = Semester.objects.all()
     semesterModeForm = SemesterModeForm()
     courseTypeForm = CourseTypeForm()
+    courseExtraFieldTypeForm = CourseExtraFieldForm()
     faculty_list = User.objects.all()
     specialization_list = SpecializationsMC.objects.all()
     prerequisiteList = CourseMC.objects.all()
-    if request.method == 'POST':
-        courseCode = request.POST.get('course_code')
-        courseName = request.POST.get('course_name')
-        courseDesc = request.POST.get('course_desc')
-        courseBranch = request.POST.get('branch')
-        courseSemester = request.POST.get('semester')
-        courseCC = request.POST.get('course_coordinator')
-        course_type = request.POST.get('course_type')
-        courseSpecialization_id = request.POST.get('specialization', None)
-        pre_requisite = request.POST.get('prerequisite')
-        courseFiles = request.FILES.getlist('course_files')
-        
-        if User.objects.filter(id=courseCC).exists() is True:
-            courseCC = User.objects.get(id=courseCC)
-            if Branch.objects.filter(id = courseBranch).exists() is True:
-                courseBranch = Branch.objects.get(id = courseBranch)
-                if Semester.objects.filter(id = courseSemester).exists() is True:
-                    courseSemester = Semester.objects.get(id = courseSemester)
-                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
-                        pre_requisite = None
-                    if courseSpecialization_id is None or courseSpecialization_id == '':
-                        courseSpecializationObj = None
-                    else:
-                        if SpecializationsMC.objects.filter(id = courseSpecialization_id).exists() is True:
-                            courseSpecializationObj = SpecializationsMC.objects.get(id = courseSpecialization_id)
-                    getCourseObj = CourseMC.objects.get(id=course_id)
-                    getCourseObj.code=courseCode,
-                    getCourseObj.name=courseName,
-                    getCourseObj.desc = courseDesc,
-                    getCourseObj.course_coordinator=courseCC,
-                    getCourseObj.branch=courseBranch,
-                    getCourseObj.semester=courseSemester,
-                    getCourseObj.specialization=courseSpecializationObj,
-                    getCourseObj.type = course_type,
-                    getCourseObj.pre_requisite = pre_requisite,
-                    getCourseObj.save()
-                    try:
-                        for file in courseFiles:
-                            CourseFiles.objects.create(course = getCourseObj, course_files = file)
-                        messages.success(request, "Course created successfully")
-                    except Exception:
-                        messages.error(request, "Failed to create course!")
-                else:
-                    messages.error(request, "Semester does not exist")
-            else:
-                messages.error(request, "Branch does not exist")
-        else:
-            messages.error(request, "User does not exist")
-        return redirect('manage_courses')
-    else:
-        messages.warning(request, "We couldn't process your request!")
     context = {
-        "courseObj": courseObj,
+        "courseObj": current_courseObj,
+        "courseExtraFields": courseExtraFields,
+        "cots": current_courseCOTObjs,
+        "courseCotExtraFields": courseCOTExtraFields,
         "branch_list":branch_list,
         "semesterModeForm":semesterModeForm,
         "semester_list":semester_list,
         "faculty_list":faculty_list,
         "courseTypeForm": courseTypeForm,
+        'courseExtraFieldTypeForm':courseExtraFieldTypeForm,
         "specialization_list":specialization_list,
         "prerequisiteList": prerequisiteList,
     }

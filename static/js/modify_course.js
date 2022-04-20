@@ -349,6 +349,19 @@ $(document).on('click', 'a[data-delete-cot-field_id]', function() {
     }); 
 });
 
+$("input[type=text], input[type=number]").each(function () {
+    var $input = $(this);
+    var $parent = $input.closest(".input-box");
+    if ($input.val()) $parent.addClass("focus");
+     else $parent.removeClass("focus");
+});
+$("textarea").each(function () {
+    var $input = $(this);
+    var $parent = $input.closest(".input-box");
+    if ($input.val()) $parent.addClass("focus");
+        else $parent.removeClass("focus");
+});
+
 function setFocus(on) {
     var element = document.activeElement;
     if (on) {
@@ -358,7 +371,7 @@ function setFocus(on) {
     } else {
         let box = document.querySelector(".input-box");
         box.classList.remove("focus");
-        $("input").each(function () {
+        $("input[type=text], input[type=number]").each(function () {
             var $input = $(this);
             var $parent = $input.closest(".input-box");
             if ($input.val()) $parent.addClass("focus");
@@ -459,31 +472,22 @@ $(document).ready(function() {
         });
     }
 
+    $(".next").click(function() {
+        nextFieldSet.call(this);
+    });
+
     $(".previous").click(function(){
         previousFieldSet.call(this);
     });
     
-    $("input[data-create-design='true']").prop('disabled', true);
-    $("#course-btn").prop("disabled", true);
+    // $("input[data-create-design='true']").prop('disabled', true);
+    // $("#course-btn").prop("disabled", true);
     var course_btn = false;
 
     var code = false; var name = false;
     var description = false;
     var branch = false; var semester = false;
     var faculty = false; var course_type = false;
-
-    $("input").each(function () {
-        var $input = $(this);
-        var $parent = $input.closest(".input-box");
-        if ($input.val()) $parent.addClass("focus");
-         else $parent.removeClass("focus");
-    });
-    $("textarea").each(function () {
-        var $input = $(this);
-        var $parent = $input.closest(".input-box");
-        if ($input.val()) $parent.addClass("focus");
-            else $parent.removeClass("focus");
-    });
 
     $('#id_course_code').on('keyup keydown blur change', function() {
         if ($("#id_course_code").val() == "") {
@@ -539,11 +543,6 @@ $(document).ready(function() {
             $("#id_course_desc").parent().find(".error-text").css("display", "block");
             description = false;
         }
-        // else if (!$("#id_course_desc").val().match(/^[A-Za-z0-9-,.-/\s]*$/)) {
-        //     $("#id_course_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course description correctly&#x0003F;");
-        //     $("#id_course_desc").parent().find(".error-text").css("display", "block");
-        //     description = false;
-        // }
         else if ($("#id_course_desc").val().match(/^\s+$/)) {
             $("#id_course_desc").parent().find(".error-text").html("Sorry, but the course description cannot be empty");
             $("#id_course_desc").parent().find(".error-text").css("display", "block");
@@ -597,23 +596,6 @@ $(document).ready(function() {
         } else {
             $("#id_course_type").parent().find(".error-text").css("display", "none");
             course_type = true;
-        }
-    });
-
-    $('input, select, textarea').on('keyup keydown blur change', function() {
-        if (code == true && name == true && description == true && branch == true && semester == true && faculty == true && course_type == true) {
-            course_btn = true;
-        }
-        else {
-            course_btn = false;
-        }
-        if (course_btn == true) {
-            $("#course-btn").prop("disabled", false);
-            $("input[data-create-design='true']").prop('disabled', false);
-        }
-        else {
-            $("#course-btn").prop("disabled", true);
-            $("input[data-create-design='true']").prop('disabled', true);
         }
     });
 
@@ -806,7 +788,7 @@ $(document).ready(function() {
         }
     });
 
-    $('input, select').on('keyup keydown blur change', function() {
+    $('input, select, textarea').on('keyup keydown blur change', function() {
         if (course_mos == true && course_ltps == true) {
             current_cmos_btn = true;
         }
@@ -932,76 +914,6 @@ $(document).ready(function() {
             $("#extrafield-btn").prop("disabled", true);
         }
     });
-
-    function createDesignCourse() {
-        if($(this).hasClass('createCourseAjax-disabled')){
-            return false;
-        }
-        $(this).addClass('createCourseAjax-disabled');
-        setTimeout(function(){
-            $("#create-design-course-next").removeClass('createCourseAjax-disabled');
-        }, 5000);
-
-        var getCreateDesignCourseURL = $("#create-design-course-next").data('create-course-ajax');
-        var form = $('.create-course-form')[0];
-        var form_data = new FormData(form);
-
-        $.ajax({
-            method: "POST",
-            enctype: 'multipart/form-data',
-            url: getCreateDesignCourseURL,
-            data: form_data,
-            processData: false,
-            contentType: false,
-            cache: false,
-            success: function (data) {
-                if(data.status == 'success') {
-                    toastr.success(data.message)
-                    var course_id = data.course_id;
-                    var course_id_cookie = "course_id=" + course_id + "; path=/";
-                    if(document.cookie.indexOf("course_id") != -1) {
-                        document.cookie = "course_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    }
-                    document.cookie = course_id_cookie;
-                    // var before_value = $(".create-course-form").data('created-course-id');
-                    $(".create-course-form").data('created-course-id', course_id);
-                    // var after_value = $(".create-course-form").data('created-course-id');
-
-                    document.getElementById("id_course_id").value = course_id;
-                    // var inputincourse_id = document.getElementById("id_course_id").value;
-
-                    document.getElementById("id_course_cot_id").value = course_id;
-                    // var inputincoursecot_id = document.getElementById("id_course_cot_id").value;
-
-                    $(".get-all-current-cot").data('current_course_id', course_id);
-                    // var data_current_course_id = $(".get-all-current-cot").data('current_course_id');
-
-                    // delete the cookie with name course_cot_id
-                    if(document.cookie.indexOf("course_cot_id") != -1) {
-                        document.cookie = "course_cot_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    }
-
-                    $('#id_course_code').prop('readonly', true);
-                    $("#id_course_code").parent().find(".help-text").html("Can be modified while editing course");
-                    $("#id_course_code").parent().find(".help-text").css("display", "block");
-                    
-                    $('#id_course_name').prop('readonly', true);
-                    $("#id_course_name").parent().find(".help-text").html("Can be modified while editing course");
-                    $("#id_course_name").parent().find(".help-text").css("display", "block");
-
-                    var next = document.getElementsByClassName('next')[0];
-                    nextFieldSet.call(next);
-                    console.log(data);
-                }
-                else if(data.status == 'error') {
-                    toastr.warning(data.message)
-                }
-            },
-            error: function (data) {
-                toastr.error(data.message)
-            }
-        }); 
-    }
 
     function createBranchFunc() {
         var branch_name = $('#id_branch_name').val();
@@ -1262,9 +1174,7 @@ $(document).ready(function() {
                         document.cookie = "course_cot_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     }
                     document.cookie = course_cot_id_cookie;
-                    // var cot_before_value = $(".create-course-cot-form").data('created-course-cot-id');
                     $(".create-course-cot-form").data('created-course-cot-id', coursecot_id);
-                    // var cot_after_value = $(".create-course-cot-form").data('created-course-cot-id');
                     
                     var cotfield_btn_as_this = document.getElementsByClassName('get-all-current-cot')[0];
                     getAllCOTFunc.call(cotfield_btn_as_this);
@@ -1347,7 +1257,7 @@ $(document).ready(function() {
             cache: false,
             success: function (data) {
                 if(data.status == 'success') {
-                    toastr.success(data.message)
+                    toastr.success("Course updated successfully")
                     setTimeout(function(){
                         window.location.href = submitCourseSuccessURL;
                     }
@@ -1378,16 +1288,6 @@ $(document).ready(function() {
     });
     $("#fetchSemester").click(function(){
         getAllSemestersFunc.call(this);
-    });
-
-    $("#create-design-course-next").click(function(){
-        if($(".create-course-form").data('created-course-id') == 'empty') {
-            createDesignCourse.call(this);
-        }
-        else {
-            var next = document.getElementsByClassName('next')[0];
-            nextFieldSet.call(next);
-        }
     });
 
     $("#extrafield-btn").click(function() {
