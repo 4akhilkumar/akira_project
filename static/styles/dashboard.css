@@ -1505,13 +1505,14 @@ button.search-icon:hover {
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
   .modal {
     -webkit-backdrop-filter: blur(8px) saturate(100%) contrast(45%) brightness(130%);
     backdrop-filter: blur(8px) saturate(100%) contrast(45%) brightness(130%);
-
+    background-color: unset; /* unset */
   }
 }
 
