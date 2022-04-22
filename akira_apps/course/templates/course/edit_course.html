@@ -55,8 +55,8 @@
                     </select>
                     <span class="error-text">Select branch</span>
                     <span class="redirect">
-                      <a href="#" id="showFormCreateBranch"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
-                      <a href="#" id="fetchBranches" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
+                      <a href="#createBranchModal" id="showFormCreateBranch"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
+                      <a href="#fetchBranchList" id="fetchBranches" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
                         <i class="fa-solid fa-arrows-rotate"></i> refresh
                       </a>
                     </span>
@@ -75,8 +75,8 @@
                     </select>
                     <span class="error-text">Select semester</span>
                     <span class="redirect">
-                      <a href="#" id="showFormCreateSemester"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
-                      <a href="#" id="fetchSemester" data-get-semester-url="{% url 'getAllSemestersAjax' %}">
+                      <a href="#createSemesterModal" id="showFormCreateSemester"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
+                      <a href="#fetchSemesterList" id="fetchSemester" data-get-semester-url="{% url 'getAllSemestersAjax' %}">
                         <i class="fa-solid fa-arrows-rotate"></i> refresh
                       </a>
                     </span>
@@ -194,8 +194,8 @@
                   {% endfor %}
                 </span>
                 <span class="redirect">
-                  <a href="#" id="showFormCreateCOTField"><i class="fa-solid fa-circle-plus"></i> Course offering type</a>
-                  <a href="#" id="showFormCreateCOTExtraField"><i class="fa-solid fa-circle-plus"></i> Add a field</a>
+                  <a href="#createCOTModal" id="showFormCreateCOTField"><i class="fa-solid fa-circle-plus"></i> Course offering type</a>
+                  <a href="#addCOTExtraFieldModal" id="showFormCreateCOTExtraField"><i class="fa-solid fa-circle-plus"></i> Add a field</a>
                 </span>
                 <span id="id_append_cot_external_fields">
                   {% for each in courseCotExtraFields %}
@@ -312,7 +312,7 @@
                   <!-- Append Here -->
                 </span>
                 <span class="redirect">
-                  <a href="#" id="showFormCreateExternalField"><i class="fa-solid fa-circle-plus"></i> Add an extra field for the course</a>
+                  <a href="#createCourseExtraFieldModal" id="showFormCreateExternalField"><i class="fa-solid fa-circle-plus"></i> Add an extra field for the course</a>
                 </span>
               </div>
               <button type="button" id="course-btn" class="action-button course-btn" data-submit-course-url="{% url 'submitcourseformAjax' %}" data-course-create-success-url="{% url 'manage_courses' %}">Submit</button>
@@ -534,8 +534,8 @@
               <div class="input-box active-grey">
                 <label class="fieldlabels input-label" for="id_current_course_cot">Extra Field for...?</label>
                 <select name="current_course_cot" class="input-1" id="id_current_course_cot">
-                  {% for each in cots %}
                   <option value="">Select field for...?</option>
+                  {% for each in cots %}
                   <option value="{{ each.id }}"> {{ each }} </option>
                   {% empty %}
                   <option value="">Data Not Available</option>
