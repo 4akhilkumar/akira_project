@@ -474,7 +474,7 @@ def getAllCurrentCOTAjax(request):
             for each in getCurrentCOTs:
                 cot_list.append({
                     'id': each.id,
-                    'final_obj': str(each.name) + " - " + str(each.course.name)
+                    'final_obj': str(each.course.code) + " - " + str(each.name) + " - " + str(each.course.name)
                 })
             return JsonResponse(cot_list, safe=False)
         else:
