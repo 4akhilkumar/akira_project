@@ -114,6 +114,13 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+@supports (scrollbar-color: #606060 transparent) and (scrollbar-width: thin) {
+ * {
+   scrollbar-color: #606060 transparent;
+   scrollbar-width: thin;
+ }
+}
+
 ::-webkit-scrollbar {
   width: 16px;
 }
