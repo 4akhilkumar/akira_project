@@ -45,6 +45,9 @@ function getAllCOTFunc() {
                     html_data += `<option value="${data.id}">${data.final_obj}</option>`
                 });
                 $("#id_current_course_cot").html(html_data);
+
+                $("#id_current_course_cot").parent().find(".error-text").css("display", "block");
+                $("#cotextrafield-btn").prop("disabled", true);
             }
         },
         error: function (data) {
@@ -1108,6 +1111,10 @@ $(document).ready(function() {
                         html_data += `<option value="${data.id}">${data.name}</option>`
                     });
                     $("#id_branch").html(html_data);
+
+                    $("#id_branch").parent().find(".error-text").css("display", "block");
+                    $("#course-btn").prop("disabled", true);
+                    $("input[data-create-design='true']").prop('disabled', true);
                 }
             },
             error: function (data) {
@@ -1142,6 +1149,9 @@ $(document).ready(function() {
                         html_data += `<option value="${data.id}">${data.name}</option>`
                     });
                     $("#id_semester_branch").html(html_data);
+
+                    $("#id_semester_branch").parent().find(".error-text").css("display", "block");
+                    $("#semester-btn").prop("disabled", true);
                 }
             },
             error: function (data) {
@@ -1224,6 +1234,10 @@ $(document).ready(function() {
                         html_data += `<option value="${data.id}">${data.mode} ${data.start_year.substring(0, 4)}</option>`
                     });
                     $("#id_semester").html(html_data);
+
+                    $("#id_semester").parent().find(".error-text").css("display", "block");
+                    $("#course-btn").prop("disabled", true);
+                    $("input[data-create-design='true']").prop('disabled', true);
                 }
             },
             error: function (data) {
