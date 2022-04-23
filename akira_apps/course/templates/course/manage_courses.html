@@ -55,29 +55,13 @@
 
 {% block manage-courses %}
 
-<div class="search-box-container">
-  <form action="{% url 'search_course' %}" method="POST" class="form-elements">
-    {% csrf_token %}
-    <input type="text" name="search" id="search-bar" placeholder="Search course..." autocomplete="off" required>
-    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
-  </form>
+<div class="btn-area">
+  <button id="createCourse" data-create-course-url="{% url 'updateCourse' %}" class="create-block-btn">Create Course</button>
+  <button id="createCourseBulk" class="create-block-btn">Create Courses (CSV)</button>
 </div>
 
 <div class="course-container">
   <ul class="courses">
-    <li class="courses_item">
-      <div class="course">
-        <div class="course_image">
-          <span class="fa-solid fa-circle-plus" onclick="document.location='{% url 'updateCourse' %}'"></span>
-          /
-          <span class="fa-solid fa-file-csv"></span>
-        </div>
-        <div class="course_content">
-          <h2 class="course_title">Create a Course</h2>
-          <p class="course_text">A course is a unit of teaching that typically lasts one academic term</p>
-        </div>
-      </div>
-    </li>
     {% for i in courses %}
     <li class="courses_item">
       <div class="course">
@@ -97,6 +81,9 @@
     {% endfor %}
   </ul>
 </div>
+
+<script src="{% static 'js/manage_course.js' %}"></script>
+
 {% endblock %}
 
 {% endblock %}
