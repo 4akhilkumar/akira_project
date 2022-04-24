@@ -55,3 +55,12 @@ function topFunction() {
   document.documentElement.scrollTop = 0;
 }
 // ====================== End Top Button ====================== //
+
+// ====================== Skeleton CSS ====================== //
+const allSkeleton = document.querySelectorAll('.skeleton')
+window.addEventListener('load', function() {
+  allSkeleton.forEach(item=> {
+    item.classList.remove('skeleton')
+  })
+})
+// ====================== Skeleton CSS ====================== //

@@ -21,7 +21,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Blocks</h4>
-          <h1>{{ blocks|length }}</h1>
+          <h1 class="skeleton">{{ blocks|length }}</h1>
       </div>
   </div>
   <div class="analytic">
@@ -30,7 +30,7 @@
     </div>
     <div class="analytic-info">
         <h4>Total Rooms</h4>
-        <h1>{{ rooms|length }}</h1>
+        <h1 class="skeleton">{{ rooms|length }}</h1>
     </div>
   </div>
 </div>
@@ -48,18 +48,18 @@
 </div>
 
 {% if blocks %}
-<div class="search-box-container">
+<!-- <div class="search-box-container">
   <form method="post" action="" class="form-elements">
     {% csrf_token %}
     <input type="text" name="search-block" id="search-bar" placeholder="Search Block..." autocomplete="off" required>
     <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
   </form>
-</div>
+</div> -->
 
 <div class="list-all-blocks-info">
   {% for i in blocks %}
   <div class="item-block">
-    <div class="block-name-desc">
+    <div class="block-name-desc skeleton">
       <span class="fa-solid fa-building building-block-icon"></span>
       <div class="block-name-block-desc">
         <h2>{{ i.name }}</h2>
@@ -67,17 +67,17 @@
       </div>
     </div>
     <div class="block-chips">
-      <span class="block-chip chip-one">
+      <span class="block-chip chip-one skeleton">
         <i class="fa-solid fa-layer-group"></i>
         {{ i.name|block_floors }} Floor{{ i.name|block_floors|pluralize }}
       </span>
       &nbsp;
-      <span class="block-chip chip-two">
+      <span class="block-chip chip-two skeleton">
         <i class="fa-solid fa-layer-group"></i>
         {{ i.name|block_rooms }} Room{{ i.name|block_rooms|pluralize }}
       </span>
       &nbsp;
-      <span class="block-chip chip-three">
+      <span class="block-chip chip-three skeleton">
         <i class="fa-solid fa-layer-group"></i>
         {{ i.name|block_waiting_halls }} Waiting Hall{{ i.name|block_waiting_halls|pluralize }}
       </span>
@@ -87,12 +87,12 @@
       <div class="component1">
         <li>
           <div class="whole-component">
-            <div class="icon-component">
+            <div class="icon-component skeleton">
               <span class="fa-solid fa-chalkboard-user"></span>
             </div>
             <div class="info-component">
-              <h5>Staff Room{{ i.name|block_staff_rooms|pluralize }}</h5>
-              <h4>{{ i.name|block_staff_rooms }}</h4>
+              <h5 class="skeleton">Staff Room{{ i.name|block_staff_rooms|pluralize }}</h5>
+              <h4 class="skeleton">{{ i.name|block_staff_rooms }}</h4>
             </div>
           </div>
         </li>
@@ -100,12 +100,12 @@
       <div class="component2">
         <li>
           <div class="whole-component">
-            <div class="icon-component">
+            <div class="icon-component skeleton">
               <span class="fa-solid fa-user-graduate"></span>
             </div>
             <div class="info-component">
-              <h5>Class Room{{ i.name|block_class_rooms|pluralize }}</h5>
-              <h4>{{ i.name|block_class_rooms }}</h4>
+              <h5 class="skeleton">Class Room{{ i.name|block_class_rooms|pluralize }}</h5>
+              <h4 class="skeleton">{{ i.name|block_class_rooms }}</h4>
             </div>
           </div>
         </li>
@@ -113,12 +113,12 @@
       <div class="component3">
         <li>
           <div class="whole-component">
-            <div class="icon-component">
+            <div class="icon-component skeleton">
               <span class="fa-solid fa-handshake"></span>
             </div>
             <div class="info-component">
-              <h5>Meeting Hall{{ i.name|block_meeting_halls|pluralize }}</h5>
-              <h4>{{ i.name|block_meeting_halls }}</h4>
+              <h5 class="skeleton">Meeting Hall{{ i.name|block_meeting_halls|pluralize }}</h5>
+              <h4 class="skeleton">{{ i.name|block_meeting_halls }}</h4>
             </div>
           </div>
         </li>
@@ -126,12 +126,12 @@
       <div class="component4">
         <li>
           <div class="whole-component">
-            <div class="icon-component">
+            <div class="icon-component skeleton">
               <span class="fa-solid fa-flask"></span>
             </div>
             <div class="info-component">
-              <h5>Lab{{ i.name|block_lab_rooms|pluralize }}</h5>
-              <h4>{{ i.name|block_lab_rooms }}</h4>
+              <h5 class="skeleton">Lab Room{{ i.name|block_lab_rooms|pluralize }}</h5>
+              <h4 class="skeleton">{{ i.name|block_lab_rooms }}</h4>
             </div>
           </div>
         </li>
@@ -139,7 +139,7 @@
     </div>
     <div class="block-buttons">
       <!-- <button class="block-delete-btn" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button> -->
-      <button class="block-contact-btn"><span>Contact</span></button>
+      <button class="block-contact-btn skeleton"><span>Contact</span></button>
     </div>
   </div>
   {% endfor %}

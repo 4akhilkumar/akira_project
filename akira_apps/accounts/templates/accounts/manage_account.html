@@ -67,12 +67,12 @@
                 </div>
                 <div class="recovery-email">
                     <h4>Recovery email</h4>
-                    <p>{{ request.user.email }}</p>
+                    <p class="skeleton">{{ request.user.email }}</p>
                 </div>
                 <hr>
                 <div class="recovery-phone">
                     <h4>Recovery phone</h4>
-                    <p>{{ current_user_details.phone }}</p>
+                    <p class="skeleton">{{ current_user_details.phone }}</p>
                 </div>
                 <hr>
                 <div class="two-step-verfication">
@@ -115,7 +115,7 @@
             <h3 class="section-head" id="Login_activity">Login activity</h3>
             <div class="graph-content">
                 <div class="graph-head">
-                    <div class="graph-select">
+                    <div class="graph-select skeleton">
                         <p>{{current_month}}</p>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
             <div class="outer-container">
                 <div class="each-login-details">
                     <div class="device-icon-login-details">
-                        <div class="device-icon">
+                        <div class="device-icon skeleton">
                             {% if "Windows" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-windows"></span>
                             {% elif "iPhone" in get_currentLoginInfo.os_details or "Macintosh" in get_currentLoginInfo.os_details %}
@@ -148,13 +148,13 @@
                             {% endif %}
                         </div>
                         <div class="device-platform_ip_addr-location-time">
-                            <div class="platform-name">
+                            <div class="platform-name skeleton">
                                 <h4>{{ get_currentLoginInfo.os_details }} - {{ get_currentLoginInfo.user_ip_address }}</h4>
                             </div>
-                            <div class="location_name">
+                            <div class="location_name skeleton">
                                 <p>{{ get_currentLoginInfo.user_ip_address|ip_location }} &#183; {{ get_currentLoginInfo.browser_details }}</p>
                             </div>
-                            <div class="time-date">
+                            <div class="time-date skeleton">
                                 <p>{{ get_currentLoginInfo.created_at|date:"h:i A" }} &#183; {{ get_currentLoginInfo.created_at|date:"d M" }}</p>
                             </div>
                         </div>

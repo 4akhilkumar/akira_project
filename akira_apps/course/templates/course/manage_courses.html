@@ -20,7 +20,7 @@
       </div>
       <div class="analytic-info">
           <h4>Most Reg. Course</h4>
-          <h1>--</h1>
+          <h1 class="skeleton">--</h1>
       </div>
   </div>
   <div class="analytic">
@@ -29,7 +29,7 @@
     </div>
     <div class="analytic-info">
         <h4>Least Reg. Course</h4>
-        <h1>--</h1>
+        <h1 class="skeleton">--</h1>
     </div>
   </div>
   <div class="analytic">
@@ -38,7 +38,7 @@
       </div>
       <div class="analytic-info">
           <h4>Total Courses</h4>
-          <h1>{{ courses|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+          <h1 class="skeleton">{{ courses|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
       </div>
   </div>
   <div class="analytic">
@@ -47,7 +47,7 @@
     </div>
     <div class="analytic-info">
         <h4>Specializations</h4>
-        <h1>{{ specializations|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+        <h1 class="skeleton">{{ specializations|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
     </div>
   </div>
 </div>
@@ -66,12 +66,12 @@
     <li class="courses_item">
       <div class="course">
         <div class="course_image">
-          <h1 class="course-short_title">{{ i.code }} <sub class="custom_sub">{{ i.name|first_letter_word }}</sub> </h1>
+          <h1 class="course-short_title skeleton">{{ i.code }} <sub class="custom_sub">{{ i.name|first_letter_word }}</sub> </h1>
         </div>
         <div class="course_content">
-          <h2 class="course_title">{{ i.name }}</h2>
-          <p class="course_text">{{ i.desc }}</p>
-          <div class="course-buttons">
+          <h2 class="course_title skeleton">{{ i.name }}</h2>
+          <p class="course_text skeleton">{{ i.desc }}</p>
+          <div class="course-buttons skeleton">
             <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.code %}'" >Know More</button>
             <!-- <button class="enrollCoursebtn course_btn">Enroll</button> -->
           </div>
