@@ -36,7 +36,6 @@ themeBtn.addEventListener('click', () => {
 window.addEventListener('DOMContentLoaded', () => {
   loadTheme(getCurrentTheme());
 })
-
 /* ====================== End Dark Mode ====================== */
 
 // ====================== Top Button ====================== //
@@ -64,3 +63,90 @@ window.addEventListener('load', function() {
   })
 })
 // ====================== Skeleton CSS ====================== //
+
+// ====================== Widgets Modal ====================== //
+var widgetsModal = document.getElementById("widgetsModal"); 
+var widgetsModal_btn = document.getElementById("showWidgetsModal");
+var widgetsModal_span = document.getElementById("close-widgetModal");
+
+widgetsModal_btn.onclick = function() {
+  widgetsModal.style.display = "block";
+}
+
+widgetsModal_span.onclick = function() {
+  widgetsModal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == widgetsModal) {
+    widgetsModal.style.display = "none";
+  }
+}
+// ====================== End Widgets Modal ====================== //
+
+// ====================== Full Screen ====================== //
+var fullexitscreen = document.getElementById("fullexitscreen");
+var elem = document.documentElement;
+
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) { /* Safari */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) { /* IE11 */
+    document.msExitFullscreen();
+  }
+}
+
+function setFS() {
+  $('.set_mat_icon').html('fullscreen');
+  $('.set_fullexitscreen').html('Full screen');
+}
+
+function setNormal() {
+  $('.set_mat_icon').html('fullscreen_exit');
+  $('.set_fullexitscreen').html('Normal');
+}
+
+fullexitscreen.addEventListener("click", function() {
+  if(localStorage.getItem('fullscreen') === 'true'){
+    localStorage.setItem('fullscreen', 'false');
+    closeFullscreen();
+    setFS();
+  } 
+  else {
+    localStorage.setItem('fullscreen', 'true');
+    openFullscreen();
+    setNormal();
+  }
+}, false);
+
+addEventListener('fullscreenchange', event => { 
+  if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+    localStorage.setItem('fullscreen', 'true');
+    setNormal();
+    console.log("entered fullscreen mode.");
+  } else {
+    localStorage.setItem('fullscreen', 'false');
+    setFS();
+    console.log('Leaving fullscreen mode.');
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  if(localStorage.getItem('fullscreen') === 'true'){
+    setFS();
+    localStorage.setItem('fullscreen', 'false');
+  }
+});
+// ====================== End Full Screen ====================== //

@@ -246,9 +246,11 @@
                 </div>
             </div>
             <div class="header-action">
-                <button class="theme theme-animation" role="switch" aria-roledescription="light/dark mode" aria-label="light/dark mode"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="bkg2--stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
-                <audio src="{% static 'audio/light-on.mp3' %}" class="theme-audio--light-on" data-attribute="adapted from user 160033 file on freesound.org https://freesound.org/people/160033/sounds/366184/ under CC BY-NC 3.0"></audio>
-                <audio src="{% static 'audio/light-off.mp3' %}" class="theme-audio--light-off" data-attribute="adapted from user 160033 file on freesound.org https://freesound.org/people/160033/sounds/366184/ under CC BY-NC 3.0"></audio>
+                <button class="widgets" id="showWidgetsModal" role="switch" aria-roledescription="widgets" aria-label="widgets">  
+                    <svg viewBox="0 0 50 50" width="35" height="35" class="bkg1--stroke">
+                        <path d="M33.95 24.7 23.3 14.05 33.95 3.4 44.6 14.05ZM6 21.1V6.05H21.05V21.1ZM26.9 42V26.95H41.95V42ZM6 42V26.95H21.05V42ZM9 18.1H18.05V9.05H9ZM34.1 20.65 40.55 14.2 34.1 7.75 27.65 14.2ZM29.9 39H38.95V29.95H29.9ZM9 39H18.05V29.95H9ZM18.05 18.1ZM27.65 14.2ZM18.05 29.95ZM29.9 29.95Z"/>
+                      </svg>
+                </button>
             </div>
         </header>
 
@@ -295,20 +297,115 @@
         </main>
     </div>
 
+    <div id="widgetsModal" class="modal">
+        <div class="model-container">
+          <div class="modal-content">
+            <div class="modal-top-section">
+              <h3>Widgets</span></h3>
+              <span id="close-widgetModal" class="close">&times;</span>
+            </div>
+            <div class="widgets-section">
+                <div class="dark-mode-widget widget-item">
+                    <div class="sub-item">
+                        <button class="theme theme-animation" role="switch" aria-roledescription="light/dark mode" aria-label="light/dark mode"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" class="bkg2--stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
+                        <audio src="{% static 'audio/light-on.mp3' %}" class="theme-audio--light-on" data-attribute="adapted from user 160033 file on freesound.org https://freesound.org/people/160033/sounds/366184/ under CC BY-NC 3.0"></audio>
+                        <audio src="{% static 'audio/light-off.mp3' %}" class="theme-audio--light-off" data-attribute="adapted from user 160033 file on freesound.org https://freesound.org/people/160033/sounds/366184/ under CC BY-NC 3.0"></audio>
+                    </div>
+                    <div class="sub-item">
+                        <p>Dark mode</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon link-widget" role="switch" aria-roledescription="url_shortener" aria-label="url_shortener">
+                            <span class="material-icons"> link </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p>URL Shortener</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon" role="switch" aria-roledescription="devices" aria-label="devices">
+                            <span class="material-icons"> devices </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p>Devices</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon" role="switch" aria-roledescription="alarm" aria-label="alarm">
+                            <span class="material-icons"> alarm </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p>Alarm</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon" role="switch" id="fullexitscreen" aria-roledescription="full_screen" aria-label="full_screen">
+                            <span class="material-icons set_mat_icon"> fullscreen </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p class="set_fullexitscreen">Full screen</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon" role="switch" aria-roledescription="report_problem" aria-label="report_problem">
+                            <span class="material-icons"> report_problem </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p>Report</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon" role="switch" aria-roledescription="feedback" aria-label="feedback">
+                            <span class="material-icons"> feedback </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p>Feedback</p>
+                    </div>
+                </div>
+                <div class="widget-item">
+                    <div class="sub-item">
+                        <button class="widget-item-icon" role="switch" aria-roledescription="feedback" aria-label="feedback">
+                            <span class="material-icons"> help </span>
+                        </button>
+                    </div>
+                    <div class="sub-item">
+                        <p>Help</p>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div id="urlShortenerModal" class="modal">
+        <div class="model-container">
+          <div class="modal-content">
+            <div class="modal-top-section">
+              <h3>URL Shortener</span></h3>
+              <span id="close-urlshortener" class="close">&times;</span>
+            </div>
+            <div class="url_shortener-section">
+                
+            </div>
+          </div>
+        </div>
+    </div>
+
     <script src="{% static 'js/dashboard.js' %}"></script>
-    {% comment %}
-    <script src='{% static "js/BrowserFingerPrintWebGL_ER.js" %}'></script>
-    {% endcomment %}
     {% block custom_video_editor_js %}{% endblock %}
-    <!-- <script>
-        $(document).ready(function() {
-            $('input[name="toggle-checkbox"]').click(function(){
-                if($(this).prop("checked") == false){
-                    window.location.reload();
-                }
-            });
-        });
-    </script> -->
     {% block chart-js %}{% endblock %}
 </body>
 </html>
