@@ -58,8 +58,6 @@
     
         <form action="" method="POST">
             {% csrf_token %}
-            <input type="hidden" name="fingerprint" id="id_fingerprint" readonly>
-            <input type="hidden" name="protocol_current_domain" id="id_protocol_current_domain" data-protocol_current_domain="{{ protocol_current_domain }}">
             <div class="input app-input">
                 <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" onkeyup="isEmpty()" required>
                 <label for="username"><i class="far fa-user"></i> Username</label>
@@ -87,5 +85,4 @@
 
 <script src='{% static "js/κρυπτογράφηση δεδομένων.js" %}'></script>
 <script src='{% static "js/BrowserFingerPrintWebGL.js" %}'></script>
-<!-- <script src='{% static "js/BrowserFingerPrinting.js" %}'></script> -->
 <script src='{% static "js/login.js" %}'></script>

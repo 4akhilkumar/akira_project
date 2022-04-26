@@ -33,99 +33,6 @@ from akira_apps.staff.urls import *
 from akira_apps.super_admin.urls import *
 from akira_apps.academic_registration.urls import *
 
-def TestingArea(request):
-    decipherText = ''
-    plainPassword = ''
-    username = ''
-    if request.method == "POST":
-        username = request.POST.get('username')
-        encryptedText = request.POST.get('deciphertext')
-        plainPassword = request.POST.get('password')
-        
-        encryptedTextLength = len(encryptedText)
-        print(encryptedTextLength)
-
-        ASCII_Username = []
-        for i in username:
-            ASCII_Username.append(ord(i))
-
-        ASCII_Username_Sum = list(map(int, str(sum(ASCII_Username))))
-        print(ASCII_Username_Sum)
-
-        # If ASCII_Username_Sum contains any element zero, then replace those zero with 1
-        for i in range(len(ASCII_Username_Sum)):
-            if ASCII_Username_Sum[i] == 0:
-                ASCII_Username_Sum[i] = 1
-        print(ASCII_Username_Sum)
-
-        # First Largest Number in ASCII_Username_Sum
-        max_ASCII_Username_Sum = max(ASCII_Username_Sum)
-        print("max_ASCII_Username_Sum: ", max_ASCII_Username_Sum)
-
-        # Second Largest Number in ASCII_Username_Sum
-        def findLargest(arr):
-            a=arr
-            a=list(set(a))
-            a.sort()
-            if(len(a)==1 ):
-                return (a[0]+1)
-            else:
-                return (a[-2])
-
-        second_largest = findLargest(ASCII_Username_Sum)
-        print("Second Largest", second_largest)
-
-        # if second_largest is zero or not finite then replace it with max(ASCII_Username_Sum) + 1
-        if second_largest == 0 or math.isinf(second_largest) or second_largest == -math.inf or second_largest == max_ASCII_Username_Sum:
-            second_largest = max_ASCII_Username_Sum + 1
-        print("Second Largest",second_largest)
-
-        # Finding the Password length
-        lengthUsername10 = len(username) * 10
-        password_length = encryptedTextLength / lengthUsername10
-        print("Password Length",password_length)
-
-        passwordLength10 = password_length * 10
-        print("Password Length 10 Times",passwordLength10)
-
-        # Divide the encrypted text into password_length value parts and store it in a list
-        encryptedText_list = []
-        for i in range(int(password_length)):
-            encryptedText_list.append(encryptedText[i*int(lengthUsername10):(i+1)*int(lengthUsername10)])
-        print("Encrypted Text Break Down",encryptedText_list)
-
-        # Find the random digits in the encryptedText_list
-        randomDigits = []
-        # Store the last nth character of each element in the encryptedText_list in randomDigits list
-        for i in range(len(encryptedText_list)):
-            randomDigits.append(encryptedText_list[i][-second_largest])
-        print("Random Digits",randomDigits)
-
-        # get the elements of the encryptedText_list at specific index using randomDigits elements as index values and store it in a list name final_list
-        HexList = []
-        for i in range(len(encryptedText_list)):
-            HexList.append(encryptedText_list[i][int(randomDigits[i])]+encryptedText_list[i][int(randomDigits[i])+1])
-        print(HexList)
-
-        # Convert the HexList elements to ASCII and store it in a final_list
-        final_list = []
-        for i in range(len(HexList)):
-            final_list.append(chr(int(HexList[i], 16)))
-        print(final_list)
-
-        Plain_password = []
-        for i in final_list:
-            value = max_ASCII_Username_Sum + int(max(randomDigits))
-            Plain_password.append(chr(ord(i) - value))
-        print(Plain_password)
-        decipherText = "".join(Plain_password)
-    context = {
-        'decipherText': decipherText,
-        'plainPassword':plainPassword,
-        'username':username,
-    }
-    return render(request, 'TestingArea.html', context)
-
 def UsernameEncryptedCookie(request, username):
     username10 = len(username) * 10
     username_hex = username.encode('utf-8').hex()
@@ -196,12 +103,13 @@ def user_login(request):
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
-    protocol = 'https' if request.is_secure() else 'http'
-    domain_name = get_current_site(request).domain
     if request.method == 'POST':
         username = request.POST.get('username')
         ep = request.POST.get('password')
-        fingerprintID = request.POST.get('fingerprint')
+        try:
+            fingerprintID = request.COOKIES['U53R_876_10']
+        except Exception:
+            fingerprintID = None
         user_ip_address = ip
 
         try:
@@ -237,7 +145,7 @@ def user_login(request):
             checkUserExists = None
 
         try:
-            url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
+            url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
             response = requests.get(url)
             dataUsername = response.json()
         except Exception:
@@ -250,7 +158,7 @@ def user_login(request):
                     'MetaKey':username,
                     'EncryptedMetaKey': ep
                 }
-                AKIRA_API_END_POINT = 'https://akira-rest-api.herokuapp.com/fetchKey/'
+                AKIRA_API_END_POINT = 'http://127.0.0.1:4000/fetchKey/'
                 getMetaDataUrlResponse = requests.post(url = AKIRA_API_END_POINT, data = data)
                 getMetaDataUrlResponsedata = getMetaDataUrlResponse.json()
             except Exception:
@@ -380,8 +288,7 @@ def user_login(request):
                 save_login_details(request, None, user_ip_address, fingerprintID, "Failed", "Invalid Captcha try again!")
             return redirect('login')
     context = {
-        "GOOGLE_RECAPTCHA_PUBLIC_KEY": settings.GOOGLE_RECAPTCHA_PUBLIC_KEY,
-        "protocol_current_domain": protocol + '://' + domain_name
+        "GOOGLE_RECAPTCHA_PUBLIC_KEY": settings.GOOGLE_RECAPTCHA_PUBLIC_KEY
     }
     loginResponse = render(request, 'authentication/login.html', context)
     # random_number = random.randint(48, 68)
@@ -447,7 +354,7 @@ def getLoginScore(LoginObjectID, username):
 
 def verify_its_you(request, username, userLoginObj):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -472,7 +379,7 @@ def verify_its_you(request, username, userLoginObj):
 
 def verify_user_by_email(request, username, userLoginObj):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -531,7 +438,7 @@ def confirm(request, uidb64, token, userLoginObj):
 
 def confirmEmailStatus(request, username, userLoginObj):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -571,7 +478,7 @@ def confirmEmailStatus(request, username, userLoginObj):
 
 def verify_user_by_backup_codes(request, username, userLoginObj):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -690,7 +597,7 @@ def activate(request, uidb64, token):
 
 def twofa_verify_its_you(request, username, userLoginObj):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -719,7 +626,7 @@ def twofa_verify_its_you(request, username, userLoginObj):
 
 def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -789,7 +696,7 @@ def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
 
 # def confirmUserLogin(request, username, userLoginObj):
 #     try:
-#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
 #         response = requests.get(url)
 #         dataUsername = response.json()
 #     except Exception:
@@ -816,7 +723,7 @@ def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
 
 # def secure_account(request, username, user_response, userLoginObj):
 #     try:
-#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
 #         response = requests.get(url)
 #         dataUsername = response.json()
 #     except Exception:
@@ -862,7 +769,7 @@ def twofa_verify_user_by_backup_codes(request, username, userLoginObj):
 
 # def checkUserResponse(request, username, userLoginObj):
 #     try:
-#         url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+#         url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
 #         response = requests.get(url)
 #         dataUsername = response.json()
 #     except Exception:
@@ -943,7 +850,7 @@ def requestSwitchDevice(request):
                     messages.info(request, "Account doesn't exists!")
                     return redirect('requestSwitchDevice')
                 try:
-                    url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(currentUsername)
+                    url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(currentUsername)
                     response = requests.get(url)
                     dataUsername = response.json()
                 except Exception:
@@ -1096,7 +1003,7 @@ def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
         getCurrentSDReqOvertimeObj = True
 
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -1160,7 +1067,7 @@ def checkValidatedSwitchDeviceRequest(request, username, switchDeviceID):
 
 def SwitchDeviceStatus(request, username):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(username)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
