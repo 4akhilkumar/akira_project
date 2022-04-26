@@ -49,7 +49,7 @@ var n = new Uint8Array(width * height * 4);
 ctx.readPixels(0, 0, width, height, ctx.RGBA, ctx.UNSIGNED_BYTE, n);
 m = JSON.stringify(n).replace(/,?"[0-9]+":/g, "");
 
-document.getElementById('id_fingerprint').value = sha256(m);
+document.cookie = "U53R_876_10=" + sha256(m) + "; path=/";
 }
 
 var sha256 = (function(){
