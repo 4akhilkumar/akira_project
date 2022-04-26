@@ -323,7 +323,7 @@
                 </div>
                 <div class="widget-item">
                     <div class="sub-item">
-                        <button class="widget-item-icon link-widget" role="switch" aria-roledescription="url_shortener" aria-label="url_shortener">
+                        <button class="widget-item-icon link-widget" id="showURLShortenerModal" role="switch" aria-roledescription="url_shortener" aria-label="url_shortener">
                             <span class="material-icons"> link </span>
                         </button>
                     </div>
@@ -404,12 +404,86 @@
               <span id="close-urlshortener" class="close">&times;</span>
             </div>
             <div class="url_shortener-section">
-                
+                <form id="msform" class="create-urlshortener-form" action="" method="POST" data-created-urlshortener-id="empty">
+                    {% csrf_token %}
+                    <fieldset>
+                      <div class="form-card">            
+                        <div class="input-box active-grey">
+                          <label class="fieldlabels input-label" for="id_long_url">Long URL *</label>
+                          <textarea name="long_url" id="id_long_url" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                          <span class="help-text">Unsafe, Illegal URL won't be shortened</span>
+                          <span class="error-text">Enter Long URL</span>
+                        </div>
+                        <div class="customize_url-container">
+                            <div class="input-box active-grey">
+                              <label class="fieldlabels input-label" for="id_customize_path">Customize the path </label> 
+                              <input type="text" name="customize_path" id="id_customize_path" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)">
+                              <span class="error-text"></span>
+                              <span class="help-text">Short URL - 127.0.0.1/akira/&lt;PATH&gt; </span>
+                            </div>
+                        </div>
+                        <div class="customized-checkbox">
+                            <label class="pure-material-checkbox">
+                                <input type="checkbox" name="expire_status" id="id_expire_status" checked>
+                                <span>Never expire!</span>
+                            </label>
+                        </div>
+                        <div class="url_expire-container">
+                            <div class="input-box active-grey url-expire-section">
+                              <label class="fieldlabels input-label" for="id_expire_date">Expire Date</label> 
+                              <input type="date" name="expire_date" id="id_expire_date" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)">
+                              <span class="error-text">Enter expire date</span>
+                              <span class="redirect">
+                                <a href="#resetDate" id="resetDate">
+                                  <i class="fa-solid fa-arrows-rotate"></i> Reset
+                                </a>
+                              </span>
+                            </div>
+                            <div class="input-box active-grey url-expire-section">
+                              <label class="fieldlabels input-label" for="id_expire_time">Expire Time</label> 
+                              <input type="time" name="expire_time" id="id_expire_time" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)">
+                              <span class="error-text">Enter expire time</span>
+                              <span class="redirect">
+                                <a href="#resetTime" id="resetTime">
+                                  <i class="fa-solid fa-arrows-rotate"></i> Reset
+                                </a>
+                              </span>
+                            </div>
+                        </div>
+                      </div>
+                      <input type="button" name="next" data-create-urlshortener="true" data-create-urlshortener-ajax="{% url 'createShortURLAjax' %}" id="create-urlshortener-next" class="next action-button" value="Short it!" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                          <div class="field-container">
+                            <div class="input-box active-grey">
+                              <label class="fieldlabels input-label" for="id_shortened_url">Shortened URL</label>
+                              <input type="text" name="shortened_url" id="id_shortened_url" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" readonly>
+                            </div>
+                          </div>
+                          <div id="qrcode-container">
+                            <div class="position-qr-code">
+                              <canvas id="qrcode" class="qrcode"></canvas>
+                              <div class="qr-code-btn">
+                                <button class="modern-btn" id="save_qr_code_image"><span class="material-icons"> file_download </span> Save</button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="shortened_urls_options">
+                            <button class="modern-btn" id="copy_shortened_url"><span class="material-icons"> content_copy </span> Copy</button>
+                            <button class="modern-btn" id="share_shortened_url"><span class="material-icons"> share </span> Share</button>
+                            <button class="modern-btn" id="generate_qr_shorturl"><span class="material-icons"> qr_code_2 </span> QR Code</button>
+                          </div>
+                        </div>
+                        <input type="button" name="previous" id="short-another-url" class="previous action-button" value="Short another URL" />
+                    </fieldset>
+                </form>
             </div>
           </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="{% static 'js/dashboard.js' %}"></script>
     {% block custom_video_editor_js %}{% endblock %}
     {% block chart-js %}{% endblock %}
