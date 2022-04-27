@@ -14,7 +14,7 @@ class URLShortenerMC(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s %s' % (self.user, self.short_url)
+        return '%s %s' % (self.user, self.long_url_path)
     
     class Meta:
         ordering = ["user__username", "created_at"]
