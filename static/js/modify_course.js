@@ -412,13 +412,9 @@ $(document).ready(function() {
 
         //Add Class Active
         if ($(this).prop('id') == 'create-design-course-next') {
-            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("account-section");
+            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("design-course-section");
             $(".main-container-fluid").removeClass();
-            $(".main-container-fluid").addClass("accountsection");
-        } else if ($(this).prop('id') == 'account-next') {
-            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("institute-section");
-            $(".main-container-fluid").removeClass();
-            $(".main-container-fluid").addClass("institutesection");
+            $(".main-container-fluid").addClass("designcoursesection");
         }
 
         //show the next fieldset
@@ -443,18 +439,10 @@ $(document).ready(function() {
         previous_fs = $(this).parent().prev();
 
         //Remove class active
-        if ($(this).prop('id') == 'account-previous') {
-            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("account-section");
+        if ($(this).prop('id') == 'create-course-previous') {
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("design-course-section");
             $(".main-container-fluid").removeClass();
-            $(".main-container-fluid").addClass("personalsection");
-        } else if ($(this).prop('id') == 'institute-previous') {
-            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("institute-section");
-            $(".main-container-fluid").removeClass();
-            $(".main-container-fluid").addClass("accountsection");
-        } else if ($(this).prop('id') == 'tandc-previous') {
-            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("tandc-section");
-            $(".main-container-fluid").removeClass();
-            $(".main-container-fluid").addClass("institutesection");
+            $(".main-container-fluid").addClass("createcoursesection");
         }
 
         //show the previous fieldset
