@@ -3167,16 +3167,30 @@ sup.custom_sup {
 /* SKELETON */
 
 /* Modal URL Shortener */
-.customize_url-container, .url_expire-container {
+.customize_url-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   max-width: fit-content;
   column-gap: 1rem;
 }
 
+.url_expire-container {
+  display: flex;
+}
+
+@media only screen and (min-width: 450px) {
+  .url_expire-container {
+    display: flex;
+    flex-direction: row;
+    max-width: 100%;
+    gap: 1rem;
+  }
+}
+
 @media only screen and (max-width: 450px) {
-  .customize_url-container, .url_expire-container {
-    grid-template-columns: repeat(1, 1fr);
+  .url_expire-container, .customize_url-container {
+    display: flex;
+    flex-direction: column;
     max-width: 100%;
   }
 }
