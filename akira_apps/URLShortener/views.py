@@ -253,6 +253,7 @@ def createShortURLAjax(request):
                     return JsonResponse({'status': status, 'message': message, 'shortened_url': shorterner_url})
                 else:
                     message = 'URL is not safe to be shortened'
+                    status = "error"
                     return JsonResponse({'status': status, 'message': message})
             else:
                 message = "Custom path can only contain alphanumeric characters."
