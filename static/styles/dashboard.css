@@ -3177,6 +3177,7 @@ sup.custom_sup {
 @media only screen and (max-width: 450px) {
   .customize_url-container, .url_expire-container {
     grid-template-columns: repeat(1, 1fr);
+    max-width: 100%;
   }
 }
 /* Modal URL Shortener */
