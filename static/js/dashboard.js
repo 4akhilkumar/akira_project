@@ -24,107 +24,68 @@ function topFunction() {
 }
 // ====================== End Top Button ====================== //
 
-$(document).ready(function() {
-  var current_fs, next_fs, previous_fs; //fieldsets
-  var opacity;
+var current_fs, next_fs, previous_fs; //fieldsets
+var opacity;
 
-  function nextFieldSet() {
-      current_fs = $(this).parent();
-      next_fs = $(this).parent().next();
+function nextFieldSet() {
+  current_fs = $(this).parent();
+  next_fs = $(this).parent().next();
 
-      //Add Class Active
-      if ($(this).prop('id') == 'create-urlshortener-next') {
-          $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("shortened-url-section");
-          $(".main-container-fluid").removeClass();
-          $(".main-container-fluid").addClass("shortenedurlsection");
-      }
+  //Add Class Active
+  if ($(this).prop('id') == 'create-urlshortener-next') {
+    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("shortened-url-section");
+    $(".main-container-fluid").removeClass();
+    $(".main-container-fluid").addClass("shortenedurlsection");
+  }
 
-      //show the next fieldset
-      next_fs.show();
-      //hide the current fieldset with style
-      current_fs.animate({opacity: 0}, {
-          step: function(now) {
-              // for making fielset appear animation
-              opacity = 1 - now;
+  //show the next fieldset
+  next_fs.show();
+  //hide the current fieldset with style
+  current_fs.animate({opacity: 0}, {
+    step: function(now) {
+      // for making fielset appear animation
+      opacity = 1 - now;
 
-              current_fs.css({
-                  'display': 'none',
-                  'position': 'relative'
-              });
-              next_fs.css({'opacity': opacity});
-          }, duration: 500
+      current_fs.css({
+        'display': 'none',
+        'position': 'relative'
       });
-  }
-
-  function previousFieldSet() {
-    current_fs = $(this).parent();
-    previous_fs = $(this).parent().prev();
-
-    //Remove class active
-    if ($(this).prop('id') == 'short-another-url') {
-      $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("shortened-url-section");
-      $(".main-container-fluid").removeClass();
-      $(".main-container-fluid").addClass("personalsection");
-    }
-
-    //show the previous fieldset
-    previous_fs.show();
-
-    //hide the current fieldset with style
-    current_fs.animate({opacity: 0}, {
-      step: function(now) {
-        // for making fielset appear animation
-        opacity = 1 - now;
-
-        current_fs.css({
-          'display': 'none',
-          'position': 'relative'
-        });
-        previous_fs.css({'opacity': opacity});
-      }, duration: 500
-    });
-  }
-
-  $(".previous_new_long_url").click(function(){
-    previousFieldSet.call(this);
+      next_fs.css({'opacity': opacity});
+    }, duration: 500
   });
+}
 
-  function createURLShortener() {
-    var getCreateURLShortenerURL = $("#create-urlshortener-next").data('create-urlshortener-ajax');
-    var form = $('.create-urlshortener-form')[0];
-    var form_data = new FormData(form);
+function previousFieldSet() {
+  current_fs = $(this).parent();
+  previous_fs = $(this).parent().prev();
 
-    $.ajax({
-      method: "POST",
-      url: getCreateURLShortenerURL,
-      data: form_data,
-      processData: false,
-      contentType: false,
-      cache: false,
-      success: function (data) {
-        if(data.status == 'success') {
-          toastr.success(data.message)
-          var next = document.getElementsByClassName('next_to_sortened_url')[0];
-          nextFieldSet.call(next);
-          $('.create-urlshortener-form')[0].reset();
-          $("#id_shortened_url").val(data.shortened_url);
-        }
-        else if(data.status == 'error') {
-          toastr.warning(data.message)
-        }
-        else {
-          toastr.warning(data.message)
-        }
-      },
-      error: function (data) {
-        toastr.error(data.message)
-      }
-    }); 
+  //Remove class active
+  if ($(this).prop('id') == 'short-another-url') {
+    $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("shortened-url-section");
+    $(".main-container-fluid").removeClass();
+    $(".main-container-fluid").addClass("personalsection");
   }
 
-  $("#create-urlshortener-next").click(function(){
-    createURLShortener.call(this);
+  //show the previous fieldset
+  previous_fs.show();
+
+  //hide the current fieldset with style
+  current_fs.animate({opacity: 0}, {
+    step: function(now) {
+      // for making fielset appear animation
+      opacity = 1 - now;
+
+      current_fs.css({
+        'display': 'none',
+        'position': 'relative'
+      });
+      previous_fs.css({'opacity': opacity});
+    }, duration: 500
   });
+}
+
+$(".previous_new_long_url").click(function(){
+  previousFieldSet.call(this);
 });
 
 $("input[type=text], input[type=number], textarea").each(function () {
@@ -447,6 +408,45 @@ $('#short-another-url').on('click', function() {
   else {
     long_url = true;
   }
+});
+
+function createURLShortener() {
+  var getCreateURLShortenerURL = $("#create-urlshortener-next").data('create-urlshortener-ajax');
+  var form = $('.create-urlshortener-form')[0];
+  var form_data = new FormData(form);
+
+  $.ajax({
+    method: "POST",
+    url: getCreateURLShortenerURL,
+    data: form_data,
+    processData: false,
+    contentType: false,
+    cache: false,
+    success: function (data) {
+      if(data.status == 'success') {
+        toastr.success(data.message)
+        var next = document.getElementsByClassName('next_to_sortened_url')[0];
+        nextFieldSet.call(next);
+        $('.create-urlshortener-form')[0].reset();
+        $("#id_shortened_url").val(data.shortened_url);
+      }
+      else if(data.status == 'error') {
+        toastr.warning(data.message)
+      }
+      else {
+        toastr.warning(data.message)
+      }
+      $("#create-urlshortener-next").val("Short it!");
+    },
+    error: function (data) {
+      toastr.error(data.message)
+    }
+  }); 
+}
+
+$("#create-urlshortener-next").click(function(){
+  $(this).val("Shorting...");
+  createURLShortener.call(this);
 });
 // ====================== URL Shortener Modal ====================== //
 
