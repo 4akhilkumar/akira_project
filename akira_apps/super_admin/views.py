@@ -329,7 +329,10 @@ def confirm_admin_email(request, uidb64, token):
 
 def isAdminRegConfirmed(request):
     if request.method == 'POST':
-        uid = request.POST.get('bfpID')
+        try:
+            fingerprintID = request.COOKIES['U53R_876_10']
+        except Exception:
+            fingerprintID = None
         EnUsername = request.POST.get('EnUsername')
         try:
             url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
@@ -355,7 +358,7 @@ def isAdminRegConfirmed(request):
             except Exception:
                 getAAVIPAddr = None
                 print("Here2")
-            if str(ip) == str(getAAVIPAddr.ipaddress) or str(uid) == str(getAAVIPAddr.bfpID):
+            if str(ip) == str(getAAVIPAddr.ipaddress) or str(fingerprintID) == str(getAAVIPAddr.bfpID):
                 print("Here3")
                 dataResponse = {
                     'status': 'success',
