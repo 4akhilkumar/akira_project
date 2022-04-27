@@ -123,7 +123,7 @@ $(document).ready(function() {
   }
 
   $("#create-urlshortener-next").click(function(){
-      createURLShortener.call(this);
+    createURLShortener.call(this);
   });
 });
 
@@ -437,6 +437,7 @@ $('input, select, textarea').on('keyup keydown blur change', function() {
 });
 
 $('#short-another-url').on('click', function() {
+  $("#qrcode-container").css("display", "none");
   if($("#id_long_url").val() == "") {
     long_url = false;
   }
