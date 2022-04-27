@@ -310,22 +310,17 @@ def save_login_details(request, user_name, user_ip_address, fingerprintID, attem
 
     res = re.findall(r'\(.*?\)', user_agent)
     OS_Details = res[0][1:-1]
-    if user_name == None:
-        userLoginObj = UserLoginDetails.objects.create(
-                                    user_ip_address = user_ip_address,
-                                    bfp = fingerprintID,
-                                    os_details = OS_Details,
-                                    browser_details = browser,
-                                    attempt = attempt, reason = reason)
-    else:
+    try:
         userObj = User.objects.get(username=user_name)
-        userLoginObj = UserLoginDetails.objects.create(
-                                    user = userObj,
-                                    user_ip_address = user_ip_address,
-                                    bfp = fingerprintID,
-                                    os_details = OS_Details,
-                                    browser_details = browser,
-                                    attempt = attempt, reason = reason)
+    except Exception:
+        userObj = None
+    userLoginObj = UserLoginDetails.objects.create(
+                                user = userObj,
+                                user_ip_address = user_ip_address,
+                                bfp = fingerprintID,
+                                os_details = OS_Details,
+                                browser_details = browser,
+                                attempt = attempt, reason = reason)
     return userLoginObj
 
 def getLoginScore(LoginObjectID, username):
