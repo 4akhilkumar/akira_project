@@ -57,41 +57,41 @@ $(document).ready(function() {
   }
 
   function previousFieldSet() {
-      current_fs = $(this).parent();
-      previous_fs = $(this).parent().prev();
+    current_fs = $(this).parent();
+    previous_fs = $(this).parent().prev();
 
-      //Remove class active
-      if ($(this).prop('id') == 'short-another-url') {
-          $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("shortened-url-section");
-          $(".main-container-fluid").removeClass();
-          $(".main-container-fluid").addClass("personalsection");
-      }
+    //Remove class active
+    if ($(this).prop('id') == 'short-another-url') {
+      $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("shortened-url-section");
+      $(".main-container-fluid").removeClass();
+      $(".main-container-fluid").addClass("personalsection");
+    }
 
-      //show the previous fieldset
-      previous_fs.show();
+    //show the previous fieldset
+    previous_fs.show();
 
-      //hide the current fieldset with style
-      current_fs.animate({opacity: 0}, {
-          step: function(now) {
-              // for making fielset appear animation
-              opacity = 1 - now;
+    //hide the current fieldset with style
+    current_fs.animate({opacity: 0}, {
+      step: function(now) {
+        // for making fielset appear animation
+        opacity = 1 - now;
 
-              current_fs.css({
-                  'display': 'none',
-                  'position': 'relative'
-              });
-              previous_fs.css({'opacity': opacity});
-          }, duration: 500
-      });
+        current_fs.css({
+          'display': 'none',
+          'position': 'relative'
+        });
+        previous_fs.css({'opacity': opacity});
+      }, duration: 500
+    });
   }
 
-  $(".previous").click(function(){
-      previousFieldSet.call(this);
+  $(".previous_new_long_url").click(function(){
+    previousFieldSet.call(this);
   });
 
   function createURLShortener() {
     var getCreateURLShortenerURL = $("#create-urlshortener-next").data('create-urlshortener-ajax');
-    var form = $('.create-course-form')[0];
+    var form = $('.create-urlshortener-form')[0];
     var form_data = new FormData(form);
 
     $.ajax({
@@ -104,18 +104,20 @@ $(document).ready(function() {
       success: function (data) {
         if(data.status == 'success') {
           toastr.success(data.message)
-          var next = document.getElementsByClassName('next')[0];
+          var next = document.getElementsByClassName('next_to_sortened_url')[0];
           nextFieldSet.call(next);
-          $('.create-course-form')[0].reset();
+          $('.create-urlshortener-form')[0].reset();
+          $("#id_shortened_url").val(data.shortened_url);
         }
         else if(data.status == 'error') {
           toastr.warning(data.message)
-          $("#create-urlshortener-next").prop("disabled", false);
+        }
+        else {
+          toastr.warning(data.message)
         }
       },
       error: function (data) {
         toastr.error(data.message)
-        $("#create-urlshortener-next").prop("disabled", false);
       }
     }); 
   }
@@ -433,6 +435,18 @@ $('input, select, textarea').on('keyup keydown blur change', function() {
     $("#create-urlshortener-next").prop("disabled", true);
   }
 });
+
+$('#short-another-url').on('click', function() {
+  if($("#id_long_url").val() == "") {
+    long_url = false;
+  }
+  else if ($("#id_long_url").val().match(/^\s+$/)) {
+    long_url = false;
+  }
+  else {
+    long_url = true;
+  }
+});
 // ====================== URL Shortener Modal ====================== //
 
 // ============================= QR Code ================================ //
@@ -466,7 +480,7 @@ shareURLShortened_btn.addEventListener('click', async () => {
 var qr_as_image;
 $('#generate_qr_shorturl').click(function() {
   let shortenedURLField = document.getElementById("id_shortened_url");
-  if (shortenedURLField) {
+  if (shortenedURLField.value) {
     let qrcodeContainer = document.getElementById("qrcode");
     qrcodeContainer.textContent = "";
     var qr = new QRious({
@@ -477,7 +491,7 @@ $('#generate_qr_shorturl').click(function() {
     qr_as_image = qr.toDataURL('image/jpeg');
     document.getElementById("qrcode-container").style.display = "block";
   } else {
-    toastr.error('Please enter a valid URL')
+    toastr.error('Unable to generate QR Code.')
   }
 });
 

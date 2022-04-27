@@ -13,7 +13,7 @@
     <form action="" method="POST">
         {% csrf_token %}
         <label for="long_url">Long URL</label>
-        <textarea name="long_url" id="id_long_url" cols="30" rows="10" required>iakira.herokuapp.com</textarea>
+        <textarea name="long_url" id="id_long_url" cols="30" rows="10" required>google.com</textarea>
         <br>
         <label for="long_url_alias">Customize your link</label>
         <input type="text" name="long_url_alias" id="id_long_url_alias">
@@ -35,7 +35,7 @@
     <h3>Shortened URL</h3>
     <a href="{{ shorterner_url }}" target="_blank">{{ shorterner_url }}</a>
     {% for eachObj in getShortedURLs %}
-        <a href="{{shorterner_url_prefix}}{{ eachObj.short_url }}" target="_blank">{{ eachObj.short_url }}</a>
+        <a href="{{shorterner_url_prefix}}{{ eachObj.long_url_path }}" target="_blank">{{ eachObj.long_url_path }}</a>
         <br>
     {% endfor %}
     <hr>

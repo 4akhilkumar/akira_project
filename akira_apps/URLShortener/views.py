@@ -1,8 +1,12 @@
-from django.shortcuts import render, redirect
+from sre_constants import SUCCESS
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponseRedirect
+from django.db.models import Q
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, redirect
 
 import datetime as pydt
 import base64
@@ -16,7 +20,7 @@ import string
 from akira_apps.URLShortener.models import (URLShortenerMC, ShortenURLStat)
 
 def randomString():
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
 
 def getOS_Browser_info(request):
     user_agent = request.META['HTTP_USER_AGENT']
@@ -61,61 +65,77 @@ def shortURL(request):
     else:
         ipaddr = request.META.get('REMOTE_ADDR')
 
-    getShortedURLs = URLShortenerMC.objects.filter(ip_addr=ipaddr)
     protocol = 'https' if request.is_secure() else 'http'
     domain_name = get_current_site(request).domain
     shorterner_url_prefix = protocol + '://' + domain_name + '/akira/'
 
+    getShortedURLs = URLShortenerMC.objects.filter(user=request.user).order_by('-created_at')
+
     if request.method == "POST":
-        if request.user.is_authenticated:
-            userObj = request.user
-        else:
-            userObj = None
-
-        userBFP_ID, expiretime, expiredate = None, None, None
-        userBFP_ID = request.POST.get('fingerprint')
-
-        long_url = request.POST.get('long_url').strip()
+        userObj = request.user or None
+        try:
+            userBFP_ID = request.COOKIES['U53R_876_10']
+        except Exception:
+            userBFP_ID = None
+        long_url = request.POST.get('long_url')
         if not re.match(r'^https?://', long_url):
             long_url = 'http://' + long_url
-        customlink = request.POST.get('long_url_alias').strip()
+        customlink = request.POST.get('customize_path')
+        if customlink is None or customlink == '':
+            customlink = randomString()
         expire_status = request.POST.get('expire_status')
         if not expire_status == "on":
             expiredate = request.POST.get('expire_date')
             expiretime = request.POST.get('expire_time')
-            expiretimedate = expiredate + " " + expiretime
-        else:
-            expiretimedate = None
+            if re.match(r'^\d{4}-\d{2}-\d{2}$', expiredate) and re.match("^[0-9]{2}:[0-9]{2}$", expiretime):
+                print("Date and Time are in proper format")
 
-        if customlink is None or customlink == '':
-            customlink = randomString()
-        if URLShortenerMC.objects.filter(short_url=customlink).exists() is False:
+                # Check Today's date
+                if expiredate == pydt.date.today().strftime("%Y-%m-%d"):
+                    # Checking given time is greater than current time or not
+                    if expiretime > pydt.datetime.now().strftime("%H:%M:%S"):
+                        expiredatetime = expiredate + " " + expiretime
+                    else:
+                        messages.error(request, "Expire time is less than current time.")
+                        return redirect('shortURL')
+                
+                # Checking yesterday's
+                elif expiredate < pydt.date.today().strftime("%Y-%m-%d"):
+                    messages.error(request, "Expire date is less than current date.")
+                    return redirect('shortURL')
+                
+                # Checking tomorrow's
+                elif expiredate > pydt.date.today().strftime("%Y-%m-%d"):
+                    if re.match("^[0-9]{2}:[0-9]{2}$", expiretime):
+                        expiredatetime = expiredate + " " + expiretime
+                    else:
+                        messages.error(request, "Enter proper expire time")
+                        return redirect('shortURL')
+            else:
+                messages.error(request, "Enter proper time format")
+                return redirect('shortURL')
+        else:
+            expiredatetime = None
+        if URLShortenerMC.objects.filter(long_url_path=customlink).exists() is False:
             if re.match("^[a-zA-Z0-9]*$", customlink):
                 if isLongURLSafe(request, long_url) is True:
-                    gen_short_url = str(customlink) 
-                    if userObj:
-                        shortenerURL = URLShortenerMC.objects.create(user=userObj,
-                                                    ip_addr = ipaddr, bfp = userBFP_ID,
-                                                    long_url=long_url, short_url = gen_short_url,
-                                                    expire_time_date = expiretimedate)
-                    else:
-                        shortenerURL = URLShortenerMC.objects.create(user=userObj,
-                                                    ip_addr = ipaddr, bfp = userBFP_ID,
-                                                    long_url=long_url, short_url = gen_short_url,
-                                                    expire_time_date = expiretimedate)
-                    messages.success(request, 'URL Shortened Successfully')
-                    shorterner_url = shorterner_url_prefix + shortenerURL.short_url
-                    context = {
-                        'shorterner_url': shorterner_url,
-                    }
-                    return render(request, 'URLShortener/shortURL.html', context)
+                    gen_short_url = str(customlink)
+                    shortenerURL = URLShortenerMC.objects.create(user=userObj,
+                                                ip_addr = ipaddr, bfp_id = userBFP_ID,
+                                                long_url=long_url, long_url_path = gen_short_url,
+                                                expire_date_time = expiredatetime)
+                    shorterner_url = shorterner_url_prefix + shortenerURL.long_url_path
+                    messages.success(request, "URL Shortened Successfully")
+                    messages.success(request, "Shortened URL: " + shorterner_url)
+                    return redirect('shortURL')
                 else:
                     messages.error(request, 'URL is not safe to be shortened')
+                    return redirect('shortURL')
             else:
-                messages.error(request, "Custom link can only contain alphanumeric characters.")
+                messages.error(request, "Custom path can only contain alphanumeric characters.")
+                return redirect('shortURL')
         else:
-            messages.error(request, "Alias is already exists.")
-            messages.info(request, "Please choose simple unique alias.")
+            messages.error(request, "Path is already exists. Please choose simple unique Path.")
         return redirect('shortURL')
     context = {
         'getShortedURLs': getShortedURLs,
@@ -125,7 +145,7 @@ def shortURL(request):
     return render(request, 'URLShortener/shortURL.html', context)
 
 def shortenURL(request, short_url):
-    if URLShortenerMC.objects.filter(short_url=short_url).exists() is True:
+    if URLShortenerMC.objects.filter(long_url_path=short_url).exists() is True:
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
             ipaddr = x_forwarded_for.split(',')[0]
@@ -135,18 +155,109 @@ def shortenURL(request, short_url):
             userObj = request.user
         else:
             userObj = None
-        shortenerURL = URLShortenerMC.objects.get(short_url=short_url)
+        shortenerURL = URLShortenerMC.objects.get(long_url_path=short_url)
         ShortenURLStat.objects.create(
                                 shortenURL=shortenerURL,
                                 user = userObj,
                                 user_ip_address=ipaddr,
                                 os_details = getOS_Browser_info(request)[1],
                                 browser_details = getOS_Browser_info(request)[0])
-        if shortenerURL.expire_time_date is not None:
-            if shortenerURL.expire_time_date < pydt.datetime.now():
-                messages.error(request, "This URL is expired.")
+        if shortenerURL.expire_date_time is not None:
+            if shortenerURL.expire_date_time < pydt.datetime.now():
+                messages.error(request, "Shortened URL is expired.")
                 return redirect('shortURL')
         return HttpResponseRedirect(shortenerURL.long_url)
     else:
-        messages.error(request, "URL is not exists.")
+        messages.error(request, "Shortened URL is not exists.")
         return redirect('shortURL')
+
+@login_required(login_url=settings.LOGIN_URL)
+def createShortURLAjax(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ipaddr = x_forwarded_for.split(',')[0]
+    else:
+        ipaddr = request.META.get('REMOTE_ADDR')
+
+    protocol = 'https' if request.is_secure() else 'http'
+    domain_name = get_current_site(request).domain
+    shorterner_url_prefix = protocol + '://' + domain_name + '/akira/'
+
+    if request.method == "POST":
+        userObj = request.user or None
+        try:
+            userBFP_ID = request.COOKIES['U53R_876_10']
+        except Exception:
+            userBFP_ID = None
+        long_url = request.POST.get('long_url')
+        if not re.match(r'^https?://', long_url):
+            long_url = 'http://' + long_url
+        customlink = request.POST.get('customize_path')
+        if customlink is None or customlink == '':
+            customlink = randomString()
+        expire_status = request.POST.get('expire_status')
+        if not expire_status == "on":
+            expiredate = request.POST.get('expire_date')
+            expiretime = request.POST.get('expire_time')
+            if re.match(r'^\d{4}-\d{2}-\d{2}$', expiredate) and re.match("^[0-9]{2}:[0-9]{2}$", expiretime):
+                print("Date and Time are in proper format")
+
+                # Check Today's date
+                if expiredate == pydt.date.today().strftime("%Y-%m-%d"):
+                    # Checking given time is greater than current time or not
+                    if expiretime > pydt.datetime.now().strftime("%H:%M:%S"):
+                        expiredatetime = expiredate + " " + expiretime
+                    else:
+                        message = "Expire time is less than current time."
+                        status = "error"
+                        return JsonResponse({
+                                'message':message,
+                                'status':status
+                            })
+                
+                # Checking yesterday's
+                elif expiredate < pydt.date.today().strftime("%Y-%m-%d"):
+                    message = "Expire date is less than current date."
+                    status = "error"
+                    return JsonResponse({
+                            'message':message,
+                            'status':status
+                        })
+                
+                # Checking tomorrow's
+                elif expiredate > pydt.date.today().strftime("%Y-%m-%d"):
+                    if re.match("^[0-9]{2}:[0-9]{2}$", expiretime):
+                        expiredatetime = expiredate + " " + expiretime
+                    else:
+                        message = "Enter proper expire time"
+                        status = "error"
+                        return JsonResponse({'status': status, 'message': message})
+            else:
+                message = "Enter proper time format"
+                status = "error"
+                return JsonResponse({'status': status, 'message': message})
+        else:
+            expiredatetime = None
+        if URLShortenerMC.objects.filter(long_url_path=customlink).exists() is False:
+            if re.match("^[a-zA-Z0-9]*$", customlink):
+                if isLongURLSafe(request, long_url) is True:
+                    gen_short_url = str(customlink)
+                    shortenerURL = URLShortenerMC.objects.create(user=userObj,
+                                                ip_addr = ipaddr, bfp_id = userBFP_ID,
+                                                long_url=long_url, long_url_path = gen_short_url,
+                                                expire_date_time = expiredatetime)
+                    shorterner_url = shorterner_url_prefix + shortenerURL.long_url_path
+                    
+                    message = "URL Shortened Successfully"
+                    status = "success"
+                    return JsonResponse({'status': status, 'message': message, 'shortened_url': shorterner_url})
+                else:
+                    message = 'URL is not safe to be shortened'
+                    return JsonResponse({'status': status, 'message': message})
+            else:
+                message = "Custom path can only contain alphanumeric characters."
+                return JsonResponse({'status': status, 'message': message})
+        else:
+            message = "Path is already exists. Please choose simple unique Path."
+            status = "error"
+            return JsonResponse({'status': status, 'message': message})
