@@ -568,7 +568,7 @@ $(document).ready(function() {
             $("#id_institute_address").parent().find(".error-text").css("display", "block");
             instituteaddress = false;
         }
-        else if(!$("#id_institute_address").val().match(/^[a-z\d\-,_\s]+$/i)) {
+        else if(!$("#id_institute_address").val().match(/^[A-Za-z0-9-/,\s]+$/i)) {
             $("#id_institute_address").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered your institute address correctly&#x0003F;");
             $("#id_institute_address").parent().find(".error-text").css("display", "block");
             instituteaddress = false;
