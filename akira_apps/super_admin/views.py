@@ -13,13 +13,10 @@ from django.template.loader import render_to_string
 
 import requests
 import secrets
-import csv, io
-import pandas as pd
 import datetime as pydt
 import re
 
 from akira_apps.academic.models import(Academy)
-from akira_apps.authentication.models import (UserLoginDetails)
 from akira_apps.authentication.token import (account_activation_token)
 from akira_apps.course.models import CourseMC
 from akira_apps.adops.models import (UserProfile)
@@ -118,30 +115,30 @@ def adminInstituteRegistration(request):
     name_prefix_list = NAMEPREFIXForm()
     gender_list = GENDERCHOICESForm()
     if request.method == 'POST':
-        firstname = request.POST.get('firstname').title().strip()
-        lastname = request.POST.get('lastname').title().strip()
-        username = request.POST.get('username').strip()
-        password = request.POST.get('password').strip()
-        confirm_password = request.POST.get('confirm_password').strip()
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
         email = request.POST.get('email').lower()
-        phone = request.POST.get('phone').strip()
+        phone = request.POST.get('phone')
 
-        nameprefix = request.POST.get('name_prefix').strip()
+        nameprefix = request.POST.get('name_prefix')
         dob = request.POST.get('date_of_birth')
-        gender = request.POST.get('gender').strip()
+        gender = request.POST.get('gender')
 
-        doorno = request.POST.get('door_no').strip()
-        zipcode = request.POST.get('zip_code').strip()
-        city = request.POST.get('city').strip() or request.POST.get('new_city').strip()
-        district = request.POST.get('district').strip()
-        state = request.POST.get('state').strip()
-        country = request.POST.get('country').strip()
+        doorno = request.POST.get('door_no')
+        zipcode = request.POST.get('zip_code')
+        city = request.POST.get('city') or request.POST.get('new_city')
+        district = request.POST.get('district')
+        state = request.POST.get('state')
+        country = request.POST.get('country')
 
         photo = request.FILES.get('photo')
 
-        institutecode = request.POST.get('institute_code').strip()
-        institutename = request.POST.get('institute_name').title().strip()
-        instituteaddress = request.POST.get('institute_address').strip()
+        institutecode = request.POST.get('institute_code')
+        institutename = request.POST.get('institute_name')
+        instituteaddress = request.POST.get('institute_address')
 
         if User.objects.filter(groups__name = "Administrator", is_staff = True, is_active = True, is_superuser = True).exists() is True:
             messages.info(request, "Administrator & Institute already registered")
