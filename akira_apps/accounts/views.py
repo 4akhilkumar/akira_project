@@ -9,12 +9,10 @@ import re
 import secrets
 import datetime as pydt
 import datetime
-import httpagentparser
 
-from akira_apps.accounts.models import TwoFactorAuth
+from akira_apps.accounts.models import (TwoFactorAuth)
 from akira_apps.authentication.models import (User_BackUp_Codes, User_IP_List, UserLoginDetails)
-from akira_apps.staff.models import Staff
-from akira_apps.student.models import Students
+from akira_apps.adops.models import (UserProfile)
 
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
@@ -23,10 +21,8 @@ def account_settings(request):
     else:
         current_user_2fa_status = 0
 
-    if Staff.objects.filter(user = request.user).exists() is True:
-        current_user_details = Staff.objects.get(user = request.user)
-    elif Students.objects.filter(user = request.user).exists() is True:
-        current_user_details = Students.objects.get(user = request.user)
+    if UserProfile.objects.filter(user = request.user).exists() is True:
+        current_user_details = UserProfile.objects.get(user = request.user)
     else:
         current_user_details = None
 
@@ -62,7 +58,6 @@ def account_settings(request):
     removed_duplicate_date = list(sorted(set(get_dates)))
 
     month = pydt.datetime.now().strftime(" %b")
-    current_month = pydt.datetime.now().strftime(" %B")
     remove_duplicate_date_after_ordinal = []
     for i in removed_duplicate_date:
         remove_duplicate_date_after_ordinal.append(str(ordinal(int(i))) + month)
@@ -100,7 +95,7 @@ def account_settings(request):
         "current_user_details":current_user_details,
         "backup_codes_status":backup_codes_status,
         "current_user_2fa_status":current_user_2fa_status,
-        "current_month":current_month,
+        "current_month":month,
         "get_dates":remove_duplicate_date_after_ordinal,
         "success_attempts_date":success_attempts_date,
         "failed_attempts_date":failed_attempts_date,
