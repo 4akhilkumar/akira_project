@@ -54,45 +54,8 @@
 {% endblock %}
 
 {% block manage-faculty %}
-{% if "Administrator" in request.user|user_group %}
-<div class="btn-area">
-  <button onClick='window.location="{% url 'add_staff' %}"' class="add-faculty">Add Staff</button>
-  <button id="showFormBulkImport" class="add-faculty">Bulk Import</button>
-  {% if staffs %}
-  <button onClick='window.location="{% url 'staff_info_csv' %}"' class="add-faculty">Bulk Export</button>
-  {% endif %}
-</div>
-{% endif %}
-
-<div id="myModal" class="modal">
-  <div class="model-container">
-    <div class="modal-content">
-      <span id="close-model" class="close"><span class="material-icons"> cancel </span></span>
-      <form action="{% url 'bulk_upload_staffs_save' %}" method="POST" enctype="multipart/form-data">
-        <div class="drop-zone">
-          <span class="drop-zone__prompt">
-            <i class="fa-solid fa-file fileUploadIcon"></i> <br>
-            Drop file here or click to upload</span>
-          {% csrf_token %}
-            <input type="file" name="staff_file" class="drop-zone__input" accept=".csv" required>
-        </div>
-        <input type="submit" class="bulkUploadButton" value="Bulk Upload">
-      </form>
-    </div>
-  </div>
-</div>
-
-<script src="{% static 'js/fileDragUpload.js' %}"></script>
 
 {% if staffs %}
-<div class="search-box-container">
-  <form method="post" action="" class="form-elements">
-    {% csrf_token %}
-    <input type="text" name="search-faculty" id="search-bar" placeholder="Search Faculty" autocomplete="off" required>
-    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
-  </form>
-</div>
-
 <div class="list-all-faculty">
   {% for staff in staffs %}
   <div class="staff-profile-card"
