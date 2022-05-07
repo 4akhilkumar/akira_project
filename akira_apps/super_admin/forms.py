@@ -32,5 +32,6 @@ class GENDERCHOICESForm(forms.Form):
         ("", "Select Gender"),
         ("Male", "Male"),
         ("Female", "Female"),
+        ("Rather not say", "Rather not say"),
     ]
     gender = forms.ChoiceField(choices = GENDER_CHOICES)
