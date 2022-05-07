@@ -15,24 +15,14 @@ import random
 import string
 
 from akira_apps.academic.models import (Branch)
-from akira_apps.student.models import (Students)
 from akira_apps.super_admin.forms import (BLOODGROUPForm, GENDERCHOICESForm)
 
 @login_required(login_url=settings.LOGIN_URL)
 def student_dashboard(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
     context = {
-        "rAnd0m123":rAnd0m123,
+
     }
     return render(request, 'student/dashboard.html', context)
-
-@login_required(login_url=settings.LOGIN_URL)
-def manage_students(request):
-    students = Students.objects.all()
-    context = {
-        "students":students,
-    }
-    return render(request, 'student/manage_students/manage_students.html', context)
 
 @login_required(login_url=settings.LOGIN_URL)
 def view_student(request, student_username):
@@ -139,81 +129,47 @@ def search_student(request):
         return redirect('manage_students')
 
 def add_student(request):
-    gender = GENDERCHOICESForm()
-    blood_groups = BLOODGROUPForm()
-    branches = Branch.objects.all()
-    last_student = User.objects.filter(groups__name='Student').last()
-
     if request.method == "POST":
         username = request.POST.get('username')
-        firstname = request.POST.get('firstname')
-        lastname = request.POST.get('lastname')
         email = request.POST.get('email')
-        password = ''.join(random.choice(string.ascii_letters + string.digits + string.punctuation) for i in range(random.randint(14, 18)))
+        password = request.POST.get('password')
+        firstname = request.POST.get('first_name')
+        lastname = request.POST.get('last_name')
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('date_of_birth')
+        blood_group = request.POST.get('blood_group')
+        phone = request.POST.get('phone')
         door_no = request.POST.get('door_no')
         zip_code = request.POST.get('zip_code')
         city = request.POST.get('city')
+        district = request.POST.get('district')
         state = request.POST.get('state')
         country = request.POST.get('country')
-        blood_group = request.POST.get('blood_group')
-        branch = request.POST.get('branch')
-        branch = Branch.objects.get(id=branch)
-        if 'photo' in request.FILES:
-            photo = request.FILES['photo']
-        else:
-            photo = False
-        save = request.POST.get('_save')
-        addanother = request.POST.get('_addanother')
-
-        if User.objects.filter(username = username).exists() is False:
-            try:
-                user = User.objects.create_user(
-                    username = username,
-                    email = email,
-                    first_name = firstname,
-                    last_name = lastname
-                )
-                user.set_password(password)
-                user.save()
-
-                student = Students.objects.create(
-                    user = user,
-                    gender = gender,
-                    date_of_birth = date_of_birth,
-                    door_no = door_no,
-                    zip_code = zip_code,
-                    city = city,
-                    state = state,
-                    country = country,
-                    blood_group = blood_group,
-                    photo = photo,
-                    branch = branch
-                )
-            except Exception as e1:
-                try:
-                    user.delete()
-                    student.delete()
-                except Exception as e2:
-                    messages.error(request, str(e2))
-                messages.error(request, str(e1))
-                return redirect('add_student')
-            if save:
-                messages.success(request, "Student added successfully!")
-                return redirect('manage_students')
-            elif addanother:
-                messages.success(request, "Student added successfully!")
-                return redirect('add_student')
-            else:
-                messages.success(request, "Student added successfully!")
-                return redirect('edit_student', stdID = user.id)
-        else:
-            messages.info(request, "%s already exists!" % username)
+        photo = request.FILES['photo']
+        branch_id = request.POST.get('branch')
+        branch_id = "7c9645cd-290f-4282-801d-2f96fd8735a2"
+        try:
+            branch = Branch.objects.get(id = branch_id)
+        except Branch.DoesNotExist:
+            branch = None
             return redirect('add_student')
+        user = User.objects.create_user(
+            username = username, email = email,
+            password = password,
+            first_name = firstname,
+            last_name = lastname
+        )
+        user.is_active = True # False
+        applicant_group, isCreated = Group.objects.get_or_create(name = "Student")
+        try:
+            Students.objects.create(user = user, gender = gender, date_of_birth = date_of_birth,
+                                blood_group = blood_group, phone = phone, door_no = door_no,
+                                zip_code = zip_code, city = city, district = district,
+                                state = state, country = country, photo = photo, branch = branch)
+            user.groups.add(Group.objects.get(name = str(applicant_group)))
+            user.save()
+        except Exception:
+            user.delete()
     context = {
-        'gender': gender,
-        'blood_groups': blood_groups,
-        'branches': branches,
     }
-    return render(request, "student/manage_students/add_student.html", context)
+    return render(request, 'student/add_student.html', context)
