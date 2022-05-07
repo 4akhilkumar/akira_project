@@ -8,65 +8,31 @@ import csv
 import datetime as pydt
 
 from akira_apps.super_admin.decorators import allowed_users
-from .models import (Block, Floor, Room, Branch)
+from .models import (Block, Floor, Room)
 from akira_apps.academic.forms import (RoomTypeForm)
 
-def getAllBranchesAjax(request):
-    getBranches = Branch.objects.all()
-    return JsonResponse(list(getBranches.values('id', 'name')), safe = False)
-
-def createbranchAjax(request):
-    if request.method == "POST":
-        name = request.POST.get('name')
-        desc = request.POST.get('desc')
-        if Branch.objects.filter(name__contains = name).exists() is False:
-            Branch.objects.create(name = name, description = desc)
-            message = "Branch %s created successfully!" % str(name)
-            status = "success"
-        else:
-            message = "Branch %s already exists!" % str(name)
-            status = "failed"
-        return JsonResponse({
-            'message': message,
-            'status': status
-            }, safe = False)
-    else:
-        return JsonResponse({'message': "Invalid request"}, safe = False)
-
-def add_branch(request):
-    if request.method == "POST":
-        name = request.POST.get('branch')
-        save = request.POST.get('_save')
-        addanother = request.POST.get('_addanother')
-        if Branch.objects.filter(name = name).exists() is False:
-            branchObj = Branch.objects.create(name = name)            
-            if save:
-                return redirect('manage_branches')
-            elif addanother:
-                return redirect('add_branch')
-            else:
-                return redirect('edit_branch', stdID = branchObj.id)
-        else:
-            messages.info(request, "%s already exists!" % str(name))
-            return redirect('add_branch')
-    return render(request, "academic/manage_branches/add_branch.html")
+def manage_academic(request):
+    blocks = Block.objects.all().order_by('name')
+    floors = Floor.objects.all()
+    rooms = Room.objects.all()
+    roomTypeForm = RoomTypeForm()
+    context = {
+        "blocks": blocks,
+        "floors": floors,
+        "rooms": rooms,
+        "roomTypeForm":roomTypeForm,
+    }
+    return render(request, 'academic/academic.html', context)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_block(request):
     if request.method == 'POST':
         blockName = request.POST.get('name')
-        if "block" == blockName.lower() or blockName == None or blockName == "":
-            messages.info(request, 'What Block is it?')
-            return redirect('manage_academic')
         blockDesc = request.POST.get('desc')
         try:
             Block.objects.create(name=blockName, desc=blockDesc)
         except Exception as e:
-            if "UNIQUE constraint" in str(e):
-                messages.info(request, 'Block Name Already Exists!')
-            else:
-                messages.info(request, e)
-            return redirect('manage_academic')
+            messages.info(request, e)
         return redirect('manage_academic')
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
@@ -103,11 +69,7 @@ def create_floor(request):
         try:
             Floor.objects.create(name = floorName, block = fetechBlock)
         except Exception as e:
-            if "UNIQUE constraint" in str(e):
-                messages.info(request, '{} Already Exists in {}!'.format(floorName, fetechBlock.name))
-            else:
-                messages.info(request, e)
-            return redirect('manage_academic')
+            messages.info(request, e)
         return redirect('manage_academic')
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
@@ -116,6 +78,7 @@ def delete_floor(request, floor_id):
     floor.delete()
     return redirect('manage_academic')
 
+@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def getFloorbyBlock(request):
     if request.method == "POST":
         block_id = request.POST['block']
@@ -159,52 +122,35 @@ def bulk_upload_academic_info_save(request):
         data = pd.read_csv(paramFile)
 
         for index, row in data.iterrows():
-            if Block.objects.filter(name = str(row['Block Name'])).exists() is False:
-                blockObj = Block.objects.create(
-                    name = row['Block Name'],
-                    block_desc = row['Block Desc'],
-                )
-            else:
-                blockObj = Block.objects.filter(name = str(row['Block Name']))[0]
-            
-            if Floor.objects.filter(floor_name = str(row['Floor']), block__name = str(row['Block Name'])).exists() is False:
-                floorObj = Floor.objects.create(
-                    floor_name = row['Floor'],
-                    block = blockObj,
-                )
-            else:
-                floorObj = Floor.objects.filter(floor_name = str(row['Floor']))[0]
-            
-            if Room.objects.filter(block__name = str(row['Block Name']), floor__floor_name = str(row['Floor']), room_name = str(row['Room'])).exists() is False:
-                Room.objects.create(
-                    room_name = row['Room'],
-                    block = blockObj,
-                    floor = floorObj,
-                    type = row['Room Type'],
-                    capacity = row['Room Capacity'],
-                )
-            messages.success(request, "Bulk Import done")
+            try:
+                if Block.objects.filter(name = str(row['Block Name'])).exists() is False:
+                    blockObj = Block.objects.create(
+                        name = row['Block Name'],
+                        desc = row['Block Desc'],
+                    )
+                else:
+                    blockObj = Block.objects.filter(name = str(row['Block Name']))[0]
+                
+                if Floor.objects.filter(name = str(row['Floor']), block__name = str(row['Block Name'])).exists() is False:
+                    floorObj = Floor.objects.create(
+                        name = row['Floor'],
+                        block = blockObj,
+                    )
+                else:
+                    floorObj = Floor.objects.filter(name = str(row['Floor']))[0]
+                
+                if Room.objects.filter(block__name = str(row['Block Name']), floor__name = str(row['Floor']), name = str(row['Room'])).exists() is False:
+                    Room.objects.create(
+                        name = row['Room'],
+                        block = blockObj,
+                        floor = floorObj,
+                        type = row['Room Type'],
+                        capacity = row['Room Capacity'],
+                    )
+                messages.success(request, "Bulk Import done")
+            except Exception as e:
+                messages.error(request, e)
         return redirect('manage_academic')
-
-# Testing MTM
-from .models import (Testing)
-
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def manage_academic(request):
-    blocks = Block.objects.all().order_by('name')
-    floors = Floor.objects.all()
-    rooms = Room.objects.all()
-    roomTypeForm = RoomTypeForm()
-    # Testing MTM
-    test = Testing.objects.all()
-    context = {
-        "blocks": blocks,
-        "floors": floors,
-        "rooms": rooms,
-        "roomTypeForm":roomTypeForm,
-        "test":test,
-    }
-    return render(request, 'academic/academic.html', context)
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def academic_info_csv(request):
@@ -219,8 +165,8 @@ def academic_info_csv(request):
     rooms = Room.objects.all()
 
     for i in rooms:
-        writer.writerow([i.block.name, i.block.block_desc, i.floor.floor_name,
-                        i.room_name, i.type, i.capacity])
+        writer.writerow([i.block.name, i.block.desc, i.floor.name,
+                        i.name, i.type, i.capacity])
     return response
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
@@ -236,20 +182,6 @@ def sample_academic_info_csv(request):
     rooms = Room.objects.all()
 
     for i in rooms:
-        writer.writerow([i.block.name, i.block.block_desc, i.floor.floor_name,
+        writer.writerow([i.block.name, i.block.desc, i.floor.floor_name,
                         i.room_name, i.type, i.capacity])
     return response
-
-# Testing Many-to-Many
-
-# Testing.objects.all().delete()
-
-def TestingMet(request):
-    if request.method == "POST":
-        getName = request.POST['name']
-        getMembers = request.POST.getlist('members')
-        createObj = Testing.objects.create(name = getName)
-        for i in getMembers:
-            ithObj = Block.objects.get(id=i)
-            createObj.members.add(ithObj)
-    return redirect('manage_academic')
