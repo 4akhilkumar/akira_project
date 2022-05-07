@@ -5,5 +5,5 @@ register = template.Library()
 @register.filter
 def user_group(value):
     user = User.objects.get(username=value)
-    groupList = ', '.join(map(str, user.groups.all()))
-    return groupList
+    groupName = user.groups.all()[0].name
+    return groupName
