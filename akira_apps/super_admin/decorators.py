@@ -1,54 +1,11 @@
 from django.http import HttpResponse
+from django.contrib import messages
 from django.shortcuts import redirect
 
 def unauthenticated_user(view_func):
     def wrapper_func(request, *args, **kwargs):
         if request.user.is_authenticated:
-            group = None
-            if request.user.groups.exists():
-                group = request.user.groups.all()[0].name
-            if group == 'Student':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else:
-                    return redirect('student_dashboard')
-            elif group == 'Assistant Professor':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else: 
-                    return redirect('staff_dashboard')
-            elif group == 'Associate Professor':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else: 
-                    return redirect('staff_dashboard')
-            elif group == 'Professor':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else: 
-                    return redirect('staff_dashboard')
-            elif group == 'Head of the Department':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else: 
-                    return redirect('hod_dashboard')
-            elif group == 'Course Co-Ordinator':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else: 
-                    return redirect('staff_dashboard')
-            elif group == 'Applicant':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else:
-                    return redirect('applicant_dashboard')
-            elif group == 'Administrator':
-                if (request.GET.get('next')):
-                    return redirect(request.GET.get('next'))
-                else:
-                    return redirect('super_admin_dashboard')
-            else:
-                return HttpResponse("Contact Administrator")
+            return redirect('dashboard')
         else:
             return view_func(request, *args, **kwargs)
     return wrapper_func
@@ -63,6 +20,8 @@ def allowed_users(allowed_roles=[]):
                 # print('Working:', allowed_roles)
                 return view_func(request, *args, **kwargs)
             else:
-                return HttpResponse(status=403)
+                # return HttpResponse(status=403)
+                messages.warning(request, "You are not authorized to view this page!")
+                return redirect('dashboard')
         return wrapper_func
     return decorator
