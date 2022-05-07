@@ -19,12 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('akira_apps.authentication.urls')),
-    path('super_admin/', include('akira_apps.super_admin.urls')),
+    path('admin/', include('akira_apps.super_admin.urls')),
     path('staff/', include('akira_apps.staff.urls')),
     path('student/', include('akira_apps.student.urls')),
-    path('academic_registration/', include('akira_apps.academic_registration.urls')),
+    path('academicRegistration/', include('akira_apps.academic_registration.urls')),
     path('academic/', include('akira_apps.academic.urls')),
     path('accounts/', include('akira_apps.accounts.urls')),
     path('course/', include('akira_apps.course.urls')),
