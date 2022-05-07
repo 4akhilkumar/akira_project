@@ -1,7 +1,6 @@
 from django import template
 from django.contrib.auth.models import User
-from akira_apps.staff.models import (Staff)
-from akira_apps.student.models import (Students)
+from akira_apps.adops.models import (UserProfile)
 
 register = template.Library()
 
@@ -14,14 +13,12 @@ def getUserProfile(value):
     groupList = ', '.join(map(str, user.groups.all()))
     userImagePath = False
     if groupList is not None:
-        if 'Student' in groupList:
-            if Students.objects.filter(user__username = value).exists() is True:
-                userObj = Students.objects.get(user__username = value)
+        if UserProfile.objects.filter(user__username = value).exists() is True:
+            userObj = UserProfile.objects.get(user__username = value)
+            if userObj.photo:
                 userImagePath = userObj.photo.url
-        else:
-            if Staff.objects.filter(user__username = value).exists() is True:
-                userObj = Staff.objects.get(user__username = value)
-                userImagePath = userObj.photo.url
+            else:
+                return False
         return userImagePath
     else:
         return userImagePath
