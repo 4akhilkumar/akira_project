@@ -5,8 +5,7 @@ from django.dispatch import receiver
 import uuid
 import os
 
-from akira_apps.academic.models import (Semester, Branch)
-from akira_apps.specialization.models import (SpecializationsMC)
+from akira_apps.academic_registration.models import (Branch)
 
 class CourseMC(models.Model):
     COURSE_TYPE = [
@@ -23,8 +22,6 @@ class CourseMC(models.Model):
     desc = models.TextField(max_length = 500)
     course_coordinator = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     branch = branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, blank=True, null=True)
-    specialization = models.ForeignKey(SpecializationsMC, on_delete=models.SET_NULL, blank=True, null=True)
     type = models.CharField(max_length = 50, choices = COURSE_TYPE, default=1)
     pre_requisite = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -43,7 +40,6 @@ class CourseExtraFields(models.Model):
     field_name = models.CharField(max_length = 100)
     field_type = models.CharField(max_length = 100, choices = FIELD_TYPE, default="")
     field_value = models.TextField(max_length = 50000)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '%s - %s' % (self.course, self.field_name)
@@ -118,9 +114,18 @@ class CourseTask(models.Model):
     sub_component = models.ForeignKey(CourseSubComponent, on_delete=models.CASCADE)
     question = models.TextField(max_length = 500)
     answer = models.ForeignKey('TaskAnswer', on_delete=models.SET_NULL, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.question)
+
+class CourseTaskAccessRestriction(models.Model):
+    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+    task = models.ForeignKey(CourseTask, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+
+    def __str__(self):
+        return '%s %s' % (self.task, self.datetime)
 
 class TaskAnswer(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
@@ -129,4 +134,20 @@ class TaskAnswer(models.Model):
     answer = models.FileField(upload_to='TaskAnswerFiles/')
 
     def __str__(self):
-        return '%s - %s' % (self.user, self.answer) 
+        return '%s - %s' % (self.user, self.answer)
+
+class FacultyCourseEnroll(models.Model):
+    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+    course = models.ForeignKey(CourseMC, on_delete=models.CASCADE)
+    teachingStaff = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['course','teachingStaff']
+
+class StudentCourseEnroll(models.Model):
+    id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
+    course = models.ForeignKey(CourseMC, on_delete=models.CASCADE)
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['course','student']
