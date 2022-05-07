@@ -15,7 +15,7 @@ import requests
 import datetime as pydt
 import re
 
-from akira_apps.academic.models import (Academy)
+from akira_apps.academic.models import (Academy, Branch)
 from akira_apps.adops.forms import (OpeningsJobTypeForm)
 from akira_apps.adops.models import (UserProfile, Admission, Openings, Programme, AdmissionRegister, StuAdmAccountVerificationStatus)
 from akira_apps.authentication.token import (account_activation_token)
