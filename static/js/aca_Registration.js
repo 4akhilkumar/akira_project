@@ -248,6 +248,7 @@ $(document).on('click', '.semester_status', function() {
             console.log(data);
             if (data.status == "success") {
                 toastr.success(data.message);
+                $("#id_active_semesters").load(location.href + " #id_active_semesters", "");
             }
             else {
                 toastr.error(data.message);

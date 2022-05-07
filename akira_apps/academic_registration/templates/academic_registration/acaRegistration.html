@@ -20,7 +20,11 @@
     </div>
     <div class="analytic-info">
       <h4>Active Semester{{ getActiveSemesters|length|pluralize }}</h4>
-      <h1>{{ getActiveSemesters|length }}</h1>
+      <h1>
+        <span id="id_active_semesters">
+        {{ getActiveSemesters|length }}
+        </span>
+      </h1>
     </div>
   </div>
   <div class="analytic">
