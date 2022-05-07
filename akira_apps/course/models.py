@@ -5,7 +5,7 @@ from django.dispatch import receiver
 import uuid
 import os
 
-from akira_apps.academic_registration.models import (Branch)
+from akira_apps.academic.models import (Branch)
 
 class CourseMC(models.Model):
     COURSE_TYPE = [
@@ -21,7 +21,7 @@ class CourseMC(models.Model):
     name = models.CharField(max_length = 100, unique = True)
     desc = models.TextField(max_length = 500)
     course_coordinator = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    branch = branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     type = models.CharField(max_length = 50, choices = COURSE_TYPE, default=1)
     pre_requisite = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True, null=True)
 

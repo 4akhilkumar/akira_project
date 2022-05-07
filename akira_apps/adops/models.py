@@ -169,7 +169,7 @@ class AdmissionRegister(models.Model):
         return '%s - %s' % (self.student, self.batch)
     
     class Meta:
-        unique_together = ['user', 'batch']
+        unique_together = ['student', 'batch']
 
 class StuAdmAccountVerificationStatus(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)

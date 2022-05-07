@@ -4,9 +4,9 @@ from django.http import JsonResponse
 from akira_apps.adops.models import AdmissionRegister
 
 from akira_apps.super_admin.decorators import (allowed_users)
-from akira_apps.academic.models import (Semester, Branch)
-from akira_apps.academic.forms import (SemesterModeForm)
-from akira_apps.academic_registration.models import (SetSemesterRegistration)
+from akira_apps.academic.models import (Branch)
+from akira_apps.academic_registration.forms import (SemesterModeForm)
+from akira_apps.academic_registration.models import (Semester, SetSemesterRegistration)
 
 def aca_Registration(request):
     branches = Branch.objects.all()

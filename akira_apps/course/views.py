@@ -8,9 +8,9 @@ from django.shortcuts import redirect, render
 
 from datetime import datetime
 
-from akira_apps.academic.forms import (SemesterModeForm)
-from akira_apps.academic.models import (Semester, Branch)
-from akira_apps.academic_registration.models import SetSemesterRegistration
+from akira_apps.academic_registration.forms import (SemesterModeForm)
+from akira_apps.academic.models import (Branch)
+from akira_apps.academic_registration.models import (Semester, SetSemesterRegistration)
 from akira_apps.course.forms import (CourseTypeForm, CourseExtraFieldForm)
 from akira_apps.course.models import (CourseExtraFields, CourseMC, CourseOfferingType, CourseCOTExtraFields, CourseFiles, 
                                         CourseComponent, CourseSubComponent, CourseTask, TaskAnswer, 
