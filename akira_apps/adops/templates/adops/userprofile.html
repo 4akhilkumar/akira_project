@@ -17,7 +17,7 @@
     <title> @{{ userObj.username }} | Profile</title>
 </head>
 <body>
-    <img style="width: 50px;"
+    <img style="width: 50px;" loading="eager"
         {% if not staff.photo %}
         src="{% get_static_prefix %}Default User Profile Photo/{{staff.user.first_name|capfirst|first}}.png" 
         {% else %}
@@ -28,7 +28,6 @@
     <p>Name: {{ staff.name_prefix }} {{ userObj.first_name }} {{ userObj.last_name }} </p>
     <p>Group: {{ userObj.username|user_group }}</p>
     <p>Email: {{ userObj.email }}</p>
-
     <hr>
     <p>Gender: {{ staff.gender }}</p>
     <p>DOB: {{ staff.date_of_birth }}</p>

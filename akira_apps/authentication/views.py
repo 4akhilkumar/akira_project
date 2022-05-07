@@ -20,7 +20,6 @@ import json
 import requests
 import string
 import random
-import math
 
 from akira_apps.super_admin.decorators import unauthenticated_user
 from akira_apps.accounts.models import TwoFactorAuth
@@ -112,16 +111,16 @@ def user_login(request):
             fingerprintID = None
         user_ip_address = ip
 
-        try:
-            captcha_token = request.POST.get("g-recaptcha-response")
-            cap_url = "https://www.google.com/recaptcha/api/siteverify"
-            cap_secret = settings.GOOGLE_RECAPTCHA_SECRET_KEY
-            cap_data = {"secret": cap_secret, "response": captcha_token}
-            cap_server_response = requests.post(url = cap_url, data = cap_data)
-            cap_json = json.loads(cap_server_response.text)
-        except Exception:
-            messages.info(request, 'Check your internet connection')
-            return redirect('login')
+        # try:
+        #     captcha_token = request.POST.get("g-recaptcha-response")
+        #     cap_url = "https://www.google.com/recaptcha/api/siteverify"
+        #     cap_secret = settings.GOOGLE_RECAPTCHA_SECRET_KEY
+        #     cap_data = {"secret": cap_secret, "response": captcha_token}
+        #     cap_server_response = requests.post(url = cap_url, data = cap_data)
+        #     cap_json = json.loads(cap_server_response.text)
+        # except Exception:
+        #     messages.info(request, 'Check your internet connection')
+        #     return redirect('login')
 
         try:
             getEncryptedCookie = request.COOKIES['access_token']
@@ -144,15 +143,8 @@ def user_login(request):
         except User.DoesNotExist:
             checkUserExists = None
 
-        try:
-            url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
-            response = requests.get(url)
-            dataUsername = response.json()
-        except Exception:
-            messages.info(request, "Server under maintenance. Please try again later.")
-            return redirect('login')
-
-        if cap_json['success'] == True:
+        # if cap_json['success'] == True:
+        if True == True:
             try:
                 data = {
                     'MetaKey':username,
@@ -161,6 +153,13 @@ def user_login(request):
                 AKIRA_API_END_POINT = 'http://127.0.0.1:4000/fetchKey/'
                 getMetaDataUrlResponse = requests.post(url = AKIRA_API_END_POINT, data = data)
                 getMetaDataUrlResponsedata = getMetaDataUrlResponse.json()
+            except Exception:
+                messages.info(request, "Server under maintenance. Please try again later.")
+                return redirect('login')
+            try:
+                url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
+                response = requests.get(url)
+                dataUsername = response.json()
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
@@ -218,51 +217,7 @@ def user_login(request):
                                     get_current_userlogindetailsObject_Id.sessionKey = request.session.session_key
                                     get_current_userlogindetailsObject_Id.save()
                                     
-                                    group = None
-                                    if request.user.groups.exists():
-                                        group = request.user.groups.all()[0].name
-                                    if group == 'Student':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else:
-                                            return redirect('student_dashboard')
-                                    elif group == 'Assistant Professor':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else: 
-                                            return redirect('staff_dashboard')
-                                    elif group == 'Associate Professor':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else: 
-                                            return redirect('staff_dashboard')
-                                    elif group == 'Professor':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else: 
-                                            return redirect('staff_dashboard')
-                                    elif group == 'Head of the Department':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else: 
-                                            return redirect('hod_dashboard')
-                                    elif group == 'Course Co-Ordinator':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else: 
-                                            return redirect('staff_dashboard')
-                                    elif group == 'Applicant':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else:
-                                            return redirect('applicant_dashboard')
-                                    elif group == 'Administrator':
-                                        if (request.GET.get('next')):
-                                            return redirect(request.GET.get('next'))
-                                        else:
-                                            return redirect('super_admin_dashboard')
-                                    else:
-                                        return HttpResponse("Contact Administrator")
+                                    return redirect('dashboard')
                         else:
                             messages.warning(request, 'Username or Password is Incorrect!')
                             save_login_details(request, username, user_ip_address, fingerprintID, "Failed", "Username or Password is Incorrect!")
@@ -1164,3 +1119,45 @@ def logoutUser(request):
         return redirect('login')
     else:
         return redirect('login')
+
+def dashboard(request):
+    group = None
+    if request.user.groups.exists():
+        group = request.user.groups.all()[0].name
+    if group == 'Student':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else:
+            return redirect('student_dashboard')
+    elif group == 'Teaching Staff':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else: 
+            return redirect('teachingstaff_dashboard')
+    elif group == 'Non Teaching Staff':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else: 
+            return redirect('non_teachingstaff_dashboard')
+    elif group == 'Applicant':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else:
+            return redirect('applicant_dashboard')
+    elif group == 'Adops Team':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else:
+            return redirect('adops_dashboard')
+    elif group == 'Admission Student':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else:
+            return redirect('admstudent_dashboard')
+    elif group == 'Administrator':
+        if (request.GET.get('next')):
+            return redirect(request.GET.get('next'))
+        else:
+            return redirect('super_admin_dashboard')
+    else:
+        return HttpResponse("Contact Administrator")

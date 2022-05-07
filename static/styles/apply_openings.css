@@ -884,6 +884,14 @@ body {
   margin-top: -2px;
   white-space: nowrap;
 }
+.ellipsis1 {
+  max-width: 15rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: unset;
+}
 .explain-contents {
   height: 66px;
 }

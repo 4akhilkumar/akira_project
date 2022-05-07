@@ -6,7 +6,7 @@
 {% block manage-account %}
 <div class="security">
     <div class="security-title">
-        <h2><i class="fas fa-shield-alt"></i> Security</h2>
+        <h2><span class="material-icons security-icon"> security </span> Security</h2>
         <p>Settings and recommendations to help you keep your account secure</p>
     </div>
     <div class="security-summary">
@@ -25,7 +25,7 @@
                     <div class="security-status-image">
                         <picture>
                             <source media="(min-width:1040px)" srcset="{% static 'images/securitycheckup_scene_green.png' %}">
-                            <img src="{% static 'images/securitycheckup_green.webp' %}" alt="Flowers" style="width:auto;">
+                            <img loading="lazy" src="{% static 'images/securitycheckup_green.webp' %}" alt="Flowers" style="width:auto;">
                         </picture>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         <p>These can be used to make sure it's really you signing in or to reach you if there's suspicious activity in your account</p>
                     </div>
                     <div class="wwcviy-image">
-                        <img src="{% static 'images/recovery_scene.png' %}" alt="">
+                        <img loading="lazy" src="{% static 'images/recovery_scene.png' %}" alt="">
                     </div>
                 </div>
                 <div class="recovery-email">
@@ -135,7 +135,7 @@
                         <div class="device-icon skeleton">
                             {% if "Windows" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-windows"></span>
-                            {% elif "iPhone" in get_currentLoginInfo.os_details or "Macintosh" in get_currentLoginInfo.os_details %}
+                            {% elif "iPhone" in get_currentLoginInfo.os_details or "Mac" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-apple"></span>
                             {% elif "Ubuntu" in get_currentLoginInfo.os_details %}
                             <span class="fab fa-ubuntu"></span>
@@ -146,6 +146,11 @@
                             {% else %}
                             <span class="fas fa-exclamation-circle"></span>
                             {% endif %}
+                            <div class="isthisdevice">
+                                {% if thisDeviceCurrent == True %}
+                                <p class="this_device_text">This device</p>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="device-platform_ip_addr-location-time">
                             <div class="platform-name skeleton">
@@ -159,11 +164,6 @@
                             </div>
                         </div>
                     </div>
-                    {% if thisDeviceCurrent == True %}
-                    <div class="login-attempt-action">
-                        <button class="confirmed-button"><span class="fas fa-check-circle"></span> This Device</button>
-                    </div>
-                    {% endif %}
                 </div>
                 
             </div>

@@ -18,7 +18,7 @@ $(document).ready(function() {
       $("#id_job_name").parent().find(".error-text").css("display", "block");
       job_name = false;
     }
-    else if (!$("#id_job_name").val().match(/^[A-Za-z&()\-\s]*$/)) {
+    else if (!$("#id_job_name").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_job_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the job name correctly&#x0003F;");
       $("#id_job_name").parent().find(".error-text").css("display", "block");
       job_name = false;
@@ -51,7 +51,7 @@ $(document).ready(function() {
       $("#id_job_overview").parent().find(".error-text").css("display", "block");
       job_overview = false;
     }
-    else if (!$("#id_job_overview").val().match(/^[A-Za-z0-9-#.,&/\s]*$/)) {
+    else if (!$("#id_job_overview").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_job_overview").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the job overview correctly&#x0003F;");
       $("#id_job_overview").parent().find(".error-text").css("display", "block");
       job_overview = false;
@@ -89,7 +89,7 @@ $(document).ready(function() {
       $("#id_job_description").parent().find(".error-text").css("display", "block");
       job_desc = false;
     }
-    else if (!$("#id_job_description").val().match(/^[A-Za-z0-9-#.,&/\s]*$/)) {
+    else if (!$("#id_job_description").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_job_description").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the job description correctly&#x0003F;");
       $("#id_job_description").parent().find(".error-text").css("display", "block");
       job_desc = false;
@@ -116,7 +116,7 @@ $(document).ready(function() {
       $("#id_experience").parent().find(".error-text").css("display", "block");
       experience = false;
     }
-    else if (!$("#id_experience").val().match(/^[A-Za-z0-9\-\s]*$/)) {
+    else if (!$("#id_experience").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_experience").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the experience correctly&#x0003F;");
       $("#id_experience").parent().find(".error-text").css("display", "block");
       experience = false;
@@ -138,7 +138,7 @@ $(document).ready(function() {
       $("#id_qualification").parent().find(".error-text").css("display", "block");
       qualification = false;
     }
-    else if (!$("#id_qualification").val().match(/^[A-Za-z./\-\s]*$/)) {
+    else if (!$("#id_qualification").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_qualification").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the qualification correctly&#x0003F;");
       $("#id_qualification").parent().find(".error-text").css("display", "block");
       qualification = false;

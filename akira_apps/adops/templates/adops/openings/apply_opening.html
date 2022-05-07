@@ -1,5 +1,5 @@
 {% load static %}
-{% load humanize %}
+{% load user_group %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,11 +48,11 @@
       </div>
       <div class="job-card-title">{{ eachopening.job }}</div>
       <div class="job-card-subtitle">
-        {{ eachopening.description }}
+        {{ eachopening.overview }}
       </div>
       <div class="job-detail-buttons">
        <button class="search-buttons detail-button">{{ eachopening.type }}</button>
-       <button class="search-buttons detail-button">{{ eachopening.experience }}</button>
+       <!-- <button class="search-buttons detail-button">{{ eachopening.experience }}</button> -->
        <button class="search-buttons detail-button">{{ eachopening.qualification }}</button>
        <button class="search-buttons detail-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</button>
       </div>
@@ -104,7 +104,7 @@
           Back
         </button>
       </div>
-      <img class="job-bg" alt="">
+      <img loading="lazy" class="job-bg" alt="">
       <div class="job-logos">
        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="background-color:#f76754">
         <path xmlns="http://www.w3.org/2000/svg" d="M0 .5h4.2v23H0z" fill="#042b48" data-original="#212121"></path>
@@ -117,17 +117,10 @@
         <!-- <svg onclick="document.location='#'" class="add-to-fav" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
           <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" />
         </svg> -->
-        {% if is_admin %}
+        {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group %}
         <a href="" class="edit-job" id="edit-job-anchor_tag">
           <span class="fa-solid fa-pen-to-square"></span>
         </a>
-        {% comment %}
-        <form action="" id="edit-job-form" method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="job_id" id="id_job_id" value="">
-          <button class="edit-job" type="submit"><span class="fa-solid fa-pen-to-square"></span></button>
-        </form>
-        {% endcomment %}
         {% endif %}
         <svg onclick="document.location='#'" class="share" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
        </div>
@@ -141,11 +134,11 @@
        <div class="explain-bar">
         <div class="explain-contents">
           <div class="explain-title">Experience</div>
-          <div class="explain-subtitle job-experience"></div>
+          <div class="explain-subtitle job-experience ellipsis1"></div>
         </div>
         <div class="explain-contents">
           <div class="explain-title">Qualification</div>
-          <div class="explain-subtitle job-qualification"></div>
+          <div class="explain-subtitle job-qualification ellipsis1"></div>
         </div>
         <div class="explain-contents">
           <div class="explain-title">Employee Type</div>
@@ -246,7 +239,7 @@ jobCards.forEach((jobCard) => {
   document.getElementById("id_job_id").value = jobIdString;
 
   // add jobIdString to id="edit-job-anchor_tag"
-  {% if is_admin %}
+  {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group %}
   const editJobAnchorTag = document.getElementById("edit-job-anchor_tag");
   editJobAnchorTag.setAttribute("href", `/adops/editOpening/${jobIdString}/`);
   {% endif %}

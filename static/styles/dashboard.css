@@ -273,6 +273,11 @@ a {
   margin-bottom: 2rem;
 }
 
+span.menu-bars {
+  font-size: 2rem;
+  margin-top: .4rem;
+}
+
 #menu-toggle {
   display: none;
 }
@@ -398,8 +403,10 @@ img {
 
 .sidebar-menu a {
   color: var(--normal-text-color);
-  display: block;
+  display: flex;
   padding: .7rem 0rem;
+  flex-direction: row;
+  align-items: center;
 }
 
 .sidebar-menu a.active {
@@ -411,7 +418,7 @@ img {
 .sidebar-menu a span:first-child {
   display: inline-block;
   margin-right: .8rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: var(--icons-color);
 }
 
@@ -508,7 +515,7 @@ header {
 .header-title-wrapper label {
   display: inline-block;
   color: var(--color-main);
-  margin-right: 2rem;
+  margin-right: .8rem;
   font-size: 1.8rem;
 }
 
@@ -520,6 +527,8 @@ header {
 .header-title p {
   color: var(--normal-text-color);
   font-size: .9rem;
+  display: flex;
+  align-items: center;
 }
 
 .header-title p span {
@@ -618,6 +627,7 @@ span.admission_status {
   border-radius: 50%;
   display: grid;
   place-items: center;
+  justify-items: center;
   margin-right: .8rem;
 }
 
@@ -627,8 +637,6 @@ span.admission_status {
   font-weight: 600;
   margin-bottom: 1rem;
 }
-
-
 
 .rev-content {
   background: var(--card-color);
@@ -864,6 +872,10 @@ span.admission_status {
   letter-spacing: .125rem;
   color: var(--large-text-color);
   font-size: 2rem;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: .5rem;
 }
 
 .security-title p {
@@ -874,6 +886,10 @@ span.admission_status {
   hyphens: auto;
   word-break: break-word;
   word-wrap: break-word;
+}
+
+span.security-icon {
+  font-size: 2rem;
 }
 
 .account-secuirty-status, 
@@ -1044,7 +1060,7 @@ button.add-admission {
 a.more-login-details {
   font-size: .8rem;
   font-family: 'Poppins', sans-serif;
-  text-decoration: underline;
+  /* text-decoration: underline; */
   letter-spacing: normal;
 }
 
@@ -1184,6 +1200,24 @@ input:checked + .slider:before {
 .device-icon span {
   font-size: 3.5rem;
   color: var(--icons-color);
+}
+
+.isthisdevice {
+
+}
+
+p.this_device_text {
+  font-size: .4rem;
+  font-weight: 700;
+  letter-spacing: .4px;
+  background: #000;
+  color: #FFF;
+  display: flex;
+  margin: 0;
+  padding: .1rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: .5rem;
 }
 
 .device-platform_ip_addr-location-time {
@@ -1614,6 +1648,7 @@ button.search-icon:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 1rem 0 .5rem 0;
 }
 
 .modal-top-section h3 {
@@ -1663,8 +1698,9 @@ button.search-icon:hover {
 
 .close {
   color: #aaaaaa;
-  font-size: 28px;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  align-content: center;
 }
 
 .close:hover,
@@ -1899,19 +1935,29 @@ span.block-chip {
   font-size: .623rem;
 }
 
+span.chips-icon {
+  font-size: 1rem;
+}
+
 span.chip-one {
   color: #cddc39;
   background: #cddc391f;
+  display: flex;
+  align-items: center;
 }
 
 span.chip-two {
   color: #ae03f4a1;
   background: #ae03f41f;
+  display: flex;
+  align-items: center;
 }
 
 span.chip-three {
   background: #f4b40033;
   color: #F4B400;
+  display: flex;
+  align-items: center;
 }
 
 .block-hr {
@@ -1965,6 +2011,9 @@ span.chip-three {
   border-radius: 50%;
   max-height: 2.5rem;
   max-width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .component1 span {
@@ -2035,13 +2084,15 @@ span.chip-three {
 }
 
 span.building-block-icon {
-  font-size: 1.2rem;
+  display: flex;
   padding: 1rem;
   border-radius: 50%;
   width: 2.826rem;
   height: 3rem;
   background: #4285f433;
   color: #4285F4;
+  align-items: center;
+  justify-content: center;
 }
 
 button.block-delete-btn {
@@ -2098,9 +2149,11 @@ button.block-contact-btn {
 }
 
 .block-contact-btn span:after {
-  content: "\f879";
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
+  font-family: 'Material Icons';
+  content: "call";
+  -webkit-font-feature-settings: 'liga' 1;
+  -moz-font-feature-settings: 'liga' 1;
+  font-feature-settings: 'liga' 1;
   position: absolute;
   opacity: 0;
   top: 0;

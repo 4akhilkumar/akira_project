@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Programme</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <label for="id_degree">Degree</label>
+        <input type="text" name="degree" id="id_degree" placeholder="Degree" required>
+        <label for="id_name">Name</label>
+        <input type="text" name="name" id="id_name" placeholder="Name" required>
+        <label for="id_duration">Duration</label>
+        <input type="text" name="duration" id="id_duration" placeholder="Duration" required>
+        <label for="id_branch">Branch</label>
+        <select name="branch_id" id="id_branch" required>
+            <option value="">Select Branch</option>
+            {% for each in branches %}
+            <option value="{{ each.id }}">{{ each.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="id_specialization">Specialization</label>
+        <select name="specialization_id" id="id_specialization">
+            <option value="">Select Specialization</option>
+            {% for each in specialization %}
+            <option value="{{ each.id }}">{{ each.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

@@ -1,6 +1,7 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
 {% load first_letter_word %}
+{% load user_group %}
 
 {% block content %}
 
@@ -55,10 +56,12 @@
 
 {% block manage-courses %}
 
+{% if "Administrator" in request.user|user_group %}
 <div class="btn-area">
   <button id="createCourse" data-create-course-url="{% url 'updateCourse' %}" class="create-block-btn">Create Course</button>
   <button id="createCourseBulk" class="create-block-btn">Create Courses (CSV)</button>
 </div>
+{% endif %}
 
 <div class="course-container">
   <ul class="courses">

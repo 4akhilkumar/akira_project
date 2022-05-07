@@ -1,0 +1,21 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load semRegistration %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Analytics</h1>
+<p>Display analytics about your Academy Registration <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block studentAcaReg %}
+
+<h4>You've opted the {{ admissionInfo.batch.programme }} program in {{ admissionInfo.batch.programme.branch }} branch ({{ admissionInfo.batch.programme.degree }}) </h4>
+
+
+
+<script src="{% static 'js/studentSemReg.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

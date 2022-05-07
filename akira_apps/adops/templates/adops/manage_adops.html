@@ -53,12 +53,12 @@
 {% block manage-adops %}
 
 <div class="btn-area">
-  <button class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
-  <button id="bulkOpeningForm" class="add-opening">Bulk openings</button>
-  <button class="add-admission">Add admission</button>
-  <button id="bulkAdmissionForm" class="add-admission">Bulk admissions</button>
+  <button type="button" class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
+  <button type="button" id="bulkOpeningForm" class="add-opening">Bulk openings</button>
+  <button type="button" class="add-admission" onclick="document.location='{% url 'manageAdmission' %}'">Manage admission</button>
 </div>
 
+{% comment %}
 <div class="job-cards">
   {% for eachopening in applied_openings %}
   <div class="job-card job-id" id="{{ eachopening.id }}">
@@ -88,8 +88,6 @@
   {% endfor %}
 </div>
 
-{% endblock %}
-
 <div id="openingsApplData">
   {% for i in openings %}
   {{ i.job }}
@@ -102,3 +100,6 @@
       <hr>
   {% endfor %}
 </div>
+{% endcomment %}
+
+{% endblock %}

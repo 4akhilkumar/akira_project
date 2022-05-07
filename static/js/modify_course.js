@@ -391,8 +391,8 @@ function setFocus(on) {
 
 // If user click on input with id=back-course then print clicked in console
 $("#back-course").click(function () {
-    // get the data-back-to-courses-url attribute of the clicked element
-    var backToCourses = $(this).data('back-to-courses-url');
+    // get the data-back-to-course-url attribute of the clicked element
+    var backToCourses = $(this).data('back-to-course-url');
     // disable the button for 5 seconds
     $("#back-course").prop("disabled", true);
     setTimeout(function () {
@@ -638,15 +638,15 @@ $(document).ready(function() {
         semester = true;
     }
 
-    $('#id_semester').on('keyup keydown blur change', function() {
-        if ($("#id_semester").val() == "") {
-            $("#id_semester").parent().find(".error-text").css("display", "block");
-            semester = false;
-        } else {
-            $("#id_semester").parent().find(".error-text").css("display", "none");
-            semester = true;
-        }
-    });
+    // $('#id_semester').on('keyup keydown blur change', function() {
+    //     if ($("#id_semester").val() == "") {
+    //         $("#id_semester").parent().find(".error-text").css("display", "block");
+    //         semester = false;
+    //     } else {
+    //         $("#id_semester").parent().find(".error-text").css("display", "none");
+    //         semester = true;
+    //     }
+    // });
 
     if ($("#id_course_coordinator").val() == "") {
         $("#id_course_coordinator").parent().find(".error-text").css("display", "block");
@@ -1179,7 +1179,7 @@ $(document).ready(function() {
             success: function (data) {
                 if(data.status == 'success') {
                     toastr.success(data.message)
-                    getAllSemestersFunc.call(this);
+                    // getAllSemestersFunc.call(this);
                     setTimeout(function(){
                         $("#myModal2").fadeOut(500);
                     }, 250);
@@ -1194,45 +1194,45 @@ $(document).ready(function() {
         });
     }
 
-    function getAllSemestersFunc() {
+    // function getAllSemestersFunc() {
 
-        if($(this).hasClass('anchor-disabled')){
-            return false;
-        }
-        $(this).addClass('anchor-disabled');
-        setTimeout(function(){
-            $("#fetchSemester").removeClass('anchor-disabled');
-        }, 5000);
+    //     if($(this).hasClass('anchor-disabled')){
+    //         return false;
+    //     }
+    //     $(this).addClass('anchor-disabled');
+    //     setTimeout(function(){
+    //         $("#fetchSemester").removeClass('anchor-disabled');
+    //     }, 5000);
 
-        var get_semesters_url = $("#fetchSemester").data('get-semester-url');
+    //     var get_semesters_url = $("#fetchSemester").data('get-semester-url');
 
-        $.ajax({
-            type: "GET",
-            url: get_semesters_url,
-            success: function (data) {
-                if(data.length == 0) {
-                    html_data = '<option value=""> Data Not Available </option>';
-                    $("#id_semester").html(html_data);
-                    toastr.info("No semesters available")
-                }
-                else {
-                    toastr.success("Semesters list fetched successfully")
-                    let html_data = '<option value=""> Select Semester </option>';
-                    data.forEach(function (data) {
-                        html_data += `<option value="${data.id}">${data.mode} ${data.start_year.substring(0, 4)}</option>`
-                    });
-                    $("#id_semester").html(html_data);
+    //     $.ajax({
+    //         type: "GET",
+    //         url: get_semesters_url,
+    //         success: function (data) {
+    //             if(data.length == 0) {
+    //                 html_data = '<option value=""> Data Not Available </option>';
+    //                 $("#id_semester").html(html_data);
+    //                 toastr.info("No semesters available")
+    //             }
+    //             else {
+    //                 toastr.success("Semesters list fetched successfully")
+    //                 let html_data = '<option value=""> Select Semester </option>';
+    //                 data.forEach(function (data) {
+    //                     html_data += `<option value="${data.id}">${data.mode} ${data.start_year.substring(0, 4)}</option>`
+    //                 });
+    //                 $("#id_semester").html(html_data);
 
-                    $("#id_semester").parent().find(".error-text").css("display", "block");
-                    $("#course-btn").prop("disabled", true);
-                    $("input[data-create-design='true']").prop('disabled', true);
-                }
-            },
-            error: function (data) {
-                toastr.error(data);
-            }
-        });
-    }
+    //                 $("#id_semester").parent().find(".error-text").css("display", "block");
+    //                 $("#course-btn").prop("disabled", true);
+    //                 $("input[data-create-design='true']").prop('disabled', true);
+    //             }
+    //         },
+    //         error: function (data) {
+    //             toastr.error(data);
+    //         }
+    //     });
+    // }
 
     function createExtraFieldFunc() {
         if($(this).hasClass('create-extra-field-disabled')){
@@ -1414,9 +1414,9 @@ $(document).ready(function() {
     $("#semester-btn").click(function(){
         createSemesterFunc.call(this);
     });
-    $("#fetchSemester").click(function(){
-        getAllSemestersFunc.call(this);
-    });
+    // $("#fetchSemester").click(function(){
+    //     getAllSemestersFunc.call(this);
+    // });
 
     $("#extrafield-btn").click(function() {
         createExtraFieldFunc.call(this);
@@ -1439,17 +1439,17 @@ $(document).ready(function() {
 });
 
 var modal = document.getElementById("myModal"); 
-var modal2 = document.getElementById("myModal2");
+// var modal2 = document.getElementById("myModal2");
 var modal3 = document.getElementById("myModal3");
 var modal4 = document.getElementById("myModal4");
 var modal5 = document.getElementById("myModal5");
 var btn = document.getElementById("showFormCreateBranch");
-var btn2 = document.getElementById("showFormCreateSemester");
+// var btn2 = document.getElementById("showFormCreateSemester");
 var btn3 = document.getElementById("showFormCreateExternalField");
 var btn4 = document.getElementById("showFormCreateCOTField");
 var btn5 = document.getElementById("showFormCreateCOTExtraField");
 var span = document.getElementById("close-model");
-var span2 = document.getElementById("close-model2");
+// var span2 = document.getElementById("close-model2");
 var span3 = document.getElementById("close-model3");
 var span4 = document.getElementById("close-model4");
 var span5 = document.getElementById("close-model5");
@@ -1457,9 +1457,9 @@ var span5 = document.getElementById("close-model5");
 btn.onclick = function() {
   modal.style.display = "block";
 }
-btn2.onclick = function() {
-  modal2.style.display = "block";
-}
+// btn2.onclick = function() {
+//   modal2.style.display = "block";
+// }
 btn3.onclick = function() {
   modal3.style.display = "block";
 }
@@ -1473,9 +1473,9 @@ btn5.onclick = function() {
 span.onclick = function() {
   modal.style.display = "none";
 }
-span2.onclick = function() {
-  modal2.style.display = "none";
-}
+// span2.onclick = function() {
+//   modal2.style.display = "none";
+// }
 span3.onclick = function() {
   modal3.style.display = "none";
 }
@@ -1490,9 +1490,9 @@ window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
   }
-  if (event.target == modal2) {
-    modal2.style.display = "none";
-  }
+//   if (event.target == modal2) {
+//     modal2.style.display = "none";
+//   }
   if (event.target == modal3) {
     modal3.style.display = "none";
   }

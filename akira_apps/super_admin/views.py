@@ -1,10 +1,10 @@
 from django.http.response import HttpResponse, JsonResponse
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
-from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils.encoding import force_bytes, force_text  
@@ -22,8 +22,7 @@ from akira_apps.academic.models import(Academy)
 from akira_apps.authentication.models import (UserLoginDetails)
 from akira_apps.authentication.token import (account_activation_token)
 from akira_apps.course.models import CourseMC
-from akira_apps.staff.models import (Staff)
-from akira_apps.student.models import Students
+from akira_apps.adops.models import (UserProfile)
 from akira_apps.super_admin.forms import (GENDERCHOICESForm, NAMEPREFIXForm)
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.super_admin.models import (MailLog, AdminAccountVerificationStatus)
@@ -154,10 +153,15 @@ def adminInstituteRegistration(request):
         else:
             ip = request.META.get('REMOTE_ADDR')
 
+        try:
+            fingerprintID = request.COOKIES['U53R_876_10']
+        except Exception:
+            fingerprintID = None
+
         validatedUserDOB = validateUserDOB(dob)
         if validatedUserDOB[0] is True:
             try:
-                url = 'https://akira-rest-api.herokuapp.com/getEmail/{}/?format=json'.format(email)
+                url = 'http://127.0.0.1:4000/getEmail/{}/?format=json'.format(email)
                 response = requests.get(url)
                 dataEmail = response.json()
             except Exception:
@@ -166,21 +170,32 @@ def adminInstituteRegistration(request):
             if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
                 if not User.objects.filter(username=username).exists():
                     if password == confirm_password:
-                        user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
-                        admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
-                        user.groups.add(Group.objects.get(name = str(admin_group)))
-                        user.is_active = False
-                        user.is_staff = False
-                        user.is_superuser = False
-                        user.save()
-                        Staff.objects.create(
-                            user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
-                            door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
-                            photo = photo)
-                        Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
-                        AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip)
                         try:
-                            url = 'https://akira-rest-api.herokuapp.com/getEncryptionData/{}/?format=json'.format(username)
+                            user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
+                            admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
+                            user.groups.add(Group.objects.get(name = str(admin_group)))
+                            user.is_active = False
+                            user.is_staff = False
+                            user.is_superuser = False
+                            user.save()
+                            UserProfile.objects.create(
+                                user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
+                                door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
+                                photo = photo)
+                            Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
+                            AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip, bfpID = fingerprintID)
+                        except Exception:
+                            if User.objects.filter(username=username).exists() is True:
+                                currentUserObj = User.objects.get(username=username)
+                                if AdminAccountVerificationStatus.objects.filter(user=user).exists() is True:
+                                    AdminAccountVerificationStatus.objects.get(user=user).delete()
+                                if UserProfile.objects.filter(user=user).exists() is True:
+                                    UserProfile.objects.get(user=user).delete()
+                                currentUserObj.delete()
+                            messages.info(request, "Something went wrong. Please try again later.")
+                            return redirect('adminInstituteRegistration')
+                        try:
+                            url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
                             response = requests.get(url)
                             dataUsername = response.json()
                         except Exception:
@@ -216,7 +231,7 @@ def adminInstituteRegistration(request):
 
 def send_admin_reg_email(request, EnUsername):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(EnUsername)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -273,7 +288,7 @@ def send_admin_reg_email(request, EnUsername):
 
 def waitingAdminConfirm(request, EnUsername):
     try:
-        url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(EnUsername)
         response = requests.get(url)
         dataUsername = response.json()
     except Exception:
@@ -305,7 +320,7 @@ def confirm_admin_email(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
         try:
-            url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(uid)
+            url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(uid)
             response = requests.get(url)
             dataUsername = response.json()
         except Exception:
@@ -335,7 +350,7 @@ def isAdminRegConfirmed(request):
             fingerprintID = None
         EnUsername = request.POST.get('EnUsername')
         try:
-            url = 'https://akira-rest-api.herokuapp.com/getDecryptionData/{}/?format=json'.format(EnUsername)
+            url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(EnUsername)
             response = requests.get(url)
             dataUsername = response.json()
         except Exception:
@@ -418,13 +433,9 @@ def assign_group(request):
 @allowed_users(allowed_roles=['Administrator'])
 def super_admin_dashboard(request):
     rAnd0m123 = secrets.token_urlsafe(16)
-    listFaculty = Staff.objects.all()
-    listStudents = Students.objects.all()
     listCourses = CourseMC.objects.all()
     context = {
         "rAnd0m123":rAnd0m123,
-        "listFaculty":listFaculty,
-        "listStudents":listStudents,
         "listCourses":listCourses,
     }
     return render(request, 'super_admin/dashboard.html', context)

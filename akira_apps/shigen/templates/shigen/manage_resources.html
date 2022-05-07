@@ -83,11 +83,11 @@
     <li class="resurce-cards_item">
       <div class="resource-card" onclick="document.location='{% url 'view_resource' resource.id %}'">
         <div class="resource_image">
-          <img src="{{ resource.thumbnail.url }}">
+          <img loading="lazy" src="{{ resource.thumbnail.url }}">
         </div>
         <div class="resource-card_content">
           <div class="resource-uploaded-user-pic">
-            <img src="{% get_static_prefix %}Default User Profile Photo/{{resource.user.first_name|capfirst|first}}.png" alt="" class="resource-uploaded-by-avatar">
+            <img loading="lazy" src="{% get_static_prefix %}Default User Profile Photo/{{resource.user.first_name|capfirst|first}}.png" alt="" class="resource-uploaded-by-avatar">
           </div>
           <div class="resource-info">
             <div class="resource-title">
@@ -112,7 +112,7 @@
 <div id="myModal" class="modal">
   <div class="model-container">
     <div class="modal-content">
-      <span id="close-model" class="close">&times;</span>
+      <span id="close-model" class="close"><span class="material-icons"> cancel </span></span>
       <form action="{% url 'create_resource_save' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-components">

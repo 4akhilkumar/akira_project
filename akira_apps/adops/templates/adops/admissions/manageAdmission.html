@@ -1,0 +1,98 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load first_letter_word %}
+{% load user_group %}
+{% load manageadmission %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Manage Admissions</h1>
+<p>Display analytics about your Academy Admissions <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block manage-admissions %}
+<div class="btn-area">
+  <button type="button" class="add-admission" onclick="document.location='{% url 'createProgramme' %}'">Create Programme</button>
+  <button id="showFormCreateAdmissionProgramme" class="create-block-btn">Create Admission</button>
+</div>
+
+<div class="course-container">
+  <ul class="courses">
+    {% for each in admissions %}
+    <li class="courses_item">
+      <div class="course">
+        <div class="course_image">
+          <h1 class="course-short_title skeleton">{{ each.batch_start_year|onlyYear }} - {{ each.batch_end_year|onlyYear }} <sub class="custom_sub">{{ each.programme.name|first_letter_word }}</sub> </h1>
+        </div>
+        <div class="course_content">
+          <h2 class="course_title skeleton">{{ each.programme.name }}</h2>
+          <p class="course_text skeleton">This programme is offered by {{ each.programme.branch }} department under {{ each.programme.degree }} degree with a duration of {{ each.programme.duration }}.</p>
+          <div class="course-buttons skeleton">
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'AdmissionbyBatch' each.id %}'" >View More</button>
+          </div>
+        </div>  
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div id="admissionProgrammeModalForm" class="modal">
+    <div class="model-container">
+      <div class="modal-content">
+        <div class="modal-top-section">
+          <h3>Create <span class="underline">Admission</span></h3>
+          <span id="close-admissionProgrammeModalForm" class="close"><span class="material-icons"> cancel </span></span>
+        </div>
+        <div class="regiserformcontainer">
+          <form id="msform" autocomplete="off" action="{% url 'createAdmission' %}" method="POST">
+            {% csrf_token %}
+            <fieldset>
+              <div class="form-card">  
+                <div class="field-container">
+                  <div class="input-box active-grey">
+                      <label class="fieldlabels input-label" for="id_batchStartYear">Start year</label>
+                      <input type="date" name="batchStartYear" id="id_batchStartYear" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <span class="error-text">Select start year</span>
+                  </div>
+                  <div class="input-box active-grey">
+                      <label class="fieldlabels input-label" for="id_batchEndYear">End year</label>
+                      <input type="date" name="batchEndYear" id="id_batchEndYear" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <span class="error-text">Select end year</span>
+                  </div>
+                </div>
+
+                <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_programme_id">Programme</label>
+                    <select name="programme_id" class="input-1" id="id_programme_id" required>
+                    <option value="">Select Programme</option>
+                    {% for each in programmes %}
+                    <option value="{{ each.id }}">{{ each.name }}</option>
+                    {% empty %}
+                    <option value="">Data Not Available</option>
+                    {% endfor %}
+                    </select>
+                    <span class="error-text">Select Programme</span>
+                </div>
+
+                <div class="customized-checkbox">
+                    <label class="pure-material-checkbox" id="id_admissionStatus">
+                        <input type="checkbox" name="admissionStatus" id="id_admissionStatus" checked>
+                        <span>Active</span>
+                    </label>
+                </div>
+
+              </div>
+              <button type="submit" id="semester-btn" class="action-button semester-btn">Create</button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script src="{% static 'js/manageAdmission.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

@@ -61,7 +61,7 @@
                       </a>
                     </span>
                   </div>
-                  <div class="input-box active-grey">
+                  <!-- <div class="input-box active-grey">
                     <label class="fieldlabels input-label" for="id_semester">Semester</label>
                     <select name="semester" class="input-1" id="id_semester" required>
                       {% if semester_list %}
@@ -80,7 +80,7 @@
                         <i class="fa-solid fa-arrows-rotate"></i> refresh
                       </a>
                     </span>
-                  </div>
+                  </div> -->
                 </div>
   
                 <div class="field-container mb-1rem">
@@ -159,7 +159,7 @@
                 </div>
               </div>
               <input type="button" name="next" data-create-design="true" data-create-course-ajax="{% url 'createCourseAjax' %}" id="create-design-course-next" class="next action-button" value="Next" />
-              <input type="button" name="back" id="back-course" data-back-to-courses-url="{% url 'manage_courses' %}" class="back-to-courses action-button-previous" value="Back" />
+              <input type="button" name="back" id="back-course" data-back-to-course-url="{% url 'view_course' courseObj.code %}" class="back-to-courses action-button-previous" value="Back" />
             </fieldset>
             <fieldset>
               <div class="form-card">
@@ -328,7 +328,7 @@
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Branch</span></h3>
-        <span id="close-model" class="close">&times;</span>
+        <span id="close-model" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" method="POST">
@@ -359,12 +359,12 @@
   </div>
 </div>
 
-<div id="myModal2" class="modal">
+<!-- <div id="myModal2" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Semester</span></h3>
-        <span id="close-model2" class="close">&times;</span>
+        <span id="close-model2" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" autocomplete="off" action="" method="POST">
@@ -439,14 +439,14 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <div id="myModal3" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Extra Field</span></h3>
-        <span id="close-model3" class="close">&times;</span>
+        <span id="close-model3" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" class="create-course-extra-field" method="POST">
@@ -489,7 +489,7 @@
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Course Offering Type</span></h3>
-        <span id="close-model4" class="close">&times;</span>
+        <span id="close-model4" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" class="create-course-cot create-course-cot-form" data-created-course-cot-id="" method="POST">
@@ -524,7 +524,7 @@
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">COT Extra Field</span></h3>
-        <span id="close-model5" class="close">&times;</span>
+        <span id="close-model5" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" class="create-course-cot-extra-field" method="POST">

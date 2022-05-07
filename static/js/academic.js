@@ -1,56 +1,79 @@
-var modal = document.getElementById("myModal");
-var modal2 = document.getElementById("myModal2");
-var modal3 = document.getElementById("myModal3");
-var modal4 = document.getElementById("myModal4");
-var btn = document.getElementById("showFormCreateBlock");
-var btn2 = document.getElementById("showFormCreateFloor");
-var btn3 = document.getElementById("showFormCreateRoom");
-var btn4 = document.getElementById("showFormCreateBulk");
-var span = document.getElementById("close-model");
-var span2 = document.getElementById("close-model2");
-var span3 = document.getElementById("close-model3");
-var span4 = document.getElementById("close-model4");
+var blockModal = document.getElementById("blockModalForm");
+var floorModal = document.getElementById("floorModalForm");
+var roomModal = document.getElementById("roomModalForm");
+var bulkBlockFloorRoomModal = document.getElementById("bulkBlockFloorRoomModalForm");
 
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-btn2.onclick = function() {
-  modal2.style.display = "block";
-}
-btn3.onclick = function() {
-  modal3.style.display = "block";
-}
-btn4.onclick = function() {
-  modal4.style.display = "block";
-}
+var showFormCreateBlockbtn = document.getElementById("showFormCreateBlock");
+var showFormCreateFloorbtn = document.getElementById("showFormCreateFloor");
+var showFormCreateRoombtn = document.getElementById("showFormCreateRoom");
+var showFormCreateBulkbtn = document.getElementById("showFormCreateBulk");
 
-span.onclick = function() {
-  modal.style.display = "none";
+var blockModalSpan = document.getElementById("close-blockModel");
+var floorModalSpan = document.getElementById("close-floorModal");
+var roomModalSpan = document.getElementById("close-roomModal");
+var bulkBlockFloorRoomSpan = document.getElementById("close-bulkBlockFloorRoomModal");
+
+showFormCreateBlockbtn.onclick = function() {
+  blockModal.style.display = "block";
 }
-span2.onclick = function() {
-  modal2.style.display = "none";
+showFormCreateFloorbtn.onclick = function() {
+  floorModal.style.display = "block";
 }
-span3.onclick = function() {
-  modal3.style.display = "none";
+showFormCreateRoombtn.onclick = function() {
+  roomModal.style.display = "block";
 }
-span4.onclick = function() {
-  modal4.style.display = "none";
+showFormCreateBulkbtn.onclick = function() {
+  bulkBlockFloorRoomModal.style.display = "block";
 }
 
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-  if (event.target == modal2) {
-    modal2.style.display = "none";
-  }
-  if (event.target == modal3) {
-    modal3.style.display = "none";
-  }
-  if (event.target == modal4) {
-    modal4.style.display = "none";
-  }
+blockModalSpan.onclick = function() {
+  blockModal.style.display = "none";
 }
+floorModalSpan.onclick = function() {
+  floorModal.style.display = "none";
+}
+roomModalSpan.onclick = function() {
+  roomModal.style.display = "none";
+}
+bulkBlockFloorRoomSpan.onclick = function() {
+  bulkBlockFloorRoomModal.style.display = "none";
+}
+
+$(window).click(function(event) {
+  if (event.target == blockModal) {
+    blockModal.style.display = "none";
+  }
+  if (event.target == floorModal) {
+    floorModal.style.display = "none";
+  }
+  if (event.target == roomModal) {
+    roomModal.style.display = "none";
+  }
+  if (event.target == bulkBlockFloorRoomModal) {
+    bulkBlockFloorRoomModal.style.display = "none";
+  }
+});
+
+$("select[name = 'get_block_id']").change(function () {
+  const blockId = $(this).val();
+  var getFloorbyBlockURL = $("#id_room_block").data('get-floor-by-block');
+  $.ajax({
+    type: "POST",
+    url: getFloorbyBlockURL,
+    data: {
+      'block': blockId,
+      'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+    },
+    success: function (data) {
+      console.log(data);
+      let html_data = '<option value=""> Select Floor </option>';
+      data.forEach(function (data) {
+        html_data += `<option value="${data.id}">${data.name}</option>`
+      });
+      $("#id_room_floor_name_no").html(html_data);
+    }
+  });
+});
 
 function setFocus(on) {
   var element = document.activeElement;
@@ -89,7 +112,7 @@ $(document).ready(function() {
       $("#id_block_name").parent().find(".error-text").css("display", "block");
       block_name = false;
     }
-    else if (!$("#id_block_name").val().match(/^[A-Za-z0-9&\-\s]*$/)) {
+    else if (!$("#id_block_name").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_block_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the block name correctly&#x0003F;");
       $("#id_block_name").parent().find(".error-text").css("display", "block");
       block_name = false;
@@ -118,22 +141,22 @@ $(document).ready(function() {
 
   $('#id_block_desc').on('keyup keydown blur change', function() {
     if($("#id_block_desc").val() == "") {
-      $("#id_block_desc").parent().find(".error-text").html("Enter the course description");
+      $("#id_block_desc").parent().find(".error-text").html("Enter the block description");
       $("#id_block_desc").parent().find(".error-text").css("display", "block");
       block_desc = false;
     }
-    else if (!$("#id_block_desc").val().match(/^[A-Za-z0-9-/\s]*$/)) {
-      $("#id_block_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course description correctly&#x0003F;");
+    else if (!$("#id_block_desc").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
+      $("#id_block_desc").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the block description correctly&#x0003F;");
       $("#id_block_desc").parent().find(".error-text").css("display", "block");
       block_desc = false;
     }
     else if ($("#id_block_desc").val().match(/^\s+$/)) {
-      $("#id_block_desc").parent().find(".error-text").html("Sorry, but the course description cannot be empty");
+      $("#id_block_desc").parent().find(".error-text").html("Sorry, but the block description cannot be empty");
       $("#id_block_desc").parent().find(".error-text").css("display", "block");
       block_desc = false;
     }        
     else if ($("#id_block_desc").val().length > 500) {
-      $("#id_block_desc").parent().find(".error-text").html("Sorry, but the course description cannot be more than 500 characters");
+      $("#id_block_desc").parent().find(".error-text").html("Sorry, but the block description cannot be more than 500 characters");
       $("#id_block_desc").parent().find(".error-text").css("display", "block");
       block_desc = false;
     }
@@ -171,7 +194,7 @@ $(document).ready(function() {
       $("#id_floor_name").parent().find(".error-text").css("display", "block");
       floor_name_no = false;
     }
-    else if (!$("#id_floor_name").val().match(/^[A-Za-z0-9&\-\s]*$/)) {
+    else if (!$("#id_floor_name").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_floor_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the floor name/no. correctly&#x0003F;");
       $("#id_floor_name").parent().find(".error-text").css("display", "block");
       floor_name_no = false;
@@ -226,7 +249,7 @@ $(document).ready(function() {
       $("#id_room_name").parent().find(".error-text").css("display", "block");
       room_name = false;
     }
-    else if (!$("#id_room_name").val().match(/^[A-Za-z0-9&\-\s]*$/)) {
+    else if (!$("#id_room_name").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_room_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the room name correctly&#x0003F;");
       $("#id_room_name").parent().find(".error-text").css("display", "block");
       room_name = false;
@@ -278,10 +301,10 @@ $(document).ready(function() {
       $("#id_room_capacity").parent().find(".error-text").css("display", "block");
       capacity = false;
     }
-    else if ($("#id_room_capacity").val() >= 200) {
+    else if ($("#id_room_capacity").val() > 200) {
       $("#id_room_capacity").parent().find(".error-text").html("Room capacity can be more than 200&#x0003F;");
       $("#id_room_capacity").parent().find(".error-text").css("display", "block");
-      capacity = false;
+      // capacity = true;
     }
     else {
       $("#id_room_capacity").parent().find(".error-text").css("display", "none");
@@ -304,9 +327,13 @@ $(document).ready(function() {
     }
   });
   // Room Form Validation End
-
 });
 
+$('.branch-btn').click(function() {
+  $(this).prop('disabled', true);
+  $(this).html('Please wait...');
+  $(this).closest('form').submit();
+});
 
 $('.block-btn').click(function() {
   $(this).prop('disabled', true);

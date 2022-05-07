@@ -1,0 +1,182 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load semRegistration %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Analytics</h1>
+<p>Display analytics about your Sem-Registration <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="fa-solid fa-calendar-day"></span>
+    </div>
+    <div class="analytic-info">
+      <h4>Active Semester{{ getActiveSemesters|length|pluralize }}</h4>
+      <h1>{{ getActiveSemesters|length }}</h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="material-icons"> account_tree </span>
+    </div>
+    <div class="analytic-info">
+        <h4>Total Branches</h4>
+        <h1 class="skeleton">{{ branches|length }}</h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block aca-registration %}
+<div class="btn-area">
+  <button id="showFormCreateBranch" class="create-block-btn">Create Branch</button>
+  <button id="showFormCreateSemester" class="create-block-btn">Create Semester</button>
+</div>
+
+<div class="semesters-container">
+  <div class="list-all-semesters">
+    {% for each in semesters %}
+    {{ each.mode }} | {{ each.start_year }} - {{ each.end_year }} | {{ each.branch.name }} | {% if each.is_active == True %}Active{% else %}Inactive{% endif %} 
+    <br>
+    <label for="id_{{ each.id }}">Semester Registration Status</label>
+    
+    <br>
+    <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.id|checkTeachingStaffSemRegStatus == True %} checked {% endif %} data-set-sem-reg-status-url="{% url 'setTeachingStaffSemesterRegistrationAjax' %}" class="semRegStatus" />
+    {% if each.id|checkTeachingStaffSemRegStatus == True %} Opened for teaching staff {% else %} Not Opened teaching staff {% endif %}
+    
+    <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.id|checkStudentSemRegStatus == True %} checked {% endif %} data-set-sem-reg-status-url="{% url 'setStudentSemesterRegistrationAjax' %}" class="semRegStatus" />
+    {% if each.id|checkStudentSemRegStatus == True %} Opened for student {% else %} Not Opened Students {% endif %}
+    
+    <hr>
+    {% endfor %}
+  </div>
+</div>
+
+<div id="semesterModalForm" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Create <span class="underline">Semester</span></h3>
+        <span id="close-semesterModalForm" class="close"><span class="material-icons"> cancel </span></span>
+      </div>
+      <div class="regiserformcontainer">
+        <form id="msform" autocomplete="off" action="{% url 'createsemester' %}" method="POST">
+          {% csrf_token %}
+          <fieldset>
+            <div class="form-card"> 
+              <div class="field-container">
+                <div class="input-box active-grey">
+                  <label class="fieldlabels input-label" for="id_semester_mode">Semester mode</label>
+                  <select name="semester_mode" class="input-1" id="id_semester_mode" required>
+                    <option value="">Select mode</option>
+                    {% for x,y in semesterModeForm.fields.semesterModeForm.choices %}
+                    <option value="{{ x }}">{{ y }}</option>
+                    {% empty %}
+                    <option value="">Data Not Available</option>
+                    {% endfor %}
+                  </select>
+                  <span class="error-text">Select semester mode</span>
+                </div>
+              </div>
+
+              <div class="field-container">
+                <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_start_year">Start year</label>
+                    <input type="date" name="start_year" id="id_start_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="error-text">Select start year</span>
+                </div>
+                <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_end_year">End year</label>
+                    <input type="date" name="end_year" id="id_end_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="error-text">Select end year</span>
+                </div>
+              </div>
+
+              <div class="field-container">
+                <div class="input-box active-grey">
+                    <label class="fieldlabels input-label" for="id_semester_branch">Branch</label>
+                    <select name="branch" class="input-1" id="id_semester_branch" required>
+                        {% if branches %}
+                        <option value="">Select Branch</option>
+                        {% endif %}
+                        {% for branch in branches %}
+                        <option value="{{ branch.id }}">{{ branch.name }}</option>
+                        {% empty %}
+                        <option value="">Data Not Available</option>
+                        {% endfor %}
+                    </select>
+                    <span class="error-text">Select branch</span>
+                    <span class="redirect">
+                        <a href="#" id="fetchBranchesforSemester" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
+                          <i class="fa-solid fa-arrows-rotate"></i> refresh
+                        </a>
+                    </span>
+                </div>
+                <div class="input-box input-box-toggle">
+                    <div>
+                        <label style="position: unset;" class="fieldlabels input-label" for="id_semester_is_active">Semester Status</label>
+                    </div>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" name="semester_is_active" id="id_semester_is_active" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <button type="submit" id="semester-btn" class="action-button semester-btn">Create</button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="branchModalForm" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Create <span class="underline">Branch</span></h3>
+        <span id="close-branchModal" class="close"><span class="material-icons"> cancel </span></span>
+      </div>
+
+      <form id="msform" action="{% url 'createbranch' %}" method="POST">
+        {% csrf_token %}
+        <fieldset>
+          <div class="form-card">
+            <div class="field-container">
+              <div class="input-box">
+                <label class="fieldlabels input-label" for="id_branch_name">Name</label> 
+                <input type="text" name="name" id="id_branch_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                <span class="error-text">Enter branch name</span>
+              </div>
+            </div>
+
+            <div class="input-box">
+              <label class="fieldlabels input-label" for="id_branch_desc">Description</label>
+              <textarea name="desc" maxlength="500" id="id_branch_desc" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+              <span class="help-text">Maximum characters allowed is 500 only.</span>
+              <span class="error-text">Enter branch description</span>
+              <span class="info-text"></span>
+            </div>
+          </div>
+          <button type="submit" id="branch-btn" class="action-button branch-btn">Create</button>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/aca_Registration.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

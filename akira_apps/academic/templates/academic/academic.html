@@ -17,7 +17,7 @@
 <div class="analytics">
   <div class="analytic">
       <div class="analytic-icon">
-          <span class="fa-solid fa-building"></span>
+        <span class="material-icons"> domain </span>
       </div>
       <div class="analytic-info">
           <h4>Total Blocks</h4>
@@ -26,7 +26,7 @@
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fa-solid fa-person-booth"></span>
+      <span class="material-icons"> meeting_room </span>
     </div>
     <div class="analytic-info">
         <h4>Total Rooms</h4>
@@ -37,6 +37,7 @@
 {% endblock %}
 
 {% block academic %}
+{% if "Administrator" in request.user|user_group %}
 <div class="btn-area">
   <button id="showFormCreateBlock" class="create-block-btn">Create Block</button>
   <button id="showFormCreateFloor" class="create-block-btn">Create Floor</button>
@@ -46,39 +47,31 @@
   <button onClick='window.location="{% url 'academic_info_csv' %}"' class="add-faculty">Bulk Export</button>
   {% endif %}
 </div>
+{% endif %}
 
 {% if blocks %}
-<!-- <div class="search-box-container">
-  <form method="post" action="" class="form-elements">
-    {% csrf_token %}
-    <input type="text" name="search-block" id="search-bar" placeholder="Search Block..." autocomplete="off" required>
-    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
-  </form>
-</div> -->
-
 <div class="list-all-blocks-info">
   {% for i in blocks %}
   <div class="item-block">
     <div class="block-name-desc skeleton">
-      <span class="fa-solid fa-building building-block-icon"></span>
+      <span class="material-icons building-block-icon"> apartment </span>
       <div class="block-name-block-desc">
         <h2>{{ i.name }}</h2>
-        <p>{{ i.desc }}</p>
       </div>
     </div>
     <div class="block-chips">
       <span class="block-chip chip-one skeleton">
-        <i class="fa-solid fa-layer-group"></i>
+        <span class="chips-icon material-icons"> layers </span>
         {{ i.name|block_floors }} Floor{{ i.name|block_floors|pluralize }}
       </span>
       &nbsp;
       <span class="block-chip chip-two skeleton">
-        <i class="fa-solid fa-layer-group"></i>
+        <span class="chips-icon material-icons"> meeting_room </span>
         {{ i.name|block_rooms }} Room{{ i.name|block_rooms|pluralize }}
       </span>
       &nbsp;
       <span class="block-chip chip-three skeleton">
-        <i class="fa-solid fa-layer-group"></i>
+        <span class="chips-icon material-icons"> self_improvement </span>
         {{ i.name|block_waiting_halls }} Waiting Hall{{ i.name|block_waiting_halls|pluralize }}
       </span>
     </div>
@@ -88,7 +81,7 @@
         <li>
           <div class="whole-component">
             <div class="icon-component skeleton">
-              <span class="fa-solid fa-chalkboard-user"></span>
+              <span class="material-icons"> person_3 </span>
             </div>
             <div class="info-component">
               <h5 class="skeleton">Staff Room{{ i.name|block_staff_rooms|pluralize }}</h5>
@@ -101,7 +94,7 @@
         <li>
           <div class="whole-component">
             <div class="icon-component skeleton">
-              <span class="fa-solid fa-user-graduate"></span>
+              <span class="material-icons"> class </span>
             </div>
             <div class="info-component">
               <h5 class="skeleton">Class Room{{ i.name|block_class_rooms|pluralize }}</h5>
@@ -114,7 +107,7 @@
         <li>
           <div class="whole-component">
             <div class="icon-component skeleton">
-              <span class="fa-solid fa-handshake"></span>
+              <span class="material-icons"> meeting_room </span>
             </div>
             <div class="info-component">
               <h5 class="skeleton">Meeting Hall{{ i.name|block_meeting_halls|pluralize }}</h5>
@@ -127,7 +120,7 @@
         <li>
           <div class="whole-component">
             <div class="icon-component skeleton">
-              <span class="fa-solid fa-flask"></span>
+              <span class="material-icons"> biotech </span>
             </div>
             <div class="info-component">
               <h5 class="skeleton">Lab Room{{ i.name|block_lab_rooms|pluralize }}</h5>
@@ -139,7 +132,7 @@
     </div>
     <div class="block-buttons">
       <!-- <button class="block-delete-btn" onclick="document.location='{% url 'delete_block' i.id %}'">Delete</button> -->
-      <button class="block-contact-btn skeleton"><span>Contact</span></button>
+      <button type="button" class="block-contact-btn skeleton"><span>Contact</span></button>
     </div>
   </div>
   {% endfor %}
@@ -148,12 +141,12 @@
 <h1 style="text-align: center; margin-top: 5rem; color: var(--large-text-color);">Data Not Available</h1>
 {% endif %}
 
-<div id="myModal" class="modal">
+<div id="blockModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Block</span></h3>
-        <span id="close-model" class="close">&times;</span>
+        <span id="close-blockModel" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" class="block_form" autocomplete="off" action="{% url 'create_block' %}" method="POST">
@@ -186,12 +179,12 @@
   </div>
 </div>
 
-<div id="myModal2" class="modal">
+<div id="floorModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content" id="createFloor">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Floor</span></h3>
-        <span id="close-model2" class="close">&times;</span>
+        <span id="close-floorModal" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" autocomplete="off" action="{% url 'create_floor' %}" method="POST">
@@ -229,12 +222,12 @@
   </div>
 </div>
 
-<div id="myModal3" class="modal">
+<div id="roomModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Room</span></h3>
-        <span id="close-model3" class="close">&times;</span>
+        <span id="close-roomModal" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" autocomplete="off" action="{% url 'create_room_save' %}" method="POST">
@@ -251,7 +244,7 @@
               <div class="field-container mb-1rem">
                 <div class="input-box active-grey">
                     <label class="fieldlabels input-label" for="id_room_block">Block</label>
-                    <select name="get_block_id" class="input-1" id="id_room_block" required>
+                    <select name="get_block_id" id="id_room_block" data-get-floor-by-block="{% url 'getFloorbyBlock' %}" class="input-1" required>
                         <option value="">Select Block</option>
                         {% for i in blocks %}
                         <option value="{{ i.id }}">{{ i.name }}</option>
@@ -303,12 +296,12 @@
   </div>
 </div>
 
-<div id="myModal4" class="modal">
+<div id="bulkBlockFloorRoomModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Upload <span class="underline">Bulk</span></h3>
-        <span id="close-model4" class="close">&times;</span>
+        <span id="close-bulkBlockFloorRoomModal" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <form action="{% url 'bulk_upload_academic_info_save' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -325,92 +318,8 @@
   </div>
 </div>
 
-{% comment %}
-
-<h2 class="blocks-list">Blocks Lists</h2>
-<h4 class="create-block">
-    {% for i in blocks %}
-    {{ i.name }} {{ i.desc }} | <a href="">Edit</a> | <a href="{% url 'delete_block' i.id %}">Delete</a>
-    <br>
-    {% empty %}
-    No Blocks
-    {% endfor %}
-</h4>
-<hr>
-
-<h2 class="floors-list">Floors Lists</h2>
-<h4 class="create-floor">
-    {% for i in floors %}
-    {{ i.name }} {{ i.block }} | <a href="">Edit</a> | <a href="{% url 'delete_floor' i.id %}">Delete</a>
-    <br>
-    {% empty %}
-    No Floors
-    {% endfor %}
-</h4>
-
-<hr>
-
-<h2 class="rooms-list">Rooms Lists</h2>
-<h4 class="create-room">
-    {% for i in rooms %}
-    {{ i.name }} {{ i.block }} {{ i.floor }} {{ i.type }} {{ i.capacity }} | <a href="">Edit</a> | <a href="{% url 'delete_room' i.id %}">Delete</a>
-    <br>
-    {% empty %}
-    No Rooms found
-    {% endfor %}
-</h4>
-
-{% endcomment %}
-
-{% comment %}
-<!-- Testing Many-to-Many -->
-
-<form action="{% url 'TestingMet' %}" method="post">
-  {% csrf_token %}
-  <input type="text" name="name" id="id_name" value="LoremText">
-  <select name="members" id="id_members" multiple>
-    {% for i in blocks %}
-    <option value="{{i.id}}">{{ i.name }}</option>
-    {% endfor %}
-  </select>
-  <input type="submit" value="Test it">
-</form>
-
-{% for i in test %}
-    Name: {{ i.name }} <br>
-    Blocks: <br>
-    {% for j in i.members.all %}
-      {{ j }}<br/>
-    {% endfor %}
-{% endfor %}
-
-<!-- Testing Many-to-Many -->
-{% endcomment %}
-
 <script src="{% static 'js/academic.js' %}"></script>
 <script src="{% static 'js/fileDragUpload.js' %}"></script>
-<script>
-  $("select[name = 'get_block_id']").change(function () {
-    const blockId = $(this).val();
-    $.ajax({
-      type: "POST",
-      url: '{% url "getFloorbyBlock" %}',
-      data: {
-        'block': blockId,
-        'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
-      },
-      success: function (data) {
-        console.log(data);
-        let html_data = '<option value=""> Select Floor </option>';
-        data.forEach(function (data) {
-            html_data += `<option value="${data.id}">${data.name}</option>`
-        });
-        $("#id_room_floor_name_no").html(html_data);
-      }
-    });
-  });
-</script>
-
 {% endblock %}
 
 {% endblock %}

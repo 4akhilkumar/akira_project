@@ -2,102 +2,89 @@
 {% load static %}
 {% load first_letter_word %}
 {% load course_components %}
+{% load course_COTExtraFields %}
+{% load user_group %}
+{% load semRegistration %}
 
 {% block content %}
 
 {% block analytics-text %}
-<h1>{{ course.course_code }}</h1>
-<p>{{ course.course_name }} ({{ course.course_name|first_letter_word }})</p>
+<h1>{{ course.code }}</h1>
+<p>{{ course.name }} ({{ course.name|first_letter_word }})</p>
 {% endblock %}
 
 {% block view-course %}
 
-<style>
-{% for i in courseComponent %}
-#tab{{ forloop.counter }}:checked ~ #content{{ forloop.counter }}{% if forloop.last %} {% else %},{% endif %}
-{% endfor %}
-{
-    display: block;
-    padding: 20px;
-    background: #fff;
-    color: #999;
-    border-bottom: 2px solid #f0f0f0;
-}
+<h4>Description</h4>
+<p>{{ course.desc }}</p>
 
-#tab{{ courseComponent|length|add:"1" }}:checked ~ #content{{ courseComponent|length|add:"1" }}
-{
-    display: block;
-    padding: 20px;
-    background: #fff;
-    color: #999;
-    border-bottom: 2px solid #f0f0f0;
-}
-</style>
-
-<h4>Course Short Info</h4>
-{{ course.course_short_info }}
-<br>
-<h4>What you will learn</h4>
-{{ course.course_wywl }}
-<br>
-<h4>Skills you will gain</h4>
-{{ course.course_sywg }}
-<br>
-<h4>Course Desciption</h4>
-{{ course.course_desc }}
-<br>
 <h4>Course Co-Ordinator</h4>
-{{ course.course_coordinator }}
-<br>
-<h4>Course Offered by </h4>
-{{ course.branch }}
-<br>
-<h4>Course Duration</h4>
-{{ course.semester }}
-<br>
-<h4>Course Specialization</h4>
-{{ course.specialization }}
-<br>
+<p>{{ course.course_coordinator }}</p>
+
+<h4>Offered by</h4>
+<p>{{ course.branch }}</p>
+
+{% if course.specialization %}
+<h4>Specialization</h4>
+<p>{{ course.specialization }}</p>
+{% endif %}
+
+<h4>Type</h4>
+<p>{{ course.type }}</p>
+
+{% if course.pre_requisite %}
+<h4>Pre requisite</h4>
+<p>{{ course.pre_requisite }}</p>
+{% endif %}
+
 <h4>Course Files</h4>
-{% for i in courseFilesObjs %}
+{% for i in courseFiles %}
 <a href="{{ i.course_files.url }}" download="{{ i.course_files.name|slice:'13:' }}">{{ i.course_files.name|slice:"13:" }}</a>
 {% empty %}
 <p>No files uploaded</p>
 {% endfor %}
-<br>
-<h4>Action</h4>
-<a href="{% url 'delete_course' course.id %}">Delete Course</a>
-
-<!-- <hr>
-
-{% for i in courseComponent %}
-{{ i.name }} | {{ i.desc }} <br>
-{% endfor %}
 
 <hr>
+{% for each in offeringType %}
+<h4>{{ each.name }} <small>{{ each.l }}-{{ each.t }}-{{ each.p }}-{{ each.s }}</small> </h4>
+  {% for j_each in each.id|COTExtraFieldData %}
+  <h4>{{ j_each.field_name }}</h4>
+  <p>{{ j_each.field_value }}</p>
+  {% endfor %}
+  {% if not forloop.last %}
+  <hr>
+  {% endif %}
+{% endfor %}
+<hr>
 
-{% for i in courseSubComponent %}
-{{ i.course.course_name }} | {{ i.component.name }} | {{ i.name }} | {{ i.desc }} <br>
+{% for each in extraField %}
+<h4>{{ each.field_name }}</h4>
+<p>{{ each.field_value }}</p>
 {% endfor %}
 
-<hr> -->
+{% if "Administrator" in request.user|user_group %}
+<h4>Action</h4>
+<a href="{% url 'delete_course' course.id %}">Delete Course</a>
+<br>
+<a href="{% url 'editCourse' course.code %}">Edit Course</a>
+{% endif %}
+<br>
 
-<!-- {% for i in courseTask %}
-<p>{{ i.question }}</p>
-<form action="{% url 'task_answer' %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="hidden" name="course" id="id_course" value="{{ course.id }}" required>
-    <input type="hidden" name="component" id="id_component" value="{{ i.component.id }}" required>
-    <input type="hidden" name="subcomponent" id="id_subcomponent" value="{{ i.sub_component.id }}" required>
-    <input type="hidden" name="task" id="id_task" value="{{ i.id }}" required>
-    <input type="file" name="answer" id="id_answer" required>
-    <input type="submit">
-</form>
-{% endfor %} -->
+{% if course.id|checkTeachingStaffSemRegCourse == True %}
+    {% if "Teaching staff" in request.user|user_group or "Administrator" in request.user|user_group %}
+    <button type="button" id="id_teachingstaffenrollcourse" data-course-id="{{ course.id }}" data-teaching-staff-enroll-course-url="{% url 'teachingstaffCourseEnrollAjax' %}"> Enroll now</button>
+    {% endif %}
+{% endif %}
 
-<!-- {% for i in taskAnswer %}
-{{ i.answer }} <br>
-{% endfor %} -->
+{% if course.id|checkStudentSemRegCourse == True %}
+    {% if "Student" in request.user|user_group %}
+    <button type="button" id="id_studentenrollcourse" data-course-id="{{ course.id }}" data-student-enroll-course-url="{% url 'studentCourseEnrollAjax' %}"> Enroll now</button>
+    {% endif %}
+{% endif %}
+
+<script src="{% static 'js/view_course.js' %}"></script>
+
+{% endblock %}
 
 <div class="tab_container">
     {% for i in courseComponent %}
@@ -167,7 +154,6 @@
             <input type="submit">
         </form>
     </section>
-
 </div>
 
 <script>
@@ -190,8 +176,6 @@
             }
         });
     });
-  </script>
-
-{% endblock %}
+</script>
 
 {% endblock %}

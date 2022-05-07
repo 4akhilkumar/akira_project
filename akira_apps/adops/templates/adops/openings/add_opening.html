@@ -33,7 +33,6 @@
               <div class="input-box">
                 <label class="fieldlabels input-label" for="id_job_overview">Overview</label>
                 <textarea name="overview" maxlength="400" id="id_job_overview" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
-                <span class="help-text">Seperate sentence by '#'.</span>
                 <span class="help-text">Maximum characters allowed is 400 only.</span>
                 <span class="error-text">Enter job overview</span>
                 <span class="info-text"></span>
@@ -54,12 +53,12 @@
             <div class="field-container">
               <div class="input-box">
                   <label class="fieldlabels input-label" for="id_experience">Experience</label> 
-                  <input type="text" name="experience" id="id_experience" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <input type="text" name="experience" id="id_experience" maxlength="500" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                   <span class="error-text">Enter experience</span>
               </div>
               <div class="input-box">
                   <label class="fieldlabels input-label" for="id_qualification">Qualification</label> 
-                  <input type="text" name="qualification" id="id_qualification" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <input type="text" name="qualification" id="id_qualification" maxlength="500" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
                   <span class="error-text">Enter qualification</span>
               </div>
             </div>

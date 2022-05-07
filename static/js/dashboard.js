@@ -278,9 +278,6 @@ $('#id_expire_date').on('keyup keydown blur change', function() {
       }
     }
   }
-  else {
-    expire_date = false;
-  }
 });
 
 $('#id_expire_time').on('keyup keydown blur change', function() {
@@ -461,14 +458,14 @@ $("#copy_shortened_url").click(function() {
 });
 
 // Share Shortened URL
-var shortenedURLField = document.getElementById("id_shortened_url");
-const shareData = {
-  title: 'URL Shortener - AkirA',
-  text: 'Short Long URLs using AkirA',
-  url: shortenedURLField.value
-}
 const shareURLShortened_btn = document.getElementById('share_shortened_url');
 shareURLShortened_btn.addEventListener('click', async () => {
+  var shortenedURLField = document.getElementById("id_shortened_url");
+  const shareData = {
+    title: 'URL Shortener - AkirA',
+    text: 'Short Long URLs using AkirA',
+    url: shortenedURLField.value
+  }
   try {
     await navigator.share(shareData)
     toastr.success('Shortened URL shared successfully')

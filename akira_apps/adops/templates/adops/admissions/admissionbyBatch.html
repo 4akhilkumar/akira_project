@@ -1,0 +1,65 @@
+{% load manageadmission %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admissionbyBatch</title>
+</head>
+<body>
+    {% include 'messages.html' %}
+    {% include 'check_internet_connection.html' %}
+
+    {% csrf_token %}
+    <h1 id="acceptAdmissionURL" data-accept-admission-url="{% url 'acceptAdmissionAjax' %}">Applied Students</h1>
+    {% for each in admissionbyBatchObjs %}
+    <p>{{ each.user.first_name }} {{ each.user.last_name }} - {{ each.batch.programme.name }}, {{ each.batch.programme.duration }}, {{ each.batch.programme.degree }}</p>
+    
+    {% if each.user.username|admissionStatus == None %}
+    <button type="button" data-student-id="{{ each.user.username }}" class="accept_admission">Accept Admission</button>
+    {% elif each.user.username|admissionStatus == False %}
+    <p>Accepted</p>
+    {% else %}
+    <p>Admission NA</p>
+    {% endif %}
+    {% endfor %}
+
+    <script>
+        $(document).ready(function() {
+            $('.accept_admission').click(function() {
+
+                if($(this).hasClass('disable-accept-admission')) {
+                    return false;
+                }
+                $(this).addClass('disable-accept-admission');
+                setTimeout(function(){
+                    $(".accept_admission").removeClass('disable-accept-admission');
+                }, 5000);
+
+                var student_id = $(this).data('student-id');
+                var acceptAdmissionURL = $("#acceptAdmissionURL").data('accept-admission-url');
+                $.ajax({
+                    url: acceptAdmissionURL,
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'student_id': student_id
+                    },
+                    success: function(data) {
+                        if (data.status == 'success') {
+                            toastr.success(data.message);
+                        }
+                        else if (data.status == 'info') {
+                            toastr.info(data.message);
+                        } else {
+                            toastr.error(data.message);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

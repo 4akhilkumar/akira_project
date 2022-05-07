@@ -1,12 +1,241 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apply - Admission</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="theme-color" content="#FFF"/>
+    <meta name="description" content="AkirA is a kind of Education Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+
+    <link rel="stylesheet" href="{% static 'styles/stuAdm_register.css' %}">
     
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+
+    <title>Admin Registration - AkirA</title>
+</head>
+<body class="personalsection">
+    {% include 'messages.html' %}
+
+    {% include 'check_internet_connection.html' %}
+
+    <div class="main">
+        <!-- <div class="container-fluid"> -->
+            <div class="regiserformcontainer">
+                <h2 id="heading">Create Your <span class="akira">AkirA</span> Student Account</h2>
+                <p class="note">Fill all the fields to create student account</p>
+                <form id="msform" action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- progressbar -->
+                    <ul id="progressbar">
+                        <li class="active" id="account"><strong>Personal</strong></li>
+                        <li id="personal"><strong>Account</strong></li>
+                        <li id="institute"><strong>Admission</strong></li>
+                        <li id="confirm"><strong>T&C</strong></li>
+                    </ul>
+                    <!-- fieldsets -->
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Personal Information</h2>
+                                </div>
+                            </div>
+                            <div class="first-last-name">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_firstname">First name</label>
+                                    <input type="text" name="firstname" id="id_firstname" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your first name</span>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_lastname">Last name</label> 
+                                    <input type="text" name="lastname" id="id_lastname" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your last name</span>
+                                </div>
+                            </div>
+                            
+                            <div class="input-box active-grey">
+                                <label class="fieldlabels input-label" for="id_date_of_birth">Date of birth</label>
+                                <input type="date" name="date_of_birth" id="id_date_of_birth" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="error-text">Enter your date of birth</span>
+                            </div>
+                                
+                            <div class="gender-phone">
+                                <div class="input-box active-grey">
+                                    <label class="fieldlabels input-label" for="id_gender">Gender</label>
+                                    <select name="gender" class="input-1" id="id_gender" required>
+                                        {% for x,y in gender.fields.gender.choices %}
+                                        <option value="{{ x }}">{{ y }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="error-text">Select your gender</span>
+                                </div>
+                                
+                                <div class="input-box">    
+                                    <label class="fieldlabels input-label" for="id_phone">Phone number</label>
+                                    <input type="tel" name="phone" id="id_phone" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your phone number</span>              
+                                </div>
+                            </div>
+                            
+                            <div class="door-flat-no-zip-code">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_door_no">Door No./Flat No.</label>
+                                    <input type="text" name="door_no" id="id_door_no" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your door no./flat no.</span>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_zip_code">Zip code</label>
+                                    <input type="text" name="zip_code" id="id_zip_code" pattern="[0-9]*" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your zip code</span>
+                                </div>
+                            </div>
+                            
+                            <div class="city-district">
+                                <div class="input-box active-grey" id="id_city_parent">
+                                    <label class="fieldlabels input-label" for="id_city">City</label>
+                                    <select name="city" class="input-1" id="id_city">
+                                        <option value="">Select your City</option>
+                                    </select>
+                                    <input type="text" name="new_city" id="id_new_city" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" hidden>
+                                    <span class="error-text">Select your city</span>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_district">District</label>
+                                    <input type="text" name="district" id="id_district" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your district</span>
+                                </div>
+                            </div>
+                            
+                            <div class="state-country">
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_state">State</label>
+                                    <input type="text" name="state" id="id_state" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your state</span>
+                                </div>
+                                <div class="input-box">
+                                    <label class="fieldlabels input-label" for="id_country">Country</label>
+                                    <input type="text" name="country" id="id_country" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <span class="error-text">Enter your country</span>
+                                </div>
+                            </div>
+                            <div class="input-box active-grey-1">
+                                <label class="fieldlabels input-label" for="id_photo">Upload your photo</label>
+                                <input type="file" name="photo" accept="image/*" id="id_photo" class="input-1 custom-input-file" required>
+                                <span class="error-text">Upload your photo</span>
+                            </div>
+                        </div>
+                        <input type="button" name="next" id="personal-next" class="next action-button" value="Next" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Account Information</h2>
+                                </div>
+                            </div> 
+
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="id_email">Email</label>
+                                <input type="email" name="email" id="id_email" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="help-text">Please use legitimate email only</span>
+                                <span class="error-text">Enter your email</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="id_username">Username</label>
+                                <input type="text" name="username" id="id_username" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="help-text">You can use letters&comma; numbers &amp; periods</span>
+                                <span class="error-text">Enter your username</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="id_password">Password</label>
+                                <input type="password" name="password" id="id_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="help-text">Use 8 or more characters with a mix of letters&comma; numbers &amp; symbols&lsqb;&excl;&comma; &commat;&comma; &num;&rsqb;</span>
+                                <span class="error-text">Enter a strong password</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="id_confirm_password">Confirm password</label>
+                                <input type="password" name="confirm_password" id="id_confirm_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="error-text">Those passwords didn&apos;t match. Try again.</span>
+                            </div>
+                            <div class="customized-checkbox">
+                                <label class="pure-material-checkbox">
+                                    <input type="checkbox" name="show_password" id="id_show_password">
+                                    <span>Show password</span>
+                                </label>
+                            </div>
+                        </div> 
+                        <input type="button" name="next" id="account-next" class="next action-button" value="Next" /> 
+                        <input type="button" name="previous" id="account-previous" class="previous action-button-previous" value="Previous" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Admission Programme</h2>
+                                </div>
+                            </div> 
+                            <div class="input-box active-grey">
+                                <label class="fieldlabels input-label" for="id_programme">Programme</label>
+                                <select name="programme_id" id="id_programme" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                    <option value="">Select programme</option>
+                                    {% for each in programmes %}
+                                    <option value="{{ each.id }}">{{ each.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="error-text">Select the programme</span>
+                            </div>
+                            
+                            <!-- <div class="input-box">
+                                <label class="fieldlabels input-label">Institute code</label> 
+                                <input type="text" name="institute_code" id="id_institute_code" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="help-text">Please provide the institute code provided by the Govt.</span>
+                                <span class="error-text">Enter a your Institute code</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="institute_name">Institute name</label>
+                                <input type="text" name="institute_name" id="id_institute_name" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="error-text">Enter a your Institute name</span>
+                            </div>
+                            <div class="input-box">
+                                <label class="fieldlabels input-label" for="institute_address">Institute address</label>
+                                <input type="text" name="institute_address" id="id_institute_address" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                                <span class="error-text">Enter a your Institute address</span>
+                            </div> -->
+                        </div> 
+                        <input type="button" name="next" id="institute-next" class="next action-button last-next" value="Next" /> 
+                        <input type="button" name="previous" id="institute-previous" class="previous action-button-previous" value="Previous" />
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-card">
+                            <div class="">
+                                <div class="">
+                                    <h2 class="fs-title">Terms and Conditions</h2>
+                                </div>
+                            </div> 
+                            <div class="">
+                                <div class="">
+                                    <h4 class="purple-text tandc">
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt nisi aliquam, consequatur sequi consectetur nemo quasi excepturi non consequuntur culpa est, tenetur, officia optio. Tempora ratione dolores numquam explicabo commodi est amet minima saepe sunt at voluptatum, iure recusandae, qui repellat doloremque harum, sit veniam temporibus! Quis cumque, mollitia maiores fugit, in ipsum soluta consequatur ab suscipit similique enim reiciendis!
+                                    </h4>
+                                    <h4 class="purple-text bold mgl-p5rem">By creating the student account in <span class="akira">AkirA</span> application, you agree to our above mentioned T&C.</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="action-button register-btn">Register</button>
+                        <input type="button" name="previous" id="tandc-previous" class="previous action-button-previous last-previous" value="Previous" />
+                    </fieldset>
+                </form>
+            </div>
+        <!-- </div> -->
+    </div>
+    <script src="{% static 'js/stuAdm_register.js' %}"></script>
+    <script src='{% static "js/BrowserFingerPrintWebGL.js" %}'></script>
 </body>
 </html>

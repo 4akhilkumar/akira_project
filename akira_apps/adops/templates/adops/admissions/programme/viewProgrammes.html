@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmes Offered</title>
+</head>
+<body>
+    {% include 'messages.html' %}
+
+    {% include 'check_internet_connection.html' %}
+
+    <h4>Avaiable Admissions</h4>
+    {% for each in admissions %}
+    {% if  each.is_active %}
+    <h4>Offered by {{ each.programme.branch }} department</h4>
+    <p>{{ each }} | {{ each.programme }}</p>
+    <button type="button" class="apply_programme" data-student-adm-url="{% url 'stuAdmRegistration' %}" data-programme-id="{{ each.id }}">Apply</button>
+    {% endif %}
+    {% empty %}
+    <p>No Admissions Available</p>
+    {% endfor %}
+
+    <script>
+        $('.apply_programme').click(function() {
+            if($(this).hasClass('anchor-disabled')) {
+                return false;
+            } else {
+                var programme_id = $(this).data('programme-id');
+                var student_adm_url = $(this).data('student-adm-url');
+                window.location.href = student_adm_url;
+            }
+            $(this).addClass('anchor-disabled');
+            setTimeout(function(){
+                $(".apply_programme").removeClass('anchor-disabled');
+            }, 4000);
+        });
+    </script>
+</body>
+</html>

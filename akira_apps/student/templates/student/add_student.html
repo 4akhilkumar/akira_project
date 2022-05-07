@@ -1,0 +1,39 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Add Student</h1>
+<p>A person who is studying at a university or other place of higher education.</p>
+{% endblock %}
+
+{% block add-student %}
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="username" id="id_username" placeholder="username">
+    <input type="password" name="password" id="id_password" placeholder="password">
+    <input type="email" name="email" id="id_email" placeholder="email">
+    <input type="text" name="first_name" id="id_first_name" placeholder="first_name">
+    <input type="text" name="last_name" id="id_last_name" placeholder="last_name">
+
+    <input type="text" name="gender" id="id_gender" placeholder="gender">
+    <input type="date" name="date_of_birth" id="id_date_of_birth" placeholder="date_of_birth">
+    <input type="text" name="blood_group" id="id_blood_group" placeholder="blood_group">
+    <input type="text" name="phone" id="id_phone" placeholder="phone">
+    <input type="text" name="door_no" id="id_door_no" placeholder="door_no">
+    <input type="text" name="zip_code" id="id_zip_code" placeholder="zip_code">
+    <input type="text" name="city" id="id_city" placeholder="city">
+    <input type="text" name="district" id="id_district" placeholder="district">
+    <input type="text" name="state" id="id_state" placeholder="state">
+    <input type="text" name="country" id="id_country" placeholder="country">
+    <input type="file" name="photo" id="id_photo" placeholder="photo">
+    <input type="text" name="branch" id="id_branch" placeholder="branch">
+    <button type="submit">Register</button>
+</form>
+
+<script src="{% static 'js/add_student.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

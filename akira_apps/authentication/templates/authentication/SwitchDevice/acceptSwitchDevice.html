@@ -6,7 +6,7 @@
 
 {% block analytics-text %}
 <h1>Devices</h1>
-<p>Respond to Switch Device request <span class="fa-solid fa-laptop-code"></span></p>
+<p>Respond to Switch Device request <span class="material-icons"> devices </span></p>
 {% endblock %}
 
 {% block switch-device %}
@@ -184,7 +184,7 @@
                     </div>
                 </div>
                 <div class="login-attempt-action">
-                    <button class="confirmed-button"><span class="fas fa-check-circle"></span> Approved</button>
+                    <button class="confirmed-button"><span class="material-icons"> check_circle </span> Approved</button>
                     {% if i.sessionKey != request.session.session_key %}
                     {% if i.id|checkSessionKey == True %}
                     <button class="false-button" onclick="window.location='{% url 'terminateSwitchDevice' i.id %}'"><span class="far fa-times-circle"></span> Terminate</button>
@@ -225,7 +225,7 @@
                     </div>
                 </div>
                 <div class="login-attempt-action">
-                    <button class="false-button"><span class="far fa-times-circle"></span> Denied</button>
+                    <button class="false-button"><span class="material-icons"> remove_circle </span> Denied</button>
                 </div>
             </div>
         </div>
