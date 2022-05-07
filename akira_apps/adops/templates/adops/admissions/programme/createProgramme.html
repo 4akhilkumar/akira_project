@@ -1,36 +1,230 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Programme</title>
-</head>
-<body>
-    <form action="" method="POST">
-        {% csrf_token %}
-        <label for="id_degree">Degree</label>
-        <input type="text" name="degree" id="id_degree" placeholder="Degree" required>
-        <label for="id_name">Name</label>
-        <input type="text" name="name" id="id_name" placeholder="Name" required>
-        <label for="id_duration">Duration</label>
-        <input type="text" name="duration" id="id_duration" placeholder="Duration" required>
-        <label for="id_branch">Branch</label>
-        <select name="branch_id" id="id_branch" required>
-            <option value="">Select Branch</option>
-            {% for each in branches %}
-            <option value="{{ each.id }}">{{ each.name }}</option>
-            {% endfor %}
-        </select>
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
 
-        <label for="id_specialization">Specialization</label>
-        <select name="specialization_id" id="id_specialization">
-            <option value="">Select Specialization</option>
-            {% for each in specialization %}
-            <option value="{{ each.id }}">{{ each.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Submit</button>
-    </form>
-</body>
-</html>
+{% block analytics-text %}
+<h1>Create Programme</h1>
+{% endblock %}
+
+{% block create-programme %}
+
+<div class="main-container-fluid">
+  <div class="container-fluid">
+    <div class="regiserformcontainer">
+        <form id="msform" class="create-course-form" action="" autocomplete="off" method="POST" enctype="multipart/form-data" data-created-course-id="empty">
+            {% csrf_token %}
+            <fieldset>
+              <div class="form-card">
+                <div class="input-box">
+                    <label class="fieldlabels input-label" for="id_degree">Degree</label> 
+                    <input type="text" name="degree" id="id_degree" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="help-text"></span>
+                    <span class="error-text">Enter degree</span>
+                </div>
+
+                <div class="input-box">
+                    <label class="fieldlabels input-label" for="id_programme">Programme</label> 
+                    <input type="text" name="programme" id="id_programme" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    <span class="help-text"></span>
+                    <span class="error-text">Enter programme name</span>
+                </div>
+
+                <div class="input-box">
+                    <label class="fieldlabels input-label" for="id_prog_desc">Description</label>
+                    <textarea name="prog_desc" data-check-input-value="True" maxlength="500" id="id_prog_desc" data-dynamic-field-value="1" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                    <span class="help-text">Maximum characters allowed is 500 only.</span>
+                    <span class="error-text">Enter programme description</span>
+                    <span class="info-text"></span>
+                </div>
+
+                <div class="field-container mb-1rem">
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_prog_duration">Duration</label> 
+                        <input type="text" name="prog_duration" id="id_prog_duration" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="help-text"></span>
+                        <span class="error-text">Enter degree</span>
+                    </div>
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_branch_id">Branch</label>
+                        <select name="branch_id" class="input-1" id="id_branch_id" required>
+                            {% if branches %}
+                            <option value="">Select Branch</option>
+                            {% endif %}
+                            {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }}</option>
+                            {% empty %}
+                            <option value="">Data Not Available</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select branch</span>
+                        <span class="redirect">
+                            <a href="#createBranchModal" id="showFormCreateBranch"><i class="fa-solid fa-circle-plus"></i> Create branch</a>
+                            <a href="#fetchBranchList" id="fetchBranches" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
+                            <i class="fa-solid fa-arrows-rotate"></i> refresh
+                            </a>
+                        </span>
+                    </div>
+                </div>
+ 
+              </div>
+              <button type="submit" id="course-btn" class="action-button course-btn">Create</button>
+              <!-- <input type="button" name="next" data-create-design="true" data-create-course-ajax="{% url 'createCourseAjax' %}" id="create-design-course-next" class="next action-button" value="Next" />
+              <input type="button" name="back" id="back-course" data-back-to-courses-url="{% url 'manage_courses' %}" class="back-to-courses action-button-previous" value="Back" /> -->
+            </fieldset>
+            {% comment %}
+            <fieldset>
+              <div class="form-card">
+                <div class="">
+                  <div class="">
+                    <h2 class="fs-title">Design the course</h2>
+                    <span class="about-text">Course design is the process and methodology of creating quality learning environments and experiences for students.</span>
+                  </div>
+                </div>
+                <!-- Course Offering Start -->
+                <span id="id_append_course_cot">
+                  {% for each in cots %}
+                  <div class="field-container">
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_mode_of_study">Mode of study</label>
+                      <input type="text" name="mode_of_study" id="id_mode_of_study" value="{{ each.name }}" data-created-cot-mos="{{ each.id }}" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    </div>
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_course_ltps">L-T-P-S</label>
+                      <input type="text" name="course_ltps" id="id_course_ltps" value="{{ each.l }}-{{ each.t }}-{{ each.p }}-{{ each.s }}" data-created-cot-ltps="{{ each.id }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                    </div>
+                  </div>
+                  <div class="input-box-footer-part">
+                    <div class="ibfp-1">
+                      <span class="help-text">Please click on the save button after done.</span>
+                    </div>
+                    <div class="ibfp-2">
+                      <a href="#" data-delete-cot-field-url="{% url 'deleteCreatedCOTFieldAjax' %}" data-delete-cot-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_cot_dynamic_field">Delete</a>
+                      <a href="#" data-set-cot-field-url="{% url 'setCreatedCOTFieldAjax' %}" data-set-cot-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_set_cot_dynamic_field">Save</a>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </span>
+                <span class="redirect">
+                  <a href="#createCOTModal" id="showFormCreateCOTField"><i class="fa-solid fa-circle-plus"></i> Course offering type</a>
+                  <a href="#addCOTExtraFieldModal" id="showFormCreateCOTExtraField"><i class="fa-solid fa-circle-plus"></i> Add a field</a>
+                </span>
+                <span id="id_append_cot_external_fields">
+                  {% for each in courseCotExtraFields %}
+                    {% if each.field_type == "textarea" %}
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                      <textarea name="{{ each.field_name }}" data-set-cot-dynamic-value-url="{% url 'setCourseCOTExtraFieldValueAjax' %}" data-cot-dynamic-field-value="{{ each.id }}" maxlength="5000" id="id_{{ each.field_name }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>{{ each.field_value }}</textarea>
+                      <div class="input-box-footer-part">
+                        <div class="ibfp-1">
+                          <span class="help-text"><b>{{ each.course.name }} - {{ each.field_name }}</b></span>
+                          <span class="data-status" data-ds-cot-dynamic-value-id="{{ each.id }}">Saving...</span>
+                        </div>
+                        <div class="ibfp-2">
+                          <a href="#" data-delete-cot-dynamic-value-url="{% url 'deleteCourseCOTExtraFieldValueAjax' %}" data-delete-cot-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                          <!-- <a href="#" data-set-cot-dynamic-value-url="{% url 'setCourseCOTExtraFieldValueAjax' %}" data-save-cot-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a> -->
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% if each.field_type == "text" %}
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                      <input type="text" name="{{ each.field_name }}" onload="setFocus(true)" data-set-cot-dynamic-value-url="{% url 'setCourseCOTExtraFieldValueAjax' %}" data-cot-dynamic-field-value="{{ each.id }}" id="id_{{ each.field_name }}" class="input-1" value="{{ each.field_value }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <div class="input-box-footer-part">
+                        <div class="ibfp-1">
+                          <span class="help-text"><b>{{ each.course.name }} - {{ each.field_name }}</b></span>
+                          <span class="data-status" data-ds-cot-dynamic-value-id="{{ each.id }}">Saving...</span>
+                        </div>
+                        <div class="ibfp-2">
+                          <a href="#" data-delete-cot-dynamic-value-url="{% url 'deleteCourseCOTExtraFieldValueAjax' %}" data-delete-cot-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                          <!-- <a href="#" data-set-cot-dynamic-value-url="{% url 'setCourseCOTExtraFieldValueAjax' %}" data-save-cot-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a> -->
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% if each.field_type == "number" %}
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                      <input type="number" name="{{ each.field_name }}" data-set-cot-dynamic-value-url="{% url 'setCourseCOTExtraFieldValueAjax' %}" data-cot-dynamic-field-value="{{ each.id }}" id="id_{{ each.field_name }}" value="{{ each.field_value }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <div class="input-box-footer-part">
+                        <div class="ibfp-1">
+                          <span class="help-text"><b>{{ each.course.name }} - {{ each.field_name }}</b></span>
+                          <span class="data-status" data-ds-cot-dynamic-value-id="{{ each.id }}">Saving...</span>
+                        </div>
+                        <div class="ibfp-2">
+                          <a href="#" data-delete-cot-dynamic-value-url="{% url 'deleteCourseCOTExtraFieldValueAjax' %}" data-delete-cot-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                          <!-- <a href="#" data-set-cot-dynamic-value-url="{% url 'setCourseCOTExtraFieldValueAjax' %}" data-save-cot-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a> -->
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                  <!-- Append Here -->
+                </span>
+                <br>
+                <span id="id_append_external_fields">
+                  <!-- Append Here -->
+                  {% for each in courseExtraFields %}
+                    {% if each.field_type == "textarea" %}
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                      <textarea name="{{ each.field_name }}" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-dynamic-field-value="{{ each.id }}" maxlength="5000" id="id_{{ each.field_name }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>{{ each.field_value }}</textarea>
+                      <div class="input-box-footer-part">
+                        <div class="ibfp-1">
+                          <span class="help-text"></span>
+                          <span class="data-status" data-cot-dynamic-value-id="{{ each.id }}">Saving...</span>
+                        </div>
+                        <div class="ibfp-2">
+                          <a href="#" data-delete-dynamic-value-url="{% url 'deleteCourseExtraFieldValueAjax' %}" data-delete-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                          <!-- <a href="#" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-save-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a> -->
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% if each.field_type == "text" %}
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                      <input type="text" name="{{ each.field_name }}" onload="setFocus(true)" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-dynamic-field-value="{{ each.id }}" id="id_{{ each.field_name }}" class="input-1" value="{{ each.field_value }}" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <div class="input-box-footer-part">
+                        <div class="ibfp-1">
+                          <span class="help-text"></span>
+                          <span class="data-status" data-cot-dynamic-value-id="{{ each.id }}">Saving...</span>
+                        </div>
+                        <div class="ibfp-2">
+                          <a href="#" data-delete-dynamic-value-url="{% url 'deleteCourseExtraFieldValueAjax' %}" data-delete-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                          <!-- <a href="#" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-save-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a> -->
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                    {% if each.field_type == "number" %}
+                    <div class="input-box">
+                      <label class="fieldlabels input-label" for="id_{{ each.field_name }}">{{ each.field_name }}</label>
+                      <input type="number" name="{{ each.field_name }}" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-dynamic-field-value="{{ each.id }}" id="id_{{ each.field_name }}" value="{{ each.field_value }}" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                      <div class="input-box-footer-part">
+                        <div class="ibfp-1">
+                          <span class="help-text"></span>
+                          <span class="data-status" data-cot-dynamic-value-id="{{ each.id }}">Saving...</span>
+                        </div>
+                        <div class="ibfp-2">
+                          <a href="#" data-delete-dynamic-value-url="{% url 'deleteCourseExtraFieldValueAjax' %}" data-delete-dynamic-field_id="{{ each.id }}" class="delete_dynamic_field" id="id_delete_dynamic_field">Delete</a>
+                          <!-- <a href="#" data-set-dynamic-value-url="{% url 'setCourseExtraFieldValueAjax' %}" data-save-dynamic-field_id="{{ each.id }}" class="save_dynamic_field_value" id="id_save_dynamic_field_value">Save</a> -->
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                  <!-- Append Here -->
+                </span>
+                <span class="redirect">
+                  <a href="#createCourseExtraFieldModal" id="showFormCreateExternalField"><i class="fa-solid fa-circle-plus"></i> Add an extra field for the course</a>
+                </span>
+              </div>
+              <button type="button" id="course-btn" class="action-button course-btn" data-submit-course-url="{% url 'submitcourseformAjax' %}" data-course-create-success-url="{% url 'manage_courses' %}">Submit</button>
+              <input type="button" name="previous" id="create-course-previous" class="previous action-button-previous" value="Back" />
+            </fieldset>
+            {% endcomment %}
+        </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

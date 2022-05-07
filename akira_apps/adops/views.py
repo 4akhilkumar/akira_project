@@ -544,10 +544,10 @@ def createProgramme(request):
     branches = Branch.objects.all()
     if request.method == "POST":
         degree = request.POST.get('degree')
-        name = request.POST.get('name')
-        duration = request.POST.get('duration')
+        name = request.POST.get('programme')
+        description = request.POST.get('prog_desc')
+        duration = request.POST.get('prog_duration')
         branch_id = request.POST.get('branch_id')
-        specialization_id = request.POST.get('specialization_id')
 
         if Branch.objects.filter(id = branch_id).exists() is True:
             branchObj = Branch.objects.get(id = branch_id)
