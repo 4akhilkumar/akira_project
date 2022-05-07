@@ -10,7 +10,7 @@ from akira_apps.academic_registration.models import (Semester, SetSemesterRegist
 
 def aca_Registration(request):
     branches = Branch.objects.all()
-    semesters = Semester.objects.all().order_by('-is_active')
+    semesters = Semester.objects.all().order_by('-start_year')
     semesterModeForm = SemesterModeForm()
     getActiveSemesters = Semester.objects.filter(is_active=True)
     context = {
