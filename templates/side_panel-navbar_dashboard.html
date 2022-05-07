@@ -56,9 +56,9 @@
             <div class="sidebar-avatar">
                 <div class="avatar-img">
                     {% if request.user|getUserProfile is False %}
-                    <img src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="">
+                    <img loading="lazy" src="{% get_static_prefix %}Default User Profile Photo/{{request.user.first_name|capfirst|first}}.png" alt="">
                     {% else %}
-                    <img src="{{ request.user|getUserProfile }}" alt="">
+                    <img loading="lazy" src="{{ request.user|getUserProfile }}" alt="">
                     {% endif %}
                 </div>
                 <div class="avatar-info">
@@ -66,94 +66,115 @@
                         <h4>{{ request.user.first_name }} {{ request.user.last_name }}</h4>
                         <small>@{{ request.user }}</small>
                     </div>
-                    <span class="fas fa-angle-double-down"></span>
+                    <span class="material-icons"> keyboard_double_arrow_down </span>
                 </div>
             </div>
 
             <div class="sidebar-menu">
                 <ul>
                     <li>
-                        <a href="{% url 'login' %}"
+                        <a href="{% url 'dashboard' %}"
                         {% if "dashboard" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fas fa-th-large"></span>
+                            <span class="material-icons"> dashboard </span>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    {% if request.user|user_group == "Administrator" or request.user|user_group == "Head of the Department" %}
                     <li>
                         <a href="{% url 'manage_academic' %}"
                         {% if "manage_academic" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fas fa-school"></span>
-                            <span class="fa-solid fa-building-columns"></span>
-                            <span>Academic</span>
+                            <span class="material-icons"> school </span>
+                            <span>Academy</span>
                         </a>
                     </li>
-                    {% endif %}
-                    {% if request.user|user_group == "Administrator" or request.user|user_group == "Head of the Department" %}
+                    {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group %}
                     {% if "manage_academic" in request.path or "registration" in request.path %}
                     <li>
-                        <a href="{% url 'sem_registration' %}"
+                        <a href="{% url 'aca_Registration' %}"
                         {% if "registration" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fa-solid fa-check-to-slot"></span>
-                            <span>Sem. Registration</span>
+                            <span class="material-icons"> how_to_reg </span>
+                            <span>Academy Registration</span>
                         </a>
                     </li>
                     {% endif %}
                     {% endif %}
-                    {% if request.user|user_group != "Student" %}
+                    {% if "Student" == request.user|user_group %}
+                    {% if "manage_academic" in request.path or "registration" in request.path %}
                     <li>
-                        <a href="{% url 'manage_adops' %}"
-                        {% if "manage_adops" in request.path or "add_openings" in request.path %}
+                        <a href="{% url 'studentAcaReg' %}"
+                        {% if "registration" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fas fa-swatchbook"></span>
+                            <span class="material-icons"> how_to_reg </span>
+                            <span>Academy Registration</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group  %}
+                    <li>
+                        <a href="{% url 'manage_adops' %}"
+                        {% if "manage_adops" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                            <span class="material-icons"> confirmation_number </span>
                             <span>Adops</span>
                         </a>
                     </li>
-                    {% if "adops" in request.path %}
-                        {% if request.user|user_group != "Student" %}
+                    {% if "manage_adops" in request.path or "manageOpenings" in request.path or "manageAdmission" in request.path %}
+                        <li>
+                            <a href="#manageOpenings"
+                            {% if "openings" in request.path %}
+                            class="active"
+                            {% endif %}
+                            >
+                                <span class="material-icons"> work </span>
+                                <span>Openings</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'manageAdmission' %}"
+                            {% if "manageAdmission" in request.path %}
+                            class="active"
+                            {% endif %}
+                            >
+                                <span class="material-icons"> book_online </span>
+                                <span>Admissions</span>
+                            </a>
+                        </li>
+                        {% if "Applicant" == request.user|user_group %}
                         <li>
                             <a href="{% url 'userAppliedOpenings' %}"
                             {% if "userAppliedOpenings" in request.path %}
                             class="active"
                             {% endif %}
                             >
-                                <span class="fas fa-user-graduate"></span>
+                                <span class="material-icons"> people_alt </span>
                                 <span>Appl. Info</span>
                             </a>
                         </li>
                         {% endif %}
                     {% endif %}
                     {% endif %}
-                    {% if request.user|user_group == "Administrator" or request.user|user_group == "Head of the Department" or request.user|user_group == "Student" %}
+                    {% if "Administrator" == request.user|user_group or "Teaching staff" == request.user|user_group or "Student" == request.user|user_group %}
                     <li>
                         <a href="{% url 'manage_courses' %}"
                         {% if "course" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fas fa-book"></span>
+                            <span class="material-icons"> auto_stories </span>
                             <span>Courses</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'manage_specializations' %}"
-                        {% if "specialization" in request.path %}
-                        class="active"
-                        {% endif %}
-                        >
-                            <span class="fas fa-swatchbook"></span>
-                            <span>Specializations</span>
                         </a>
                     </li>
                     {% if "manage_course" in request.path or "resource" in request.path %}
@@ -163,30 +184,40 @@
                         class="active"
                         {% endif %}
                         >
-                            <span class="fa-solid fa-box-archive"></span>
+                            <span class="material-icons"> source </span>
                             <span>Resource</span>
                         </a>
                     </li>
                     {% endif %}
                     <li>
-                        <a href="{% url 'manage_staff' %}"
-                        {% if "manage_staff" in request.path or "view_staff" in request.path %}
+                        <a href="{% url 'manage_specializations' %}"
+                        {% if "specialization" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                        <span class="fas fa-chalkboard-teacher"></span>
-                        <span>Faculty</span>
+                            <span class="material-icons"> menu_book </span>
+                            <span>Specializations</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'manage_staff' %}"
+                        {% if "manage_staff" in request.path or "view_staff" in request.path or "add_staff" in request.path %}
+                        class="active"
+                        {% endif %}
+                        >
+                        <span class="material-icons"> person_3 </span>
+                        <span>Staff</span>
                         </a>
                     </li>
                     {% endif %}
-                    {% if request.user|user_group == "Administrator" or request.user|user_group == "Head of the Department" %}
+                    {% if "Administrator" == request.user|user_group %}
                     <li>
                         <a href="{% url 'manage_students' %}"
                         {% if "student" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fas fa-user-graduate"></span>
+                            <span class="material-icons"> person_4 </span>
                             <span>Students</span>
                         </a>
                     </li>
@@ -197,31 +228,25 @@
                         class="active"
                         {% endif %}
                         >
-                            <span class="fas fa-user-cog"></span>
+                            <span class="material-icons"> manage_accounts </span>
                             <span>Account</span>
                         </a>
                     </li>
-                    {% if request.user|user_group != "Applicant" %}
+                    {% if "Administrator" == request.user|user_group or "Teaching Staff" == request.user|user_group or "Student" == request.user|user_group %}
                     <li>
                         <a href="{% url 'validateSwitchDevice' %}"
                         {% if "validateSwitchDevice" in request.path %}
                         class="active"
                         {% endif %}
                         >
-                            <span class="fa-solid fa-laptop-code"></span>
+                            <span class="material-icons"> devices </span>
                             <span>Devices <sup class="custom_sup">Beta</sup></span>
                         </a>
                     </li>
                     {% endif %}
                     <li>
-                        <a href="{% url 'viewMedia' %}">
-                            <span class="fa-solid fa-database"></span>
-                            <span>Storage <sup class="custom_sup">Alpha</sup></span>
-                        </a>
-                    </li>
-                    <li>
                         <a href="{% url 'logout' %}">
-                            <span class="fas fa-sign-out-alt"></span>
+                            <span class="material-icons"> logout </span>
                             <span>Logout</span>
                         </a>
                     </li>
@@ -230,7 +255,7 @@
 
             <div class="sidebar-card">
                 <div class="sidebar-card-icon">
-                    <span class="fab fa-centercode"></span>
+                    <span class="material-icons"> festival </span>
                 </div>
                 <div>
                     <h4>Join Fest.</h4>
@@ -245,7 +270,7 @@
         <header>
             <div class="header-title-wrapper">
                 <label for="menu-toggle">
-                    <span class="fas fa-bars pointer-cursor"></span>
+                    <span class="material-icons pointer-cursor menu-bars"> menu </span>
                 </label>
                 <div class="header-title">
                     {% block analytics-text %}{% endblock %}
@@ -262,8 +287,10 @@
 
         <main>
             {% block analytic-overview %}{% endblock %}
+
             {% block academic %} {% endblock %}
-            {% block sem-registration %} {% endblock %}
+            {% block aca-registration %} {% endblock %}
+            {% block studentAcaReg %} {% endblock %}
             
             {% block create-course %} {% endblock %}
             {% block manage-courses %} {% endblock %}
@@ -274,6 +301,7 @@
             {% block create-openings %} {% endblock %}
             {% block edit-openings %} {% endblock %}
             {% block manage-user_applied_openings %} {% endblock %}
+            {% block manage-admissions %} {% endblock %}
             
             {% block manage-specializations %} {% endblock %}
             {% block view-specialization %} {% endblock %}
@@ -283,12 +311,13 @@
             {% block view-resource %} {% endblock %}
             
             {% block manage-faculty %} {% endblock %}
+            {% block add-staff %} {% endblock %}
             {% block view-faculty %} {% endblock %}
 
             {% block user-profile %} {% endblock %}
             
             {% block manage-students %} {% endblock %}
-            {% block add-students %} {% endblock %}
+            {% block add-student %} {% endblock %}
             {% block view-student %} {% endblock %}
             
             {% block manage-account %} {% endblock %}
@@ -308,7 +337,7 @@
           <div class="modal-content">
             <div class="modal-top-section">
               <h3>Widgets</span></h3>
-              <span id="close-widgetModal" class="close">&times;</span>
+              <span id="close-widgetModal" class="close"><span class="material-icons"> cancel </span></span>
             </div>
             <div class="widgets-section">
                 <div class="dark-mode-widget widget-item">
@@ -401,7 +430,7 @@
           <div class="modal-content">
             <div class="modal-top-section">
               <h3>URL Shortener</span></h3>
-              <span id="close-urlshortener" class="close">&times;</span>
+              <span id="close-urlshortener" class="close"><span class="material-icons"> cancel </span></span>
             </div>
             <div class="url_shortener-section">
                 <form id="msform" class="create-urlshortener-form" action="" method="POST" data-created-urlshortener-id="empty">
