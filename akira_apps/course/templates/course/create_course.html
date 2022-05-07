@@ -61,26 +61,6 @@
                       </a>
                     </span>
                   </div>
-                  <!-- <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_semester">Semester</label>
-                    <select name="semester" class="input-1" id="id_semester" required>
-                      {% if semester_list %}
-                      <option value="">Select Semester</option>
-                      {% endif %}
-                      {% for i in semester_list %}
-                      <option value="{{ i.id }}"> {{ i }} </option>
-                      {% empty %}
-                      <option value="">Data Not Available</option>
-                      {% endfor %}
-                    </select>
-                    <span class="error-text">Select semester</span>
-                    <span class="redirect">
-                      <a href="#createSemesterModal" id="showFormCreateSemester"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
-                      <a href="#fetchSemesterList" id="fetchSemester" data-get-semester-url="{% url 'getAllSemestersAjax' %}">
-                        <i class="fa-solid fa-arrows-rotate"></i> refresh
-                      </a>
-                    </span>
-                  </div> -->
                 </div>
   
                 <div class="field-container mb-1rem">
@@ -115,41 +95,21 @@
                   </div>
                 </div>
                 
-                <div class="field-container mb-1rem">
-                  <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
-                    <select name="specialization" class="input-1" id="id_specialization">
-                      {% for i in specialization_list %}
-                      <option value="{{ i.id }}"> {{ i }} </option>
-                      {% empty %}
-                      <option value="">Data Not Available</option>
-                      {% endfor %}
-                    </select>
-                    <span class="help-text">Allocating to specialization is optional</span>
-                    <span class="error-text">Select specialization</span>
-                    <span class="redirect">
-                      <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
-                      <a href="#" id="fetchSpec">
-                        <i class="fa-solid fa-arrows-rotate"></i> refresh
-                      </a>
-                    </span>
-                  </div>
-                  <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_prerequisite">Prerequisite</label>
-                    <select name="prerequisite" class="input-1" id="id_prerequisite">
-                      {% if prerequisiteList %}
-                      <option value="">Select prerequisite</option>
-                      {% endif %}
-                      <option value="None">No Need</option>
-                      {% for i in prerequisiteList %}
-                      <option value="{{ i.id }}"> {{ i }} </option>
-                      {% empty %}
-                      <option value="">Data Not Available</option>
-                      {% endfor %}
-                    </select>
-                    <span class="help-text">Prerequisite is optional</span>
-                    <span class="error-text">Select prerequisite</span>
-                  </div>
+                <div class="input-box active-grey">
+                  <label class="fieldlabels input-label" for="id_prerequisite">Prerequisite</label>
+                  <select name="prerequisite" class="input-1" id="id_prerequisite">
+                    {% if prerequisiteList %}
+                    <option value="">Select prerequisite</option>
+                    {% endif %}
+                    <option value="None">No Need</option>
+                    {% for i in prerequisiteList %}
+                    <option value="{{ i.id }}"> {{ i }} </option>
+                    {% empty %}
+                    <option value="">Data Not Available</option>
+                    {% endfor %}
+                  </select>
+                  <span class="help-text">Prerequisite is optional</span>
+                  <span class="error-text">Select prerequisite</span>
                 </div>
                 
                 <div class="input-box active-grey-1">
