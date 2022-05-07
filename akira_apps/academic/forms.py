@@ -1,4 +1,22 @@
 from django import forms
+from django.db import models
+
+class SectionRoomForm(forms.Form):
+    class Floor(models.TextChoices):
+        Ground = 'Ground'
+        First = 'First'
+        Second = 'Second'
+        Third = 'Third'
+        Fourth = 'Fourth'
+        Fifth = 'Fifth'
+        Sixth = 'Sixth'
+        Seventh = 'Seventh'
+        Eighth = 'Eighth'
+        Ninth = 'Ninth'
+        Tenth = 'Tenth'
+        Eleventh = 'Eleventh'
+    floor = forms.ChoiceField(choices = Floor.choices)
+    fields = ['floor']
 
 class RoomTypeForm(forms.Form):
     TYPE = [
@@ -9,10 +27,3 @@ class RoomTypeForm(forms.Form):
         ('Meeting Hall','Meeting Hall'),
     ]
     roomTypeForm = forms.ChoiceField(choices = TYPE)
-
-class SemesterModeForm(forms.Form):
-    MODE = [
-        ('ODD','ODD'),
-        ('EVEN','EVEN'),
-    ]
-    semesterModeForm = forms.ChoiceField(choices = MODE)
