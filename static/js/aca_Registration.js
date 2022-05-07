@@ -232,3 +232,29 @@ $(document).on('click', '.semRegStatus', function() {
         }
     });
 });
+
+$(document).on('click', '.semester_status', function() {
+    var semester_id = $(this).attr('name');
+    var setSemesterStatusURL = $(this).data('set-semester-status-url');
+
+    $.ajax({
+        type: "POST",
+        url: setSemesterStatusURL,
+        data: {
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            'semester_id': semester_id
+        },
+        success: function (data) {
+            console.log(data);
+            if (data.status == "success") {
+                toastr.success(data.message);
+            }
+            else {
+                toastr.error(data.message);
+            }
+        },
+        error: function (data) {
+            console.log("Something went wrong");
+        }
+    });
+});

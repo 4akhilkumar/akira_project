@@ -44,7 +44,9 @@
 <div class="semesters-container">
   <div class="list-all-semesters">
     {% for each in semesters %}
-    {{ each.mode }} | {{ each.start_year }} - {{ each.end_year }} | {{ each.branch.name }} | {% if each.is_active == True %}Active{% else %}Inactive{% endif %} 
+    {{ each.mode }} | {{ each.start_year }} - {{ each.end_year }} | {{ each.branch.name }}
+    <p>Semester Status</p>
+    <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.is_active == True %}checked{% endif %} data-set-semester-status-url="{% url 'setSemesterStatusAjax' %}" class="semester_status"> 
     <br>
     <label for="id_{{ each.id }}">Semester Registration Status</label>
     

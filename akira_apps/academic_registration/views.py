@@ -174,6 +174,23 @@ def setStudentSemesterRegistrationAjax(request):
             status = "error"
         return JsonResponse({'message': message, 'status': status}, safe = False)
 
+def setSemesterStatusAjax(request):
+    if request.method == "POST":
+        semesterId = request.POST.get('semester_id')
+        if Semester.objects.filter(id=semesterId).exists() is True:
+            semesterObj = Semester.objects.get(id=semesterId)
+            if semesterObj.is_active is True:
+                semesterObj.is_active = False
+            else:
+                semesterObj.is_active = True
+            semesterObj.save()
+            message = "Semester status changed successfully!"
+            status = "success"
+        else:
+            message = "Semester does not exist!"
+            status = "error"
+        return JsonResponse({'message': message, 'status': status}, safe = False)
+
 def studentAcaReg(request):
     if AdmissionRegister.objects.filter(user = request.user).exists() is True:
         admissionInfo = AdmissionRegister.objects.get(user = request.user)

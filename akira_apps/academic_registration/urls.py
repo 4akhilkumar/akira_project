@@ -7,6 +7,7 @@ urlpatterns = [
     path('createsemester/', views.createsemester, name='createsemester'),
     path('createsemesterAjax/', views.createsemesterAjax, name='createsemesterAjax'),
     path('getAllSemestersAjax/', views.getAllSemestersAjax, name='getAllSemestersAjax'),
+    path('setSemesterStatusAjax/', views.setSemesterStatusAjax, name='setSemesterStatusAjax'),
 
     path('setTeachingStaffSemesterRegistrationAjax/', views.setTeachingStaffSemesterRegistrationAjax, name='setTeachingStaffSemesterRegistrationAjax'),
     path('setStudentSemesterRegistrationAjax/', views.setStudentSemesterRegistrationAjax, name='setStudentSemesterRegistrationAjax'),
