@@ -189,38 +189,6 @@
                         </a>
                     </li>
                     {% endif %}
-                    <li>
-                        <a href="{% url 'manage_specializations' %}"
-                        {% if "specialization" in request.path %}
-                        class="active"
-                        {% endif %}
-                        >
-                            <span class="material-icons"> menu_book </span>
-                            <span>Specializations</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'manage_staff' %}"
-                        {% if "manage_staff" in request.path or "view_staff" in request.path or "add_staff" in request.path %}
-                        class="active"
-                        {% endif %}
-                        >
-                        <span class="material-icons"> person_3 </span>
-                        <span>Staff</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% if "Administrator" == request.user|user_group %}
-                    <li>
-                        <a href="{% url 'manage_students' %}"
-                        {% if "student" in request.path %}
-                        class="active"
-                        {% endif %}
-                        >
-                            <span class="material-icons"> person_4 </span>
-                            <span>Students</span>
-                        </a>
-                    </li>
                     {% endif %}
                     <li>
                         <a href="{% url 'account_settings' %}"
