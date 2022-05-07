@@ -131,7 +131,7 @@
                             <span>Adops</span>
                         </a>
                     </li>
-                    {% if "manage_adops" in request.path or "manageOpenings" in request.path or "manageAdmission" in request.path %}
+                    {% if "adops" in request.path %}
                         <li>
                             <a href="#manageOpenings"
                             {% if "openings" in request.path %}
@@ -144,7 +144,7 @@
                         </li>
                         <li>
                             <a href="{% url 'manageAdmission' %}"
-                            {% if "manageAdmission" in request.path %}
+                            {% if "manageAdmission" in request.path or "createProgramme" in request.path %}
                             class="active"
                             {% endif %}
                             >
@@ -266,6 +266,7 @@
             {% block search-courses %} {% endblock %}
 
             {% block manage-adops %} {% endblock %}
+            {% block create-programme %} {% endblock %}
             {% block create-openings %} {% endblock %}
             {% block edit-openings %} {% endblock %}
             {% block manage-user_applied_openings %} {% endblock %}
