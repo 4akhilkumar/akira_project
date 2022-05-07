@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'akira_apps.academic.apps.AcademicConfig',
     'akira_apps.accounts.apps.AccountsConfig',
     'akira_apps.course.apps.CourseConfig',
-    'akira_apps.specialization.apps.SpecializationConfig',
     'akira_apps.shigen.apps.ShigenConfig',
     'akira_apps.adops.apps.AdopsConfig',
     'akira_apps.URLShortener.apps.UrlshortenerConfig',
