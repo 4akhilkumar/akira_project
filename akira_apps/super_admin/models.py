@@ -18,7 +18,7 @@ class MailLog(models.Model):
 class AdminAccountVerificationStatus(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, on_delete = models.CASCADE)
-    bfpID = models.CharField(max_length = 11)
+    bfpID = models.CharField(max_length = 100)
     ipaddress = models.GenericIPAddressField()
     verificationStatus = models.BooleanField(default = False)
 
