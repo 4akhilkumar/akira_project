@@ -140,86 +140,95 @@ def adminInstituteRegistration(request):
         institutename = request.POST.get('institute_name')
         instituteaddress = request.POST.get('institute_address')
 
-        if User.objects.filter(groups__name = "Administrator", is_staff = True, is_active = True, is_superuser = True).exists() is True:
-            messages.info(request, "Administrator & Institute already registered")
-            return redirect('login')
-
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-
-        try:
-            fingerprintID = request.COOKIES['U53R_876_10']
-        except Exception:
-            fingerprintID = None
-
-        validatedUserDOB = validateUserDOB(dob)
-        if validatedUserDOB[0] is True:
-            try:
-                url = 'http://127.0.0.1:4000/getEmail/{}/?format=json'.format(email)
-                response = requests.get(url)
-                dataEmail = response.json()
-            except Exception:
-                messages.info(request, "Server under maintenance. Please try again later.")
-                return redirect('adminInstituteRegistration')
-            if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
-                if not User.objects.filter(username=username).exists():
-                    if password == confirm_password:
-                        try:
-                            user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
-                            admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
-                            user.groups.add(Group.objects.get(name = str(admin_group)))
-                            user.is_active = False
-                            user.is_staff = False
-                            user.is_superuser = False
-                            user.save()
-                            UserProfile.objects.create(
-                                user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
-                                door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
-                                photo = photo)
-                            Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
-                            AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip, bfpID = fingerprintID)
-                        except Exception:
-                            if User.objects.filter(username=username).exists() is True:
-                                currentUserObj = User.objects.get(username=username)
-                                if AdminAccountVerificationStatus.objects.filter(user=user).exists() is True:
-                                    AdminAccountVerificationStatus.objects.get(user=user).delete()
-                                if UserProfile.objects.filter(user=user).exists() is True:
-                                    UserProfile.objects.get(user=user).delete()
-                                currentUserObj.delete()
-                            messages.info(request, "Something went wrong. Please try again later.")
-                            return redirect('adminInstituteRegistration')
-                        try:
-                            url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
-                            response = requests.get(url)
-                            dataUsername = response.json()
-                        except Exception:
-                            messages.info(request, "Server under maintenance. Please try again later.")
-                            return redirect('adminInstituteRegistration')
-                        return redirect('send_admin_reg_email', EnUsername = dataUsername['EncryptedUsername'])
-                    else:
-                        messages.info(request, "Password didn't Matched")
-                        return redirect('adminInstituteRegistration')
-                else:
-                    messages.error(request, "Username Already Exists...!")
-                    return redirect('adminInstituteRegistration')
-            elif dataEmail['Disposable'] is True:
-                messages.error(request, "Don't use disposable email address")
-                return redirect('adminInstituteRegistration')
+        formResponse = dict(request.POST)
+        if all(len(formResponse[key]) > 0 for key in formResponse) and not all(str(formResponse[key]).isspace() for key in formResponse):
+            can_go_on = False
+            if(not request.POST.get('city').isspace() or len(request.POST.get('city')) > 0) and (request.POST.get('new_city').isspace() or len(request.POST.get('new_city')) == 0):
+                can_go_on = True
+            elif(request.POST.get('city').isspace() or len(request.POST.get('city')) == 0) and (not request.POST.get('new_city').isspace() or len(request.POST.get('new_city')) > 0):
+                can_go_on = True
             else:
-                messages.error(request, "Please use legitimate email address only")
+                can_go_on = False
+        if can_go_on is True:
+            if User.objects.filter(groups__name = "Administrator", is_staff = True, is_active = True, is_superuser = True).exists() is True:
+                messages.info(request, "Administrator & Institute already registered")
+                return redirect('login')
+
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+
+            try:
+                fingerprintID = request.COOKIES['U53R_876_10']
+            except Exception:
+                fingerprintID = None
+
+            validatedUserDOB = validateUserDOB(dob)
+            if validatedUserDOB[0] is True:
+                try:
+                    url = 'http://127.0.0.1:4000/getEmail/{}/?format=json'.format(email)
+                    response = requests.get(url)
+                    dataEmail = response.json()
+                except Exception:
+                    messages.info(request, "Server under maintenance. Please try again later.")
+                    return redirect('adminInstituteRegistration')
+                if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
+                    if not User.objects.filter(username=username).exists():
+                        if password == confirm_password:
+                            try:
+                                user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
+                                admin_group, isCreated = Group.objects.get_or_create(name ='Administrator')
+                                user.groups.add(Group.objects.get(name = str(admin_group)))
+                                user.is_active = False
+                                user.is_staff = False
+                                user.is_superuser = False
+                                user.save()
+                                UserProfile.objects.create(
+                                    user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
+                                    door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
+                                    photo = photo)
+                                Academy.objects.create(user=user, code=institutecode, name=institutename, address=instituteaddress)
+                                AdminAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip, bfpID = fingerprintID)
+                            except Exception:
+                                if User.objects.filter(username=username).exists() is True:
+                                    currentUserObj = User.objects.get(username=username)
+                                    if AdminAccountVerificationStatus.objects.filter(user=user).exists() is True:
+                                        AdminAccountVerificationStatus.objects.get(user=user).delete()
+                                    if UserProfile.objects.filter(user=user).exists() is True:
+                                        UserProfile.objects.get(user=user).delete()
+                                    currentUserObj.delete()
+                                messages.info(request, "Something went wrong. Please try again later.")
+                                return redirect('adminInstituteRegistration')
+                            try:
+                                url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
+                                response = requests.get(url)
+                                dataUsername = response.json()
+                            except Exception:
+                                messages.info(request, "Server under maintenance. Please try again later.")
+                                return redirect('adminInstituteRegistration')
+                            return redirect('send_admin_reg_email', EnUsername = dataUsername['EncryptedUsername'])
+                        else:
+                            messages.info(request, "Password didn't Matched")
+                            return redirect('adminInstituteRegistration')
+                    else:
+                        messages.error(request, "Username Already Exists...!")
+                        return redirect('adminInstituteRegistration')
+                elif dataEmail['Disposable'] is True:
+                    messages.error(request, "Don't use disposable email address")
+                    return redirect('adminInstituteRegistration')
+                else:
+                    messages.error(request, "Please use legitimate email address only")
+                    return redirect('adminInstituteRegistration')
+            elif "not in YYYY-MM-DD format" in validatedUserDOB[1] :
+                messages.error(request, str(validatedUserDOB[1]))
                 return redirect('adminInstituteRegistration')
-        elif "not in YYYY-MM-DD format" in validatedUserDOB[1] :
-            messages.error(request, str(validatedUserDOB[1]))
+            elif validatedUserDOB[1] == "False":
+                return HttpResponse("You are not eligible to register as a Admininstrator")
+        else:
+            messages.error(request, "Please fill all the fields")
             return redirect('adminInstituteRegistration')
-        elif validatedUserDOB[1] == "False":
-            notice_context2 = {
-                'title': 'Not Eligible',
-                'message': 'You are not eligible to register as a Admininstrator',
-            }
-            return render(request, 'notice.html', notice_context2)
     context = {
         'name_prefix': name_prefix_list,
         'gender': gender_list,
