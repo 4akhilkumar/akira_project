@@ -10,31 +10,30 @@ from datetime import datetime
 
 from akira_apps.academic.forms import (SemesterModeForm)
 from akira_apps.academic.models import (Semester, Branch)
+from akira_apps.academic_registration.models import SetSemesterRegistration
 from akira_apps.course.forms import (CourseTypeForm, CourseExtraFieldForm)
-from akira_apps.course.models import (CourseComponent, CourseExtraFields, CourseMC, CourseOfferingType, CourseCOTExtraFields, CourseFiles, CourseSubComponent, CourseTask, TaskAnswer)
-from akira_apps.specialization.models import (SpecializationsMC)
+from akira_apps.course.models import (CourseExtraFields, CourseMC, CourseOfferingType, CourseCOTExtraFields, CourseFiles, 
+                                        CourseComponent, CourseSubComponent, CourseTask, TaskAnswer, 
+                                        FacultyCourseEnroll, StudentCourseEnroll)
 from akira_apps.super_admin.decorators import (allowed_users)
 
 @login_required(login_url=settings.LOGIN_URL)
 def manage_courses(request):
     courses = CourseMC.objects.all()
-    specializations = SpecializationsMC.objects.all()
     context = {
-        "courses":courses,
-        "specializations":specializations,
+        "courses":courses
     }
     return render(request, 'course/manage_courses.html', context)
 
+@login_required(login_url=settings.LOGIN_URL)
 def createCourseAjax(request):
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
         courseName = request.POST.get('course_name')
         courseDesc = request.POST.get('course_desc')
         courseBranch = request.POST.get('branch')
-        courseSemester = request.POST.get('semester')
         courseCC = request.POST.get('course_coordinator')
         course_type = request.POST.get('course_type')
-        courseSpecialization_id = request.POST.get('specialization', None)
         pre_requisite = request.POST.get('prerequisite')
         courseFiles = request.FILES.getlist('course_files')
         
@@ -43,41 +42,29 @@ def createCourseAjax(request):
                 courseCC = User.objects.get(id=courseCC)
                 if Branch.objects.filter(id = courseBranch).exists() is True:
                     courseBranch = Branch.objects.get(id = courseBranch)
-                    if Semester.objects.filter(id = courseSemester).exists() is True:
-                        courseSemester = Semester.objects.get(id = courseSemester)
-                        if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
-                            pre_requisite = None
-                        if courseSpecialization_id is None or courseSpecialization_id == '':
-                            courseSpecializationObj = None
-                        else:
-                            if SpecializationsMC.objects.filter(id = courseSpecialization_id).exists() is True:
-                                courseSpecializationObj = SpecializationsMC.objects.get(id = courseSpecialization_id)
-                        getCourseObj = CourseMC.objects.create(
-                            code=courseCode,
-                            name=courseName,
-                            desc = courseDesc,
-                            course_coordinator=courseCC,
-                            branch=courseBranch,
-                            semester=courseSemester,
-                            specialization=courseSpecializationObj,
-                            type = course_type,
-                            pre_requisite = pre_requisite,
-                        )
-                        try:
-                            for file in courseFiles:
-                                CourseFiles.objects.create(course = getCourseObj, course_files = file)
-                            message = "Course created successfully"
-                            status = "success"
-                            return JsonResponse({
-                                    'message': message,
-                                    'status': status,
-                                    'course_id': getCourseObj.id,
-                                })
-                        except Exception as e:
-                            message = str(e)
-                            status = "error"
-                    else:
-                        message = "Semester does not exist"
+                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
+                        pre_requisite = None
+                    getCourseObj = CourseMC.objects.create(
+                        code=courseCode,
+                        name=courseName,
+                        desc = courseDesc,
+                        course_coordinator=courseCC,
+                        branch=courseBranch,
+                        type = course_type,
+                        pre_requisite = pre_requisite,
+                    )
+                    try:
+                        for file in courseFiles:
+                            CourseFiles.objects.create(course = getCourseObj, course_files = file)
+                        message = "Course created successfully"
+                        status = "success"
+                        return JsonResponse({
+                                'message': message,
+                                'status': status,
+                                'course_id': getCourseObj.id,
+                            })
+                    except Exception as e:
+                        message = str(e)
                         status = "error"
                 else:
                     message = "Branch does not exist"
@@ -100,8 +87,8 @@ def createCourseAjax(request):
                 'status':status
             })
 
+@login_required(login_url=settings.LOGIN_URL)
 def editCourse(request, course_id):
-
     try:
         current_courseObj = CourseMC.objects.get(code=course_id)
     except CourseMC.DoesNotExist:
@@ -130,7 +117,6 @@ def editCourse(request, course_id):
     courseTypeForm = CourseTypeForm()
     courseExtraFieldTypeForm = CourseExtraFieldForm()
     faculty_list = User.objects.all()
-    specialization_list = SpecializationsMC.objects.all()
     prerequisiteList = CourseMC.objects.all()
     context = {
         "courseObj": current_courseObj,
@@ -148,16 +134,15 @@ def editCourse(request, course_id):
     }
     return render(request, "course/edit_course.html", context)
 
+@login_required(login_url=settings.LOGIN_URL)
 def submitcourseformAjax(request):
     if request.method == 'POST':
         courseCode = request.POST.get('course_code')
         courseName = request.POST.get('course_name')
         courseDesc = request.POST.get('course_desc')
         courseBranch = request.POST.get('branch')
-        courseSemester = request.POST.get('semester')
         courseCC = request.POST.get('course_coordinator')
         course_type = request.POST.get('course_type')
-        courseSpecialization_id = request.POST.get('specialization', None)
         pre_requisite = request.POST.get('prerequisite')
         courseFiles = request.FILES.getlist('course_files')
         
@@ -166,41 +151,29 @@ def submitcourseformAjax(request):
                 courseCCObj = User.objects.get(id=courseCC)
                 if Branch.objects.filter(id = courseBranch).exists() is True:
                     courseBranch = Branch.objects.get(id = courseBranch)
-                    if Semester.objects.filter(id = courseSemester).exists() is True:
-                        courseSemester = Semester.objects.get(id = courseSemester)
-                        if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
-                            pre_requisite = None
-                        if courseSpecialization_id is None or courseSpecialization_id == '':
-                            courseSpecializationObj = None
-                        else:
-                            if SpecializationsMC.objects.filter(id = courseSpecialization_id).exists() is True:
-                                courseSpecializationObj = SpecializationsMC.objects.get(id = courseSpecialization_id)
-                        getCourseObj = CourseMC.objects.get(code=courseCode)
-                        getCourseObj.code=courseCode
-                        getCourseObj.name=courseName
-                        getCourseObj.desc = courseDesc
-                        getCourseObj.course_coordinator=courseCCObj
-                        getCourseObj.branch=courseBranch
-                        getCourseObj.semester=courseSemester
-                        getCourseObj.specialization=courseSpecializationObj
-                        getCourseObj.type = course_type
-                        getCourseObj.pre_requisite = pre_requisite
-                        getCourseObj.save()
-                        try:
-                            for file in courseFiles:
-                                CourseFiles.objects.create(course = getCourseObj, course_files = file)
-                            message = "Course created successfully"
-                            status = "success"
-                        except Exception as e:
-                            message = str(e)
-                            status = "error"
-                        return JsonResponse({
-                                'message': message,
-                                'status': status
-                            })
-                    else:
-                        message = "Semester does not exist"
+                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
+                        pre_requisite = None
+                    getCourseObj = CourseMC.objects.get(code=courseCode)
+                    getCourseObj.code=courseCode
+                    getCourseObj.name=courseName
+                    getCourseObj.desc = courseDesc
+                    getCourseObj.course_coordinator=courseCCObj
+                    getCourseObj.branch=courseBranch
+                    getCourseObj.type = course_type
+                    getCourseObj.pre_requisite = pre_requisite
+                    getCourseObj.save()
+                    try:
+                        for file in courseFiles:
+                            CourseFiles.objects.create(course = getCourseObj, course_files = file)
+                        message = "Course created successfully"
+                        status = "success"
+                    except Exception as e:
+                        message = str(e)
                         status = "error"
+                    return JsonResponse({
+                            'message': message,
+                            'status': status
+                        })
                 else:
                     message = "Branch does not exist"
                     status = "error"
@@ -222,6 +195,7 @@ def submitcourseformAjax(request):
                 'status':status
             })
 
+@login_required(login_url=settings.LOGIN_URL)
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def updateCourse(request):
     try:
@@ -255,8 +229,7 @@ def updateCourse(request):
     semesterModeForm = SemesterModeForm()
     courseTypeForm = CourseTypeForm()
     courseExtraFieldTypeForm = CourseExtraFieldForm()
-    faculty_list = User.objects.all()
-    specialization_list = SpecializationsMC.objects.all()
+    faculty_list = User.objects.filter(groups__name='Teaching Staff')
     prerequisiteList = CourseMC.objects.all()
     context = {
         "courseExtraFields": courseExtraFields,
@@ -268,11 +241,11 @@ def updateCourse(request):
         "faculty_list":faculty_list,
         "courseTypeForm": courseTypeForm,
         'courseExtraFieldTypeForm':courseExtraFieldTypeForm,
-        "specialization_list":specialization_list,
         "prerequisiteList": prerequisiteList,
     }
     return render(request, 'course/create_course.html', context)
 
+@login_required(login_url=settings.LOGIN_URL)
 def createCourseExtraFieldAjax(request):
     if request.method == "POST":
         courseID = request.POST.get('course_id')
@@ -307,6 +280,7 @@ def createCourseExtraFieldAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def setCourseExtraFieldValueAjax(request):
     if request.method == "POST":
         courseExtraFieldID = request.POST.get('course_extra_field_id')
@@ -335,6 +309,7 @@ def setCourseExtraFieldValueAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def deleteCourseExtraFieldValueAjax(request):
     if request.method == "POST":
         courseExtraFieldID = request.POST.get('course_extra_field_id')
@@ -360,6 +335,7 @@ def deleteCourseExtraFieldValueAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def createCourseCOTAjax(request):
     if request.method == "POST":
         courseID = request.POST.get('course_cot_id')
@@ -398,6 +374,7 @@ def createCourseCOTAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def setCreatedCOTFieldAjax(request):
     if request.method == "POST":
         setCreatedCOTFieldID = request.POST.get('setCreatedCOTFieldID')
@@ -432,6 +409,7 @@ def setCreatedCOTFieldAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def deleteCreatedCOTFieldAjax(request):
     if request.method == "POST":
         created_cot_fieldID = request.POST.get('created_cot_field_id')
@@ -457,6 +435,7 @@ def deleteCreatedCOTFieldAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def getAllCurrentCOTAjax(request):
     if request.method == "POST":
         courseID = request.POST.get('course_id')
@@ -479,6 +458,7 @@ def getAllCurrentCOTAjax(request):
         else:
             return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def createCourseCOTExtraFieldAjax(request):
     if request.method == "POST":
         courseCOTID = request.POST.get('current_course_cot')
@@ -513,6 +493,7 @@ def createCourseCOTExtraFieldAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def setCourseCOTExtraFieldValueAjax(request):
     if request.method == "POST":
         courseCOTExtraFieldID = request.POST.get('cot_extra_field_id')
@@ -541,6 +522,7 @@ def setCourseCOTExtraFieldValueAjax(request):
         status = "failed"
         return JsonResponse({'message': message, 'status': status})
 
+@login_required(login_url=settings.LOGIN_URL)
 def deleteCourseCOTExtraFieldValueAjax(request):
     if request.method == "POST":
         courseCOTExtraFieldID = request.POST.get('cot_extra_field_id')
@@ -568,68 +550,94 @@ def deleteCourseCOTExtraFieldValueAjax(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def view_course(request, course_code):
-    try:
-        courseObj = CourseMC.objects.get(code=course_code)
-        courseFilesObjs = CourseFiles.objects.filter(course = courseObj)
-    except Exception:
-        messages.info(request, "No such course exist")
+    # current_user = request.user
+    # group = current_user.groups.all()[0].name
+    # print(group)
+    if CourseMC.objects.filter(code = course_code).exists() is True:
+        courseObj = CourseMC.objects.get(code = course_code)
+        extraFieldsObj = CourseExtraFields.objects.filter(course = courseObj)
+        offeringTypeObj = CourseOfferingType.objects.filter(course = courseObj)
+        courseFilesObj = CourseFiles.objects.filter(course = courseObj)
+    else:
+        messages.info(request, "Course doesn't exist!")
         return redirect('manage_courses')
-    faculty_list = User.objects.all()
-    branch_list = Branch.objects.all()
-    semester_list = Semester.objects.all()
-    try:
-        courseComponent = CourseComponent.objects.filter(course = courseObj)
-        courseSubComponent = CourseSubComponent.objects.filter(course = courseObj)
-        courseTask = CourseTask.objects.filter(course = courseObj)
-        taskAnswer = TaskAnswer.objects.filter(course = courseObj, user = request.user)
-    except Exception:
-        courseComponent = None
-        courseSubComponent = None
-        courseTask = None
-        taskAnswer = None
     context = {
-        "course":courseObj,
-        "courseFilesObjs":courseFilesObjs,
-        "faculty_list":faculty_list,
-        "branch_list":branch_list,
-        "semester_list":semester_list,
-        "courseComponent":courseComponent,
-        "courseSubComponent":courseSubComponent,
-        "courseTask":courseTask,
-        "taskAnswer":taskAnswer,
+        "course": courseObj,
+        "courseFiles": courseFilesObj,
+        "extraField": extraFieldsObj,
+        "offeringType": offeringTypeObj
     }
     return render(request, 'course/view_course.html', context)
 
-@login_required(login_url=settings.LOGIN_URL)
-def search_course(request):
-    if request.method == 'POST':
-        query = request.POST['search'].strip()
-        beforeSearch = datetime.now()
-        courses = CourseMC.objects.filter(
-            Q(course_code__icontains=query) | Q(course_name__icontains=query) |
-            Q(course_short_info__icontains=query) | Q(course_wywl__icontains=query) |
-            Q(course_sywg__icontains=query) | Q(course_desc__icontains=query) |
-            Q(course_coordinator__first_name__icontains=query) | Q(course_coordinator__last_name__icontains=query) |
-            Q(branch__icontains=query) | Q(semester__mode__icontains=query) | Q(specialization__specialization_name__icontains=query) |
-            Q(semester__start_year__icontains=query) | Q(semester__end_year__icontains=query)
-        )
-        afterSearch = datetime.now()
-        totalTimeTaken = (afterSearch - beforeSearch).total_seconds()
-        context = {
-            'courses': courses,
-            'totalTimeTaken':totalTimeTaken,
-            'query':query,
-        }
-        return render(request, 'course/search_course.html', context)
-    else:
-        messages.info(request, "We could process your request!")
-        return redirect('manage_courses')
+@allowed_users(allowed_roles=['Administrator'])
+def delete_course(request, course_id):
+    try:
+        course = CourseMC.objects.get(id=course_id)
+        course.delete()
+        messages.info(request, "Course deleted.")
+    except Exception as e:
+        messages.error(request, e)
+    return redirect('manage_courses')
 
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
-def delete_course(request, course_id):
-    course = CourseMC.objects.get(id=course_id)
-    course.delete()
-    return redirect('manage_courses')
+def teachingstaffCourseEnrollAjax(request):
+    if request.method == "POST":
+        current_user = request.user
+        courseID = request.POST.get('course_id')
+        try:
+            getCourseSem = CourseMC.objects.get(id=courseID)
+            semesterObj = Semester.objects.get(id=getCourseSem.semester.id)
+            getSemRegStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+            if getSemRegStatus.teachingstaff is True:
+                try:
+                    courseObj = CourseMC.objects.get(id = courseID)
+                    if FacultyCourseEnroll.objects.filter(course = courseObj, teachingStaff = current_user).exists() is False:
+                        FacultyCourseEnroll.objects.create(course = courseObj, teachingStaff = current_user)
+                        message = "Course enrolled successfully"
+                        status = "success"
+                    else:
+                        message = "Course already enrolled!"
+                        status = "error"
+                except CourseMC.DoesNotExist:
+                    message = "Course does not exist!"
+                    status = "error"
+            else:
+                message = "Course registration not open!"
+                status = "error"
+        except Exception:
+            message = "Something went wrong!"
+            status = "error"
+        return JsonResponse({'message': message, 'status': status})
+
+@allowed_users(allowed_roles=['Student'])
+def studentCourseEnrollAjax(request):
+    if request.method == "POST":
+        current_user = request.user
+        courseID = request.POST.get('course_id')
+        try:
+            getCourseSem = CourseMC.objects.get(id=courseID)
+            semesterObj = Semester.objects.get(id=getCourseSem.semester.id)
+            getSemRegStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+            if getSemRegStatus.students is True:
+                try:
+                    courseObj = CourseMC.objects.get(id = courseID)
+                    if StudentCourseEnroll.objects.filter(course = courseObj, students = current_user).exists() is False:
+                        StudentCourseEnroll.objects.create(course = courseObj, students = current_user)
+                        message = "Course enrolled successfully"
+                        status = "success"
+                    else:
+                        message = "Course already enrolled!"
+                        status = "error"
+                except CourseMC.DoesNotExist:
+                    message = "Course does not exist!"
+                    status = "error"
+            else:
+                message = "Course registration not open!"
+                status = "error"
+        except Exception:
+            message = "Something went wrong!"
+            status = "error"
+        return JsonResponse({'message': message, 'status': status})
 
 def course_component(request):
     if request.method == "POST":

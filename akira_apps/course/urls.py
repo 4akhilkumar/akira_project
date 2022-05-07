@@ -22,8 +22,10 @@ urlpatterns = [
     path('submitcourseformAjax/', views.submitcourseformAjax, name='submitcourseformAjax'),
     
     path('view_course/<course_code>/', views.view_course, name='view_course'),
-    path('search_course/', views.search_course, name='search_course'),
     path('delete_course/<course_id>/', views.delete_course, name='delete_course'),
+
+    path('teachingstaffCourseEnrollAjax/', views.teachingstaffCourseEnrollAjax, name='teachingstaffCourseEnrollAjax'),
+    path('studentCourseEnrollAjax/', views.studentCourseEnrollAjax, name='studentCourseEnrollAjax'),
 
     path('course_component/', views.course_component, name='course_component'),
     path('sub_component/', views.sub_component, name='sub_component'),
