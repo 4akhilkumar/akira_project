@@ -5,7 +5,6 @@ from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
 
 from akira_apps.super_admin.decorators import (allowed_users)
-from .models import (Staff)
 from akira_apps.course.models import (CourseMC)
 from akira_apps.academic.models import (Branch)
 from akira_apps.super_admin.forms import (BLOODGROUPForm)
@@ -21,15 +20,19 @@ def applicant_dashboard(request):
     context = {
 
     }
-    return render(request, 'staff/applicant_dashboard.html', context)
+    return render(request, 'staff/dashboards/applicant_dashboard.html', context)
 
-@allowed_users(allowed_roles=['Assistant Professor', 'Associate Professor', 'Professor'])
-def staff_dashboard(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
+@allowed_users(allowed_roles=['Adops Team'])
+def adops_dashboard(request):
     context = {
-        "rAnd0m123":rAnd0m123,
+
     }
-    return render(request, 'staff/staff_templates/staff_dashboard.html', context)
+    return render(request, 'staff/dashboards/adops_dashboard.html', context)
+
+def teachingstaff_dashboard(request):
+    context = {
+    }
+    return render(request, 'staff/dashboards/teachingstaff_dashboard.html', context)
 
 @allowed_users(allowed_roles=['Head of the Department'])
 def hod_dashboard(request):
@@ -161,37 +164,28 @@ def student_enroll_course(request, course_id):
         else:
             return HttpResponse(e)
 
-def manage_staff(request):
-    staffs = Staff.objects.all()
-    doctorial_faculty = Staff.objects.filter(name_prefix='Dr')
-    courses = CourseMC.objects.all()
-    context = {
-        "staffs":staffs,
-        "doctorial_faculty":doctorial_faculty,
-        "courses":courses,
-    }
-    return render(request, 'staff/staff_templates/manage_staff/manage_faculty.html', context)
-
 def add_staff(request):
-    branch_list = Branch.objects.all()
-    bloodgroup = BLOODGROUPForm()
-    list_groups = Group.objects.all()
-    if request.method == 'POST':
-        date = request.POST.get('date_of_birth')
-        save = request.POST.get('_save')
-        addanother = request.POST.get('_addanother')
-        continuethis = request.POST.get('_continue')
-        print(save)
-        print(addanother)
-        print(continuethis)
-    else:
-        pass
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        firstname = request.POST.get('first_name')
+        lastname = request.POST.get('last_name')
+        groupName = request.POST.get('group')
+        user = User.objects.create_user(
+            username = username, email = email,
+            password = password,
+            first_name = firstname,
+            last_name = lastname
+        )
+        user.is_active = True # False
+        applicant_group, isCreated = Group.objects.get_or_create(name = groupName)
+        user.groups.add(Group.objects.get(name = str(applicant_group)))
+        # Staff.objects.create(user = user)
+        user.save()
     context = {
-        'list_groups':list_groups,
-        "branch_list":branch_list,
-        "bloodgroup":bloodgroup,
     }
-    return render(request, 'staff/staff_templates/manage_staff/add_faculty.html', context)
+    return render(request, 'staff/add_staff.html', context)
 
 def edit_staff(request, staff_username):
     staff = Staff.objects.get(user__username=staff_username)
@@ -285,17 +279,3 @@ def bulk_upload_staffs_save(request):
         return redirect('manage_staff')
     else:
         return redirect('manage_staff')
-
-@allowed_users(allowed_roles=['Administrator'])
-def add_student(request):
-    branch_list = BranchForm()
-    bloodgroup = BLOODGROUPForm()
-    if request.method == 'POST':
-        pass
-    else:
-        pass
-    context = {
-        "branch_list":branch_list,
-        "bloodgroup":bloodgroup,
-    }
-    return render(request, 'staff/admission_templates/add_student.html', context)
