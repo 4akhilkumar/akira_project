@@ -2,18 +2,18 @@ from django.contrib.auth.models import User
 from django import template
 register = template.Library()
 
-from akira_apps.staff.models import (Staff)
+from akira_apps.adops.models import (UserProfile)
 
 @register.filter
 def applicantPhoto(value):
     userObj = User.objects.get(id=value)
-    staff = Staff.objects.get(user=userObj)
+    staff = UserProfile.objects.get(user=userObj)
     return staff.photo.url
 
 @register.filter
 def about(value):
     userObj = User.objects.get(id=value)
-    staff = Staff.objects.get(user=userObj)
+    staff = UserProfile.objects.get(user=userObj)
     if staff.about:
         return staff.about
     else:
@@ -23,7 +23,7 @@ def about(value):
 @register.filter
 def skills(value):
     userObj = User.objects.get(id=value)
-    staff = Staff.objects.get(user=userObj)
+    staff = UserProfile.objects.get(user=userObj)
     skills = staff.skills.all()
     skills_list = []
     for skill in skills:
@@ -36,7 +36,7 @@ def skills(value):
 @register.filter
 def isResume(value):
     userObj = User.objects.get(id=value)
-    staff = Staff.objects.get(user=userObj)
+    staff = UserProfile.objects.get(user=userObj)
     if staff.resume:
         return True
     else:
