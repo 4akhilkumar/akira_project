@@ -41,29 +41,10 @@ def delete_block(request, block_id):
     block.delete()
     return redirect('manage_academic')
 
-def ordinal(n):
-    s = ('th', 'st', 'nd', 'rd') + ('th',)*10
-    v = n%100
-    if v > 13:
-        return f'{n}{s[v%10]}'
-    else:
-        return f'{n}{s[v]}'
-
-def returnFloorName(floorName):
-    if floorName.isnumeric():
-        floorName = ordinal(int(floorName)) + " Floor"
-    if any(char.isdigit() for char in floorName):
-        for i, char in enumerate(floorName):
-            if char.isdigit():
-                floorName = ordinal(int(floorName[i])) + " Floor"
-                break
-    return floorName
-
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def create_floor(request):
     if request.method == 'POST':
         floorName = request.POST.get('name')
-        floorName = returnFloorName(floorName)
         blockID = request.POST.get('block_id')
         fetechBlock = Block.objects.get(id = blockID)
         try:
@@ -115,6 +96,24 @@ def delete_room(request, room_id):
     room.delete()
     return redirect('manage_academic')
 
+def ordinal(n):
+    s = ('th', 'st', 'nd', 'rd') + ('th',)*10
+    v = n%100
+    if v > 13:
+        return f'{n}{s[v%10]}'
+    else:
+        return f'{n}{s[v]}'
+
+def returnFloorName(floorName):
+    if floorName.isnumeric():
+        floorName = ordinal(int(floorName)) + " Floor"
+    if any(char.isdigit() for char in floorName):
+        for i, char in enumerate(floorName):
+            if char.isdigit():
+                floorName = ordinal(int(floorName[i])) + " Floor"
+                break
+    return floorName
+
 @allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
 def bulk_upload_academic_info_save(request):
     if request.method == 'POST':
@@ -131,15 +130,15 @@ def bulk_upload_academic_info_save(request):
                 else:
                     blockObj = Block.objects.filter(name = str(row['Block Name']))[0]
                 
-                if Floor.objects.filter(name = str(row['Floor']), block__name = str(row['Block Name'])).exists() is False:
+                if Floor.objects.filter(name = returnFloorName(str(row['Floor'])), block = blockObj).exists() is False:
                     floorObj = Floor.objects.create(
                         name = row['Floor'],
                         block = blockObj,
                     )
                 else:
-                    floorObj = Floor.objects.filter(name = str(row['Floor']))[0]
+                    floorObj = Floor.objects.filter(name = returnFloorName(str(row['Floor'])))[0]
                 
-                if Room.objects.filter(block__name = str(row['Block Name']), floor__name = str(row['Floor']), name = str(row['Room'])).exists() is False:
+                if Room.objects.filter(block__name = str(row['Block Name']), floor__name = returnFloorName(str(row['Floor'])), name = str(row['Room'])).exists() is False:
                     Room.objects.create(
                         name = row['Room'],
                         block = blockObj,
