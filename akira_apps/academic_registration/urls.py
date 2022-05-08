@@ -16,4 +16,6 @@ urlpatterns = [
     path('createbranch/', views.createbranch, name='createbranch'),
     path('getAllBranchesAjax/', views.getAllBranchesAjax, name='getAllBranchesAjax'),
     path('studentAcaReg/', views.studentAcaReg, name='studentAcaReg'),
+    path('allocateCourseForSemester/', views.allocateCourseForSemester, name='allocateCourseForSemester'),
+    path('allocateCourseForSemesterAjax/', views.allocateCourseForSemesterAjax, name='allocateCourseForSemesterAjax'),
 ]

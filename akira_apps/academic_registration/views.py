@@ -2,11 +2,12 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from akira_apps.adops.models import AdmissionRegister
+from akira_apps.course.models import CourseMC
 
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.academic.models import (Branch)
 from akira_apps.academic_registration.forms import (SemesterModeForm)
-from akira_apps.academic_registration.models import (Semester, SetSemesterRegistration)
+from akira_apps.academic_registration.models import (DesignCoursesSemester, Semester, SetSemesterRegistration)
 
 def aca_Registration(request):
     branches = Branch.objects.all()
@@ -121,7 +122,6 @@ def createsemester(request):
             messages.info(request, "{} Semester {} already exists!".format(str(semesterMode), str(semesterStartYear)))
     return redirect('aca_Registration')
 
-
 def setTeachingStaffSemesterRegistrationAjax(request):
     if request.method == "POST":
         semesterId = request.POST.get('semester_id')
@@ -198,3 +198,51 @@ def studentAcaReg(request):
         "admissionInfo": admissionInfo,
     }
     return render(request, 'academic_registration/studentAcademyReg.html', context)
+
+def allocateCourseForSemester(request):
+    branches = Branch.objects.all()
+    semesters = Semester.objects.all()
+    semesterModeForm = SemesterModeForm()
+    courses = CourseMC.objects.all()
+    context = {
+        "branches": branches,
+        "semesters": semesters,
+        "semesterModeForm":semesterModeForm,
+        "courses": courses,
+    }
+    return render(request, 'academic_registration/allocatingCourseForSemester.html', context)
+
+
+def allocateCourseForSemesterAjax(request):
+    if request.method == "POST":
+        semesterId = request.POST.get('semester_id')
+        courses_list = request.POST.get('courses_stack_data')
+        if len(semesterId) > 0:
+            if courses_list is not None:
+                split_course_list = courses_list.split(",")
+                if Semester.objects.filter(id=semesterId).exists() is True:
+                    semesterObj = Semester.objects.get(id=semesterId)
+                    if DesignCoursesSemester.objects.filter(semester = semesterObj).exists() is False:
+                        dcsMTMObj = DesignCoursesSemester.objects.create(semester = semesterObj)
+                        for course in split_course_list:
+                            if CourseMC.objects.filter(id=course).exists() is True:
+                                courseObj = CourseMC.objects.get(id=course)
+                                dcsMTMObj.course.add(courseObj)
+                                message = "Course allocated successfully!"
+                                status = "success"
+                            else:
+                                message = "Course does not exist!"
+                                status = "error"
+                    else:
+                        message = "This Semester already has courses allocated!"
+                        status = "info"
+                else:
+                    message = "Semester does not exist!"
+                    status = "error"
+            else:
+                message = "No courses selected!"
+                status = "error"
+        else:
+            message = "No semester selected!"
+            status = "error"
+        return JsonResponse({'message': message, 'status': status}, safe = False)
