@@ -2709,7 +2709,7 @@ i.transform-angle-135 {
 .regiserformcontainer {
   display: flex;
   flex-direction: column;
-  max-width: 40rem;
+  /* max-width: 40rem; */
   align-items: center;
 }
 
@@ -2738,8 +2738,8 @@ i.transform-angle-135 {
 .container-fluid {
   padding: 1rem;
   background-color: var(--card-color);
-  max-width: fit-content;
   border-radius: .5rem;
+  max-width: 42rem;
 }
 
 .form-card {
