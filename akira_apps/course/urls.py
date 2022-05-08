@@ -24,6 +24,8 @@ urlpatterns = [
     path('view_course/<course_code>/', views.view_course, name='view_course'),
     path('delete_course/<course_id>/', views.delete_course, name='delete_course'),
 
+    path('fetchTeachingStaff', views.fetchTeachingStaff, name='fetchTeachingStaff'),
+
     path('teachingstaffCourseEnrollAjax/', views.teachingstaffCourseEnrollAjax, name='teachingstaffCourseEnrollAjax'),
     path('studentCourseEnrollAjax/', views.studentCourseEnrollAjax, name='studentCourseEnrollAjax'),
 

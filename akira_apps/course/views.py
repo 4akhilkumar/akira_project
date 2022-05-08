@@ -743,4 +743,8 @@ def subComponentsbyComponents(request):
             getSubComponents = CourseSubComponent.objects.filter(component__id=component_id)
         except Exception as e:
             print(e)
-        return JsonResponse(list(getSubComponents.values('id', 'name')), safe = False) 
+        return JsonResponse(list(getSubComponents.values('id', 'name')), safe = False)
+
+def fetchTeachingStaff(request):
+    faculty_list = User.objects.filter(groups__name='Teaching Staff')
+    return JsonResponse(list(faculty_list.values('id', 'username')), safe = False)

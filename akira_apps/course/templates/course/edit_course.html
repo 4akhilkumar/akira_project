@@ -76,8 +76,8 @@
                     </select>
                     <span class="error-text">Select Course Co-Ordinator</span>
                     <span class="redirect">
-                      <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
-                      <a href="#" id="fetchFaculty">
+                      <a href="{% url 'add_staff' %}" target="_blank"><i class="fa-solid fa-circle-plus"></i> Add faculty</a>
+                      <a href="#fetchStaff" id="fetchFaculty" data-fetch-teaching-staff-url="{% url 'fetchTeachingStaff' %}">
                         <i class="fa-solid fa-arrows-rotate"></i> refresh
                       </a>
                     </span>

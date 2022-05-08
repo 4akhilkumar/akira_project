@@ -990,6 +990,44 @@ $(document).ready(function() {
         });
     }
 
+    function getTeachingStaff() {
+
+        if($(this).hasClass('anchor-disabled')){
+            return false;
+        }
+        $(this).addClass('anchor-disabled');
+        setTimeout(function(){
+            $("#fetchFaculty").removeClass('anchor-disabled');
+        }, 5000);
+
+        var get_teachingstaff_url = $("#fetchFaculty").data('fetch-teaching-staff-url');
+
+        $.ajax({
+            type: "GET",
+            url: get_teachingstaff_url,
+            success: function (data) {
+                if(data.length == 0) {
+                    toastr.info("No Teaching Staff available")
+                }
+                else {
+                    toastr.success("Teaching Staff list fetched successfully")
+                    let html_data = '<option value=""> Select Faculty </option>';
+                    data.forEach(function (data) {
+                        html_data += `<option value="${data.id}">${data.username}</option>`
+                    });
+                    $("#id_course_coordinator").html(html_data);
+
+                    $("#id_course_coordinator").parent().find(".error-text").css("display", "block");
+                    $("#course-btn").prop("disabled", true);
+                    $("input[data-create-design='true']").prop('disabled', true);
+                }
+            },
+            error: function (data) {
+                toastr.error(data);
+            }
+        });
+    }
+
     function createExtraFieldFunc() {
         if($(this).hasClass('create-extra-field-disabled')){
             return false;
@@ -1162,6 +1200,9 @@ $(document).ready(function() {
     });
     $("#fetchBranches").click(function(){
         getAllBranchesFunc.call(this);
+    });
+    $("#fetchFaculty").click(function(){
+        getTeachingStaff.call(this);
     });
 
     $("#create-design-course-next").click(function(){
