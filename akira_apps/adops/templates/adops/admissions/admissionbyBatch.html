@@ -15,11 +15,11 @@
     {% csrf_token %}
     <h1 id="acceptAdmissionURL" data-accept-admission-url="{% url 'acceptAdmissionAjax' %}">Applied Students</h1>
     {% for each in admissionbyBatchObjs %}
-    <p>{{ each.user.first_name }} {{ each.user.last_name }} - {{ each.batch.programme.name }}, {{ each.batch.programme.duration }}, {{ each.batch.programme.degree }}</p>
+    <p>{{ each.student.first_name }} {{ each.student.last_name }} - {{ each.batch.programme.name }}, {{ each.batch.programme.duration }}, {{ each.batch.programme.degree }}</p>
     
-    {% if each.user.username|admissionStatus == None %}
-    <button type="button" data-student-id="{{ each.user.username }}" class="accept_admission">Accept Admission</button>
-    {% elif each.user.username|admissionStatus == False %}
+    {% if each.student.username|admissionStatus == None %}
+    <button type="button" data-student-id="{{ each.student.username }}" class="accept_admission">Accept Admission</button>
+    {% elif each.student.username|admissionStatus == False %}
     <p>Accepted</p>
     {% else %}
     <p>Admission NA</p>

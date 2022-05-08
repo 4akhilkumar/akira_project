@@ -192,8 +192,8 @@ def setSemesterStatusAjax(request):
         return JsonResponse({'message': message, 'status': status}, safe = False)
 
 def studentAcaReg(request):
-    if AdmissionRegister.objects.filter(user = request.user).exists() is True:
-        admissionInfo = AdmissionRegister.objects.get(user = request.user)
+    if AdmissionRegister.objects.filter(student = request.user).exists() is True:
+        admissionInfo = AdmissionRegister.objects.get(student = request.user)
     context = {
         "admissionInfo": admissionInfo,
     }
