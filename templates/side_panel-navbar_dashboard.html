@@ -93,10 +93,10 @@
                         </a>
                     </li>
                     {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group or "Teaching Staff" == request.user|user_group %}
-                        {% if "manage_academic" in request.path or "aca_Registration" in request.path %}
+                        {% if "manage_academic" in request.path or "aca_Registration" in request.path or "allocateCourseForSemester" in request.path %}
                         <li>
                             <a href="{% url 'aca_Registration' %}"
-                            {% if "aca_Registration" in request.path %}
+                            {% if "aca_Registration" in request.path or "allocateCourseForSemester" in request.path %}
                             class="active"
                             {% endif %}
                             >
@@ -259,6 +259,7 @@
             {% block academic %} {% endblock %}
             {% block aca-registration %} {% endblock %}
             {% block studentAcaReg %} {% endblock %}
+            {% block allocate-courses-for-semester %} {% endblock %}
             
             {% block create-course %} {% endblock %}
             {% block manage-courses %} {% endblock %}
