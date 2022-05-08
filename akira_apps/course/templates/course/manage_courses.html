@@ -56,7 +56,7 @@
 
 {% block manage-courses %}
 
-{% if "Administrator" in request.user|user_group %}
+{% if "Administrator" in request.user|user_group or "Teaching Staff" in request.user|user_group %}
 <div class="btn-area">
   <button id="createCourse" data-create-course-url="{% url 'updateCourse' %}" class="create-block-btn">Create Course</button>
   <button id="createCourseBulk" class="create-block-btn">Create Courses (CSV)</button>

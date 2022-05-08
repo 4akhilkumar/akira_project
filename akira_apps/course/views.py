@@ -112,11 +112,9 @@ def editCourse(request, course_id):
     courseCOTExtraFields = CourseCOTExtraFields.objects.filter(course__course = current_courseObj)
 
     branch_list = Branch.objects.all()
-    semester_list = Semester.objects.all()
-    semesterModeForm = SemesterModeForm()
     courseTypeForm = CourseTypeForm()
     courseExtraFieldTypeForm = CourseExtraFieldForm()
-    faculty_list = User.objects.all()
+    faculty_list = User.objects.filter(groups__name='Teaching Staff')
     prerequisiteList = CourseMC.objects.all()
     context = {
         "courseObj": current_courseObj,
@@ -124,12 +122,9 @@ def editCourse(request, course_id):
         "cots": current_courseCOTObjs,
         "courseCotExtraFields": courseCOTExtraFields,
         "branch_list":branch_list,
-        "semesterModeForm":semesterModeForm,
-        "semester_list":semester_list,
         "faculty_list":faculty_list,
         "courseTypeForm": courseTypeForm,
         'courseExtraFieldTypeForm':courseExtraFieldTypeForm,
-        "specialization_list":specialization_list,
         "prerequisiteList": prerequisiteList,
     }
     return render(request, "course/edit_course.html", context)
@@ -196,7 +191,7 @@ def submitcourseformAjax(request):
             })
 
 @login_required(login_url=settings.LOGIN_URL)
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
+@allowed_users(allowed_roles=['Administrator', 'Teaching Staff'])
 def updateCourse(request):
     try:
         getCreatedCourseCookie = request.COOKIES['course_id']
@@ -225,8 +220,6 @@ def updateCourse(request):
     courseCOTExtraFields = CourseCOTExtraFields.objects.filter(course__course = current_courseObj)
 
     branch_list = Branch.objects.all()
-    semester_list = Semester.objects.all()
-    semesterModeForm = SemesterModeForm()
     courseTypeForm = CourseTypeForm()
     courseExtraFieldTypeForm = CourseExtraFieldForm()
     faculty_list = User.objects.filter(groups__name='Teaching Staff')
@@ -235,12 +228,10 @@ def updateCourse(request):
         "courseExtraFields": courseExtraFields,
         "cots": current_courseCOTObjs,
         "courseCotExtraFields": courseCOTExtraFields,
-        "branch_list":branch_list,
-        "semesterModeForm":semesterModeForm,
-        "semester_list":semester_list,
-        "faculty_list":faculty_list,
+        "branch_list": branch_list,
+        "faculty_list": faculty_list,
         "courseTypeForm": courseTypeForm,
-        'courseExtraFieldTypeForm':courseExtraFieldTypeForm,
+        "courseExtraFieldTypeForm": courseExtraFieldTypeForm,
         "prerequisiteList": prerequisiteList,
     }
     return render(request, 'course/create_course.html', context)
@@ -569,7 +560,7 @@ def view_course(request, course_code):
     }
     return render(request, 'course/view_course.html', context)
 
-@allowed_users(allowed_roles=['Administrator'])
+# @allowed_users(allowed_roles=['Administrator'])
 def delete_course(request, course_id):
     try:
         course = CourseMC.objects.get(id=course_id)
@@ -579,7 +570,7 @@ def delete_course(request, course_id):
         messages.error(request, e)
     return redirect('manage_courses')
 
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
+@allowed_users(allowed_roles=['Administrator', 'Teaching Staff'])
 def teachingstaffCourseEnrollAjax(request):
     if request.method == "POST":
         current_user = request.user

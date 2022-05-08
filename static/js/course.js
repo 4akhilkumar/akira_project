@@ -13,6 +13,16 @@ var IGNORE_KEYS_LIST = [
     "PrintScreen", "ScrollLock", "Pause", "NumLock", "LaunchApplication2"
 ];
 
+// delete the cookie with name course_id and course_cot_id
+if(document.cookie.indexOf("course_id") != -1) {
+    document.cookie = "course_id=; max-age=0; path=/";
+}
+
+// delete the cookie with name course_cot_id
+if(document.cookie.indexOf("course_cot_id") != -1) {
+    document.cookie = "course_cot_id=; max-age=0; path=/";
+}
+
 function getAllCOTFunc() {
     if($(this).hasClass('anchor-disabled')){
         return false;
@@ -665,68 +675,6 @@ $(document).ready(function() {
         }
     });
 
-    $("#semester-btn").prop("disabled", true);
-    var semester_btn = false;
-    var sem_mode = false; var sem_sy = false; var sem_ey = false;
-    var sem_branch = false;
-
-    $('#id_semester_mode').on('keyup keydown blur change', function() {
-        if ($("#id_semester_mode").val() == "") {
-            $("#id_semester_mode").parent().find(".error-text").css("display", "block");
-            sem_mode = false;
-        } else {
-            $("#id_semester_mode").parent().find(".error-text").css("display", "none");
-            sem_mode = true;
-        }
-    });
-
-    $('#id_start_year').on('keyup keydown blur change', function() {
-        if ($("#id_start_year").val() == "") {
-            $("#id_start_year").parent().find(".error-text").css("display", "block");
-            sem_sy = false;
-        }
-        else {
-            $("#id_start_year").parent().find(".error-text").css("display", "none");
-            sem_sy = true;
-        }
-    });
-
-    $('#id_end_year').on('keyup keydown blur change', function() {
-        if ($("#id_end_year").val() == "") {
-            $("#id_end_year").parent().find(".error-text").css("display", "block");
-            sem_ey = false;
-        }
-        else {
-            $("#id_end_year").parent().find(".error-text").css("display", "none");
-            sem_ey = true;
-        }
-    });
-
-    $('#id_semester_branch').on('keyup keydown blur change', function() {
-        if ($("#id_semester_branch").val() == "") {
-            $("#id_semester_branch").parent().find(".error-text").css("display", "block");
-            sem_branch = false;
-        } else {
-            $("#id_semester_branch").parent().find(".error-text").css("display", "none");
-            sem_branch = true;
-        }
-    });
-
-    $('input, select, textarea').on('keyup keydown blur change', function() {
-        if (sem_mode == true && sem_sy == true && sem_ey == true && sem_branch == true) {
-            semester_btn = true;
-        }
-        else {
-            semester_btn = false;
-        }
-        if (semester_btn == true) {
-            $("#semester-btn").prop("disabled", false);
-        }
-        else {
-            $("#semester-btn").prop("disabled", true);
-        }
-    });
-
     $("#cotfield-btn").prop("disabled", true);
     var current_cmos_btn = false;
     var course_mos = false; var course_ltps = false;
@@ -928,9 +876,7 @@ $(document).ready(function() {
                     toastr.success(data.message)
                     var course_id = data.course_id;
                     var course_id_cookie = "course_id=" + course_id + "; path=/";
-                    if(document.cookie.indexOf("course_id") != -1) {
-                        document.cookie = "course_id=; max-age=0;";
-                    }
+
                     document.cookie = course_id_cookie;
                     // var before_value = $(".create-course-form").data('created-course-id');
                     $(".create-course-form").data('created-course-id', course_id);
@@ -945,11 +891,6 @@ $(document).ready(function() {
                     $(".get-all-current-cot").data('current_course_id', course_id);
                     // var data_current_course_id = $(".get-all-current-cot").data('current_course_id');
 
-                    // delete the cookie with name course_cot_id
-                    if(document.cookie.indexOf("course_cot_id") != -1) {
-                        document.cookie = "course_cot_id=; max-age=0;";
-                    }
-
                     $('#id_course_code').prop('readonly', true);
                     $("#id_course_code").parent().find(".help-text").html("Can be modified while editing course");
                     $("#id_course_code").parent().find(".help-text").css("display", "block");
@@ -960,7 +901,6 @@ $(document).ready(function() {
 
                     var next = document.getElementsByClassName('next')[0];
                     nextFieldSet.call(next);
-                    console.log(data);
                 }
                 else if(data.status == 'error') {
                     toastr.warning(data.message)
@@ -998,9 +938,8 @@ $(document).ready(function() {
                 if(data.status == 'success') {
                     toastr.success(data.message)
                     getAllBranchesFunc.call(this);
-                    getAllBranchesForSemesterFunc.call(this);
                     setTimeout(function(){
-                        $("#myModal").fadeOut(500);
+                        $("#createBranchModalForm").fadeOut(500);
                     }, 250);
                 }
                 else {
@@ -1051,88 +990,6 @@ $(document).ready(function() {
         });
     }
 
-    function getAllBranchesForSemesterFunc() {
-
-        if($(this).hasClass('anchor-disabled')){
-            return false;
-        }
-        $(this).addClass('anchor-disabled');
-        setTimeout(function(){
-            $("#fetchBranchesforSemester").removeClass('anchor-disabled');
-        }, 5000);
-
-        var get_branches_url = $("#fetchBranchesforSemester").data('get-branch-url');
-
-        $.ajax({
-            type: "GET",
-            url: get_branches_url,
-            success: function (data) {
-                if(data.length == 0) {
-                    toastr.info("No branches available")
-                }
-                else {
-                    toastr.success("Branches list fetched successfully")
-                    let html_data = '<option value=""> Select Branch </option>';
-                    data.forEach(function (data) {
-                        html_data += `<option value="${data.id}">${data.name}</option>`
-                    });
-                    $("#id_semester_branch").html(html_data);
-
-                    $("#id_semester_branch").parent().find(".error-text").css("display", "block");
-                    $("#semester-btn").prop("disabled", true);
-                }
-            },
-            error: function (data) {
-                toastr.error(data);
-            }
-        });
-    }
-
-    function createSemesterFunc() {
-        var semester_mode = $('#id_semester_mode').val();
-        var start_year = $('#id_start_year').val();
-        var end_year = $('#id_end_year').val();
-        var semester_branch = $('#id_semester_branch').val();
-        var semester_is_active = $('#id_semester_is_active').val();
-        
-        if($(this).hasClass('create-semester-disabled')){
-            return false;
-        }
-        $(this).addClass('create-semester-disabled');
-        setTimeout(function(){
-            $("#semester-btn").removeClass('create-semester-disabled');
-        }, 5000);
-
-        var create_semester_url = $("#semester-btn").data('create-semester-url');
-
-        $.ajax({
-            type: "POST",
-            url: create_semester_url,
-            data: {
-                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
-                'mode': semester_mode,
-                'start_year': start_year,
-                'end_year': end_year,
-                'branch': semester_branch,
-                'is_active': semester_is_active,
-            },
-            success: function (data) {
-                if(data.status == 'success') {
-                    toastr.success(data.message)
-                    setTimeout(function(){
-                        $("#myModal2").fadeOut(500);
-                    }, 250);
-                }
-                else {
-                    toastr.warning(data.message)
-                }
-            },
-            error: function (data) {
-                toastr.error(data.message);
-            }
-        });
-    }
-
     function createExtraFieldFunc() {
         if($(this).hasClass('create-extra-field-disabled')){
             return false;
@@ -1159,7 +1016,7 @@ $(document).ready(function() {
                     toastr.success(data.message)
                     $("#id_append_external_fields").load(location.href + " #id_append_external_fields");
                     setTimeout(function(){
-                        $("#myModal3").fadeOut(500);
+                        $("#extraFieldModalForm").fadeOut(500);
                     }, 250);
                 }
                 else if(data.status == 'error') {
@@ -1197,9 +1054,7 @@ $(document).ready(function() {
                 if(data.status == 'success') {
                     var coursecot_id = data.courseCOTObjID;
                     var course_cot_id_cookie = "course_cot_id=" + coursecot_id + "; path=/";
-                    if(document.cookie.indexOf("course_cot_id") != -1) {
-                        document.cookie = "course_cot_id=; max-age=0;";
-                    }
+                    
                     document.cookie = course_cot_id_cookie;
                     // var cot_before_value = $(".create-course-cot-form").data('created-course-cot-id');
                     $(".create-course-cot-form").data('created-course-cot-id', coursecot_id);
@@ -1211,7 +1066,7 @@ $(document).ready(function() {
                     toastr.success(data.message)
                     $("#id_append_course_cot").load(location.href + " #id_append_course_cot");
                     setTimeout(function(){
-                        $("#myModal4").fadeOut(500);
+                        $("#courseOfferingTypeModalForm").fadeOut(500);
                     }, 250);
                 }
                 else if(data.status == 'error') {
@@ -1249,7 +1104,7 @@ $(document).ready(function() {
                     toastr.success(data.message)
                     $("#id_append_cot_external_fields").load(location.href + " #id_append_cot_external_fields");
                     setTimeout(function(){
-                        $("#myModal5").fadeOut(500);
+                        $("#cotExtraFieldModalForm").fadeOut(500);
                     }, 250);
                 }
                 else if(data.status == 'error') {
@@ -1308,13 +1163,6 @@ $(document).ready(function() {
     $("#fetchBranches").click(function(){
         getAllBranchesFunc.call(this);
     });
-    $("#fetchBranchesforSemester").click(function(){
-        getAllBranchesForSemesterFunc.call(this);
-    });
-
-    $("#semester-btn").click(function(){
-        createSemesterFunc.call(this);
-    });
 
     $("#create-design-course-next").click(function(){
         if($(".create-course-form").data('created-course-id') == 'empty') {
@@ -1346,56 +1194,57 @@ $(document).ready(function() {
 
 });
 
-var modal = document.getElementById("myModal"); 
-var modal3 = document.getElementById("myModal3");
-var modal4 = document.getElementById("myModal4");
-var modal5 = document.getElementById("myModal5");
-var btn = document.getElementById("showFormCreateBranch");
-var btn3 = document.getElementById("showFormCreateExternalField");
-var btn4 = document.getElementById("showFormCreateCOTField");
-var btn5 = document.getElementById("showFormCreateCOTExtraField");
-var span = document.getElementById("close-model");
-var span3 = document.getElementById("close-model3");
-var span4 = document.getElementById("close-model4");
-var span5 = document.getElementById("close-model5");
-
-btn.onclick = function() {
-  modal.style.display = "block";
+var createBranchModal = document.getElementById("createBranchModalForm"); 
+var createBranchModalFormbtn = document.getElementById("showFormCreateBranch");
+var createBranchModalspan = document.getElementById("close-createBranchModalForm");
+createBranchModalFormbtn.onclick = function() {
+    createBranchModal.style.display = "block";
 }
-btn3.onclick = function() {
-  modal3.style.display = "block";
-}
-btn4.onclick = function() {
-  modal4.style.display = "block";
-}
-btn5.onclick = function() {
-    modal5.style.display = "block";
+createBranchModalspan.onclick = function() {
+    createBranchModal.style.display = "none";
 }
 
-span.onclick = function() {
-  modal.style.display = "none";
+var extraFieldModal = document.getElementById("extraFieldModalForm");
+var extraFieldModalbtn = document.getElementById("showFormCreateExternalField");
+var extraFieldModalspan = document.getElementById("close-extraFieldModal");
+extraFieldModalbtn.onclick = function() {
+    extraFieldModal.style.display = "block";
 }
-span3.onclick = function() {
-  modal3.style.display = "none";
+extraFieldModalspan.onclick = function() {
+  extraFieldModal.style.display = "none";
 }
-span4.onclick = function() {
-  modal4.style.display = "none";
+
+var courseOfferingTypeModal = document.getElementById("courseOfferingTypeModalForm");
+var courseOfferingTypeModalbtn = document.getElementById("showFormCreateCOTField");
+var courseOfferingTypeModalspan = document.getElementById("close-courseOfferingTypeModal");
+courseOfferingTypeModalbtn.onclick = function() {
+    courseOfferingTypeModal.style.display = "block";
 }
-span5.onclick = function() {
-  modal5.style.display = "none";
+courseOfferingTypeModalspan.onclick = function() {
+    courseOfferingTypeModal.style.display = "none";
+}
+
+var cotExtraFieldModal = document.getElementById("cotExtraFieldModalForm");
+var cotExtraFieldModalbtn = document.getElementById("showFormCreateCOTExtraField");
+var cotExtraFieldModalspan = document.getElementById("close-cotExtraFieldModal");
+cotExtraFieldModalbtn.onclick = function() {
+    cotExtraFieldModal.style.display = "block";
+}
+cotExtraFieldModalspan.onclick = function() {
+  cotExtraFieldModal.style.display = "none";
 }
 
 window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+  if (event.target == createBranchModal) {
+    createBranchModal.style.display = "none";
   }
-  if (event.target == modal3) {
-    modal3.style.display = "none";
+  if (event.target == extraFieldModal) {
+    extraFieldModal.style.display = "none";
   }
-  if (event.target == modal4) {
-    modal4.style.display = "none";
+  if (event.target == courseOfferingTypeModal) {
+    courseOfferingTypeModal.style.display = "none";
   }  
-  if (event.target == modal5) {
-    modal5.style.display = "none";
+  if (event.target == cotExtraFieldModal) {
+    cotExtraFieldModal.style.display = "none";
   }
 }

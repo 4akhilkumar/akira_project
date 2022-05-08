@@ -61,26 +61,6 @@
                       </a>
                     </span>
                   </div>
-                  <!-- <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_semester">Semester</label>
-                    <select name="semester" class="input-1" id="id_semester" required>
-                      {% if semester_list %}
-                      <option value="">Select Semester</option>
-                      {% endif %}
-                      {% for i in semester_list %}
-                      <option value="{{ i.id }}" {% if courseObj.semester.id == i.id %}selected{% endif %}> {{ i }} </option>
-                      {% empty %}
-                      <option value="">Data Not Available</option>
-                      {% endfor %}
-                    </select>
-                    <span class="error-text">Select semester</span>
-                    <span class="redirect">
-                      <a href="#createSemesterModal" id="showFormCreateSemester"><i class="fa-solid fa-circle-plus"></i> Create semester</a>
-                      <a href="#fetchSemesterList" id="fetchSemester" data-get-semester-url="{% url 'getAllSemestersAjax' %}">
-                        <i class="fa-solid fa-arrows-rotate"></i> refresh
-                      </a>
-                    </span>
-                  </div> -->
                 </div>
   
                 <div class="field-container mb-1rem">
@@ -116,24 +96,6 @@
                 </div>
                 
                 <div class="field-container mb-1rem">
-                  <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_specialization">Specialization</label>
-                    <select name="specialization" class="input-1" id="id_specialization">
-                      {% for i in specialization_list %}
-                      <option value="{{ i.id }}" {% if courseObj.pre_requisite.id == i.id %}selected{% endif %}> {{ i }} </option>
-                      {% empty %}
-                      <option value="">Data Not Available</option>
-                      {% endfor %}
-                    </select>
-                    <span class="help-text">Allocating to specialization is optional</span>
-                    <span class="error-text">Select specialization</span>
-                    <span class="redirect">
-                      <a href="#" target="_blank"><i class="fa-solid fa-circle-plus"></i> Create specialization</a>
-                      <a href="#" id="fetchSpec">
-                        <i class="fa-solid fa-arrows-rotate"></i> refresh
-                      </a>
-                    </span>
-                  </div>
                   <div class="input-box active-grey">
                     <label class="fieldlabels input-label" for="id_prerequisite">Prerequisite</label>
                     <select name="prerequisite" class="input-1" id="id_prerequisite">
@@ -323,12 +285,12 @@
   </div>
 </div>
 
-<div id="myModal" class="modal">
+<div id="createBranchModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Branch</span></h3>
-        <span id="close-model" class="close"><span class="material-icons"> cancel </span></span>
+        <span id="close-createBranchModalForm" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" method="POST">
@@ -359,94 +321,12 @@
   </div>
 </div>
 
-<!-- <div id="myModal2" class="modal">
-  <div class="model-container">
-    <div class="modal-content">
-      <div class="modal-top-section">
-        <h3>Create <span class="underline">Semester</span></h3>
-        <span id="close-model2" class="close"><span class="material-icons"> cancel </span></span>
-      </div>
-      <div class="regiserformcontainer">
-        <form id="msform" autocomplete="off" action="" method="POST">
-          {% csrf_token %}
-          <fieldset>
-            <div class="form-card"> 
-              <div class="field-container">
-                <div class="input-box active-grey">
-                  <label class="fieldlabels input-label" for="id_semester_mode">Semester mode</label>
-                  <select name="semester_mode" class="input-1" id="id_semester_mode" required>
-                    <option value="">Select mode</option>
-                    {% for x,y in semesterModeForm.fields.semesterModeForm.choices %}
-                    <option value="{{ x }}">{{ y }}</option>
-                    {% empty %}
-                    <option value="">Data Not Available</option>
-                    {% endfor %}
-                  </select>
-                  <span class="error-text">Select semester mode</span>
-                </div>
-              </div>
-
-              <div class="field-container">
-                <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_start_year">Start year</label>
-                    <input type="date" name="start_year" id="id_start_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                    <span class="error-text">Select start year</span>
-                </div>
-                <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_end_year">End year</label>
-                    <input type="date" name="end_year" id="id_end_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                    <span class="error-text">Select end year</span>
-                </div>
-              </div>
-
-              <div class="field-container">
-                <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_semester_branch">Branch</label>
-                    <select name="branch" class="input-1" id="id_semester_branch" required>
-                        {% if branch_list %}
-                        <option value="">Select Branch</option>
-                        {% endif %}
-                        {% for branch in branch_list %}
-                        <option value="{{ branch.id }}">{{ branch.name }}</option>
-                        {% empty %}
-                        <option value="">Data Not Available</option>
-                        {% endfor %}
-                    </select>
-                    <span class="error-text">Select branch</span>
-                    <span class="redirect">
-                        <a href="#" id="fetchBranchesforSemester" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
-                          <i class="fa-solid fa-arrows-rotate"></i> refresh
-                        </a>
-                    </span>
-                </div>
-                <div class="input-box input-box-toggle">
-                    <div>
-                        <label style="position: unset;" class="fieldlabels input-label" for="id_semester_is_active">Semester Status</label>
-                    </div>
-                    <div>
-                        <label class="switch">
-                            <input type="checkbox" name="semester_is_active" id="id_semester_is_active" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <span class="error-text">Select semester</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" id="semester-btn" data-create-semester-url="{% url 'createsemesterAjax' %}" class="action-button semester-btn">Create</button>
-          </fieldset>
-        </form>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<div id="myModal3" class="modal">
+<div id="extraFieldModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Extra Field</span></h3>
-        <span id="close-model3" class="close"><span class="material-icons"> cancel </span></span>
+        <span id="close-extraFieldModal" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" class="create-course-extra-field" method="POST">
@@ -484,12 +364,12 @@
   </div>
 </div>
 
-<div id="myModal4" class="modal">
+<div id="courseOfferingTypeModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">Course Offering Type</span></h3>
-        <span id="close-model4" class="close"><span class="material-icons"> cancel </span></span>
+        <span id="close-courseOfferingTypeModal" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" class="create-course-cot create-course-cot-form" data-created-course-cot-id="" method="POST">
@@ -519,12 +399,12 @@
   </div>
 </div>
 
-<div id="myModal5" class="modal">
+<div id="cotExtraFieldModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
       <div class="modal-top-section">
         <h3>Create <span class="underline">COT Extra Field</span></h3>
-        <span id="close-model5" class="close"><span class="material-icons"> cancel </span></span>
+        <span id="close-cotExtraFieldModal" class="close"><span class="material-icons"> cancel </span></span>
       </div>
       <div class="regiserformcontainer">
         <form id="msform" action="" class="create-course-cot-extra-field" method="POST">
