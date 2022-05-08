@@ -3,6 +3,24 @@ from django.contrib.auth.models import User
 
 import uuid
 
+def ordinal(n):
+    s = ('th', 'st', 'nd', 'rd') + ('th',)*10
+    v = n%100
+    if v > 13:
+        return f'{n}{s[v%10]}'
+    else:
+        return f'{n}{s[v]}'
+
+def returnFloorName(floorName):
+    if floorName.isnumeric():
+        floorName = ordinal(int(floorName)) + " Floor"
+    if any(char.isdigit() for char in floorName):
+        for i, char in enumerate(floorName):
+            if char.isdigit():
+                floorName = ordinal(int(floorName[i])) + " Floor"
+                break
+    return floorName
+
 class Academy(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -48,6 +66,10 @@ class Floor(models.Model):
 
     def __str__(self):
         return '%s' % (self.name)
+
+    def save(self, *args, **kwargs):
+        self.name = returnFloorName(str(self.name))
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['name']
