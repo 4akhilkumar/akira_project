@@ -111,16 +111,16 @@ def user_login(request):
             fingerprintID = None
         user_ip_address = ip
 
-        # try:
-        #     captcha_token = request.POST.get("g-recaptcha-response")
-        #     cap_url = "https://www.google.com/recaptcha/api/siteverify"
-        #     cap_secret = settings.GOOGLE_RECAPTCHA_SECRET_KEY
-        #     cap_data = {"secret": cap_secret, "response": captcha_token}
-        #     cap_server_response = requests.post(url = cap_url, data = cap_data)
-        #     cap_json = json.loads(cap_server_response.text)
-        # except Exception:
-        #     messages.info(request, 'Check your internet connection')
-        #     return redirect('login')
+        try:
+            captcha_token = request.POST.get("g-recaptcha-response")
+            cap_url = "https://www.google.com/recaptcha/api/siteverify"
+            cap_secret = settings.GOOGLE_RECAPTCHA_SECRET_KEY
+            cap_data = {"secret": cap_secret, "response": captcha_token}
+            cap_server_response = requests.post(url = cap_url, data = cap_data)
+            cap_json = json.loads(cap_server_response.text)
+        except Exception:
+            messages.info(request, 'Check your internet connection')
+            return redirect('login')
 
         try:
             getEncryptedCookie = request.COOKIES['access_token']
@@ -143,8 +143,7 @@ def user_login(request):
         except User.DoesNotExist:
             checkUserExists = None
 
-        # if cap_json['success'] == True:
-        if True == True:
+        if cap_json['success'] == True:
             try:
                 data = {
                     'MetaKey':username,
