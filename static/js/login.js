@@ -33,19 +33,66 @@ $(".toggle-password").click(function() {
     }
 });
 
-const submitButton = document.querySelector('.app-login-button');
-submitButton.disabled = true
-function isEmpty() {
-    let username = document.getElementById('id_username').value;
-    let password = document.getElementById('id_password').value;
-
-    if (username.length > 7 && password.length > 7) {
-        submitButton.disabled = false;
+function ValidateFormResponse() {
+    if (username == true && password == true && recaptcha_response == true) {
+        $(".app-login-button").prop("disabled", false);
     }
     else {
-        submitButton.disabled = true;
+        $(".app-login-button").prop("disabled", true);
     }
 }
+
+$(".app-login-button").prop("disabled", true);
+var username = false; var password = false; var recaptcha_response = false;
+
+$('#id_username').on('keyup keydown blur change', function() {
+    if ($("#id_username").val() == "") {
+        username = false;
+    }
+    else if ($("#id_username").val().length < 6) {
+        username = false;
+    }
+    else if ($("#id_username").val().match(/^\./)) {
+        username = false;
+    }
+    else if ($("#id_username").val().match(/\.$/)) {
+        username = false;
+    }
+    else if (!$("#id_username").val().match(/^[a-zA-Z0-9\.]*$/)) {
+        username = false;
+    }
+    else if ($("#id_username").val().match(/^\s+$/)) {
+        username = false;
+    }
+    else {
+        username = true;
+    }
+    ValidateFormResponse();
+});
+
+$('#id_password').on('keyup keydown blur change', function() {
+    if ($("#id_password").val() == "") {
+        password = false;
+    }
+    else if (!$("#id_password").val().match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#])[A-Za-z\d!@#]{8,18}/)) {
+        password = false;
+    }
+    else {
+        password = true;
+    }
+    ValidateFormResponse();
+});
+
+function enableloginbtn() {
+    recaptcha_response = true;
+    ValidateFormResponse();
+}
+
+function disableloginbtn() {
+    recaptcha_response = false;
+    ValidateFormResponse();
+}
+
 
 $('.app-login-button').click(function() {
     $(this).prop('disabled', true);

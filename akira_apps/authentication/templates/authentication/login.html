@@ -59,17 +59,17 @@
         <form action="" method="POST">
             {% csrf_token %}
             <div class="input app-input">
-                <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" onkeyup="isEmpty()" required>
+                <input type="text" name="username" id="id_username" autocapitalize="none" autocomplete="off" required>
                 <label for="username"><i class="far fa-user"></i> Username</label>
             </div>
     
             <div class="input app-input">
-                <input type="password" name="password" id="id_password" autocomplete="current-password" onkeyup="isEmpty()" required>
+                <input type="password" name="password" id="id_password" autocomplete="current-password" required>
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <div class="toggle-password fa-solid fa-eye"><i class=""></i></div>
             </div>
             
-            <div class="g-recaptcha" data-sitekey="{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}"></div>
+            <div class="g-recaptcha" data-sitekey="{{ GOOGLE_RECAPTCHA_PUBLIC_KEY }}" data-callback="enableloginbtn" data-expired-callback="disableloginbtn" data-error-callback="disableloginbtn"></div>
             <button type="submit" class="button app-login-button" id="id_submit">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
@@ -83,6 +83,6 @@
 </body>
 </html>
 
-<script src='{% static "js/dataEncryption.js.js" %}'></script>
+<script src='{% static "js/dataEncryption.js" %}'></script>
 <script src='{% static "js/BrowserFingerPrintWebGL.js" %}'></script>
 <script src='{% static "js/login.js" %}'></script>
