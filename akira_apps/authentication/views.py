@@ -9,10 +9,12 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail, EmailMessage
+from django.http import FileResponse
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 
+import os
 import datetime as pydt
 import re
 import httpagentparser
@@ -1119,6 +1121,7 @@ def logoutUser(request):
     else:
         return redirect('login')
 
+@login_required(login_url=settings.LOGIN_URL)
 def dashboard(request):
     group = None
     if request.user.groups.exists():
@@ -1160,3 +1163,11 @@ def dashboard(request):
             return redirect('super_admin_dashboard')
     else:
         return HttpResponse("Contact Administrator")
+
+def accessMediaFiles(request, path):
+    if request.user.is_authenticated:
+        file_path = os.path.join(settings.MEDIA_ROOT, path)
+        response  = FileResponse(open(file_path, 'rb'))
+        return response
+    else:
+        return HttpResponse(status=401)

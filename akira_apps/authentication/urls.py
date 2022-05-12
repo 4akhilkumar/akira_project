@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -44,4 +44,6 @@ urlpatterns = [
     path('SyncDevice/<switchDeviceID>/', views.SyncDevice, name="SyncDevice"),
 
     path('dashboard/', views.dashboard, name="dashboard"),
+
+    re_path(r'^media/(?P<path>.*)$', views.accessMediaFiles, name='accessMediaFiles'),
 ]
