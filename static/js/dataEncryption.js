@@ -1,4 +1,4 @@
-document.getElementById("id_submit").addEventListener("click", myFunction);
+document.getElementById("id_submit").addEventListener("click", encryptPassKey);
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -18,7 +18,7 @@ function convertASCIItoHex(asciiString) {
     return hex;
 }
 
-function myFunction() {
+function encryptPassKey() {
     let username = document.getElementById("id_username").value;
     let password = document.getElementById("id_password").value;
     let request_token = getCookie('request_token');
@@ -108,3 +108,5 @@ function myFunction() {
     // display password in the id="plain-text"
     document.getElementById("id_password").value = mergingFinalArray;
 }
+
+export { encryptPassKey };
