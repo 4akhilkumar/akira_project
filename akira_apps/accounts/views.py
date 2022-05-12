@@ -84,12 +84,14 @@ def account_settings(request):
     except Exception as e:
         get_currentLoginInfo = None
     thisDeviceCurrent = False
-    try:
-        getU53R_876_10 = request.COOKIES['U53R_876_10']
-    except Exception:
-        getU53R_876_10 = None
-    if str(get_currentLoginInfo.bfp) == str(getU53R_876_10):
-        thisDeviceCurrent = True
+
+    if get_currentLoginInfo != None:
+        try:
+            getU53R_876_10 = request.COOKIES['U53R_876_10']
+        except Exception:
+            getU53R_876_10 = None
+        if str(get_currentLoginInfo.bfp) == str(getU53R_876_10):
+            thisDeviceCurrent = True
 
     context = {
         "current_user_details":current_user_details,
