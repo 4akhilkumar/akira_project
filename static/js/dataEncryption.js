@@ -108,5 +108,3 @@ function encryptPassKey() {
     // display password in the id="plain-text"
     document.getElementById("id_password").value = mergingFinalArray;
 }
-
-export { encryptPassKey };
