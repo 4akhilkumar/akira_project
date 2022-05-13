@@ -159,38 +159,13 @@ $(document).ready(function() {
     }
   });
 
-  if($("#id_job_description").val() == "") {
-    $("#id_job_description").parent().find(".error-text").html("Enter the course description");
-    $("#id_job_description").parent().find(".error-text").css("display", "block");
-    job_desc = false;
-  }
-  else if (!$("#id_job_description").val().match(/^[A-Za-z0-9-#.,&/\s]*$/)) {
-    $("#id_job_description").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the job description correctly&#x0003F;");
-    $("#id_job_description").parent().find(".error-text").css("display", "block");
-    job_desc = false;
-  }
-  else if ($("#id_job_description").val().match(/^\s+$/)) {
-    $("#id_job_description").parent().find(".error-text").html("Sorry, but the job description cannot be empty");
-    $("#id_job_description").parent().find(".error-text").css("display", "block");
-    job_desc = false;
-  }        
-  else if ($("#id_job_description").val().length > 2000) {
-    $("#id_job_description").parent().find(".error-text").html("Sorry, but the job description cannot be more than 2000 characters");
-    $("#id_job_description").parent().find(".error-text").css("display", "block");
-    job_desc = false;
-  }
-  else {
-    $("#id_job_description").parent().find(".error-text").css("display", "none");
-    job_desc = true;
-  }
-
   $('#id_job_description').on('keyup keydown blur change', function() {
     if($("#id_job_description").val() == "") {
       $("#id_job_description").parent().find(".error-text").html("Enter the course description");
       $("#id_job_description").parent().find(".error-text").css("display", "block");
       job_desc = false;
     }
-    else if (!$("#id_job_description").val().match(/^[A-Za-z0-9-#.,&/\s]*$/)) {
+    else if (!$("#id_job_description").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
       $("#id_job_description").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the job description correctly&#x0003F;");
       $("#id_job_description").parent().find(".error-text").css("display", "block");
       job_desc = false;
@@ -211,12 +186,37 @@ $(document).ready(function() {
     }
   });
 
+  if($("#id_job_description").val() == "") {
+    $("#id_job_description").parent().find(".error-text").html("Enter the course description");
+    $("#id_job_description").parent().find(".error-text").css("display", "block");
+    job_desc = false;
+  }
+  else if (!$("#id_job_description").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
+    $("#id_job_description").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the job description correctly&#x0003F;");
+    $("#id_job_description").parent().find(".error-text").css("display", "block");
+    job_desc = false;
+  }
+  else if ($("#id_job_description").val().match(/^\s+$/)) {
+    $("#id_job_description").parent().find(".error-text").html("Sorry, but the job description cannot be empty");
+    $("#id_job_description").parent().find(".error-text").css("display", "block");
+    job_desc = false;
+  }        
+  else if ($("#id_job_description").val().length > 2000) {
+    $("#id_job_description").parent().find(".error-text").html("Sorry, but the job description cannot be more than 2000 characters");
+    $("#id_job_description").parent().find(".error-text").css("display", "block");
+    job_desc = false;
+  }
+  else {
+    $("#id_job_description").parent().find(".error-text").css("display", "none");
+    job_desc = true;
+  }
+
   if($("#id_experience").val() == "") {
     $("#id_experience").parent().find(".error-text").html("Enter the experience");
     $("#id_experience").parent().find(".error-text").css("display", "block");
     experience = false;
   }
-  else if (!$("#id_experience").val().match(/^[A-Za-z0-9\-\s]*$/)) {
+  else if (!$("#id_experience").val().match(/^[A-Za-z0-9-#_.,'":;()[\]{}&/\s]*$/)) {
     $("#id_experience").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the experience correctly&#x0003F;");
     $("#id_experience").parent().find(".error-text").css("display", "block");
     experience = false;
