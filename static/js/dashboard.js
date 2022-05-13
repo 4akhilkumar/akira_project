@@ -126,11 +126,11 @@ widgetsModal_span.onclick = function() {
   widgetsModal.style.display = "none";
 }
 
-window.onclick = function(event) {
+$(window).click(function(event) {
   if (event.target == widgetsModal) {
     widgetsModal.style.display = "none";
   }
-}
+});
 // ====================== End Widgets Modal ====================== //
 
 /* ====================== Dark Mode ===================== */
