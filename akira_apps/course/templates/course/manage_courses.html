@@ -63,6 +63,18 @@
 </div>
 {% endif %}
 
+<form action="{% url 'searchCourses' %}" method="POST">
+{% csrf_token %}
+<div class="search-bar-container">
+  <div class="searchBar">
+      <input id="searchQueryInput" type="text" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="" aria-label="Search courses" />
+      <button id="searchQuerySubmit" type="submit" name="searchCourse">
+        <span class="material-icons"> search </span>
+      </button>
+    </div>
+  </div>
+</form>
+  
 <div class="course-container">
   <ul class="courses">
     {% for i in courses %}

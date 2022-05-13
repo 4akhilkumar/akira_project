@@ -1,27 +1,86 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
-{% load humanize %}
 {% load first_letter_word %}
+{% load user_group %}
+{% load humanize %}
 
 {% block content %}
 
 {% block analytics-text %}
-<h1>Search Courses...</h1>
+<h1>Manage Courses</h1>
+<p>Display analytics about your Courses <span class="fas fa-chart-line"></span> </p>
 {% endblock %}
 
-{% block search-courses %}
-
-<div class="search-box-container">
-  <form action="{% url 'search_course' %}" method="POST" class="form-elements">
-    {% csrf_token %}
-    <input type="text" name="search" id="search-bar" placeholder="Search course..." value="{{ query }}" autocomplete="off" required>
-    <button type="submit" class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
-  </form>
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-chalkboard-teacher"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Most Reg. Course</h4>
+          <h1 class="skeleton">--</h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-user-graduate"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Least Reg. Course</h4>
+        <h1 class="skeleton">--</h1>
+    </div>
+  </div>
+  <div class="analytic">
+      <div class="analytic-icon">
+          <span class="fas fa-book"></span>
+      </div>
+      <div class="analytic-info">
+          <h4>Total Courses</h4>
+          <h1 class="skeleton">{{ courses|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+        <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+        <h4>Specializations</h4>
+        <h1 class="skeleton">{{ specializations|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+    </div>
+  </div>
 </div>
+{% endblock %}
+
+{% block manage-courses %}
+
+{% if "Administrator" in request.user|user_group or "Teaching Staff" in request.user|user_group %}
+<div class="btn-area">
+  <button id="createCourse" data-create-course-url="{% url 'updateCourse' %}" class="create-block-btn">Create Course</button>
+  <button id="createCourseBulk" class="create-block-btn">Create Courses (CSV)</button>
+</div>
+{% endif %}
+
+<form action="{% url 'searchCourses' %}" method="POST">
+{% csrf_token %}
+<div class="search-bar-container">
+  <div class="searchBar">
+      <input id="searchQueryInput" type="text" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="{{ searchQuery }}" aria-label="Search courses" />
+      <button id="searchQuerySubmit" type="submit" name="searchQuerySubmit">
+        <span class="material-icons"> search </span>
+      </button>
+    </div>
+  </div>
+</form>
 
 {% if courses %}
-<p class="search-result-text">About {{ courses|length|intcomma }} result{{ courses|length|pluralize }} ({{totalTimeTaken}} seconds)</p>
-{% endif %}
+
+<div class="searchStatus">
+  About {{ courses|length }} result{{ courses|length|pluralize }} ({{ searchTime }} seconds)
+</div>
 
 <div class="course-container">
   <ul class="courses">
@@ -29,31 +88,27 @@
     <li class="courses_item">
       <div class="course">
         <div class="course_image">
-          <h1 class="course-short_title">{{ i.course_code }} <sub class="custom_sub">{{ i.course_name|first_letter_word }}</sub> </h1>
+          <h1 class="course-short_title skeleton">{{ i.code }} <sub class="custom_sub">{{ i.name|first_letter_word }}</sub> </h1>
         </div>
         <div class="course_content">
-          <h2 class="course_title">{{ i.course_name }}</h2>
-          <p class="course_text">{{ i.course_desc }}</p>
-          <div class="course-buttons">
-            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.course_code %}'" >Know More</button>
-            <button class="enrollCoursebtn course_btn">Enroll</button>
+          <h2 class="course_title skeleton">{{ i.name }}</h2>
+          <p class="course_text skeleton">{{ i.desc }}</p>
+          <div class="course-buttons skeleton">
+            <button class="readMoreCoursebtn course_btn" onclick="document.location='{% url 'view_course' i.code %}'" >Know More</button>
           </div>
         </div>  
       </div>
     </li>
-    {% empty %}
-    <div class="query-search-result">
-        <p class="search-result-text">Your search - <b>{{ query }}</b> - did not match any documents.</p>
-        <p class="search-result-text">Suggestions:</p>
-        <ul class="search-result-text">
-          <li class="search-result-text">&nbsp;Make sure that all words are spelled correctly.</li>
-          <li class="search-result-text">&nbsp;Try different keywords.</li>
-          <li class="search-result-text">&nbsp;Try more general keywords.</li>
-        </ul>
-    </div>
     {% endfor %}
   </ul>
 </div>
+{% else %}
+<div class="searchStatus">
+  We couldn't find any course related to <b>{{ searchQuery }}</b>
+</div>
+{% endif %}
+
+<script src="{% static 'js/manage_course.js' %}"></script>
 
 {% endblock %}
 

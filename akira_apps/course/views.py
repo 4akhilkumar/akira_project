@@ -8,7 +8,6 @@ from django.shortcuts import redirect, render
 
 from datetime import datetime
 
-from akira_apps.academic_registration.forms import (SemesterModeForm)
 from akira_apps.academic.models import (Branch)
 from akira_apps.academic_registration.models import (Semester, SetSemesterRegistration)
 from akira_apps.course.forms import (CourseTypeForm, CourseExtraFieldForm)
@@ -569,6 +568,49 @@ def delete_course(request, course_id):
     except Exception as e:
         messages.error(request, e)
     return redirect('manage_courses')
+
+from itertools import chain
+
+def searchCourses(request):
+    if request.method == "POST":
+        searchquery = request.POST.get('searchquery').strip()
+
+        startTime = datetime.now()
+        resultArray = []
+        courseExtraFields = CourseExtraFields.objects.filter(
+            Q(field_name__icontains = searchquery) | Q(field_value__icontains = searchquery)
+            )
+        for each in courseExtraFields:
+            resultArray.append(each.course)
+
+        courseCOTExtraFields = CourseCOTExtraFields.objects.filter(
+            Q(field_name__icontains = searchquery) | Q(field_value__icontains = searchquery)
+            )
+        for each in courseCOTExtraFields:
+            resultArray.append(each.course.course)
+
+        courses = CourseMC.objects.filter(
+            Q(code__icontains = searchquery) | Q(name__icontains = searchquery) |
+            Q(desc__icontains = searchquery) | Q(course_coordinator__username__icontains = searchquery) |
+            Q(branch__name__icontains = searchquery) | Q(type__icontains = searchquery) |
+            Q(pre_requisite__code__icontains = searchquery) | Q(pre_requisite__name__icontains = searchquery) |
+            Q(pre_requisite__desc__icontains = searchquery) | Q(pre_requisite__course_coordinator__username__icontains = searchquery) |
+            Q(pre_requisite__branch__name__icontains = searchquery) | Q(pre_requisite__type__icontains = searchquery)
+            )
+        for each in courses:
+            resultArray.append(each)
+        resultArray = list(set(resultArray))
+        endTime = datetime.now()
+        searchTime = (endTime - startTime).total_seconds()
+
+        context = {
+            "courses": resultArray,
+            "searchQuery": searchquery,
+            "searchTime": searchTime,
+        }
+        return render(request, 'course/search_course.html', context)
+    else:
+        return redirect('manage_courses')
 
 @allowed_users(allowed_roles=['Administrator', 'Teaching Staff'])
 def teachingstaffCourseEnrollAjax(request):

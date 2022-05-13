@@ -10,6 +10,8 @@ urlpatterns = [
     path('setCourseExtraFieldValueAjax/', views.setCourseExtraFieldValueAjax, name='setCourseExtraFieldValueAjax'),
     path('deleteCourseExtraFieldValueAjax/', views.deleteCourseExtraFieldValueAjax, name='deleteCourseExtraFieldValueAjax'),
 
+    path('searchCourses/', views.searchCourses, name='searchCourses'),
+
     path('createCourseCOTAjax/', views.createCourseCOTAjax, name='createCourseCOTAjax'),
     path('getAllCurrentCOTAjax/', views.getAllCurrentCOTAjax, name='getAllCurrentCOTAjax'),
     path('setCreatedCOTFieldAjax/', views.setCreatedCOTFieldAjax, name='setCreatedCOTFieldAjax'),
