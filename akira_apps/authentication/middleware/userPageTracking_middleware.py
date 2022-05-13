@@ -16,7 +16,7 @@ class userPageTrackingMiddleware:
 
             currentPageURL = str(request.build_absolute_uri())
 
-            DONT_SAVE_LIST = ["Device", "admin", "logout"]
+            DONT_SAVE_LIST = ["Device", "admin", "logout", "media", "static"]
             if any(ext in currentPageURL for ext in DONT_SAVE_LIST):
                 pass
             else:
