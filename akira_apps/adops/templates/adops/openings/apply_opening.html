@@ -52,8 +52,8 @@
       </div>
       <div class="job-detail-buttons">
        <button class="search-buttons detail-button">{{ eachopening.type }}</button>
-       <!-- <button class="search-buttons detail-button">{{ eachopening.experience }}</button> -->
-       <button class="search-buttons detail-button">{{ eachopening.qualification }}</button>
+       <button class="search-buttons detail-button">{{ eachopening.experience }}</button>
+       <!-- <button class="search-buttons detail-button">{{ eachopening.qualification }}</button> -->
        <button class="search-buttons detail-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</button>
       </div>
       <div class="job-card-buttons">
@@ -88,7 +88,8 @@
         <div class="job-overview-buttons">
          <div class="search-buttons time-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</div>
          <div class="search-buttons time-button">{{ eachopening.type }}</div>
-         <div class="search-buttons level-button">{{ eachopening.qualification }}</div>
+         <div class="search-buttons time-button">{{ eachopening.experience }}</div>
+         <!-- <div class="search-buttons level-button">{{ eachopening.qualification }}</div> -->
          {% comment %}
          <!-- <div class="job-stat">New</div> -->
          <!-- <div class="job-day">{{ eachopening.created_at|naturalday }}</div> -->
