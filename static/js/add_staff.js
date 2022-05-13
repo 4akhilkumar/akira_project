@@ -11,7 +11,7 @@ bulkStaffModalSpan.onclick = function() {
 }
 
 $(window).click(function(event) {
-  if (event.target == blockModal) {
+  if (event.target == bulkStaffModal) {
     bulkStaffModal.style.display = "none";
   }
 });
