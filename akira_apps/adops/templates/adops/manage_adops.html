@@ -75,7 +75,7 @@
         <form action="{% url 'bulk_upload_staffs_save' %}" method="POST" enctype="multipart/form-data">
           <div class="drop-zone">
             <span class="drop-zone__prompt">
-              <i class="fa-solid fa-file fileUploadIcon"></i> <br>
+              <span class="icon-font-size5 material-icons"> file_upload </span>
               Drop file here or click to upload</span>
               {% csrf_token %}
               <input type="file" name="staff_file" class="drop-zone__input" accept=".csv" required>

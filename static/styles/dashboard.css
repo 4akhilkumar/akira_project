@@ -1751,7 +1751,11 @@ button.search-icon:hover {
   border-style: solid;
 }
 
-.fileUploadIcon {
+.drop-zone__prompt {
+  display: contents;
+}
+
+span.icon-font-size5 {
   font-size: 5rem;
 }
 
