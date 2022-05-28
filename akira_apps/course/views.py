@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.csrf import csrf_exempt
 
 from datetime import datetime
 
@@ -569,11 +570,13 @@ def delete_course(request, course_id):
         messages.error(request, e)
     return redirect('manage_courses')
 
-from itertools import chain
-
+@csrf_exempt
 def searchCourses(request):
-    if request.method == "POST":
-        searchquery = request.POST.get('searchquery').strip()
+    if request.method == "GET":
+        try:
+            searchquery = request.GET.get('searchquery').strip()
+        except Exception:
+            return redirect('manage_courses')
 
         startTime = datetime.now()
         resultArray = []

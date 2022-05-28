@@ -7,7 +7,7 @@
 
 {% block analytics-text %}
 <h1>Manage Courses</h1>
-<p>Display analytics about your Courses <span class="fas fa-chart-line"></span> </p>
+<p>Display analytics about your Courses<span class="material-icons">analytics</span> </p>
 {% endblock %}
 
 {% block analytic-overview %}
@@ -16,39 +16,41 @@
 </section>
 <div class="analytics">
   <div class="analytic">
-      <div class="analytic-icon">
-          <span class="fas fa-chalkboard-teacher"></span>
-      </div>
-      <div class="analytic-info">
-          <h4>Most Reg. Course</h4>
-          <h1 class="skeleton">--</h1>
-      </div>
+    <div class="analytic-icon">
+      <span class="material-icons">groups</span>
+    </div>
+    <div class="analytic-info">
+      <h4>Most Reg. Course</h4>
+      <h1 class="skeleton">--</h1>
+    </div>
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fas fa-user-graduate"></span>
+      <span class="material-icons">people</span>
     </div>
     <div class="analytic-info">
-        <h4>Least Reg. Course</h4>
-        <h1 class="skeleton">--</h1>
+      <h4>Least Reg. Course</h4>
+      <h1 class="skeleton">--</h1>
     </div>
-  </div>
-  <div class="analytic">
-      <div class="analytic-icon">
-          <span class="fas fa-book"></span>
-      </div>
-      <div class="analytic-info">
-          <h4>Total Courses</h4>
-          <h1 class="skeleton">{{ courses|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
-      </div>
   </div>
   <div class="analytic">
     <div class="analytic-icon">
-        <span class="fas fa-swatchbook"></span>
+      <span class="material-icons">auto_stories</span>
     </div>
     <div class="analytic-info">
-        <h4>Specializations</h4>
-        <h1 class="skeleton">{{ specializations|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+      <h4>Total Courses</h4>
+      <h1 class="skeleton">{{ courses|length }}
+        <small title="Compared to previous semester" class="text-success">
+          <span style="display: inline-flex; align-items: center;">
+            <!-- 1% <span class="material-icons"> trending_up </span> -->
+          </span>
+        </small>
+        <!-- <small title="Compared to previous semester" class="text-danger">
+          <span style="display: inline-flex; align-items: center;">
+            1% <span class="material-icons"> trending_down </span>
+          </span>
+        </small> -->
+      </h1>
     </div>
   </div>
 </div>
@@ -63,12 +65,11 @@
 </div>
 {% endif %}
 
-<form action="{% url 'searchCourses' %}" method="POST">
-{% csrf_token %}
+<form action="{% url 'searchCourses' %}" method="GET">
 <div class="search-bar-container">
   <div class="searchBar">
-      <input id="searchQueryInput" type="text" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="" aria-label="Search courses" />
-      <button id="searchQuerySubmit" type="submit" name="searchCourse">
+      <input id="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="" aria-label="Search courses" />
+      <button id="searchQuerySubmit" type="submit">
         <span class="material-icons"> search </span>
       </button>
     </div>

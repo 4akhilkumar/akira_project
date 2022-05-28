@@ -7,69 +7,16 @@
 {% block content %}
 
 {% block analytics-text %}
-<h1>Manage Courses</h1>
-<p>Display analytics about your Courses <span class="fas fa-chart-line"></span> </p>
-{% endblock %}
-
-{% block analytic-overview %}
-<section>
-  <h3 class="section-head">Overview</h3>
-</section>
-<div class="analytics">
-  <div class="analytic">
-      <div class="analytic-icon">
-          <span class="fas fa-chalkboard-teacher"></span>
-      </div>
-      <div class="analytic-info">
-          <h4>Most Reg. Course</h4>
-          <h1 class="skeleton">--</h1>
-      </div>
-  </div>
-  <div class="analytic">
-    <div class="analytic-icon">
-        <span class="fas fa-user-graduate"></span>
-    </div>
-    <div class="analytic-info">
-        <h4>Least Reg. Course</h4>
-        <h1 class="skeleton">--</h1>
-    </div>
-  </div>
-  <div class="analytic">
-      <div class="analytic-icon">
-          <span class="fas fa-book"></span>
-      </div>
-      <div class="analytic-info">
-          <h4>Total Courses</h4>
-          <h1 class="skeleton">{{ courses|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
-      </div>
-  </div>
-  <div class="analytic">
-    <div class="analytic-icon">
-        <span class="fas fa-swatchbook"></span>
-    </div>
-    <div class="analytic-info">
-        <h4>Specializations</h4>
-        <h1 class="skeleton">{{ specializations|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
-    </div>
-  </div>
-</div>
+<h1>Search Courses</h1>
 {% endblock %}
 
 {% block manage-courses %}
 
-{% if "Administrator" in request.user|user_group or "Teaching Staff" in request.user|user_group %}
-<div class="btn-area">
-  <button id="createCourse" data-create-course-url="{% url 'updateCourse' %}" class="create-block-btn">Create Course</button>
-  <button id="createCourseBulk" class="create-block-btn">Create Courses (CSV)</button>
-</div>
-{% endif %}
-
-<form action="{% url 'searchCourses' %}" method="POST">
-{% csrf_token %}
-<div class="search-bar-container">
+<form action="{% url 'searchCourses' %}" method="GET">
+<div class="search-bar-container" style="margin: 0.5rem auto 1.5rem auto;">
   <div class="searchBar">
-      <input id="searchQueryInput" type="text" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="{{ searchQuery }}" aria-label="Search courses" />
-      <button id="searchQuerySubmit" type="submit" name="searchQuerySubmit">
+      <input id="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="{{ searchQuery }}" aria-label="Search courses" />
+      <button id="searchQuerySubmit" type="submit" name="">
         <span class="material-icons"> search </span>
       </button>
     </div>

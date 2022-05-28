@@ -26,7 +26,7 @@ urlpatterns = [
     path('academicRegistration/', include('akira_apps.academic_registration.urls')),
     path('academic/', include('akira_apps.academic.urls')),
     path('accounts/', include('akira_apps.accounts.urls')),
-    path('course/', include('akira_apps.course.urls')),
+    path('courses/', include('akira_apps.course.urls')),
     path('shigen/', include('akira_apps.shigen.urls')),
     path('adops/', include('akira_apps.adops.urls')),
     path('', include('akira_apps.URLShortener.urls')),

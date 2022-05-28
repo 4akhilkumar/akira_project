@@ -1,8 +1,8 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
-    path('manage_courses/', views.manage_courses, name='manage_courses'),
+    path('', views.manage_courses, name='manage_courses'),
     path('createCourseAjax/', views.createCourseAjax, name='createCourseAjax'),
     path('createCourse/', views.updateCourse, name='updateCourse'),
     path('editCourse/<course_id>/', views.editCourse, name='editCourse'),
@@ -10,7 +10,7 @@ urlpatterns = [
     path('setCourseExtraFieldValueAjax/', views.setCourseExtraFieldValueAjax, name='setCourseExtraFieldValueAjax'),
     path('deleteCourseExtraFieldValueAjax/', views.deleteCourseExtraFieldValueAjax, name='deleteCourseExtraFieldValueAjax'),
 
-    path('searchCourses/', views.searchCourses, name='searchCourses'),
+    re_path(r'^searchCourses/?$', views.searchCourses, name='searchCourses'),
 
     path('createCourseCOTAjax/', views.createCourseCOTAjax, name='createCourseCOTAjax'),
     path('getAllCurrentCOTAjax/', views.getAllCurrentCOTAjax, name='getAllCurrentCOTAjax'),
