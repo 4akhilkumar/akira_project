@@ -1,0 +1,81 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Manage Openings</h1>
+<p>Display analytics about your Academy openings <span class="fas fa-chart-line"></span> </p>
+{% endblock %}
+
+{% block manage-openings %}
+<div class="btn-area">
+    <button type="button" class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
+    <button type="button" id="bulkOpeningForm" class="add-opening">Bulk openings</button>
+</div>
+
+<div class="btn-area">
+  <button onClick='window.location="{% url 'add_staff' %}"' class="add-faculty">Add Staff</button>
+  <button id="showFormStaffBulkImport" class="add-faculty">Bulk Import</button>
+  <button onClick='window.location="{% url 'staff_info_csv' %}"' class="add-faculty">Bulk Export</button>
+</div>
+
+<div class="job-cards">
+  {% for eachopening in applied_openings %}
+  <div class="job-card job-id" id="{{ eachopening.id }}">
+    <div class="job-card-header skeleton">
+    <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
+      <g fill="#feb0a5">
+      <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
+      <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
+      </g>
+      <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
+    </svg>
+    </div>
+    <div class="job-card-title skeleton">{{ eachopening.job }}</div>
+    <div class="job-card-subtitle skeleton">
+      {{ eachopening.overview }}
+    </div>
+    <div class="job-detail-buttons">
+    <button class="search-buttons detail-button skeleton">{{ eachopening.type }}</button>
+    <button class="search-buttons detail-button skeleton">Min. {{ eachopening.min_experience }} Year</button>
+    <button class="search-buttons detail-button skeleton">{{ eachopening.qualification }}</button>
+    <button class="search-buttons detail-button applicant-count-info skeleton">{{ eachopening.applied.all|length }} Appl.</button>
+    </div>
+    <div class="job-card-buttons skeleton">
+      <a href="{% url 'applicantsInfo' eachopening.id %}" class="search-buttons card-buttons-msg know-more" target="_blank" rel="noopener noreferrer">View Applicant{{ eachopening.applied.all|length|pluralize }} <i class="fa-solid fa-up-right-from-square"></i> </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div id="bulkStaffModalForm" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Import <span class="underline">Bulk Staff</span></h3>
+        <span id="close-bulkStaffModal" class="close"><span class="material-icons"> cancel </span></span>
+      </div>
+      <div class="regiserformcontainer">
+        <form action="{% url 'bulk_upload_staffs_save' %}" method="POST" enctype="multipart/form-data">
+          <div class="drop-zone">
+            <span class="drop-zone__prompt">
+              <span class="icon-font-size5 material-icons"> file_upload </span>
+              Drop file here or click to upload</span>
+              {% csrf_token %}
+              <input type="file" name="staff_file" class="drop-zone__input" accept=".csv" required>
+          </div>
+          <input type="submit" class="bulkUploadButton" value="Bulk Upload">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/fileDragUpload.js' %}"></script>
+
+<script src="{% static 'js/manageOpenings.js' %}"></script>
+
+{% endblock %}
+
+{% endblock %}

@@ -36,6 +36,10 @@ def manage_adops(request):
     return render(request, 'adops/manage_adops.html', context)
 
 @allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+def manageOpenings(request):
+    return render(request, "adops/openings/manageOpenings.html")
+
+@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
 def add_openings(request):
     contact_person = User.objects.filter(groups__name='Administrator')
     job_type_list = OpeningsJobTypeForm()

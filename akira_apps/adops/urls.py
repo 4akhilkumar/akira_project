@@ -9,6 +9,7 @@ urlpatterns = [
     path('deleteOpening/<str:openingID>/', views.deleteOpening, name='deleteOpening'),
     path('openings/', views.openings, name='openings'),
     path('fetch_each_opening_Ajax/', views.fetch_each_opening_Ajax, name='fetch_each_opening_Ajax'),
+    path('manageOpenings/', views.manageOpenings, name='manageOpenings'),
 
     path('applicantsAccount/', views.applicantsAccount, name='applicantsAccount'),
     path('send_applicant_reg_email_again/<username>/', views.send_applicant_reg_email_again, name = 'send_applicant_reg_email_again'),
