@@ -445,6 +445,11 @@ $("#create-urlshortener-next").click(function(){
   $(this).val("Shorting...");
   createURLShortener.call(this);
 });
+
+$("#id_url-shortener-mf").on('click', function() {
+  var geturlshortenermflink = $(this).data('url-shortener-mf-link');
+  window.location.href = geturlshortenermflink;
+});
 // ====================== URL Shortener Modal ====================== //
 
 // ============================= QR Code ================================ //
