@@ -127,22 +127,26 @@ def setTeachingStaffSemesterRegistrationAjax(request):
         semesterId = request.POST.get('semester_id')
         if Semester.objects.filter(id=semesterId).exists() is True:
             semesterObj = Semester.objects.get(id=semesterId)
-            try:
-                getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
-            except SetSemesterRegistration.DoesNotExist:
-                getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
-                message = "Semester registration status set successfully!"
-                status = "success"
-            if getSemesterStatus.teachingstaff is True:
-                getSemesterStatus.teachingstaff = False
-                getSemesterStatus.save()
-                message = "Semester registration status changed successfully!"
-                status = "success"
+            if semesterObj.is_active is True:
+                try:
+                    getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+                except SetSemesterRegistration.DoesNotExist:
+                    getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
+                    message = "Semester registration status set successfully!"
+                    status = "success"
+                if getSemesterStatus.teachingstaff is True:
+                    getSemesterStatus.teachingstaff = False
+                    getSemesterStatus.save()
+                    message = "Semester registration status changed successfully!"
+                    status = "success"
+                else:
+                    getSemesterStatus.teachingstaff = True
+                    getSemesterStatus.save()
+                    message = "Semester registration status changed successfully!"
+                    status = "success"
             else:
-                getSemesterStatus.teachingstaff = True
-                getSemesterStatus.save()
-                message = "Semester registration status changed successfully!"
-                status = "success"
+                message = "Semester is not active"
+                status = "error"
         else:
             message = "Semester does not exist!"
             status = "error"
@@ -153,22 +157,26 @@ def setStudentSemesterRegistrationAjax(request):
         semesterId = request.POST.get('semester_id')
         if Semester.objects.filter(id=semesterId).exists() is True:
             semesterObj = Semester.objects.get(id=semesterId)
-            try:
-                getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
-            except SetSemesterRegistration.DoesNotExist:
-                getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, students = True)
-                message = "Semester registration status set successfully!"
-                status = "success"
-            if getSemesterStatus.students is True:
-                getSemesterStatus.students = False
-                getSemesterStatus.save()
-                message = "Semester registration status changed successfully!"
-                status = "success"
+            if semesterObj.is_active is True:
+                try:
+                    getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+                except SetSemesterRegistration.DoesNotExist:
+                    getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, students = True)
+                    message = "Semester registration status set successfully!"
+                    status = "success"
+                if getSemesterStatus.students is True:
+                    getSemesterStatus.students = False
+                    getSemesterStatus.save()
+                    message = "Semester registration status changed successfully!"
+                    status = "success"
+                else:
+                    getSemesterStatus.students = True
+                    getSemesterStatus.save()
+                    message = "Semester registration status changed successfully!"
+                    status = "success"
             else:
-                getSemesterStatus.students = True
-                getSemesterStatus.save()
-                message = "Semester registration status changed successfully!"
-                status = "success"
+                message = "Semester is not active"
+                status = "error"
         else:
             message = "Semester does not exist!"
             status = "error"
@@ -181,6 +189,22 @@ def setSemesterStatusAjax(request):
             semesterObj = Semester.objects.get(id=semesterId)
             if semesterObj.is_active is True:
                 semesterObj.is_active = False
+                try:
+                    getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+                except SetSemesterRegistration.DoesNotExist:
+                    getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
+                    # message = "Semester registration status set successfully!"
+                    # status = "success"
+                if getSemesterStatus.teachingstaff is True:
+                    getSemesterStatus.teachingstaff = False
+                    getSemesterStatus.save()
+                    # message = "Semester registration status changed successfully!"
+                    # status = "success"
+                if getSemesterStatus.students is True:
+                    getSemesterStatus.students = False
+                    getSemesterStatus.save()
+                    # message = "Semester registration status changed successfully!"
+                    # status = "success"
             else:
                 semesterObj.is_active = True
             semesterObj.save()
@@ -204,14 +228,15 @@ def allocateCourseForSemester(request):
     semesters = Semester.objects.all()
     semesterModeForm = SemesterModeForm()
     courses = CourseMC.objects.all()
+    coursesForSemester = DesignCoursesSemester.objects.all()
     context = {
         "branches": branches,
         "semesters": semesters,
         "semesterModeForm":semesterModeForm,
         "courses": courses,
+        "coursesForSemester": coursesForSemester
     }
     return render(request, 'academic_registration/allocatingCourseForSemester.html', context)
-
 
 def allocateCourseForSemesterAjax(request):
     if request.method == "POST":
