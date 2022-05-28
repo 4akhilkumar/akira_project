@@ -133,8 +133,8 @@
                         </li>
                         {% if "adops" in request.path %}
                         <li>
-                            <a href="#manageOpenings"
-                            {% if "openings" in request.path %}
+                            <a href="{% url 'manageOpenings' %}"
+                            {% if "manageOpenings" in request.path or "add_openings" in request.path %}
                             class="active"
                             {% endif %}
                             >
@@ -272,6 +272,7 @@
             {% block edit-openings %} {% endblock %}
             {% block manage-user_applied_openings %} {% endblock %}
             {% block manage-admissions %} {% endblock %}
+            {% block manage-openings %} {% endblock %}
             
             {% block manage-specializations %} {% endblock %}
             {% block view-specialization %} {% endblock %}
@@ -292,6 +293,8 @@
             
             {% block manage-account %} {% endblock %}
             {% block switch-device %} {% endblock %}
+
+            {% block url-shortener-mf %} {% endblock %}
             <section>
                 <div class="block-grid">
                     {% block revenue-card %}{% endblock %}
@@ -327,7 +330,7 @@
                         </button>
                     </div>
                     <div class="sub-item">
-                        <p>URL Shortener</p>
+                        <p id="id_url-shortener-mf" data-url-shortener-mf-link="{% url 'urlshortenermf' %}">URL Shortener</p>
                     </div>
                 </div>
                 <div class="widget-item">
