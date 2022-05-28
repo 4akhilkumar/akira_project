@@ -1,0 +1,216 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load shortenedURLInfo %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>URL Shortener</h1>
+<p>An URL shortener is a website that reduces the length of your URL</p>
+{% endblock %}
+
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview&nbsp; <span id="reloadurlshortenermf" class="overview-refresh">reload</span></h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="material-icons"> link </span>
+    </div>
+    <div class="analytic-info">
+        <h4>Active links</h4>
+        <h1 class="skeleton">{{ activesu|length }}</h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="material-icons"> link_off </span>
+    </div>
+    <div class="analytic-info">
+        <h4>About to expire</h4>
+        <h1 class="skeleton">{{ abouttoexpiresu|length }}</h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="material-icons"> perm_identity </span>
+    </div>
+    <div class="analytic-info">
+        <h4>Unique Visitors</h4>
+        <h1 class="skeleton">--</h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="material-icons"> ads_click </span>
+    </div>
+    <div class="analytic-info">
+        <h4>Unique Clicks</h4>
+        <h1 class="skeleton">--</h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block url-shortener-mf %}
+
+<div class="url-shortener-container">
+  {% csrf_token %}
+  <div class="shortened-urls">
+    {% for each in shorturls %}
+    <div class="item-shortened-url" id="{{ each.id }}" data-selected-su-logs-ajax-url="{% url 'selectedSULogsAjax' %}">
+      <div class="shortened-url-icon">
+        <span class="material-icons">language</span>
+      </div>
+      <div class="shortened-url-info">
+        <div class="shortened-url">
+          <h4>http://127.0.0.1:8000/ak/{{ each.long_url_path }}</h4>
+        </div>
+        <div class="original-url">
+          <p>{{ each.long_url }}</p>
+        </div>
+        <div class="shortened-url-other-info">
+          <p>{{ each.created_at }}</p>
+          <p>{{ each.id|totalClicks }} Click{{ each.id|totalClicks|pluralize }}</p>
+          <!-- {{ each.expire_date_time }} -->
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <!-- <div class="shadow curved-2">Curved top and bottom</div> -->
+  <div class="selected-shortened-url-info">
+    <div class="selected-su-boxes">
+      <!-- Appened here -->
+    </div>
+    <div class="selected-su-complete-logs">
+      Select any shortened URL to see the complete logs
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/urlshortener.js' %}"></script>
+<script>
+  $(document).ready(function() {
+    $('#reloadurlshortenermf').click(function() {
+      location.reload();
+    });
+
+    var lastScrollTop = 0;
+    $('.shortened-urls').scroll(function(event){
+      var st = $(this).scrollTop();
+      if (st > lastScrollTop) {
+        console.log('down');
+        $('.shortened-urls').css('box-shadow', 'inset 0px 2px 0px 0px #00000040');
+      } else {
+        console.log('up');
+        $('.shortened-urls').css('box-shadow', 'inset 0px -2px 0px 0px #00000040');
+      }
+      lastScrollTop = st;
+      // console.log(st, lastScrollTop);
+    });
+
+    function longURLEllipses() {
+      $('.original-url p').each(function() {
+        if ($(this).text().length > 40) {
+          var shortURL = $(this).text().substring(0, 40);
+          $(this).text(shortURL + '...');
+        }
+      });
+    }
+    
+    $(window).resize(function(){
+      if(window.innerWidth > 768) {
+        longURLEllipses();
+      }
+    });
+
+    // make an ajax call to get the logs of the selected shortened url
+    $('.item-shortened-url').click(function() {
+      var selected_su_id = $(this).attr('id');
+      var selected_su_logs_url = $(this).attr('data-selected-su-logs-ajax-url');
+      $.ajax({
+        url: selected_su_logs_url,
+        type: 'POST',
+        data: {
+          'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+          'selected_su_id': selected_su_id,
+        },
+        success: function(data) {
+          $('.selected-su-boxes').empty();
+          $('.selected-su-complete-logs').empty();
+          var data_length = Object.keys(data).length;
+          var total_ip_addr = [];
+          if(data_length > 0) {
+            $.each(data, function (key, value) {
+              // store value.user_ip_address in array
+              total_ip_addr.push(value.user_ip_address);
+              $('.selected-su-complete-logs').append(
+                  '<p>' + value.user_ip_address + '</p>' +
+                  '<p>' + value.os_details + '</p>' +
+                  '<p>' + value.browser_details + '</p>' +
+                  '<p>' + new Date(value.visited_at).toLocaleString() + '</p>' +
+                  '<br>'
+              );
+            });
+
+            var unique_ip_addr = total_ip_addr.filter(function(item, pos) {
+              return total_ip_addr.indexOf(item) == pos;
+            });
+
+            if(unique_ip_addr.length > 0) {
+              unique_ip_addr.length = unique_ip_addr.length;
+            } else {
+              unique_ip_addr.length = 0;
+            }
+
+            // create an array and store the value.os_details in array and then find the most frequent value
+            var total_os_details = [];
+            $.each(data, function (key, value) {
+              total_os_details.push(value.os_details);
+            });
+            function mode(array) {
+                if(array.length == 0)
+                    return null;
+                var modeMap = {};
+                var maxEl = array[0], maxCount = 1;
+                for(var i = 0; i < array.length; i++)
+                {
+                    var el = array[i];
+                    if(modeMap[el] == null)
+                        modeMap[el] = 1;
+                    else
+                        modeMap[el]++;  
+                    if(modeMap[el] > maxCount)
+                    {
+                        maxEl = el;
+                        maxCount = modeMap[el];
+                    }
+                }
+                return maxEl;
+            }
+
+            $('.selected-su-boxes').append(
+              '<h4>Unique Visitors</h4>' +
+              '<h4>' + unique_ip_addr.length + '</h4>' +
+              '<h4>Total Clicks</h4>' +
+              '<h4>' + data_length + '</h4>' +
+              '<h4>Mostly Users OS</h4>' +
+              '<h4>' + mode(total_os_details) + '</h4>'
+            );
+
+          } else {
+            $('.selected-su-complete-logs').append(
+                '<p>No logs found</p>'
+            );
+          }
+        }
+      });
+    });
+
+  });
+</script>
+{% endblock %}
+
+{% endblock %}
