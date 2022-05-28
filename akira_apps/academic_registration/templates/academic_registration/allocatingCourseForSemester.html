@@ -49,11 +49,11 @@
                   <label class="checkbox-wrapper">
                       <input type="checkbox" name="{{ each.id }}" class="checkbox-input course_checkbox_item" />
                       <span class="checkbox-tile">
+                      <span class="checkbox-label">{{ each.name|first_letter_word }}</span>
                       <span class="checkbox-icon">
                           <!-- Icon -->
                           {{ each.code }}
                       </span>
-                      <span class="checkbox-label">{{ each.name|first_letter_word }}</span>
                       </span>
                   </label>
                   </div>
@@ -62,7 +62,7 @@
               </div>
 
             </div>
-            <button type="button" id="semester-courses-btn" class="action-button semester-courses-btn" data-go-to-aca_Registration-url="{% url 'aca_Registration' %}" data-allocate-courses-for-semester-url="{% url 'allocateCourseForSemesterAjax' %}">Submit</button>
+            <button type="button" id="semester-courses-btn" class="action-button semester-courses-btn" data-go-to-aca-registration-url="{% url 'aca_Registration' %}" data-allocate-courses-for-semester-url="{% url 'allocateCourseForSemesterAjax' %}">Submit</button>
           </fieldset>
         </form>
     </div>
@@ -149,6 +149,15 @@
   </div>
 </div>
 
+{% for each in coursesForSemester %}
+{{ each.semester }}
+{% for eachcourse in each.course.all %}
+<ul>
+  <li>{{ eachcourse }}</li>
+</ul>
+{% endfor %}
+<br>
+{% endfor %}
 <script src="{% static 'js/allocatingCFS.js' %}"></script>
 
 {% endblock %}
