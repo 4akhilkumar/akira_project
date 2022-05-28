@@ -235,7 +235,7 @@ function allocateCFS() {
         success: function (data) {
             if (data.status == "success") {
                 toastr.success(data.message);
-                window.location.href = $("#semester-courses-btn").data('go-to-aca_Registration-url');
+                window.location.href = $("#semester-courses-btn").data('go-to-aca-registration-url');
             }
             else if (data.status == "info") {
                 toastr.info(data.message);
