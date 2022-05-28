@@ -1,6 +1,7 @@
 {% extends 'side_panel-navbar_dashboard.html' %}
 {% load static %}
 {% load semRegistration %}
+{% load first_letter_word %}
 
 {% block content %}
 
@@ -46,25 +47,96 @@
   <button class="create-block-btn" onclick="document.location='{% url 'allocateCourseForSemester' %}'">Semester Courses</button>
 </div>
 
-<div class="semesters-container">
-  <div class="list-all-semesters">
+<div style="overflow-x:auto;">
+<span id="id_acaRegTable">
+<table class="table table-sortable content-table">
+  <thead>
+    <tr>
+      <th class="table-header-title">
+        Semester
+      </th>
+      <th class="table-header-title">
+        Status
+      </th>
+      <th class="table-header-title">
+        Teaching Staff
+      </th>
+      <th class="table-header-title">
+        Student
+      </th>
+    </tr>
+    <tr>
+      <th>
+        <input type="text" class="search-input" placeholder="Semester">
+      </th>
+      <th>
+        <input type="text" class="search-input" placeholder="Status">
+      </th>
+      <th>
+        <input type="text" class="search-input" placeholder="Teaching Staff">
+      </th>
+      <th>
+        <input type="text" class="search-input" placeholder="Student">
+      </th>
+    </tr>
+  </thead>
+  <tbody>
     {% for each in semesters %}
-    {{ each.mode }} | {{ each.start_year }} - {{ each.end_year }} | {{ each.branch.name }}
-    <p>Semester Status</p>
-    <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.is_active == True %}checked{% endif %} data-set-semester-status-url="{% url 'setSemesterStatusAjax' %}" class="semester_status"> 
-    <br>
-    <label for="id_{{ each.id }}">Semester Registration Status</label>
-    
-    <br>
-    <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.id|checkTeachingStaffSemRegStatus == True %} checked {% endif %} data-set-sem-reg-status-url="{% url 'setTeachingStaffSemesterRegistrationAjax' %}" class="semRegStatus" />
-    {% if each.id|checkTeachingStaffSemRegStatus == True %} Opened for teaching staff {% else %} Not Opened teaching staff {% endif %}
-    
-    <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.id|checkStudentSemRegStatus == True %} checked {% endif %} data-set-sem-reg-status-url="{% url 'setStudentSemesterRegistrationAjax' %}" class="semRegStatus" />
-    {% if each.id|checkStudentSemRegStatus == True %} Opened for student {% else %} Not Opened Students {% endif %}
-    
-    <hr>
+    <tr>
+      <td>{{ each.mode }} {{ each.start_year }} - {{ each.end_year }} {{ each.branch.name|first_letter_word }}</td>
+      <td>
+        <div class="customized-checkbox">
+          <label class="pure-material-checkbox">
+            <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.is_active == True %}checked{% endif %} data-set-semester-status-url="{% url 'setSemesterStatusAjax' %}" class="semester_status" />
+            <span style="display: flex; align-items: center;">
+              {% if each.is_active == True %}
+              <span class="material-icons" style="font-size: 20px; margin-right: 4px;"> check_circle </span> 
+              Enabled
+              {% else %}
+              <span class="material-icons" style="font-size: 20px; margin-right: 4px;"> error </span> 
+              Disabled
+              {% endif %}
+            </span>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="customized-checkbox">
+          <label class="pure-material-checkbox">
+            <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.is_active == False %} disabled {% endif %} {% if each.id|checkTeachingStaffSemRegStatus == True %} checked {% endif %} data-set-sem-reg-status-url="{% url 'setTeachingStaffSemesterRegistrationAjax' %}" class="semRegStatus" />
+            <span style="display: flex; align-items: center;">
+              {% if each.id|checkTeachingStaffSemRegStatus == True %}
+              <span class="material-icons" style="font-size: 20px; margin-right: 4px;"> check_circle </span>
+              Enabled
+              {% else %}
+              <span class="material-icons" style="font-size: 20px; margin-right: 4px;"> error </span>
+              Disabled
+              {% endif %}
+            </span>
+          </label>
+        </div>
+      </td>
+      <td>
+        <div class="customized-checkbox">
+          <label class="pure-material-checkbox">
+            <input type="checkbox" name="{{ each.id }}" id="id_{{ each.id }}" {% if each.is_active == False %} disabled {% endif %} {% if each.id|checkStudentSemRegStatus == True %} checked {% endif %} data-set-sem-reg-status-url="{% url 'setStudentSemesterRegistrationAjax' %}" class="semRegStatus" />
+            <span style="display: flex; align-items: center;">
+              {% if each.id|checkStudentSemRegStatus == True %}
+              <span class="material-icons" style="font-size: 20px; margin-right: 4px;"> check_circle </span> 
+              Enabled
+              {% else %}
+              <span class="material-icons" style="font-size: 20px; margin-right: 4px;"> error </span> 
+              Disabled
+              {% endif %}
+            </span>
+          </label>
+        </div>
+      </td>
+    </tr>
     {% endfor %}
-  </div>
+  </tbody>
+</table>
+</span>
 </div>
 
 <div id="semesterModalForm" class="modal">
@@ -96,46 +168,46 @@
 
               <div class="field-container">
                 <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_start_year">Start year</label>
-                    <input type="date" name="start_year" id="id_start_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                    <span class="error-text">Select start year</span>
+                  <label class="fieldlabels input-label" for="id_start_year">Start year</label>
+                  <input type="date" name="start_year" id="id_start_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <span class="error-text">Select start year</span>
                 </div>
                 <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_end_year">End year</label>
-                    <input type="date" name="end_year" id="id_end_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                    <span class="error-text">Select end year</span>
+                  <label class="fieldlabels input-label" for="id_end_year">End year</label>
+                  <input type="date" name="end_year" id="id_end_year" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                  <span class="error-text">Select end year</span>
                 </div>
               </div>
 
               <div class="field-container">
                 <div class="input-box active-grey">
-                    <label class="fieldlabels input-label" for="id_semester_branch">Branch</label>
-                    <select name="branch" class="input-1" id="id_semester_branch" required>
-                        {% if branches %}
-                        <option value="">Select Branch</option>
-                        {% endif %}
-                        {% for branch in branches %}
-                        <option value="{{ branch.id }}">{{ branch.name }}</option>
-                        {% empty %}
-                        <option value="">Data Not Available</option>
-                        {% endfor %}
-                    </select>
-                    <span class="error-text">Select branch</span>
-                    <span class="redirect">
-                        <a href="#" id="fetchBranchesforSemester" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
-                          <i class="fa-solid fa-arrows-rotate"></i> refresh
-                        </a>
-                    </span>
+                  <label class="fieldlabels input-label" for="id_semester_branch">Branch</label>
+                  <select name="branch" class="input-1" id="id_semester_branch" required>
+                    {% if branches %}
+                    <option value="">Select Branch</option>
+                    {% endif %}
+                    {% for branch in branches %}
+                    <option value="{{ branch.id }}">{{ branch.name }}</option>
+                    {% empty %}
+                    <option value="">Data Not Available</option>
+                    {% endfor %}
+                  </select>
+                  <span class="error-text">Select branch</span>
+                  <span class="redirect">
+                    <a href="#" id="fetchBranchesforSemester" data-get-branch-url="{% url 'getAllBranchesAjax' %}">
+                      <i class="fa-solid fa-arrows-rotate"></i> refresh
+                    </a>
+                  </span>
                 </div>
                 <div class="input-box input-box-toggle">
                     <div>
-                        <label style="position: unset;" class="fieldlabels input-label" for="id_semester_is_active">Semester Status</label>
+                      <label style="position: unset;" class="fieldlabels input-label" for="id_semester_is_active">Semester Status</label>
                     </div>
                     <div>
-                        <label class="switch">
-                            <input type="checkbox" name="semester_is_active" id="id_semester_is_active" checked>
-                            <span class="slider round"></span>
-                        </label>
+                      <label class="switch">
+                        <input type="checkbox" name="semester_is_active" id="id_semester_is_active" checked>
+                        <span class="slider round"></span>
+                      </label>
                     </div>
                 </div>
               </div>
