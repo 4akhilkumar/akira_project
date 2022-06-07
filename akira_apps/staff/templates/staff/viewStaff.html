@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ staff.first_name }} {{ staff.last_name }}</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name="designation" id="id_designation" value="Head of the Department" placeholder="Designation">
+        <select name="group" id="id_group">
+            <option value="">Select Group</option>
+            {% for each in list_groups %}
+            <option value="{{ each }}">{{ each }}</option>
+            {% empty %}
+            <option value="">Data not available</option>
+            {% endfor %}
+        </select>
+        <input type="submit">
+    </form>
+    <script src="{% statis 'js/viewStaff.js' %}"></script>
+</body>
+</html>
