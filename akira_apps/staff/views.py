@@ -1,8 +1,12 @@
+from email import message
 from django.contrib.auth import authenticate
+from django.http import JsonResponse
 from django.http.response import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
+from akira_apps.adops.models import UserProfile
+from akira_apps.staff.models import Designation, UserDesignation
 
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.course.models import (CourseMC)
@@ -33,14 +37,6 @@ def teachingstaff_dashboard(request):
     context = {
     }
     return render(request, 'staff/dashboards/teachingstaff_dashboard.html', context)
-
-@allowed_users(allowed_roles=['Head of the Department'])
-def hod_dashboard(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
-    context = {
-        "rAnd0m123":rAnd0m123,
-    }
-    return render(request, 'staff/hod_templates/hod_dashboard.html', context)
     
 def view_course(request, course_id):
     rAnd0m123 = secrets.token_urlsafe(16)
@@ -187,8 +183,8 @@ def add_staff(request):
     }
     return render(request, 'staff/add_staff.html', context)
 
-def edit_staff(request, staff_username):
-    staff = Staff.objects.get(user__username=staff_username)
+def editStaff(request, username):
+    staff = UserProfile.objects.get(user__username=username)
     list_groups = Group.objects.all()
     if request.method == 'POST':
         pass
@@ -199,21 +195,71 @@ def edit_staff(request, staff_username):
     }
     return render(request, 'staff/staff_templates/manage_staff/edit_faculty.html', context)
 
-def view_staff(request, staff_username):
+def viewStaff(request, username):
     try:
-        staff = Staff.objects.get(user__username=staff_username)
+        staff = User.objects.get(username=username)
     except Exception:
         messages.error(request, "Staff doesn't exist")
-        return redirect('manage_staff')
-    user = User.objects.get(username=staff_username)
+        return redirect('manageOpenings')
+    user = User.objects.get(username=username)
     list_groups = Group.objects.all()
     current_user_group = ', '.join(map(str, user.groups.all()))
     context = {
         "staff": staff,
-        "current_user_group":current_user_group,
-        "list_groups":list_groups,
+        "current_user_group": current_user_group,
+        "list_groups": list_groups,
     }
-    return render(request, "staff/staff_templates/manage_staff/view_faculty.html", context)
+    return render(request, "staff/viewStaff.html", context)
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def CreateDesignationAjax(request):
+    if request.method == "POST":
+        designationName = request.POST.get('designation')
+        designationDescription = request.POST.get('description')
+        if Designation.objects.filter(name = designationName).exists() is False:
+            Designation.objects.create(name = designationName, description = designationDescription)
+            message = "Designation created successfully"
+            status = "success"
+        else:
+            message = "Designation already exists!"
+            status = "error"
+    return JsonResponse({'message': message, 'status': status}, safe=False)
+
+@csrf_exempt
+def setUserDesignationAjax(request):
+    if request.method == "POST":
+        userName = request.POST.get('username')
+        designationName = request.POST.get('designation')
+        branchID = request.POST.get('branch')
+        if User.objects.filter(username = userName).exists() is True:
+            userObj = User.objects.get(username = userName)
+            if Branch.objects.filter(id = branchID).exists() is True:
+                branchObj = Branch.objects.get(id = branchID)
+                if Designation.objects.filter(name = designationName).exists() is True:
+                    designationObj = Designation.objects.get(name = designationName)
+                    if UserDesignation.objects.filter(user = userObj).exists() is False:
+                        UserDesignation.objects.create(user = userObj, designation = designationObj, branch = branchObj)
+                        message = "Designation allocated successfully"
+                        status = "success"
+                    elif UserDesignation.objects.filter(user = userObj, designation = designationObj).exists() is True:
+                        message = "User already allocated in this designation"
+                        status = "error"
+                    else:
+                        message = "Only one designation for each user!"
+                        status = "error"
+                else:
+                    message = "Designation doesn't exist!"
+                    status = "error"
+            else:
+                message = "Branch doesn't exist!"
+                status = "error"
+        else:
+            message = "User doesn't exist!"
+            status = "error"
+    return JsonResponse({'message': message, 'status': status}, safe=False)
+
 
 def staff_info_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -226,7 +272,7 @@ def staff_info_csv(request):
                     'Blood Group', 'Door No.', 'Zip Code', 'City Name', 
                     'State Name', 'Country', 'Branch', 'Current Medical Issue', 'Designation'])
     
-    staff = Staff.objects.all()
+    staff = UserProfile.objects.all()
 
     for i in staff:
         writer.writerow([i.user.username, i.user.first_name, i.user.last_name, i.user.email,
@@ -237,45 +283,38 @@ def staff_info_csv(request):
 
 def bulk_upload_staffs_save(request):
     if request.method == 'POST':
-        staff_from_db = User.objects.all()
-        staff_user=[]
-        for i in staff_from_db:
-            staff_user.append(i.username)
-            staff_user.append(i.email)
-
         paramFile = io.TextIOWrapper(request.FILES['staff_file'].file)
         data = pd.read_csv(paramFile)
         data.drop_duplicates(subset ="Username", keep = 'first', inplace = True)
 
         for index, row in data.iterrows():
-            if str(row['Username']) not in staff_user and str(row['Email']) not in staff_user:
+            if User.objects.filter(username = str(row['Username']).lower(), email = str(row['Email']).lower()).exists() is False:
                 newuser = User.objects.create_user(
-                    username=row['Username'],
-                    first_name=row['First Name'],
-                    last_name=row['Last Name'],
-                    email=row['Email'],
+                    username=str(row['Username']).lower(),
+                    first_name=str(row['First Name']).title(),
+                    last_name=str(row['Last Name']).title(),
+                    email=str(row['Email']).lower(),
                     password="AKIRAaccount@21",
                 )
-                group_name = row['Designation']
+                group_name = str(row['Designation']).title()
                 my_group = Group.objects.get(name='%s' % str(group_name))
                 my_group.user_set.add(newuser)
 
-                staff = Staff.objects.bulk_create([
-                    Staff(
+                staff = UserProfile.objects.bulk_create([
+                    UserProfile(
                         user_id = newuser.id,
                         name_prefix=row['Name Prefix'],
-                        gender=row['Gender'],
+                        gender=str(row['Gender']),
                         date_of_birth=(row['Date of Birth'] if row['Date of Birth'] != '' else '1998-12-01'),
                         door_no=row['Door No.'],
                         zip_code=row['Zip Code'],
-                        city_name=row['City Name'],
-                        state_name=row['State Name'],
-                        country_name=row['Country'],
-                        current_medical_issue=row['Current Medical Issue'],
+                        city=row['City Name'],
+                        district=row['District Name'],
+                        state=row['State Name'],
+                        country=row['Country'],
                         blood_group=row['Blood Group'],
-                        branch=row['Branch'],
                     )
                 ])
-        return redirect('manage_staff')
+        return redirect('manageOpenings')
     else:
-        return redirect('manage_staff')
+        return redirect('manageOpenings')
