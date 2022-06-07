@@ -8,6 +8,9 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
 from datetime import datetime
+import pandas as pd
+import io
+import csv
 
 from akira_apps.academic.models import (Branch)
 from akira_apps.academic_registration.models import (Semester, SetSemesterRegistration)
@@ -16,6 +19,10 @@ from akira_apps.course.models import (CourseExtraFields, CourseMC, CourseOfferin
                                         CourseComponent, CourseSubComponent, CourseTask, TaskAnswer, 
                                         FacultyCourseEnroll, StudentCourseEnroll)
 from akira_apps.super_admin.decorators import (allowed_users)
+
+def fetchTeachingStaff(request):
+    faculty_list = User.objects.filter(groups__name='Teaching Staff')
+    return JsonResponse(list(faculty_list.values('id', 'username')), safe = False)
 
 @login_required(login_url=settings.LOGIN_URL)
 def manage_courses(request):
@@ -42,7 +49,9 @@ def createCourseAjax(request):
                 courseCC = User.objects.get(id=courseCC)
                 if Branch.objects.filter(id = courseBranch).exists() is True:
                     courseBranch = Branch.objects.get(id = courseBranch)
-                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
+                    if CourseMC.objects.filter(id = pre_requisite).exists() is True:
+                        pre_requisite = CourseMC.objects.get(id = pre_requisite)
+                    else:
                         pre_requisite = None
                     getCourseObj = CourseMC.objects.create(
                         code=courseCode,
@@ -58,11 +67,7 @@ def createCourseAjax(request):
                             CourseFiles.objects.create(course = getCourseObj, course_files = file)
                         message = "Course created successfully"
                         status = "success"
-                        return JsonResponse({
-                                'message': message,
-                                'status': status,
-                                'course_id': getCourseObj.id,
-                            })
+                        return JsonResponse({'message': message, 'status': status, 'course_id': getCourseObj.id})
                     except Exception as e:
                         message = str(e)
                         status = "error"
@@ -75,17 +80,11 @@ def createCourseAjax(request):
         else:
             message = "Course with this code or name already exists"
             status = "error"
-        return JsonResponse({
-                'message': message,
-                'status': status
-            })
+        return JsonResponse({'message': message, 'status': status})
     else:
         message = "We could process your request!"
         status = "error"
-        return JsonResponse({
-                'message':message,
-                'status':status
-            })
+        return JsonResponse({'message':message, 'status':status})
 
 @login_required(login_url=settings.LOGIN_URL)
 def editCourse(request, course_id):
@@ -185,10 +184,7 @@ def submitcourseformAjax(request):
     else:
         message = "We could process your request!"
         status = "error"
-        return JsonResponse({
-                'message':message,
-                'status':status
-            })
+        return JsonResponse({'message':message, 'status':status})
 
 @login_required(login_url=settings.LOGIN_URL)
 @allowed_users(allowed_roles=['Administrator', 'Teaching Staff'])
@@ -541,9 +537,6 @@ def deleteCourseCOTExtraFieldValueAjax(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def view_course(request, course_code):
-    # current_user = request.user
-    # group = current_user.groups.all()[0].name
-    # print(group)
     if CourseMC.objects.filter(code = course_code).exists() is True:
         courseObj = CourseMC.objects.get(code = course_code)
         extraFieldsObj = CourseExtraFields.objects.filter(course = courseObj)
@@ -560,7 +553,7 @@ def view_course(request, course_code):
     }
     return render(request, 'course/view_course.html', context)
 
-# @allowed_users(allowed_roles=['Administrator'])
+@allowed_users(allowed_roles=['Administrator'])
 def delete_course(request, course_id):
     try:
         course = CourseMC.objects.get(id=course_id)
@@ -693,6 +686,42 @@ def course_component(request):
         messages.info(request, "We could process your request!")
         return redirect('manage_courses')
 
+def bulkCreateCourses(request):
+    if request.method == "POST":
+        paramFile = io.TextIOWrapper(request.FILES['courses_file'].file)
+        data = pd.read_csv(paramFile)
+
+        for index, row in data.iterrows():
+            try:
+                if CourseMC.objects.filter(Q(code = str(row['Code']).upper()) | Q(name = str(row['Name']).title())).exists() is False:
+                    if User.objects.filter(username = str(row['Course CO'])).exists() is True:
+                        courseCC = User.objects.get(username = str(row['Course CO']))
+                        if Branch.objects.filter(name = str(row['Branch Name'])).exists() is True:
+                            courseBranch = Branch.objects.get(name = str(row['Branch Name']))
+                            if CourseMC.objects.filter(code = str(row['Prerequisite Code'])).exists() is True:
+                                pre_requisite = CourseMC.objects.get(code = str(row['Prerequisite Code']))
+                            else:
+                                pre_requisite = None
+                            CourseMC.objects.create(
+                                code = str(row['Code']).upper(),
+                                name = str(row['Name']).title(),
+                                desc = str(row['Description']),
+                                course_coordinator = courseCC,
+                                branch = courseBranch,
+                                type = str(row['Type']),
+                                pre_requisite = pre_requisite,
+                            )
+                            messages.success(request, "Bulk Courses Creation Done Successfully")
+                        else:
+                            messages.error(request, "Branch does not exist")
+                    else:
+                        messages.error(request, "User does not exist")
+                else:
+                    messages.info(request, "Course with this code or name already exists")
+            except Exception as e:
+                messages.error(request, str(e))
+    return redirect('manage_courses')
+
 def sub_component(request):
     if request.method == "POST":
         courseId = request.POST.get('course')
@@ -789,7 +818,3 @@ def subComponentsbyComponents(request):
         except Exception as e:
             print(e)
         return JsonResponse(list(getSubComponents.values('id', 'name')), safe = False)
-
-def fetchTeachingStaff(request):
-    faculty_list = User.objects.filter(groups__name='Teaching Staff')
-    return JsonResponse(list(faculty_list.values('id', 'username')), safe = False)

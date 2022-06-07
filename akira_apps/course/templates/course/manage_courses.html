@@ -65,16 +65,18 @@
 </div>
 {% endif %}
 
+{% if courses %}
 <form action="{% url 'searchCourses' %}" method="GET">
 <div class="search-bar-container">
   <div class="searchBar">
-      <input id="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="" aria-label="Search courses" />
+      <input class="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="" aria-label="Search courses" />
       <button id="searchQuerySubmit" type="submit">
         <span class="material-icons"> search </span>
       </button>
     </div>
   </div>
 </form>
+{% endif %}
   
 <div class="course-container">
   <ul class="courses">
@@ -98,7 +100,30 @@
   </ul>
 </div>
 
+<div id="bulkCoursesCreationModalForm" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Upload <span class="underline">Bulk Courses</span></h3>
+        <span id="close-bulkCoursesCreationModal" class="close"><span class="material-icons"> cancel </span></span>
+      </div>
+      <form action="{% url 'bulkCreateCourses' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="drop-zone">
+          <span class="drop-zone__prompt">
+            <span class="material-icons icon-font-size5"> file_upload </span> <br>
+            Drop file here or click to upload</span>
+            <input type="file" name="courses_file" class="drop-zone__input" accept=".csv" required>
+        </div>
+        <button onClick='window.location="{% url 'sample_academic_info_csv' %}"' class="add-faculty">Sample File</button>
+        <button class="bulkUploadButton academic-bulk-btn">Bulk Upload</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script src="{% static 'js/manage_course.js' %}"></script>
+<script src="{% static 'js/fileDragUpload.js' %}"></script>
 
 {% endblock %}
 
