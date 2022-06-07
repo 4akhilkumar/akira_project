@@ -521,11 +521,11 @@ $(document).ready(function() {
         $("#id_course_name").parent().find(".error-text").css("display", "block");
         name = false;
     }
-    else if (!$("#id_course_name").val().match(/^[A-Za-z&\-\s]*$/)) {
-        $("#id_course_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course name correctly&#x0003F;");
-        $("#id_course_name").parent().find(".error-text").css("display", "block");
-        name = false;
-    }
+    // else if (!$("#id_course_name").val().match(/^[A-Za-z0-9&\-\s]*$/)) {
+    //     $("#id_course_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course name correctly&#x0003F;");
+    //     $("#id_course_name").parent().find(".error-text").css("display", "block");
+    //     name = false;
+    // }
     else if ($("#id_course_name").val().match(/^\s+$/)) {
         $("#id_course_name").parent().find(".error-text").html("Sorry, but the course name cannot be empty");
         $("#id_course_name").parent().find(".error-text").css("display", "block");
@@ -542,11 +542,11 @@ $(document).ready(function() {
             $("#id_course_name").parent().find(".error-text").css("display", "block");
             name = false;
         }
-        else if (!$("#id_course_name").val().match(/^[A-Za-z&\-\s]*$/)) {
-            $("#id_course_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course name correctly&#x0003F;");
-            $("#id_course_name").parent().find(".error-text").css("display", "block");
-            name = false;
-        }
+        // else if (!$("#id_course_name").val().match(/^[A-Za-z0-9&\-\s]*$/)) {
+        //     $("#id_course_name").parent().find(".error-text").html("Are you sure that you&#x00027;ve entered the course name correctly&#x0003F;");
+        //     $("#id_course_name").parent().find(".error-text").css("display", "block");
+        //     name = false;
+        // }
         else if ($("#id_course_name").val().match(/^\s+$/)) {
             $("#id_course_name").parent().find(".error-text").html("Sorry, but the course name cannot be empty");
             $("#id_course_name").parent().find(".error-text").css("display", "block");
