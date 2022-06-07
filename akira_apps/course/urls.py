@@ -3,14 +3,13 @@ from . import views
 
 urlpatterns = [
     path('', views.manage_courses, name='manage_courses'),
-    path('createCourseAjax/', views.createCourseAjax, name='createCourseAjax'),
     path('createCourse/', views.updateCourse, name='updateCourse'),
-    path('editCourse/<course_id>/', views.editCourse, name='editCourse'),
+    path('createCourseAjax/', views.createCourseAjax, name='createCourseAjax'),
+    path('bulkCreateCourses', views.bulkCreateCourses, name = 'bulkCreateCourses'),
+
     path('createCourseExtraFieldAjax/', views.createCourseExtraFieldAjax, name='createCourseExtraFieldAjax'),
     path('setCourseExtraFieldValueAjax/', views.setCourseExtraFieldValueAjax, name='setCourseExtraFieldValueAjax'),
     path('deleteCourseExtraFieldValueAjax/', views.deleteCourseExtraFieldValueAjax, name='deleteCourseExtraFieldValueAjax'),
-
-    re_path(r'^searchCourses/?$', views.searchCourses, name='searchCourses'),
 
     path('createCourseCOTAjax/', views.createCourseCOTAjax, name='createCourseCOTAjax'),
     path('getAllCurrentCOTAjax/', views.getAllCurrentCOTAjax, name='getAllCurrentCOTAjax'),
@@ -22,19 +21,22 @@ urlpatterns = [
     path('deleteCourseCOTExtraFieldValueAjax/', views.deleteCourseCOTExtraFieldValueAjax, name='deleteCourseCOTExtraFieldValueAjax'),
 
     path('submitcourseformAjax/', views.submitcourseformAjax, name='submitcourseformAjax'),
-    
-    path('view_course/<course_code>/', views.view_course, name='view_course'),
-    path('delete_course/<course_id>/', views.delete_course, name='delete_course'),
+
+    path('editCourse/<course_id>/', views.editCourse, name='editCourse'),
+    path('viewCourse/<course_code>/', views.view_course, name='view_course'),
+    path('deleteCourse/<course_id>/', views.delete_course, name='delete_course'),
+
+    re_path(r'^searchCourses/?$', views.searchCourses, name='searchCourses'),
 
     path('fetchTeachingStaff', views.fetchTeachingStaff, name='fetchTeachingStaff'),
 
     path('teachingstaffCourseEnrollAjax/', views.teachingstaffCourseEnrollAjax, name='teachingstaffCourseEnrollAjax'),
     path('studentCourseEnrollAjax/', views.studentCourseEnrollAjax, name='studentCourseEnrollAjax'),
 
-    path('course_component/', views.course_component, name='course_component'),
-    path('sub_component/', views.sub_component, name='sub_component'),
-    path('course_task/', views.course_task, name='course_task'),
-    path('task_answer/', views.task_answer, name='task_answer'),
+    path('courseComponent/', views.course_component, name='course_component'),
+    path('subComponent/', views.sub_component, name='sub_component'),
+    path('courseTask/', views.course_task, name='course_task'),
+    path('taskAnswer/', views.task_answer, name='task_answer'),
     path('subComponentsbyComponents/', views.subComponentsbyComponents, name='subComponentsbyComponents'),
 
     path('submitSolutionPage/<uuid:task_id>/', views.submitSolutionPage, name='submitSolutionPage'),
