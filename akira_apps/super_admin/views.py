@@ -12,7 +12,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 
 import requests
-import secrets
 import datetime as pydt
 import re
 
@@ -437,11 +436,9 @@ def assign_group(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 @allowed_users(allowed_roles=['Administrator'])
-def super_admin_dashboard(request):
-    rAnd0m123 = secrets.token_urlsafe(16)
+def admin_dashboard(request):
     listCourses = CourseMC.objects.all()
     context = {
-        "rAnd0m123":rAnd0m123,
         "listCourses":listCourses,
     }
     return render(request, 'super_admin/dashboard.html', context)
