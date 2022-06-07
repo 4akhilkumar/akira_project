@@ -8,6 +8,50 @@
 <p>Display analytics about your Academy openings <span class="fas fa-chart-line"></span> </p>
 {% endblock %}
 
+{% block analytic-overview %}
+<section>
+  <h3 class="section-head">Overview</h3>
+</section>
+<div class="analytics">
+  <div class="analytic">
+      <div class="analytic-icon">
+        <span class="fas fa-chalkboard-teacher"></span>
+      </div>
+      <div class="analytic-info">
+        <h4 style="display: inline-flex; margin-top: 6px;">Staff <a href="{% url 'openings' %}" target="_blank" rel="noopener noreferrer">&nbsp;<span class="material-icons"> open_in_new </span></a></h4>
+        <h1>{{ openings|length }}</h1>
+      </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="fas fa-book"></span>
+    </div>
+    <div class="analytic-info">
+      <h4 style="display: inline-flex; margin-top: 6px;">Openings APPL. <a href="#openingsApplData">&nbsp;<span class="material-icons transform-angle-135"> open_in_new </span></a></h4>
+      <h1>{{ applied_openings_count|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="fas fa-user-graduate"></span>
+    </div>
+    <div class="analytic-info">
+      <h4>Admissions <span class="admission_status">active</span> </h4>
+      <h1>{{ admissions|length }}</h1>
+    </div>
+  </div>
+  <div class="analytic">
+    <div class="analytic-icon">
+      <span class="fas fa-swatchbook"></span>
+    </div>
+    <div class="analytic-info">
+      <h4 style="display: inline-flex; margin-top: 6px;">ADMIS. APPL. <a href="#openingsApplData">&nbsp;<span class="material-icons transform-angle-135"> open_in_new </span></a></h4>
+      <h1>{{ applied_admissions|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
 {% block manage-openings %}
 <div class="btn-area">
     <button type="button" class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
