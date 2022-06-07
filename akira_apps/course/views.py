@@ -41,7 +41,7 @@ def createCourseAjax(request):
         courseBranch = request.POST.get('branch')
         courseCC = request.POST.get('course_coordinator')
         course_type = request.POST.get('course_type')
-        pre_requisite = request.POST.get('prerequisite')
+        pre_requisite = request.POST.get('prerequisite') or None
         courseFiles = request.FILES.getlist('course_files')
         
         if CourseMC.objects.filter(Q(code=courseCode) | Q(name = courseName)).exists() is False:
@@ -130,24 +130,37 @@ def editCourse(request, course_id):
 
 @login_required(login_url=settings.LOGIN_URL)
 def submitcourseformAjax(request):
+    try:
+        getCreatedCourseCookie = request.COOKIES['course_id']
+    except Exception:
+        getCreatedCourseCookie = None
+    current_courseObj = None
+    if getCreatedCourseCookie is not None:
+        try:
+            current_courseObj = CourseMC.objects.get(id=getCreatedCourseCookie)
+        except CourseMC.DoesNotExist:
+            current_courseObj = None
     if request.method == 'POST':
+        courseObjID = request.POST.get('course_obj_id') or current_courseObj.id
         courseCode = request.POST.get('course_code')
         courseName = request.POST.get('course_name')
         courseDesc = request.POST.get('course_desc')
         courseBranch = request.POST.get('branch')
         courseCC = request.POST.get('course_coordinator')
         course_type = request.POST.get('course_type')
-        pre_requisite = request.POST.get('prerequisite')
+        pre_requisite = request.POST.get('prerequisite') or None
         courseFiles = request.FILES.getlist('course_files')
         
-        if CourseMC.objects.filter(code=courseCode, name = courseName).exists() is True:
+        if CourseMC.objects.filter(id=courseObjID).exists() is True:
             if User.objects.filter(id=courseCC).exists() is True:
                 courseCCObj = User.objects.get(id=courseCC)
                 if Branch.objects.filter(id = courseBranch).exists() is True:
                     courseBranch = Branch.objects.get(id = courseBranch)
-                    if pre_requisite == '' or pre_requisite == None or pre_requisite == 'None':
+                    if CourseMC.objects.filter(id = pre_requisite).exists() is True:
+                        pre_requisite = CourseMC.objects.get(id = pre_requisite)
+                    else:
                         pre_requisite = None
-                    getCourseObj = CourseMC.objects.get(code=courseCode)
+                    getCourseObj = CourseMC.objects.get(id=courseObjID)
                     getCourseObj.code=courseCode
                     getCourseObj.name=courseName
                     getCourseObj.desc = courseDesc
@@ -175,7 +188,7 @@ def submitcourseformAjax(request):
                 message = "User does not exist"
                 status = "error"
         else:
-            message = "Course with this code and name doesn't exists"
+            message = "Course doesn't exists"
             status = "error"
         return JsonResponse({
                 'message': message,

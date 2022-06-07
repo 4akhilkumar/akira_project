@@ -1217,6 +1217,9 @@ $(document).ready(function() {
         var submitCourseForm = $("#course-btn").data('submit-course-url');
         var submitCourseFormObject = $('.create-course-form')[0];
         var submitCourseFormData = new FormData(submitCourseFormObject);
+        // get the value of data-course-obj-id
+        var course_obj_id = $(".create-course-form").data('course-obj-id');
+        submitCourseFormData.append('course_obj_id', course_obj_id);
         var submitCourseSuccessURL = $("#course-btn").data('course-create-success-url');
 
         $.ajax({

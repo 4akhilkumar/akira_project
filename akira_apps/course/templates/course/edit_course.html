@@ -13,7 +13,7 @@
 <div class="main-container-fluid">
   <div class="container-fluid">
     <div class="regiserformcontainer">
-        <form id="msform" class="create-course-form" action="" autocomplete="off" method="POST" enctype="multipart/form-data" data-current-course-id="{{ courseObj.id }}">
+        <form id="msform" class="create-course-form" data-course-obj-id="{{ courseObj.id }}" action="" autocomplete="off" method="POST" enctype="multipart/form-data" data-current-course-id="{{ courseObj.id }}">
             {% csrf_token %}
             <fieldset>
               <div class="form-card">
