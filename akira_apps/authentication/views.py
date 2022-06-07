@@ -164,7 +164,7 @@ def user_login(request):
             except Exception:
                 messages.info(request, "Server under maintenance. Please try again later.")
                 return redirect('login')
-            if (User_IP_List.objects.filter(suspicious_list = user_ip_address).exists() is False) and (DECookie is not None):
+            if (User_IP_List.objects.filter(suspicious_list = user_ip_address).exists() is False) or (DECookie is not None):
                 if checkUserExists:
                     user = User.objects.get(username = username)
                     try:
@@ -231,7 +231,7 @@ def user_login(request):
                     messages.warning(request, 'No such account exist!')
                     save_login_details(request, None, user_ip_address, fingerprintID, "Failed", "No such account exist!")
                     return redirect('login')
-            elif  User_IP_List.objects.filter(suspicious_list = user_ip_address).exists() is True or DECookie is False:
+            elif User_IP_List.objects.filter(suspicious_list = user_ip_address).exists() is True or DECookie is False:
                 messages.warning(request, 'Suspicious Activity Found!')
                 if checkUserExists:
                     getuserLoginObj = save_login_details(request, username, user_ip_address, fingerprintID, "Need to verify", "Suspicious Activity")
@@ -1160,7 +1160,7 @@ def dashboard(request):
         if (request.GET.get('next')):
             return redirect(request.GET.get('next'))
         else:
-            return redirect('super_admin_dashboard')
+            return redirect('admin_dashboard')
     else:
         return HttpResponse("Contact Administrator")
 
