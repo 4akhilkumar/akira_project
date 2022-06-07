@@ -114,7 +114,7 @@ def returnFloorName(floorName):
                 break
     return floorName
 
-@allowed_users(allowed_roles=['Administrator', 'Head of the Department'])
+@allowed_users(allowed_roles=['Administrator'])
 def bulk_upload_academic_info_save(request):
     if request.method == 'POST':
         paramFile = io.TextIOWrapper(request.FILES['academic_file'].file)
