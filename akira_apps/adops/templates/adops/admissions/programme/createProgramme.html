@@ -67,6 +67,7 @@
  
               </div>
               <button type="submit" id="course-btn" class="action-button course-btn">Create</button>
+              <input type="button" name="back" id="back_manageadmission" data-back-to-manage-admission="{% url 'manageAdmission' %}" class="back-to-courses action-button-previous" value="Back" />
               <!-- <input type="button" name="next" data-create-design="true" data-create-course-ajax="{% url 'createCourseAjax' %}" id="create-design-course-next" class="next action-button" value="Next" />
               <input type="button" name="back" id="back-course" data-back-to-courses-url="{% url 'manage_courses' %}" class="back-to-courses action-button-previous" value="Back" /> -->
             </fieldset>
@@ -227,4 +228,7 @@
     </div>
   </div>
 </div>
+
+<script src="{% static 'js/createProgramme.js' %}"></script>
+
 {% endblock %}
