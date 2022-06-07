@@ -1,0 +1,70 @@
+{% extends 'side_panel-navbar_dashboard.html' %}
+{% load static %}
+{% load first_letter_word %}
+{% load semRegistration %}
+
+{% block content %}
+
+{% block analytics-text %}
+<h1>Semester Courses</h1>
+<p>Allocated the courses for the semester </p>
+{% endblock %}
+
+{% block view-all-courses-for-semester %}
+
+<form>
+  <div class="search-bar-container">
+    <div class="searchBar">
+      <input class="searchQueryInput" id="id_searchSemCourseData" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search semester data" value="" aria-label="Search semester data" />
+      <button id="searchQuerySubmit" type="submit">
+        <span class="material-icons"> search </span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<div style="overflow-x:auto;">
+<span id="id_acaRegTable">
+<table class="table table-sortable content-table">
+  <thead>
+    <tr>
+      <th class="table-header-title">
+        Semester
+      </th>
+      <th class="table-header-title">
+        Courses
+      </th>
+      <th class="table-header-title">
+        Action
+      </th>
+    </tr>
+  </thead>
+  <tbody id="id_SemCourseMngTable">
+    {% for each in coursesForSemester %}
+    <tr>
+      <td>{{ each.semester }}</td>
+      <td>
+        {% for eachcourse in each.course.all %}
+        <ul>
+        <li>{{ eachcourse }}</li>
+        </ul>
+        {% endfor %}
+      </td>
+      <td>
+        <a href="{% url 'fetcheachallocatedCourseForSemester' each.id %}" class="centerIconElements">
+          <span class="material-icons"> edit </span>
+          Edit
+        </a>
+      </td>    
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</span>
+</div>
+
+
+<script src="{% static 'js/viewSemesterCourses.js' %}"></script>
+
+{% endblock %}
+{% endblock %}

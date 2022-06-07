@@ -203,7 +203,7 @@ $('.course_checkbox_item').on('click', function() {
     }
 });
 
-function allocateCFS() {
+function editallocatedCFS() {
     if($(this).hasClass('button-disabled')){
         return false;
     }
@@ -212,7 +212,7 @@ function allocateCFS() {
         $("#semester-courses-btn").removeClass('button-disabled');
     }, 5000);
 
-    var allocateCFSURL = $("#semester-courses-btn").data('allocate-courses-for-semester-url');
+    var allocatedCFSURL = $("#semester-courses-btn").data('edit-allocated-courses-for-semester-url');
     if (typeof(Storage) !== "undefined") {
         if (localStorage.getItem("courses_stack") !== null) {
             var courses_stack = JSON.parse(localStorage.getItem("courses_stack"));
@@ -225,7 +225,7 @@ function allocateCFS() {
 
     $.ajax({
         type: "POST",
-        url: allocateCFSURL,
+        url: allocatedCFSURL,
         data: {
             'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
             'semester_id': $("#id_semester").val(),
@@ -259,7 +259,7 @@ $("#fetchSemester").click(function(){
     getAllSemestersFunc.call(this);
 });
 $("#semester-courses-btn").click(function(){
-    allocateCFS.call(this);
+    editallocatedCFS.call(this);
 });
 
 // If page is reloaded then clear the localStorage
@@ -268,6 +268,44 @@ if (typeof(Storage) !== "undefined") {
         localStorage.removeItem("courses_stack");
     }
 }
+
+$('.course_checkbox_item').each(function () {
+    if ($(this).attr('checked')) {
+        var course_id = $(this).attr("name");
+        var courses_stack = [];
+        if ($(this).is(':checked')) {
+            if (typeof(Storage) !== "undefined") {
+                if (localStorage.getItem("courses_stack") !== null) {
+                    courses_stack = JSON.parse(localStorage.getItem("courses_stack"));
+                    if (courses_stack.indexOf(course_id) == -1) {
+                        courses_stack.push(course_id);
+                        localStorage.setItem("courses_stack", JSON.stringify(courses_stack));
+                    }
+                }
+                else {
+                    courses_stack.push(course_id);
+                    localStorage.setItem("courses_stack", JSON.stringify(courses_stack));
+                }
+            }
+            else {
+                toastr.error("Sorry, your browser does not support Web Storage...");
+            }
+        } else {
+            // check course_id is in the array of courses_stack
+            if (typeof(Storage) !== "undefined") {
+                if (localStorage.getItem("courses_stack") !== null) {
+                    courses_stack = JSON.parse(localStorage.getItem("courses_stack"));
+                    var index = courses_stack.indexOf(course_id);
+                    // from courses_stack array remove course_id and update localStorage
+                    if (index > -1) {
+                        courses_stack.splice(index, 1);
+                    }
+                    localStorage.setItem("courses_stack", JSON.stringify(courses_stack));
+                }
+            }
+        }
+    }
+});
 
 var createSemesterModal = document.getElementById("createSemesterModalForm"); 
 var createSemesterModalbtn = document.getElementById("showFormCreateSemester");

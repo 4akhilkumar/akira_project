@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
+from django.contrib.auth.models import User
+
 from akira_apps.adops.models import AdmissionRegister
 from akira_apps.course.models import CourseMC
-
+from akira_apps.staff.models import UserDesignation
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.academic.models import (Branch)
 from akira_apps.academic_registration.forms import (SemesterModeForm)
@@ -58,7 +60,15 @@ def createbranch(request):
     return redirect('aca_Registration')
 
 def getAllSemestersAjax(request):
-    getSemesters = Semester.objects.all()
+    getSemesters = Semester.objects.all().order_by('-start_year')
+    if User.objects.filter(username = request.user).exists() is True:
+        user = User.objects.get(username = request.user)
+        groupName = user.groups.all()[0].name
+        if groupName == "Administrator":
+            getSemesters = Semester.objects.all().order_by('-start_year')
+        else:
+            getDesignationBranch = UserDesignation.objects.get(user = request.user)
+            getSemesters = Semester.objects.filter(branch__name = getDesignationBranch.branch.name)
     return JsonResponse(list(getSemesters.values('id', 'mode', 'start_year', 'end_year', 'branch__name', 'is_active')), safe = False)
 
 @allowed_users(allowed_roles=['Administrator', 'Teaching Staff'])
@@ -122,96 +132,121 @@ def createsemester(request):
             messages.info(request, "{} Semester {} already exists!".format(str(semesterMode), str(semesterStartYear)))
     return redirect('aca_Registration')
 
+def needToCheckSetSemStatus(userObj, semester_id):
+    needToCheck = True
+    groupName = userObj.groups.all()[0].name
+    if groupName == "Administrator":
+        needToCheck = False
+    else:
+        getDesignationBranch = UserDesignation.objects.get(user = userObj)
+        if Semester.objects.filter(branch__name = getDesignationBranch.branch.name, id = semester_id).exists() is True:
+            needToCheck = False
+        else:
+            needToCheck = True
+    return needToCheck
+
 def setTeachingStaffSemesterRegistrationAjax(request):
     if request.method == "POST":
         semesterId = request.POST.get('semester_id')
-        if Semester.objects.filter(id=semesterId).exists() is True:
-            semesterObj = Semester.objects.get(id=semesterId)
-            if semesterObj.is_active is True:
-                try:
-                    getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
-                except SetSemesterRegistration.DoesNotExist:
-                    getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
-                    message = "Semester registration status set successfully!"
-                    status = "success"
-                if getSemesterStatus.teachingstaff is True:
-                    getSemesterStatus.teachingstaff = False
-                    getSemesterStatus.save()
-                    message = "Semester registration status changed successfully!"
-                    status = "success"
+        if needToCheckSetSemStatus(request.user, semesterId) == False:
+            if Semester.objects.filter(id=semesterId).exists() is True:
+                semesterObj = Semester.objects.get(id=semesterId)
+                if semesterObj.is_active is True:
+                    try:
+                        getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+                    except SetSemesterRegistration.DoesNotExist:
+                        getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
+                        message = "Semester registration status set successfully!"
+                        status = "success"
+                    if getSemesterStatus.teachingstaff is True:
+                        getSemesterStatus.teachingstaff = False
+                        getSemesterStatus.save()
+                        message = "Semester registration status changed successfully!"
+                        status = "success"
+                    else:
+                        getSemesterStatus.teachingstaff = True
+                        getSemesterStatus.save()
+                        message = "Semester registration status changed successfully!"
+                        status = "success"
                 else:
-                    getSemesterStatus.teachingstaff = True
-                    getSemesterStatus.save()
-                    message = "Semester registration status changed successfully!"
-                    status = "success"
+                    message = "Semester is not active"
+                    status = "error"
             else:
-                message = "Semester is not active"
+                message = "Semester does not exist!"
                 status = "error"
         else:
-            message = "Semester does not exist!"
+            message = "Unauthorized Access"
             status = "error"
         return JsonResponse({'message': message, 'status': status}, safe = False)
 
 def setStudentSemesterRegistrationAjax(request):
     if request.method == "POST":
         semesterId = request.POST.get('semester_id')
-        if Semester.objects.filter(id=semesterId).exists() is True:
-            semesterObj = Semester.objects.get(id=semesterId)
-            if semesterObj.is_active is True:
-                try:
-                    getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
-                except SetSemesterRegistration.DoesNotExist:
-                    getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, students = True)
-                    message = "Semester registration status set successfully!"
-                    status = "success"
-                if getSemesterStatus.students is True:
-                    getSemesterStatus.students = False
-                    getSemesterStatus.save()
-                    message = "Semester registration status changed successfully!"
-                    status = "success"
+        if needToCheckSetSemStatus(request.user, semesterId) == False:
+            if Semester.objects.filter(id=semesterId).exists() is True:
+                semesterObj = Semester.objects.get(id=semesterId)
+                if semesterObj.is_active is True:
+                    try:
+                        getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+                    except SetSemesterRegistration.DoesNotExist:
+                        getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, students = True)
+                        message = "Semester registration status set successfully!"
+                        status = "success"
+                    if getSemesterStatus.students is True:
+                        getSemesterStatus.students = False
+                        getSemesterStatus.save()
+                        message = "Semester registration status changed successfully!"
+                        status = "success"
+                    else:
+                        getSemesterStatus.students = True
+                        getSemesterStatus.save()
+                        message = "Semester registration status changed successfully!"
+                        status = "success"
                 else:
-                    getSemesterStatus.students = True
-                    getSemesterStatus.save()
-                    message = "Semester registration status changed successfully!"
-                    status = "success"
+                    message = "Semester is not active"
+                    status = "error"
             else:
-                message = "Semester is not active"
+                message = "Semester does not exist!"
                 status = "error"
         else:
-            message = "Semester does not exist!"
+            message = "Unauthorized Access"
             status = "error"
         return JsonResponse({'message': message, 'status': status}, safe = False)
 
 def setSemesterStatusAjax(request):
     if request.method == "POST":
         semesterId = request.POST.get('semester_id')
-        if Semester.objects.filter(id=semesterId).exists() is True:
-            semesterObj = Semester.objects.get(id=semesterId)
-            if semesterObj.is_active is True:
-                semesterObj.is_active = False
-                try:
-                    getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
-                except SetSemesterRegistration.DoesNotExist:
-                    getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
-                    # message = "Semester registration status set successfully!"
-                    # status = "success"
-                if getSemesterStatus.teachingstaff is True:
-                    getSemesterStatus.teachingstaff = False
-                    getSemesterStatus.save()
-                    # message = "Semester registration status changed successfully!"
-                    # status = "success"
-                if getSemesterStatus.students is True:
-                    getSemesterStatus.students = False
-                    getSemesterStatus.save()
-                    # message = "Semester registration status changed successfully!"
-                    # status = "success"
+        if needToCheckSetSemStatus(request.user, semesterId) == False:
+            if Semester.objects.filter(id=semesterId).exists() is True:
+                semesterObj = Semester.objects.get(id=semesterId)
+                if semesterObj.is_active is True:
+                    semesterObj.is_active = False
+                    try:
+                        getSemesterStatus = SetSemesterRegistration.objects.get(semester = semesterObj)
+                    except SetSemesterRegistration.DoesNotExist:
+                        getSemesterStatus = SetSemesterRegistration.objects.create(semester = semesterObj, teachingstaff = True)
+                        # message = "Semester registration status set successfully!"
+                        # status = "success"
+                    if getSemesterStatus.teachingstaff is True:
+                        getSemesterStatus.teachingstaff = False
+                        getSemesterStatus.save()
+                        # message = "Semester registration status changed successfully!"
+                        # status = "success"
+                    if getSemesterStatus.students is True:
+                        getSemesterStatus.students = False
+                        getSemesterStatus.save()
+                        # message = "Semester registration status changed successfully!"
+                        # status = "success"
+                else:
+                    semesterObj.is_active = True
+                semesterObj.save()
+                message = "Semester status changed successfully!"
+                status = "success"
             else:
-                semesterObj.is_active = True
-            semesterObj.save()
-            message = "Semester status changed successfully!"
-            status = "success"
+                message = "Semester does not exist!"
+                status = "error"
         else:
-            message = "Semester does not exist!"
+            message = "Unauthorized Access"
             status = "error"
         return JsonResponse({'message': message, 'status': status}, safe = False)
 
@@ -223,18 +258,23 @@ def studentAcaReg(request):
     }
     return render(request, 'academic_registration/studentAcademyReg.html', context)
 
+def allocatedCourseForSemester(request):
+    coursesForSemester = DesignCoursesSemester.objects.all()
+    context = {
+        "coursesForSemester": coursesForSemester
+    }
+    return render(request, 'academic_registration/viewSemesterCourses.html', context)
+
 def allocateCourseForSemester(request):
     branches = Branch.objects.all()
     semesters = Semester.objects.all()
     semesterModeForm = SemesterModeForm()
     courses = CourseMC.objects.all()
-    coursesForSemester = DesignCoursesSemester.objects.all()
     context = {
         "branches": branches,
         "semesters": semesters,
         "semesterModeForm":semesterModeForm,
-        "courses": courses,
-        "coursesForSemester": coursesForSemester
+        "courses": courses
     }
     return render(request, 'academic_registration/allocatingCourseForSemester.html', context)
 
@@ -247,6 +287,18 @@ def allocateCourseForSemesterAjax(request):
                 split_course_list = courses_list.split(",")
                 if Semester.objects.filter(id=semesterId).exists() is True:
                     semesterObj = Semester.objects.get(id=semesterId)
+                    user = User.objects.get(username = request.user)
+                    groupName = user.groups.all()[0].name
+                    if groupName == "Administrator":
+                        pass
+                    else:
+                        getDesignationBranch = UserDesignation.objects.get(user = request.user)
+                        if Semester.objects.filter(branch__name = getDesignationBranch.branch.name, id = semesterId).exists() is True:
+                            pass
+                        else:
+                            message = "You doesn't belong to this branch"
+                            status = "error"
+                            return JsonResponse({'message': message, 'status': status}, safe = False)
                     if DesignCoursesSemester.objects.filter(semester = semesterObj).exists() is False:
                         dcsMTMObj = DesignCoursesSemester.objects.create(semester = semesterObj)
                         for course in split_course_list:
@@ -260,6 +312,72 @@ def allocateCourseForSemesterAjax(request):
                                 status = "error"
                     else:
                         message = "This Semester already has courses allocated!"
+                        status = "info"
+                else:
+                    message = "Semester does not exist!"
+                    status = "error"
+            else:
+                message = "No courses selected!"
+                status = "error"
+        else:
+            message = "No semester selected!"
+            status = "error"
+        return JsonResponse({'message': message, 'status': status}, safe = False)
+
+def fetcheachallocatedCourseForSemester(request, id):
+    try:
+        coursesForSemester = DesignCoursesSemester.objects.get(id = id)
+        branches = Branch.objects.all()
+        semesters = Semester.objects.all()
+        semesterModeForm = SemesterModeForm()
+        courses = CourseMC.objects.all()
+    except DesignCoursesSemester.DoesNotExist:
+        coursesForSemester = None
+        return redirect('allocatedCourseForSemester')
+    context = {
+        "coursesForSemester": coursesForSemester,
+        "branches": branches,
+        "semesters": semesters,
+        "semesterModeForm":semesterModeForm,
+        "courses": courses
+    }
+    return render(request, 'academic_registration/fetcheachallocatedCourseForSemester.html', context)
+
+def editallocatedCourseForSemesterAjax(request):
+    if request.method == "POST":
+        semesterId = request.POST.get('semester_id')
+        courses_list = request.POST.get('courses_stack_data')
+        if len(semesterId) > 0:
+            if courses_list is not None:
+                split_course_list = courses_list.split(",")
+                if Semester.objects.filter(id=semesterId).exists() is True:
+                    semesterObj = Semester.objects.get(id=semesterId)
+                    user = User.objects.get(username = request.user)
+                    groupName = user.groups.all()[0].name
+                    if groupName == "Administrator":
+                        pass
+                    else:
+                        getDesignationBranch = UserDesignation.objects.get(user = request.user)
+                        if Semester.objects.filter(branch__name = getDesignationBranch.branch.name, id = semesterId).exists() is True:
+                            pass
+                        else:
+                            message = "You doesn't belong to this branch"
+                            status = "error"
+                            return JsonResponse({'message': message, 'status': status}, safe = False)
+                    if DesignCoursesSemester.objects.filter(semester = semesterObj).exists() is True:
+                        dcsMTMObj = DesignCoursesSemester.objects.get(semester = semesterObj)
+                        dcsMTMObj.course.clear()
+                        for course in split_course_list:
+                            if CourseMC.objects.filter(id=course).exists() is True:
+                                courseObj = CourseMC.objects.get(id=course)
+                                dcsMTMObj.course.add(courseObj)
+                                message = "Course allocated modified successfully!"
+                                status = "success"
+                            else:
+                                message = "Course does not exist!"
+                                status = "error"
+                    else:
+                        message = "This Semester has no courses allocated!"
                         status = "info"
                 else:
                     message = "Semester does not exist!"

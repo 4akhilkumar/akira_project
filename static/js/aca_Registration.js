@@ -6,11 +6,18 @@ var semesterModal = document.getElementById("semesterModalForm");
 var semesterModalbtn = document.getElementById("showFormCreateSemester");
 var semesterModalspan = document.getElementById("close-semesterModalForm");
 
+var createSCORVSCModal = document.getElementById("createSCORVSCModalForm");
+var createSCORVSCModalbtn = document.getElementById("showFormCreateSCORVSC");
+var createSCORVSCModalspan = document.getElementById("close-createSCORVSCModalForm");
+
 showFormCreateBranchbtn.onclick = function() {
   branchModal.style.display = "block";
 }
 semesterModalbtn.onclick = function() {
   semesterModal.style.display = "block";
+}
+createSCORVSCModalbtn.onclick = function() {
+  createSCORVSCModal.style.display = "block";
 }
 
 branchModalSpan.onclick = function() {
@@ -18,6 +25,9 @@ branchModalSpan.onclick = function() {
 }
 semesterModalspan.onclick = function() {
   semesterModal.style.display = "none";
+}
+createSCORVSCModalspan.onclick = function() {
+  createSCORVSCModal.style.display = "none";
 }
 
 $(window).click(function(event) {
@@ -27,6 +37,19 @@ $(window).click(function(event) {
   if (event.target == semesterModal) {
     semesterModal.style.display = "none";
   }
+  if (event.target == createSCORVSCModal) {
+    createSCORVSCModal.style.display = "none";
+  }
+});
+
+$("#id_viewSemesterCourses").click(function () {
+    var viewsemestercoursesurl = $(this).attr('data-view-semester-courses-url');
+    window.location.href = viewsemestercoursesurl;
+});
+
+$("#id_createSemesterCourses").click(function () {
+    var createsemestercoursesurl = $(this).attr('data-create-semester-courses-url');
+    window.location.href = createsemestercoursesurl;
 });
 
 $(document).ready(function() {
@@ -268,33 +291,71 @@ $(document).on('click', '.semester_status', function() {
     });
 });
 
+$(document).ready(function() {
+    var placeholderArray = ['Semester Duration', 'Semester Mode', 'Anything related to it!'];
+    setInterval(function() {
+        var searchQueryInput = $('.searchQueryInput').attr('placeholder', "Search " + placeholderArray[Math.floor(Math.random() * placeholderArray.length)]);
+        var searchQueryInputList = $('.searchQueryInputList');
+        searchQueryInputList.empty();
+        searchQueryInput.show();
+    }
+    , 1000);
+});
+
+$(document).keypress(function(e) {
+    if (e.which == 47 && !$('.searchQueryInput').is(':focus')) {
+        $('.searchQueryInput').focus();
+        return false;
+    }
+});
+
+$("#searchQuerySubmit").prop("disabled", true);
+var searchQuery = false;
+
+$('.searchQueryInput').on('keyup keydown blur change', function() {
+    if($(".searchQueryInput").val() == "") {
+        $(".searchQueryInput").parent().find(".error-text").css("display", "block");
+        searchQuery = false;
+    }
+    else if ($(".searchQueryInput").val().match(/^\s+$/)) {
+        $(".searchQueryInput").parent().find(".error-text").css("display", "block");
+        searchQuery = false;
+    }
+    else {
+        $(".searchQueryInput").parent().find(".error-text").css("display", "none");
+        searchQuery = true;
+    }
+});
+
+$('input').on('keyup keydown blur change', function() {
+    if (searchQuery == true) {
+        $("#searchQuerySubmit").prop("disabled", false);
+    }
+    else {
+        $("#searchQuerySubmit").prop("disabled", true);
+    }
+});
+
+$("#searchQuerySubmit").click(function(e) {
+    e.preventDefault();
+});
+
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".search-input").forEach((inputField) => {
-    const tableRows = inputField
-      .closest("table")
-      .querySelectorAll("tbody > tr");
-    const headerCell = inputField.closest("th");
-    const otherHeaderCells = headerCell.closest("tr").children;
-    const columnIndex = Array.from(otherHeaderCells).indexOf(headerCell);
-    const searchableCells = Array.from(tableRows).map(
-      (row) => row.querySelectorAll("td")[columnIndex]
-    );
-
-    inputField.addEventListener("input", () => {
-      const searchQuery = inputField.value.toLowerCase();
-
-      for (const tableCell of searchableCells) {
-        const row = tableCell.closest("tr");
-        const value = tableCell.textContent.toLowerCase().replace(",", "");
-
-        row.style.visibility = null;
-
-        if (value.search(searchQuery) === -1) {
-          row.style.visibility = "collapse";
+    $("#id_searchSemData").on("keyup", function() {
+        var searchQuery = $(this).val().toLowerCase().trim();
+        var ResultStatus = true;
+        $("#id_SemMngTable tr").filter(function() {
+            $(this).toggle($(this).text()
+            .toLowerCase().indexOf(searchQuery) > -1)
+            if ($(this).text().toLowerCase().indexOf(searchQuery) == -1) {
+                ResultStatus = false;
+            }
+        });
+        if (ResultStatus == false) {
+            // change the css nodatafound display to block
+            console.log("noDataFound");
         }
-      }
     });
-  });
 });
 
 function sortTableByColumn(table, column, asc = true) {

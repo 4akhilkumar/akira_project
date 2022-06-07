@@ -44,10 +44,21 @@
 <div class="btn-area">
   <button id="showFormCreateBranch" class="create-block-btn">Create Branch</button>
   <button id="showFormCreateSemester" class="create-block-btn">Create Semester</button>
-  <button class="create-block-btn" onclick="document.location='{% url 'allocateCourseForSemester' %}'">Semester Courses</button>
+  <button id="showFormCreateSCORVSC" class="create-block-btn">Semester Courses</button>
 </div>
 
-<div style="overflow-x:auto;">
+<form>
+  <div class="search-bar-container">
+    <div class="searchBar">
+      <input class="searchQueryInput" id="id_searchSemData" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search semester data" value="" aria-label="Search semester data" />
+      <button id="searchQuerySubmit" type="submit">
+        <span class="material-icons"> search </span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<div style="overflow-x:auto; border-radius: 1rem; box-shadow: 0 5px 10px #e1e5ee;">
 <span id="id_acaRegTable">
 <table class="table table-sortable content-table">
   <thead>
@@ -65,23 +76,9 @@
         Student
       </th>
     </tr>
-    <tr>
-      <th>
-        <input type="text" class="search-input" placeholder="Semester">
-      </th>
-      <th>
-        <input type="text" class="search-input" placeholder="Status">
-      </th>
-      <th>
-        <input type="text" class="search-input" placeholder="Teaching Staff">
-      </th>
-      <th>
-        <input type="text" class="search-input" placeholder="Student">
-      </th>
-    </tr>
   </thead>
-  <tbody>
-    {% for each in semesters %}
+  <tbody id="id_SemMngTable">
+    {% for each in request.user.username|getSemesterByUserDesignationBranch %}
     <tr>
       <td>{{ each.mode }} {{ each.start_year }} - {{ each.end_year }} {{ each.branch.name|first_letter_word }}</td>
       <td>
@@ -251,6 +248,26 @@
           <button type="submit" id="branch-btn" class="action-button branch-btn">Create</button>
         </fieldset>
       </form>
+    </div>
+  </div>
+</div>
+
+<div id="createSCORVSCModalForm" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Create or View <span class="underline">Semester Courses</span></h3>
+        <span id="close-createSCORVSCModalForm" class="close"><span class="material-icons"> cancel </span></span>
+      </div>
+      <br>
+      <div class="viewCreateSemesterCourses">
+        <button class="viewSemesterCourses" id="id_viewSemesterCourses" data-view-semester-courses-url="{% url 'allocatedCourseForSemester' %}">
+          <span class="material-icons"> subject </span> <span class="viewSemesterCoursesText">View Semester Courses</span>
+        </button>
+        <button class="createSemesterCourses" id="id_createSemesterCourses" data-create-semester-courses-url="{% url 'allocateCourseForSemester' %}">
+          <span class="material-icons"> queue </span> <span class="createSemesterCoursesText">Create Semester Courses</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -7,7 +7,7 @@
 
 {% block analytics-text %}
 <h1>Semester Courses</h1>
-<p>Allocate the courses for the semester </p>
+<p>Modify the courses for the semester </p>
 {% endblock %}
 
 {% block allocate-courses-for-semester %}
@@ -27,7 +27,7 @@
                   <option value="">Select Semester</option>
                   {% endif %}
                   {% for each in request.user.username|getSemesterByUserDesignationBranch %}
-                  <option value="{{ each.id }}"> {{ each }} </option>
+                  <option value="{{ each.id }}" {% if coursesForSemester.semester.id == each.id %} selected {% endif %}> {{ each }} </option>
                   {% empty %}
                   <option value="">Data Not Available</option>
                   {% endfor %}
@@ -48,7 +48,7 @@
                   <div class="checkbox">
                   <span class="tooltiptext">{{ each.name }}</span>
                   <label class="checkbox-wrapper">
-                      <input type="checkbox" name="{{ each.id }}" class="checkbox-input course_checkbox_item" />
+                      <input type="checkbox" name="{{ each.id }}" {% for selectedCourse in coursesForSemester.course.all %} {% if selectedCourse.id == each.id %} checked data-course-checked="{{ each.id }}" {% endif %} {% endfor %} class="checkbox-input course_checkbox_item" />
                       <span class="checkbox-tile">
                       <span class="checkbox-label">{{ each.name|first_letter_word }}</span>
                       <span class="checkbox-icon">
@@ -63,8 +63,8 @@
               </div>
 
             </div>
-            <button type="button" id="semester-courses-btn" class="action-button semester-courses-btn" data-go-to-aca-registration-url="{% url 'allocatedCourseForSemester' %}" data-allocate-courses-for-semester-url="{% url 'allocateCourseForSemesterAjax' %}">Submit</button>
-            <input type="button" name="back" id="back_allocatedcfs" data-back-to-allocated-cfs-url="{% url 'aca_Registration' %}" class="back-to-courses action-button-previous" value="Back" />
+            <button type="button" id="semester-courses-btn" class="action-button semester-courses-btn" data-go-to-aca-registration-url="{% url 'allocatedCourseForSemester' %}" data-edit-allocated-courses-for-semester-url="{% url 'editallocatedCourseForSemesterAjax' %}">Modify</button>
+            <input type="button" name="back" id="back_allocatedcfs" data-back-to-allocated-cfs-url="{% url 'allocatedCourseForSemester' %}" class="back-to-courses action-button-previous" value="Back" />
           </fieldset>
         </form>
     </div>
@@ -151,7 +151,7 @@
   </div>
 </div>
 
-<script src="{% static 'js/allocatingCFS.js' %}"></script>
+<script src="{% static 'js/editallocatedCFS.js' %}"></script>
 
 {% endblock %}
 {% endblock %}
