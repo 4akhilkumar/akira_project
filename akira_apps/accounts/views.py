@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import JsonResponse
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 
@@ -13,6 +14,60 @@ import datetime
 from akira_apps.accounts.models import (TwoFactorAuth)
 from akira_apps.authentication.models import (User_BackUp_Codes, User_IP_List, UserLoginDetails)
 from akira_apps.adops.models import (UserProfile)
+
+def ordinal(n):
+    s = ('th', 'st', 'nd', 'rd') + ('th',)*10
+    v = n%100
+    if v > 13:
+        return f'{n}{s[v%10]}'
+    else:
+        return f'{n}{s[v]}'
+
+@login_required(login_url=settings.LOGIN_URL)
+def fetchLoginDetailsAjax(request):
+    if request.method == 'POST':
+        date, year = 1, 2022
+        month = int(request.POST.get('request_month'))
+
+        req_month = pydt.datetime(year, month, date)
+
+        start_month = req_month.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        nxt_mnth = start_month.replace(day=28) + datetime.timedelta(days=4)
+        res = nxt_mnth - datetime.timedelta(days=nxt_mnth.day)
+        end_month = req_month.replace(day=res.day, hour=23, minute=59, second=59, microsecond=0)
+
+        get_attempt = UserLoginDetails.objects.filter(user__username = request.user.username, created_at__range=(start_month,end_month))
+
+        get_dates = []
+        for i in get_attempt:
+            get_dates.append(i.created_at.strftime("%d"))
+        
+        removed_duplicate_date = list(sorted(set(get_dates)))
+
+        month = req_month.strftime(" %b")
+        remove_duplicate_date_after_ordinal = []
+        for i in removed_duplicate_date:
+            remove_duplicate_date_after_ordinal.append(str(ordinal(int(i))) + month)
+
+        success_attempts_date = []
+        for i in removed_duplicate_date:
+            start_date = req_month.replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
+            end_date = req_month.replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
+            attempt_on_that_date = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = 'Success', created_at__range=(start_date,end_date)).count()
+            success_attempts_date.append(attempt_on_that_date)
+        
+        failed_attempts_date = []
+        for i in removed_duplicate_date:
+            start_date = req_month.replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
+            end_date = req_month.replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
+            attempt_on_that_date = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
+            failed_attempts_date.append(attempt_on_that_date)
+
+        return JsonResponse({
+            "get_dates": remove_duplicate_date_after_ordinal,
+            "success_attempts_date": success_attempts_date,
+            "failed_attempts_date": failed_attempts_date,
+        })
 
 @login_required(login_url=settings.LOGIN_URL)
 def account_settings(request):
@@ -41,40 +96,6 @@ def account_settings(request):
     nxt_mnth = start_month.replace(day=28) + datetime.timedelta(days=4)
     res = nxt_mnth - datetime.timedelta(days=nxt_mnth.day)
     end_month = pydt.datetime.now().replace(day=res.day, hour=23, minute=59, second=59, microsecond=0)
-    get_attempt = UserLoginDetails.objects.filter(user = request.user, created_at__range=(start_month,end_month))
-
-    def ordinal(n):
-        s = ('th', 'st', 'nd', 'rd') + ('th',)*10
-        v = n%100
-        if v > 13:
-            return f'{n}{s[v%10]}'
-        else:
-            return f'{n}{s[v]}'
-
-    get_dates = []
-    for i in get_attempt:
-        get_dates.append(i.created_at.strftime("%d"))
-    
-    removed_duplicate_date = list(sorted(set(get_dates)))
-
-    month = pydt.datetime.now().strftime(" %b")
-    remove_duplicate_date_after_ordinal = []
-    for i in removed_duplicate_date:
-        remove_duplicate_date_after_ordinal.append(str(ordinal(int(i))) + month)
-
-    success_attempts_date = []
-    for i in removed_duplicate_date:
-        start_date = pydt.datetime.now().replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
-        end_date = pydt.datetime.now().replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
-        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = 'Success', created_at__range=(start_date,end_date)).count()
-        success_attempts_date.append(attempt_on_that_date)
-    
-    failed_attempts_date = []
-    for i in removed_duplicate_date:
-        start_date = pydt.datetime.now().replace(day=int(i), hour=0, minute=0, second=0, microsecond=0)
-        end_date = pydt.datetime.now().replace(day=int(i), hour=23, minute=59, second=59, microsecond=0)
-        attempt_on_that_date = UserLoginDetails.objects.filter(user__username = request.user.username, attempt = 'Failed', created_at__range=(start_date,end_date)).count()
-        failed_attempts_date.append(attempt_on_that_date)
 
     get_unconfirmed_login_attempts = UserLoginDetails.objects.filter(Q(user__username = request.user.username, attempt = "Not Confirmed Yet!") | Q(user__username = request.user.username, attempt = "Need to verify")).order_by('-created_at')
     
@@ -97,10 +118,6 @@ def account_settings(request):
         "current_user_details":current_user_details,
         "backup_codes_status":backup_codes_status,
         "current_user_2fa_status":current_user_2fa_status,
-        "current_month":month,
-        "get_dates":remove_duplicate_date_after_ordinal,
-        "success_attempts_date":success_attempts_date,
-        "failed_attempts_date":failed_attempts_date,
         "get_unconfirmed_login_attempts":get_unconfirmed_login_attempts,
         "get_failed_attempt_in_a_month":get_failed_attempt_in_a_month,
         "get_currentLoginInfo":get_currentLoginInfo,

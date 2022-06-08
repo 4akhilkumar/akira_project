@@ -9,4 +9,6 @@ urlpatterns = [
     path('status_2fa/', views.status_2fa, name='status_2fa'),
     path('agree_login_attempt/<login_attempt_id>', views.agree_login_attempt, name='agree_login_attempt'),
     path('deny_login_attempt/<login_attempt_id>', views.deny_login_attempt, name='deny_login_attempt'),
+
+    path('fetchLoginDetailsAjax/', views.fetchLoginDetailsAjax, name='fetchLoginDetailsAjax'),
 ]

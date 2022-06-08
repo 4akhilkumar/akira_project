@@ -4,6 +4,7 @@
 {% load ip_location %}
 
 {% block manage-account %}
+
 <div class="security">
     <div class="security-title">
         <h2><span class="material-icons security-icon"> security </span> Security</h2>
@@ -115,8 +116,22 @@
             <h3 class="section-head" id="Login_activity">Login activity</h3>
             <div class="graph-content">
                 <div class="graph-head">
-                    <div class="graph-select skeleton">
-                        <p>{{current_month}}</p>
+                    <div class="graph-select skeleton" data-fetch-login-details-url="{% url 'fetchLoginDetailsAjax' %}">
+                        <select name="request_month" id="id_request_month">
+                            <option value="">Select month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
                     </div>
                 </div>
                 <div class="graph-board">
@@ -232,88 +247,8 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block chart-js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js"></script>
-<script>
-    let ctx = document.querySelector('#loginActivityChart');
-    Chart.defaults.color = "#696969";
-    let revChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: {{get_dates|safe}},
-            datasets: [
-                {
-                    label: "Success",
-                    borderColor: "#0F9D58",
-                    borderWidth: "3",
-                    backgroundColor: "#0f9d5833",
-                    data: {{success_attempts_date}},
-                },
-                {
-                    label: "Failed",
-                    borderColor: "#DB4437",
-                    borderWidth: "3",
-                    backgroundColor: "#db443733",
-                    data: {{failed_attempts_date}},
-                },
-            ]
-        },
-        options: {
-            responsive: true,
-            tooltips: {
-                intersect: false,
-                node: "index",
-            }
-        }
-    });
-</script>
+<script src="{% static 'js/account.js' %}"></script>
 
-<script>
-    $(document).ready(function() {
-        $('input[name="checkbox_backup_code"]').click(function(){
-            var status_2fa_url = $(this).data('href');
-            if($(this).prop("checked") == true){
-                $.ajax({
-                    url: status_2fa_url,
-                    method: "GET",
-                    data: {},
-                    success: function(data) {
-                        window.location.reload();
-                    }, error: function(error) {
-                        console.log('Here2');
-                    }
-                });
-            }
-            else if($(this).prop("checked") == false){
-                $.ajax({
-                    url: status_2fa_url,
-                    method: "GET",
-                    data: {},
-                    success: function(data) {
-                        window.location.reload();
-                    }, error: function(error) {
-                        console.log('Here4');
-                    }
-                });
-            }
-        });
-
-        $(".show-details-login-info").slice(0, 3).show();
-        if ($(".show-details-login-info:hidden").length != 0) {
-          $("#loadMore").show();
-        }   
-        $("#loadMore").on('click', function (e) {
-          e.preventDefault();
-          $(".show-details-login-info:hidden").slice(0, 6).slideDown();
-          if ($(".show-details-login-info:hidden").length == 0) {
-            $("#loadMore").fadeOut('slow');
-          }
-          $('html,body').animate({
-            scrollTop: $(this).offset().top
-          }, 100);
-        });
-    });
-</script>
 {% endblock %}
