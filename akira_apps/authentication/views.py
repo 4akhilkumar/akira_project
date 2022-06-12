@@ -1146,7 +1146,7 @@ def dashboard(request):
             return redirect(request.GET.get('next'))
         else:
             return redirect('applicant_dashboard')
-    elif group == 'Adops Team':
+    elif group == 'ADOPS Team':
         if (request.GET.get('next')):
             return redirect(request.GET.get('next'))
         else:

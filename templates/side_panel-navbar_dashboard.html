@@ -92,7 +92,7 @@
                             <span>Academy</span>
                         </a>
                     </li>
-                    {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group or "Teaching Staff" == request.user|user_group %}
+                    {% if "Administrator" == request.user|user_group or "ADOPS Team" == request.user|user_group or "Teaching Staff" == request.user|user_group %}
                         {% if "manage_academic" in request.path or "aca_Registration" in request.path or "allocateCourseForSemester" in request.path or "allocatedCourseForSemester" in request.path %}
                         <li>
                             <a href="{% url 'aca_Registration' %}"
@@ -120,7 +120,7 @@
                         </li>
                         {% endif %}
                     {% endif %}
-                    {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group  %}
+                    {% if "Administrator" == request.user|user_group or "ADOPS Team" == request.user|user_group  %}
                         <li>
                             <a href="{% url 'manage_adops' %}"
                             {% if "manage_adops" in request.path %}

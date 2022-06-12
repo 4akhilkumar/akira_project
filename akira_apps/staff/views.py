@@ -26,7 +26,7 @@ def applicant_dashboard(request):
     }
     return render(request, 'staff/dashboards/applicant_dashboard.html', context)
 
-@allowed_users(allowed_roles=['Adops Team'])
+@allowed_users(allowed_roles=['ADOPS Team'])
 def adops_dashboard(request):
     context = {
 

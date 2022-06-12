@@ -51,7 +51,7 @@ def getSemesterByUserDesignationBranch(value):
         if User.objects.filter(username = value).exists() is True:
             user = User.objects.get(username = value)
             groupName = user.groups.all()[0].name
-            if groupName == "Administrator":
+            if groupName == "Administrator" or groupName == "ADOPS Team":
                 semesters = Semester.objects.all().order_by('-start_year')
             else:
                 getDesignationBranch = UserDesignation.objects.get(user__username = value)

@@ -28,7 +28,7 @@ def getAllBranchesAjax(request):
     getBranches = Branch.objects.all()
     return JsonResponse(list(getBranches.values('id', 'name')), safe = False)
 
-@allowed_users(allowed_roles=['Administrator', 'Teaching Staff', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'Teaching Staff', 'ADOPS Team'])
 def createbranchAjax(request):
     if request.method == "POST":
         name = request.POST.get('name')
@@ -47,7 +47,7 @@ def createbranchAjax(request):
     else:
         return JsonResponse({'message': "Invalid request"}, safe = False)
 
-@allowed_users(allowed_roles=['Administrator', 'Teaching Staff', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'Teaching Staff', 'ADOPS Team'])
 def createbranch(request):
     if request.method == "POST":
         name = request.POST.get('name')

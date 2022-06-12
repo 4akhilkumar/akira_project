@@ -23,7 +23,7 @@ from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.super_admin.forms import (GENDERCHOICESForm, NAMEPREFIXForm)
 from akira_apps.super_admin.models import (MailLog)
 
-@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def manage_adops(request):
     openings = Openings.objects.all()
     applied_openings = Openings.objects.filter(applied__isnull=False).distinct()
@@ -35,7 +35,7 @@ def manage_adops(request):
     }
     return render(request, 'adops/manage_adops.html', context)
 
-@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def manageOpenings(request):
     return render(request, "adops/openings/manageOpenings.html")
 
@@ -86,7 +86,7 @@ def add_openings(request):
     }
     return render(request, 'adops/openings/add_opening.html', context)
 
-@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def editOpening(request, openingID):
     contact_person = User.objects.filter(groups__name='Administrator')
     job_type_list = OpeningsJobTypeForm()
@@ -135,7 +135,7 @@ def editOpening(request, openingID):
     }
     return render(request, 'adops/openings/edit_opening.html', context)
 
-@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def deleteOpening(request, openingID):
     try:
         Openings.object.get(id = openingID).delete()
@@ -476,7 +476,7 @@ def withdrawAppl(request, openingID):
     else:
         return redirect('userAppliedOpenings')
     
-@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def applicantsInfo(request, openingID):
     if Openings.objects.filter(id = openingID, applied__isnull=False).exists() is True:
         openingApplicants = Openings.objects.get(id = openingID)
