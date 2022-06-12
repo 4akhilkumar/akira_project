@@ -15,12 +15,12 @@
 <form action="{% url 'searchCourses' %}" method="GET">
 <div class="search-bar-container" style="margin: 0.5rem auto 1.5rem auto;">
   <div class="searchBar">
-      <input class="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="{{ searchQuery }}" aria-label="Search courses" />
-      <button id="searchQuerySubmit" type="submit" name="">
-        <span class="material-icons"> search </span>
-      </button>
-    </div>
+    <input class="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search courses" value="{{ searchQuery }}" aria-label="Search courses" />
+    <button id="searchQuerySubmit" type="submit" name="">
+      <span class="material-icons"> search </span>
+    </button>
   </div>
+</div>
 </form>
 
 {% if courses %}
