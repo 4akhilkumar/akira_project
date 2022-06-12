@@ -8,7 +8,7 @@
 <p>{{ openingIDObj.job }}</p>
 {% else %}
 <h1>Create Opening</h1>
-<p>Create the Opening <span class="fas fa-chart-line"></span> </p>
+<p>A vacancy which an employer desires to fill</p>
 {% endif %}
 
 {% endblock %}
@@ -52,14 +52,19 @@
 
             <div class="field-container">
               <div class="input-box">
-                  <label class="fieldlabels input-label" for="id_experience">Experience</label> 
-                  <input type="text" name="experience" id="id_experience" maxlength="500" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                  <span class="error-text">Enter experience</span>
+                <label class="fieldlabels input-label" for="id_experience">Experience</label>
+                <textarea name="experience" maxlength="2000" id="id_experience" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                <span class="help-text">Maximum characters allowed is 2000 only.</span>
+                <span class="error-text">Enter experience</span>
               </div>
+            </div>
+
+            <div class="field-container">
               <div class="input-box">
-                  <label class="fieldlabels input-label" for="id_qualification">Qualification</label> 
-                  <input type="text" name="qualification" id="id_qualification" maxlength="500" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
-                  <span class="error-text">Enter qualification</span>
+                <label class="fieldlabels input-label" for="id_qualification">Qualification</label>
+                <textarea name="qualification" maxlength="2000" id="id_qualification" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required></textarea>
+                <span class="help-text">Maximum characters allowed is 2000 only.</span>
+                <span class="error-text">Enter qualification</span>
               </div>
             </div>
 
