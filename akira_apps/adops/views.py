@@ -5,15 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, send_mail
+from django.db.models import Q
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.utils.encoding import force_bytes, force_text  
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
-import requests
+import io
 import datetime as pydt
 import re
+import requests
+import pandas as pd
 
 from akira_apps.academic.models import (Academy, Branch)
 from akira_apps.adops.forms import (OpeningsJobTypeForm)
@@ -37,9 +40,46 @@ def manage_adops(request):
 
 @allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def manageOpenings(request):
-    return render(request, "adops/openings/manageOpenings.html")
+    openings = Openings.objects.all()
+    staffUsers = User.objects.filter(groups__name__in=['Developer Team', 'ADOPS Team', 'EXAMS Team', 'Teaching Staff', 'Non-Teaching Staff'])
+    context = {
+        "staffUsers": staffUsers,
+        "openings": openings
+    }
+    return render(request, "adops/openings/manageOpenings.html", context)
 
-@allowed_users(allowed_roles=['Administrator', 'Adops Team'])
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
+def bulk_openings_save(request):
+    if request.method == "POST":
+        paramFile = io.TextIOWrapper(request.FILES['openings_file'].file)
+        data = pd.read_csv(paramFile)
+
+        for index, row in data.iterrows():
+            try:
+                if Openings.objects.filter(job = str(row['Job Title']).title(), location = str(row['Location']).title()).exists() is False:
+                    if User.objects.filter(username = str(row['Contact Person'])).exists() is True:
+                        contactPerson = User.objects.get(username = str(row['Contact Person']))
+                        Openings.objects.create(
+                            job = str(row['Job Title']).title(),
+                            overview = str(row['Overview']).title(),
+                            description = str(row['Description']),
+                            experience = str(row['Experience']),
+                            qualification = str(row['Qualification']),
+                            location = str(row['Location']),
+                            pay_scale = str(row['Pay Scale']),
+                            type = str(row['Type']),
+                            contact_person = contactPerson
+                        )
+                        messages.success(request, "Bulk Openings Creation Done Successfully")
+                    else:
+                        messages.error(request, "User does not exist")
+                else:
+                    messages.info(request, "Opening with this title & location already exists")
+            except Exception as e:
+                messages.error(request, str(e))
+    return redirect('manageOpenings')
+
+@allowed_users(allowed_roles=['Administrator', 'ADOPS Team'])
 def add_openings(request):
     contact_person = User.objects.filter(groups__name='Administrator')
     job_type_list = OpeningsJobTypeForm()
@@ -150,6 +190,8 @@ def openings(request):
     except Exception as e:
         academy = None
     openings = Openings.objects.all().order_by('-created_at')
+    job_type_list = OpeningsJobTypeForm()
+    dummyVariable = ""
     if request.method == "POST":
         if request.user.is_authenticated:
             job_id = request.POST.get('job_id')
@@ -169,10 +211,11 @@ def openings(request):
         else:
             messages.info(request, "You must be logged in to apply for an opening")
             return redirect('applicantsAccount')
-
     context = {
         'academy': academy,
-        'openings': openings
+        'openings': openings,
+        'job_type_list':job_type_list,
+        'dummyVariable': dummyVariable,
     }
     return render(request, 'adops/openings/apply_opening.html', context)
 
@@ -621,7 +664,6 @@ def manageProgrammes(request):
     branches = Branch.objects.all()
     context = {
         "branches": branches,
-        "specializations": specializations,
         "programmes": programmes,
     }
     return render(request, 'adops/admissions/programme/manageProgrammes.html', context)

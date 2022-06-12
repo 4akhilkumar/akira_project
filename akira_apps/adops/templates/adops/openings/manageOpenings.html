@@ -15,53 +15,29 @@
 <div class="analytics">
   <div class="analytic">
       <div class="analytic-icon">
-        <span class="fas fa-chalkboard-teacher"></span>
+        <span class="material-icons"> work </span>
       </div>
       <div class="analytic-info">
-        <h4 style="display: inline-flex; margin-top: 6px;">Staff <a href="{% url 'openings' %}" target="_blank" rel="noopener noreferrer">&nbsp;<span class="material-icons"> open_in_new </span></a></h4>
+        <h4 style="display: inline-flex; margin-top: 6px;">Openings <a href="{% url 'openings' %}" target="_blank" rel="noopener noreferrer">&nbsp;<span class="material-icons"> open_in_new </span></a></h4>
         <h1>{{ openings|length }}</h1>
       </div>
-  </div>
-  <div class="analytic">
-    <div class="analytic-icon">
-      <span class="fas fa-book"></span>
-    </div>
-    <div class="analytic-info">
-      <h4 style="display: inline-flex; margin-top: 6px;">Openings APPL. <a href="#openingsApplData">&nbsp;<span class="material-icons transform-angle-135"> open_in_new </span></a></h4>
-      <h1>{{ applied_openings_count|length }} <small class="text-success">1% <i class="fa-solid fa-arrow-trend-up"></i></small></h1>
-    </div>
-  </div>
-  <div class="analytic">
-    <div class="analytic-icon">
-      <span class="fas fa-user-graduate"></span>
-    </div>
-    <div class="analytic-info">
-      <h4>Admissions <span class="admission_status">active</span> </h4>
-      <h1>{{ admissions|length }}</h1>
-    </div>
-  </div>
-  <div class="analytic">
-    <div class="analytic-icon">
-      <span class="fas fa-swatchbook"></span>
-    </div>
-    <div class="analytic-info">
-      <h4 style="display: inline-flex; margin-top: 6px;">ADMIS. APPL. <a href="#openingsApplData">&nbsp;<span class="material-icons transform-angle-135"> open_in_new </span></a></h4>
-      <h1>{{ applied_admissions|length }} <small class="text-danger">0% <i class="fa-solid fa-arrow-trend-down"></i></small></h1>
-    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block manage-openings %}
+
 <div class="btn-area">
-    <button type="button" class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
-    <button type="button" id="bulkOpeningForm" class="add-opening">Bulk openings</button>
+  <button type="button" class="add-opening" onclick="document.location='{% url 'add_openings' %}'">Add opening</button>
+  <button type="button" id="showBulkOpeningForm" class="add-opening">Bulk openings</button>
 </div>
 
 <div class="btn-area">
   <button onClick='window.location="{% url 'add_staff' %}"' class="add-faculty">Add Staff</button>
   <button id="showFormStaffBulkImport" class="add-faculty">Bulk Import</button>
+  {% if staffUsers %}
   <button onClick='window.location="{% url 'staff_info_csv' %}"' class="add-faculty">Bulk Export</button>
+  {% endif %}
 </div>
 
 <div class="job-cards">
@@ -93,6 +69,29 @@
   {% endfor %}
 </div>
 
+<div id="bulkOpeningsModalForm" class="modal">
+  <div class="model-container">
+    <div class="modal-content">
+      <div class="modal-top-section">
+        <h3>Import <span class="underline">Bulk Openings</span></h3>
+        <span id="close-bulkOpeningsModalForm" class="close"><span class="material-icons"> cancel </span></span>
+      </div>
+      <div class="regiserformcontainer">
+        <form action="{% url 'bulk_openings_save' %}" method="POST" enctype="multipart/form-data">
+          <div class="drop-zone">
+            <span class="drop-zone__prompt">
+              <span class="icon-font-size5 material-icons"> file_upload </span>
+              Drop file here or click to upload</span>
+              {% csrf_token %}
+              <input type="file" name="openings_file" class="drop-zone__input" accept=".csv" required>
+          </div>
+          <input type="submit" class="bulkUploadButton" value="Bulk Upload">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="bulkStaffModalForm" class="modal">
   <div class="model-container">
     <div class="modal-content">
@@ -117,7 +116,6 @@
 </div>
 
 <script src="{% static 'js/fileDragUpload.js' %}"></script>
-
 <script src="{% static 'js/manageOpenings.js' %}"></script>
 
 {% endblock %}

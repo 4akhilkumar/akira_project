@@ -1,5 +1,6 @@
 {% load static %}
 {% load user_group %}
+{% load openingsdata %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,17 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <meta name="theme-color" content="#FFF"/>
     <meta name="description" content="AkirA is a kind of Education Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
-    
-    <link href="{% static 'fontawesome/css/all.css' %}" rel="stylesheet">
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'styles/apply_openings.css' %}">
     <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
     
     <script src="{% static 'js/jquery.min.js' %}"></script>
-    <title>Opening{{ openings|pluralize }}</title>
+    <title>Opening{{ openings|pluralize }} - AkirA</title>
 </head>
 <body>
 
@@ -26,158 +23,228 @@
 
 {% if openings %}
 <div class="job">
- <div class="header">
- </div>
- <div class="wrapper">
-  <div class="main-container">
-   <div class="searched-jobs">
-     <div class="searched-bar">
-      <div class="searched-show">Showing {{ openings|length }} Job{{ openings|pluralize }}</div>
+  <div class="header">
+   <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+     <path xmlns="http://www.w3.org/2000/svg" d="M512 503.5H381.7a48 48 0 01-45.3-32.1L265 268.1l-9-25.5 2.7-124.6L338.2 8.5l23.5 67.1L512 503.5z" fill="#0473ff" data-original="#28b446" />
+     <path xmlns="http://www.w3.org/2000/svg" fill="#0473ff" data-original="#219b38" d="M361.7 75.6L265 268.1l-9-25.5 2.7-124.6L338.2 8.5z" />
+     <path xmlns="http://www.w3.org/2000/svg" d="M338.2 8.5l-82.2 234-80.4 228.9a48 48 0 01-45.3 32.1H0l173.8-495h164.4z" fill="#0473ff" data-original="#518ef8" />
+    </svg>
+    AkirA
+   </div>
+   <!-- <div class="header-menu">
+    <a href="#" class="active">Find Job</a>
+    <a href="#">Company Review</a>
+    <a href="#">Find Salaries</a>
+   </div> -->
+   <div class="user-settings">
+    <div class="dark-light">
+     <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg>
     </div>
-    <div class="job-cards">
-     {% for eachopening in openings %}
-     <div class="job-card job-id" id="{{ eachopening.id }}">
-      <div class="job-card-header">
-       <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
-        <g fill="#feb0a5">
-         <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
-         <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
-        </g>
-        <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
-       </svg>
+    <!-- <div class="user-menu">
+     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-square">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /></svg>
+    </div> -->
+    <!-- <img class="user-profile" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3364143/download+%283%29+%281%29.png" alt=""> -->
+    <!-- <div class="user-name">Suhayel Nasim</div> -->
+   </div>
+  </div>
+  <div class="wrapper">
+   <!-- <div class="search-menu"> -->
+    <div class="search-bar-container">
+      <div class="searchBar">
+        <input class="searchQueryInput" type="search" name="searchquery" placeholder="Search..." maxlength="100" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" autofocus="" role="combobox" spellcheck="false" title="Search jobs" value="" aria-label="Search jobs" />
+        <button id="searchQuerySubmit" type="submit">
+          <span class="material-icons"> search </span>
+        </button>
       </div>
-      <div class="job-card-title">{{ eachopening.job }}</div>
-      <div class="job-card-subtitle">
-        {{ eachopening.overview }}
+    </div>
+    <!-- <div class="search-bar">
+     <input type="search" name="searchJob" id="id_jobSearch" class="search-box" />
+    </div>
+    <button class="search-button">Find Job</button> -->
+   <!-- </div> -->
+   <div class="main-container">
+    <div class="search-type">
+     <!-- <div class="alert">
+      <div class="alert-title">Create Job Alert</div>
+      <div class="alert-subtitle">Create a job alert now and never miss a job</div>
+      <input type="text" placeholder="Enter job keyword">
+      <button class="search-buttons">Create Job Alerts</button>
+     </div> -->
+     <div class="job-time">
+      <div class="job-time-title">Type of Employment</div>
+      <div class="job-wrapper">
+      {% for x,y in job_type_list.fields.job_type.choices %}
+      {% if y == "Select Job Type" %}
+      <div class="type-container">
+        <input type="checkbox" id="job{{ forloop.counter }}" class="job-style" checked>
+        <label for="job{{ forloop.counter }}">All Employment Types</label>
+        <span class="job-number">{{ openings|length }}</span>
       </div>
-      <div class="job-detail-buttons">
-       <button class="search-buttons detail-button">{{ eachopening.type }}</button>
-       <button class="search-buttons detail-button">{{ eachopening.experience }}</button>
-       <!-- <button class="search-buttons detail-button">{{ eachopening.qualification }}</button> -->
-       <button class="search-buttons detail-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</button>
+      {% else %}
+      <div class="type-container">
+        <input type="checkbox" id="job{{ forloop.counter }}" class="job-style">
+        <label for="job{{ forloop.counter }}">{{ y }}</label>
+        <span class="job-number">{{ x|getJobTypeCount }}</span>
       </div>
-      <div class="job-card-buttons">
-       <button class="search-buttons card-buttons-msg know-more">Know more</button>
+      {% endif %}
+      {% endfor %}      
       </div>
      </div>
-     {% endfor %}
+     <div class="job-time">
+      <div class="job-time-title">Salary Range</div>
+      <div class="job-wrapper">
+        <div class="type-container">
+          <input type="checkbox" id="jobNDC" class="job-style">
+          <label for="jobNDC">Not Disclosed</label>
+          <span class="job-number">{{ dummyVariable|getSalaryDisclosed }}</span>
+        </div>
+        {% for each in dummyVariable|getMinMaxJobSalaryRange %}
+        <div class="type-container">
+          <input type="checkbox" id="job{{ forloop.counter }}1000" class="job-style">
+          <label for="job{{ forloop.counter }}1000">{{ each|safe }}</label>
+          <span class="job-number">{{ each|salaryRangeCount }}</span>
+        </div>
+        {% endfor %}      
+      </div>
+     </div>
     </div>
-    <div class="job-overview">
-      <div class="job-overview-cards">
-      {% for eachopening in openings %}
-      <div class="job-overview-card">
-      <div class="job-card overview-card job-id" id="{{ eachopening.id }}">
-        <div class="overview-wrapper">
-        <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
-        <g fill="#feb0a5" >
-         <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
-         <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
-        </g>
-        <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
-        </svg>
-         <div class="overview-detail">
-          <div class="job-card-title">{{ eachopening.job }}</div>
-          <div class="job-card-subtitle">
-            {{ eachopening.location }}
-          </div>
-         </div>
-         <!-- <svg class="heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
-          <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" />
-         </svg> -->
-        </div>
-        <div class="job-overview-buttons">
-         <div class="search-buttons time-button applicant-count-info">{{ eachopening.applied.all|length }} Appl.</div>
-         <div class="search-buttons time-button">{{ eachopening.type }}</div>
-         <div class="search-buttons time-button">{{ eachopening.experience }}</div>
-         <!-- <div class="search-buttons level-button">{{ eachopening.qualification }}</div> -->
-         {% comment %}
-         <!-- <div class="job-stat">New</div> -->
-         <!-- <div class="job-day">{{ eachopening.created_at|naturalday }}</div> -->
-         {% endcomment %}
-        </div>
+    <div class="searched-jobs">
+     <div class="searched-bar">
+      <div class="searched-show">Showing {{ openings|length }} Job{{ openings|pluralize }}</div>
+      <!-- <div class="searched-sort">Sort by: 
+        <span class="post-time">Newest Post </span><span class="menu-icon">▼</span>
+        <select name="sortby" id="id_sortby">
+          <option value="newest_post">Newest Post</option>
+          <option value="newest_post">Oldest Post</option>
+          <option value="newest_post">Most Applied Post</option>
+        </select>
+      </div> -->
+     </div>
+     <div class="job-cards">
+      {% for each in openings %}
+      <div class="job-card jobTarget">
+       <div class="job-card-header">
+        <span class="material-icons"> work </span>
+        <!-- <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
+         <g fill="#feb0a5">
+          <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
+          <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
+         </g>
+         <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
+        </svg> -->
+        <!-- <div class="menu-dot"></div> -->
+       </div>
+       <div class="job-card-title">{{ each.job }}</div>
+       <div class="job-card-subtitle">
+        {{ each.overview }}
+       </div>
+       <div class="job-detail-buttons">
+        <button class="search-buttons detail-button">{{ each.type }}</button>
+        <button class="search-buttons detail-button">{{ each.experience }}</button>
+       </div>
+       <div class="job-card-buttons">
+         <button class="search-buttons card-buttons" data-job-id="{{ each.id }}">Apply Now</button>
+         <button class="search-buttons card-buttons-more" data-job-id="{{ each.id }}">More</button>
        </div>
       </div>
       {% endfor %}
      </div>
-     <div class="job-explain">
-      <div class="view-all-jobs">
-        <button class="view-all-jobs-btn">
-          Back
-        </button>
+     <div class="job-overview">
+      <div class="job-overview-cards">
+       {% for each in openings %}
+       <div class="job-overview-card">
+        <div class="job-card overview-card">
+         <div class="overview-wrapper">
+          <svg viewBox="0 -13 512 512" xmlns="http://www.w3.org/2000/svg" style="background-color:#2e2882">
+         <g fill="#feb0a5" >
+          <path d="M256 92.5l127.7 91.6L512 92 383.7 0 256 91.5 128.3 0 0 92l128.3 92zm0 0M256 275.9l-127.7-91.5L0 276.4l128.3 92L256 277l127.7 91.5 128.3-92-128.3-92zm0 0" />
+          <path d="M127.7 394.1l128.4 92 128.3-92-128.3-92zm0 0" />
+         </g>
+         <path d="M512 92L383.7 0 256 91.5v1l127.7 91.6zm0 0M512 276.4l-128.3-92L256 275.9v1l127.7 91.5zm0 0M256 486.1l128.4-92-128.3-92zm0 0" fill="#feb0a5" />
+        </svg>
+          <div class="overview-detail">
+           <div class="job-card-title">{{ each.job }}</div>
+           <div class="job-card-subtitle">
+            {{ each.location }}
+           </div>
+          </div>
+          <svg class="heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+           <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" /></svg>
+         </div>
+         <div class="job-overview-buttons">
+          <div class="search-buttons time-button">{{ each.type }}</div>
+          <div class="search-buttons level-button">Senior Level</div>
+          <!-- <div class="job-stat">New</div> -->
+          <div class="job-day">4d</div>
+         </div>
+        </div>
+       </div>
+       {% endfor %}
       </div>
-      <img loading="lazy" class="job-bg" alt="">
-      <div class="job-logos">
-       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="background-color:#f76754">
-        <path xmlns="http://www.w3.org/2000/svg" d="M0 .5h4.2v23H0z" fill="#042b48" data-original="#212121"></path>
-        <path xmlns="http://www.w3.org/2000/svg" d="M15.4.5a8.6 8.6 0 100 17.2 8.6 8.6 0 000-17.2z" fill="#fefefe" data-original="#f4511e"></path></svg>
-      </div>
-      <div class="job-explain-content">
-      <div class="job-title-wrapper">
-       <div class="job-card-title"></div>
-       <div class="job-action">
-        <!-- <svg onclick="document.location='#'" class="add-to-fav" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
-          <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" />
-        </svg> -->
-        {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group %}
-        <a href="" class="edit-job" id="edit-job-anchor_tag">
-          <span class="fa-solid fa-pen-to-square"></span>
-        </a>
-        {% endif %}
-        <svg onclick="document.location='#'" class="share" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+      <div class="job-explain">
+       <img class="job-bg" alt="">
+       <div class="job-logos">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="background-color:#f76754">
+         <path xmlns="http://www.w3.org/2000/svg" d="M0 .5h4.2v23H0z" fill="#042b48" data-original="#212121"></path>
+         <path xmlns="http://www.w3.org/2000/svg" d="M15.4.5a8.6 8.6 0 100 17.2 8.6 8.6 0 000-17.2z" fill="#fefefe" data-original="#f4511e"></path></svg>
        </div>
-       </div>
-       <div class="job-subtitle-wrapper">
-        <div class="company-name">{{ academy.name }} <span class="comp-location"></span></div>
-        <div class="posted" id="myList2">
-          <span class="app-number">0 Applications</span>
+       <div class="job-explain-content">
+       <div class="job-title-wrapper">
+        <div class="job-card-title">UI /UX Designer</div>
+        <div class="job-action">
+          Apply
+         <svg class="heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+           <path d="M20.8 4.6a5.5 5.5 0 00-7.7 0l-1.1 1-1-1a5.5 5.5 0 00-7.8 7.8l1 1 7.8 7.8 7.8-7.7 1-1.1a5.5 5.5 0 000-7.8z" /></svg>
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        </div>
+        </div>
+        <div class="job-subtitle-wrapper">
+         <div class="company-name">{{ dummyVariable|instituteName }} <span class="comp-location">Londontowne, MD.</span></div>
+         <div class="posted">Posted 8 days ago<span class="app-number">98 Application</span></div>
+        </div>
+        <div class="explain-bar">
+         <div class="explain-contents">
+         <div class="explain-title">Experience</div>
+         <div class="explain-subtitle">Minimum 1 Year</div>
+          </div>
+         <div class="explain-contents">
+         <div class="explain-title">Work Level</div>
+         <div class="explain-subtitle">Senior level</div>
+          </div>
+         <div class="explain-contents">
+         <div class="explain-title">Employee Type</div>
+         <div class="explain-subtitle">Full Time Jobs</div>
+          </div>
+         <div class="explain-contents">
+         <div class="explain-title">Offer Salary</div>
+         <div class="explain-subtitle">&#8377;2150.0</div>
+          </div>
+        </div>
+        <div class="overview-text">
+         <div class="overview-text-header">Overview</div>
+         <div class="overview-text-subheader">We believe that design (and you) will be critical to the company's success. You will work with our founders and our early customers to help define and build our product functionality, while maintaining the quality bar that customers have come to expect from modern SaaS applications. You have a strong background in product design with a quantitavely anf qualitatively analytical mindset. You will also have the opportunity to craft our overall product and visual identity and should be comfortable to flex into working.</div>
+        </div>
+        <div class="overview-text">
+         <div class="overview-text-header">Job Description</div>
+         <div class="overview-text-item">3+ years working as a product designer.</div>
+         <div class="overview-text-item">A portfolio that highlights your approach to problem solving, as well as you skills in UI.</div>
+         <div class="overview-text-item">Experience conducting research and building out smooth flows.</div>
+         <div class="overview-text-item">Excellent communication skills with a well-defined design process.</div>
+         <div class="overview-text-item">Familiarity with design tools like Sketch and Figma</div>
+         <div class="overview-text-item">Up-level our overall design and bring consistency to end-user facing properties</div>
         </div>
        </div>
-       <div class="explain-bar">
-        <div class="explain-contents">
-          <div class="explain-title">Experience</div>
-          <div class="explain-subtitle job-experience ellipsis1"></div>
-        </div>
-        <div class="explain-contents">
-          <div class="explain-title">Qualification</div>
-          <div class="explain-subtitle job-qualification ellipsis1"></div>
-        </div>
-        <div class="explain-contents">
-          <div class="explain-title">Employee Type</div>
-          <div class="explain-subtitle job-type"></div>
-        </div>
-        <div class="explain-contents">
-          <div class="explain-title">Offer Salary</div>
-          <div class="explain-subtitle job-salary"></div>
-        </div>
-       </div>
-       <div class="overview-text">
-        <div class="overview-text-header">Overview</div>
-        <div class="overview-text-subheader each-job-overview"></div>
-       </div>
-       <div class="overview-text job-description-container">
-        <div class="overview-text-header">Job Description</div>
-        <div class="newly-added-item" id="myList">
-          
-        </div>
-      </div>
-      <div class="apply-job">
-        <div class="apply-job-btn">
-          <form action="" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="job_id" id="id_job_id" value="">
-            <button class="search-buttons card-buttons">Apply Now</button>
-          </form>
-        </div>
-      </div>
       </div>
      </div>
     </div>
    </div>
   </div>
- </div>
 </div>
 
-<script>
+<!-- <script>
 
 const wrapper = document.querySelector(".wrapper");
 const header = document.querySelector(".header");
@@ -240,13 +307,13 @@ jobCards.forEach((jobCard) => {
   document.getElementById("id_job_id").value = jobIdString;
 
   // add jobIdString to id="edit-job-anchor_tag"
-  {% if "Administrator" == request.user|user_group or "Adops Team" == request.user|user_group %}
+  {% if "Administrator" == request.user|user_group or "ADOPS Team" == request.user|user_group %}
   const editJobAnchorTag = document.getElementById("edit-job-anchor_tag");
-  editJobAnchorTag.setAttribute("href", `/adops/editOpening/${jobIdString}/`);
+  editJobAnchorTag.setAttribute("href", `/adops/editOpening/&#8377;{jobIdString}/`);
   {% endif %}
 
   const number = Math.floor(Math.random() * 10);
-  const url = `https://unsplash.it/640/425?image=${number}`;
+  const url = `https://unsplash.it/640/425?image=&#8377;{number}`;
   jobBg.src = url;
 
   const logo = jobCard.querySelector("svg");
@@ -265,13 +332,13 @@ jobCards.forEach((jobCard) => {
   let posted = "";
   let applicants = jobCardApplCountNumberInt; // Here I have to pass the applicant number
 
-  $.ajax({
+  &#8377;.ajax({
     type: "POST",
     async: false,
     url: '{% url "fetch_each_opening_Ajax" %}',
     data: {
         'openingID': jobIdString,
-        'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val(),
+        'csrfmiddlewaretoken':&#8377;('input[name=csrfmiddlewaretoken]').val(),
     },
     success: function (data) {
       data.forEach(function (eachdata) {
@@ -369,7 +436,9 @@ viewAllJobs.forEach((viewAllJob) => {
  });
 });
 
-</script>
+</script> -->
+
+<script src="{% static 'js/openings.js' %}"></script>
 
 {% else %}
 <div class="no-data">

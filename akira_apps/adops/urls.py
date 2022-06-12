@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('manage_adops/', views.manage_adops, name='manage_adops'),
 
+    path('bulk_openings_save/', views.bulk_openings_save, name='bulk_openings_save'),
     path('add_openings/', views.add_openings, name='add_openings'),
     path('editOpening/<str:openingID>/', views.editOpening, name='editOpening'),
     path('deleteOpening/<str:openingID>/', views.deleteOpening, name='deleteOpening'),
