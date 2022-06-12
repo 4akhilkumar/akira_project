@@ -14,7 +14,7 @@ import csv
 
 from akira_apps.academic.models import (Branch)
 from akira_apps.academic_registration.models import (Semester, SetSemesterRegistration)
-from akira_apps.course.forms import (CourseTypeForm, CourseExtraFieldForm)
+from akira_apps.course.forms import (CourseTypeForm, ExtraFieldTypeForm)
 from akira_apps.course.models import (CourseExtraFields, CourseMC, CourseOfferingType, CourseCOTExtraFields, CourseFiles, 
                                         CourseComponent, CourseSubComponent, CourseTask, TaskAnswer, 
                                         FacultyCourseEnroll, StudentCourseEnroll)
@@ -112,7 +112,7 @@ def editCourse(request, course_id):
 
     branch_list = Branch.objects.all()
     courseTypeForm = CourseTypeForm()
-    courseExtraFieldTypeForm = CourseExtraFieldForm()
+    courseExtraFieldTypeForm = ExtraFieldTypeForm()
     faculty_list = User.objects.filter(groups__name='Teaching Staff')
     prerequisiteList = CourseMC.objects.all()
     context = {
@@ -230,7 +230,7 @@ def updateCourse(request):
 
     branch_list = Branch.objects.all()
     courseTypeForm = CourseTypeForm()
-    courseExtraFieldTypeForm = CourseExtraFieldForm()
+    courseExtraFieldTypeForm = ExtraFieldTypeForm()
     faculty_list = User.objects.filter(groups__name='Teaching Staff')
     prerequisiteList = CourseMC.objects.all()
     context = {

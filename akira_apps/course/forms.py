@@ -11,11 +11,16 @@ class CourseTypeForm(forms.Form):
     ]
     type = forms.ChoiceField(choices = COURSE_TYPE)
 
-class CourseExtraFieldForm(forms.Form):
+class ExtraFieldTypeForm(forms.Form):
     FIELD_TYPE = [
         ("", "Select Field type"),
         ("text", "Short text"),
         ("textarea", "Long text"),
         ("number", "Number"),
+        ("email", "Email"),
+        ("date", "Date"),
+        ("file", "File"),
+        ("checkbox", "Checkbox"),
+        ("select", "Select"),
     ]
     fieldtype = forms.ChoiceField(choices = FIELD_TYPE)
