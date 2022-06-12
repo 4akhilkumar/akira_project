@@ -512,6 +512,28 @@ $('#save_qr_code_image').click(function() {
 });
 // ============================= QR Code ================================ //
 
+// ============================= Note ================================ //
+
+var noteModal = document.getElementById("noteModal"); 
+var noteModalBtn = document.getElementById("shownoteModal");
+var noteModal_span = document.getElementById("close-noteModal");
+
+noteModalBtn.onclick = function() {
+  noteModal.style.display = "block";
+}
+
+noteModal_span.onclick = function() {
+  noteModal.style.display = "none";
+}
+
+$(window).click(function(event) {
+  if (event.target == noteModal) {
+    noteModal.style.display = "none";
+  }
+});
+
+// ============================= Note ================================ //
+
 // ====================== Full Screen ====================== //
 var fullexitscreen = document.getElementById("fullexitscreen");
 var elem = document.documentElement;
