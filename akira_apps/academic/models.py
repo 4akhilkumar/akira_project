@@ -42,18 +42,11 @@ class Block(models.Model):
     class Meta:
         ordering = ['name']
 
-class contactExtraFields(models.Model):
-    FIELD_TYPE = [
-        ("", "Select Field type"),
-        ("text", "Short text"),
-        ("textarea", "Long text"),
-        ("number", "Phone"),
-        ("email", "Email"),
-    ]
+class BlockExtraFields(models.Model):
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
     block = models.ForeignKey(Block, on_delete=models.CASCADE)
     field_name = models.CharField(max_length = 100)
-    field_type = models.CharField(max_length = 100, choices = FIELD_TYPE, default="")
+    field_type = models.CharField(max_length = 100)
     field_value = models.TextField(max_length = 50000)
 
     def __str__(self):

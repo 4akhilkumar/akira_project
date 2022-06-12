@@ -7,12 +7,8 @@ from akira_apps.course.models import (CourseMC)
 from akira_apps.academic.models import (Branch)
 
 class Semester(models.Model):
-    MODE = [
-        ('ODD','ODD'),
-        ('EVEN','EVEN'),
-    ]
     id = models.UUIDField(primary_key = True, unique = True, default = uuid.uuid4, editable = False)
-    mode = models.CharField(max_length = 4, choices = MODE, default = 1)
+    mode = models.CharField(max_length = 4)
     start_year = models.DateField()
     end_year = models.DateField()
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, blank=True, null=True)
