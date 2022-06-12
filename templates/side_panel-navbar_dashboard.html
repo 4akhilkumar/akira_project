@@ -131,10 +131,10 @@
                                 <span>Adops</span>
                             </a>
                         </li>
-                        {% if "adops" in request.path %}
+                        {% if "manage_adops" in request.path or "manageOpenings" in request.path or "add_openings" in request.path or "manageAdmission" in request.path or "add_staff" in request.path %}
                         <li>
                             <a href="{% url 'manageOpenings' %}"
-                            {% if "manageOpenings" in request.path or "add_openings" in request.path %}
+                            {% if "manageOpenings" in request.path or "add_openings" in request.path or "add_staff" in request.path %}
                             class="active"
                             {% endif %}
                             >
