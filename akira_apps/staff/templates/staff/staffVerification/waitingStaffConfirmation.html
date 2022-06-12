@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="theme-color" content="#FFF"/>
+    <meta name="description" content="AkirA is a kind of Learning Management System which can be accessible in all your devices Android, iOS, and desktop devices.">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">    
+    <link rel="stylesheet" href="{% static 'styles/waitingStuAdmconfirm.css' %}">
+
+    <link rel="apple-touch-icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <link rel="icon" href="{% static 'images/AkirA-Logo V2.0.png' %}" type="image/icon type">
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <title>Yet to be acknowledged! - AkirA</title>
+</head>
+<body>
+    {% include 'messages.html' %}
+    {% include 'check_internet_connection.html' %}
+
+    <div class="wac-container" data-last-mail-time="{{ last_mail_time|date:"D M d Y H:i:s" }}" data-csrf-token="{{ csrf_token }}" data-login-url="{% url 'login' %}" data-enusername="{{ EnUsername }}" data-isStaff-confirmed-url="{% url 'isStaffRegConfirmed' %}">
+        <div class="wac-inner-container">
+            <div class="wac-sub-inner-container">
+                <h1 class="wac-heading">Yet to be <span class="underline">acknowledged</span>!</h1>
+                <p class="wac-paragraph mg-top-1rem">
+                    To utilize the services provided by <span class="akira">AkirA</span>. And to complete your registration process. You need to acknowledge your account's creation and the details you have provided.
+                </p>
+                <p class="wac-paragraph mg-top-1rem">
+                    Please check your email inbox. We sent an email to your registered email address.
+                </p>
+                <p class="wac-paragraph mg-top-1rem" id="showMessage"></p>
+                <p id="resendEmailOption">
+                    <a class="anchor-samre" href="{% url 'send_staff_reg_email' EnUsername %}">Resend your <span class="underline">acknowledgement</span> email</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src='{% static "js/BrowserFingerPrintWebGL.js" %}'></script>
+    <script src='{% static "js/waitingStaffconfirm.js" %}'></script>
+</body>
+</html>

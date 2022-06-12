@@ -9,19 +9,171 @@
 {% endblock %}
 
 {% block add-staff %}
+<div class="main-container-fluid">
+    <div class="container-fluid">
+      <div class="regiserformcontainer">
+          <form id="msform" action="" autocomplete="off" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset>
+                <div class="form-card">
+                    <div class="">
+                        <div class="">
+                            <h2 class="fs-title">Personal Information</h2>
+                        </div>
+                    </div> 
 
-<form action="" method="POST">
-    {% csrf_token %}
-    <input type="text" name="username" id="id_username" placeholder="username">
-    <input type="password" name="password" id="id_password" placeholder="password">
-    <input type="email" name="email" id="id_email" placeholder="email">
-    <input type="text" name="first_name" id="id_first_name" placeholder="first_name">
-    <input type="text" name="last_name" id="id_last_name" placeholder="last_name">
-    <input type="text" name="group" id="id_group" placeholder="group">
-    <button type="submit">Register</button>
-</form>
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_name_prefix">Name prefix</label>
+                        <select name="name_prefix" id="id_name_prefix" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            {% for x,y in name_prefix.fields.nameprefix.choices %}
+                            <option value="{{ x }}">{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select the name prefix</span>
+                    </div>
 
-<script src="{% static 'js/add_staff.js' %}"></script>
+                    <div class="first-last-name">
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_firstname">First name</label>
+                            <input type="text" name="firstname" id="id_firstname" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your first name</span>
+                        </div>
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_lastname">Last name</label> 
+                            <input type="text" name="lastname" id="id_lastname" spellcheck="false" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your last name</span>
+                        </div>
+                    </div>
+                    
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_date_of_birth">Date of birth</label>
+                        <input type="date" name="date_of_birth" id="id_date_of_birth" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="error-text">Enter your date of birth</span>
+                    </div>
+                        
+                    <div class="gender-phone">
+                        <div class="input-box active-grey">
+                            <label class="fieldlabels input-label" for="id_gender">Gender</label>
+                            <select name="gender" id="id_gender" class="input-1" required>
+                                {% for x,y in gender.fields.gender.choices %}
+                                <option value="{{ x }}">{{ y }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="error-text">Select your gender</span>
+                        </div>
+                        
+                        <div class="input-box">    
+                            <label class="fieldlabels input-label" for="id_phone">Phone number</label>
+                            <input type="tel" name="phone" id="id_phone" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your phone number</span>              
+                        </div>
+                    </div>
+                    
+                    <div class="door-flat-no-zip-code">
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_door_no">Door No./Flat No.</label>
+                            <input type="text" name="door_no" id="id_door_no" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your door no./flat no.</span>
+                        </div>
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_zip_code">Zip code</label>
+                            <input type="text" name="zip_code" id="id_zip_code" pattern="[0-9]*" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your zip code</span>
+                        </div>
+                    </div>
+                    
+                    <div class="city-district">
+                        <div class="input-box active-grey" id="id_city_parent">
+                            <label class="fieldlabels input-label" for="id_city">City</label>
+                            <select name="city" class="input-1" id="id_city">
+                                <option value="">Select your City</option>
+                            </select>
+                            <input type="text" name="new_city" id="id_new_city" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" hidden>
+                            <span class="error-text">Select your city</span>
+                        </div>
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_district">District</label>
+                            <input type="text" name="district" id="id_district" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your district</span>
+                        </div>
+                    </div>
+                    
+                    <div class="state-country">
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_state">State</label>
+                            <input type="text" name="state" id="id_state" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your state</span>
+                        </div>
+                        <div class="input-box">
+                            <label class="fieldlabels input-label" for="id_country">Country</label>
+                            <input type="text" name="country" id="id_country" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            <span class="error-text">Enter your country</span>
+                        </div>
+                    </div>
+                    <div class="input-box active-grey-1">
+                        <label class="fieldlabels input-label" for="id_photo">Upload your photo</label>
+                        <input type="file" name="photo" accept="image/*" id="id_photo" class="input-1 custom-input-file" required>
+                        <span class="error-text">Upload your photo</span>
+                    </div>
+                </div>
+                <input type="button" name="next" id="personal-next" class="next action-button" value="Next" />
+            </fieldset>
+            <fieldset>
+                <div class="form-card">
+                    <div class="">
+                        <div class="">
+                            <h2 class="fs-title">Account Information</h2>
+                        </div>
+                    </div> 
+                    <div class="input-box active-grey">
+                        <label class="fieldlabels input-label" for="id_group">Group</label>
+                        <select name="group" id="id_group" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                            {% for x,y in groups_list.fields.group_type.choices %}
+                            <option value="{{ x }}">{{ y }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="error-text">Select group name</span>
+                    </div>
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_email">Email</label>
+                        <input type="email" name="email" id="id_email" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="help-text">Please use legitimate email only</span>
+                        <span class="error-text">Enter your email</span>
+                    </div>
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_username">Username</label>
+                        <input type="text" name="username" id="id_username" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="help-text">You can use letters&comma; numbers &amp; periods</span>
+                        <span class="error-text">Enter your username</span>
+                    </div>
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_password">Password</label>
+                        <input type="password" name="password" id="id_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="help-text">Use 8 or more characters with a mix of letters&comma; numbers &amp; symbols&lsqb;&excl;&comma; &commat;&comma; &num;&rsqb;</span>
+                        <span class="error-text">Enter a strong password</span>
+                    </div>
+                    <div class="input-box">
+                        <label class="fieldlabels input-label" for="id_confirm_password">Confirm password</label>
+                        <input type="password" name="confirm_password" id="id_confirm_password" class="input-1" onfocus="setFocus(true)" onblur="setFocus(false)" required>
+                        <span class="error-text">Those passwords didn&apos;t match. Try again.</span>
+                    </div>
+                    <div class="customized-checkbox">
+                        <label class="pure-material-checkbox">
+                            <input type="checkbox" name="show_password" id="id_show_password">
+                            <span>Show password</span>
+                        </label>
+                    </div>
+                </div> 
+                <button type="submit" class="action-button register-btn" id="register-btn">Register</button>
+                <input type="button" name="previous" id="account-previous" class="previous action-button-previous" value="Previous" />
+            </fieldset>
+          </form>
+      </div>
+    </div>
+</div>
+
+<script src="{% static 'js/addStaff.js' %}"></script>
+<script src="{% static 'js/BrowserFingerPrintWebGL.js' %}"></script>
 {% endblock %}
 
 {% endblock %}

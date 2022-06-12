@@ -1,23 +1,34 @@
-from email import message
-from django.contrib.auth import authenticate
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import Group, User
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage, send_mail
 from django.http import JsonResponse
 from django.http.response import HttpResponse
-from django.contrib import messages
-from django.contrib.auth.models import Group, User
 from django.shortcuts import redirect, render
-from akira_apps.adops.models import UserProfile
-from akira_apps.staff.models import Designation, UserDesignation
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.views.decorators.csrf import csrf_exempt
 
-from akira_apps.super_admin.decorators import (allowed_users)
-from akira_apps.course.models import (CourseMC)
 from akira_apps.academic.models import (Branch)
-from akira_apps.super_admin.forms import (BLOODGROUPForm)
+from akira_apps.adops.models import (UserAccountVerificationStatus, UserProfile)
+from akira_apps.adops.forms import (GroupTypesForm)
+from akira_apps.authentication.token import (account_activation_token)
+from akira_apps.course.models import (CourseMC)
+from akira_apps.super_admin.decorators import (allowed_users)
+from akira_apps.staff.models import (Designation, UserDesignation)
+from akira_apps.super_admin.forms import (BLOODGROUPForm, GENDERCHOICESForm, NAMEPREFIXForm)
+from akira_apps.super_admin.models import (MailLog)
 
-import secrets
-import pandas as pd
-import io
 import csv
 import datetime as pydt
+import io
+import pandas as pd
+import re
+import requests
+import secrets
 
 @allowed_users(allowed_roles=['Applicant'])
 def applicant_dashboard(request):
@@ -160,60 +171,364 @@ def student_enroll_course(request, course_id):
         else:
             return HttpResponse(e)
 
+class Date:
+	def __init__(self, d, m, y):
+		self.d = d
+		self.m = m
+		self.y = y
+
+# To store number of days in all months from
+# January to Dec.
+monthDays = [31, 28, 31, 30, 31, 30,
+			31, 31, 30, 31, 30, 31]
+
+# This function counts number of leap years
+# before the given date
+def countLeapYears(d):
+
+	years = d.y
+
+	# Check if the current year needs to be considered
+	# for the count of leap years or not
+	if (d.m <= 2):
+		years -= 1
+
+	# An year is a leap year if it is a multiple of 4,
+	# multiple of 400 and not a multiple of 100.
+	return int(years / 4) - int(years / 100) + int(years / 400)
+
+
+# This function returns number of days between two
+# given dates
+def getDifference(dt1, dt2):
+
+	# COUNT TOTAL NUMBER OF DAYS BEFORE FIRST DATE 'dt1'
+
+	# initialize count using years and day
+	n1 = dt1.y * 365 + dt1.d
+
+	# Add days for months in given date
+	for i in range(0, dt1.m - 1):
+		n1 += monthDays[i]
+
+	# Since every leap year is of 366 days,
+	# Add a day for every leap year
+	n1 += countLeapYears(dt1)
+
+	# SIMILARLY, COUNT TOTAL NUMBER OF DAYS BEFORE 'dt2'
+
+	n2 = dt2.y * 365 + dt2.d
+	for i in range(0, dt2.m - 1):
+		n2 += monthDays[i]
+	n2 += countLeapYears(dt2)
+
+	# return difference between two counts
+	return (n2 - n1)
+
+def validateUserDOB(dob):
+    inputDate = str(dob)
+    success_msg = ""
+    error_msg = ""
+    # Check whether the inputDate is in "YYYY-MM-DD" format or not using regex pattern and check year, month and day are valid or not
+    if re.match("^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$", inputDate):
+        isinputDateValid = True
+    else:
+        isinputDateValid = False
+
+    if isinputDateValid is True:
+        dob = str(inputDate)
+        split_space = dob.split(' ')
+        yyyy, mm, dd = map(int, split_space[0].split('-'))
+
+        dt1 = Date(dd, mm, yyyy)
+
+        today = str(pydt.datetime.today())
+        split_space = today.split(' ')
+        present_yyyy, present_mm, present_dd = map(int, split_space[0].split('-'))
+
+        dt2 = Date(present_dd, present_mm, present_yyyy)
+
+        totaldiff = getDifference(dt1, dt2)
+        years = int(totaldiff/365)
+        if years >= 18:
+            success_msg = True
+        else:
+            error_msg = "False"
+    else:
+        error_msg = ("%s is not in YYYY-MM-DD format" % format(inputDate))
+    return [success_msg, error_msg]
+
 def add_staff(request):
-    if request.method == "POST":
+    name_prefix_list = NAMEPREFIXForm()
+    gender_list = GENDERCHOICESForm()
+    groups_list = GroupTypesForm()
+    if request.method == 'POST':
+        firstname = request.POST.get('firstname')
+        lastname = request.POST.get('lastname')
         username = request.POST.get('username')
-        email = request.POST.get('email')
         password = request.POST.get('password')
-        firstname = request.POST.get('first_name')
-        lastname = request.POST.get('last_name')
+        confirm_password = request.POST.get('confirm_password')
+        email = request.POST.get('email').lower()
         groupName = request.POST.get('group')
-        user = User.objects.create_user(
-            username = username, email = email,
-            password = password,
-            first_name = firstname,
-            last_name = lastname
-        )
-        user.is_active = True # False
-        applicant_group, isCreated = Group.objects.get_or_create(name = groupName)
-        user.groups.add(Group.objects.get(name = str(applicant_group)))
-        # Staff.objects.create(user = user)
-        user.save()
+
+        phone = request.POST.get('phone')
+
+        nameprefix = request.POST.get('name_prefix')
+        dob = request.POST.get('date_of_birth')
+        gender = request.POST.get('gender')
+
+        doorno = request.POST.get('door_no')
+        zipcode = request.POST.get('zip_code')
+        city = request.POST.get('city') or request.POST.get('new_city')
+        district = request.POST.get('district')
+        state = request.POST.get('state')
+        country = request.POST.get('country')
+
+        photo = request.FILES.get('photo')
+
+        formResponse = dict(request.POST)
+        if all(len(formResponse[key]) > 0 for key in formResponse) and not all(str(formResponse[key]).isspace() for key in formResponse):
+            can_go_on = False
+            if(not request.POST.get('city').isspace() or len(request.POST.get('city')) > 0) and (request.POST.get('new_city').isspace() or len(request.POST.get('new_city')) == 0):
+                can_go_on = True
+            elif(request.POST.get('city').isspace() or len(request.POST.get('city')) == 0) and (not request.POST.get('new_city').isspace() or len(request.POST.get('new_city')) > 0):
+                can_go_on = True
+            else:
+                can_go_on = False
+        if can_go_on is True:
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+
+            try:
+                fingerprintID = request.COOKIES['U53R_876_10']
+            except Exception:
+                fingerprintID = None
+
+            validatedUserDOB = validateUserDOB(dob)
+            if validatedUserDOB[0] is True:
+                try:
+                    url = 'http://127.0.0.1:4000/getEmail/{}/?format=json'.format(email)
+                    response = requests.get(url)
+                    dataEmail = response.json()
+                except Exception:
+                    messages.info(request, "Server under maintenance. Please try again later.")
+                    return redirect('adminInstituteRegistration')
+                if dataEmail['ValidEmail'] is True and dataEmail['Disposable'] is False:
+                    if not User.objects.filter(username=username).exists():
+                        if password == confirm_password:
+                            try:
+                                user = User.objects.create_superuser(username=username, email=email, password=password, first_name=firstname, last_name=lastname)
+                                staffgroup, isCreated = Group.objects.get_or_create(name = groupName)
+                                user.groups.add(Group.objects.get(name = str(staffgroup)))
+                                user.is_active = False
+                                user.save()
+                                UserProfile.objects.create(
+                                    user = user, name_prefix = nameprefix, date_of_birth = dob, gender = gender, phone = phone,
+                                    door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
+                                    photo = photo)
+                                UserAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip, bfpID = fingerprintID)
+                                try:
+                                    url = 'http://127.0.0.1:4000/getEncryptionData/{}/?format=json'.format(username)
+                                    response = requests.get(url)
+                                    dataUsername = response.json()
+                                except Exception:
+                                    messages.info(request, "Server under maintenance. Please try again later.")
+                                    return redirect('add_staff')
+                                return redirect('send_staff_reg_email', EnUsername = dataUsername['EncryptedUsername'])
+                            except Exception:
+                                if User.objects.filter(username=username).exists() is True:
+                                    currentUserObj = User.objects.get(username=username)
+                                    if UserAccountVerificationStatus.objects.filter(user=user).exists() is True:
+                                        UserAccountVerificationStatus.objects.get(user=user).delete()
+                                    if UserProfile.objects.filter(user=user).exists() is True:
+                                        UserProfile.objects.get(user=user).delete()
+                                    currentUserObj.delete()
+                                messages.info(request, "Something went wrong. Please try again later.")
+                                return redirect('add_staff')
+                        else:
+                            messages.info(request, "Password didn't Matched")
+                            return redirect('add_staff')
+                    else:
+                        messages.error(request, "Username Already Exists...!")
+                        return redirect('add_staff')
+                elif dataEmail['Disposable'] is True:
+                    messages.error(request, "Don't use disposable email address")
+                    return redirect('add_staff')
+                else:
+                    messages.error(request, "Please use legitimate email address only")
+                    return redirect('add_staff')
+            elif "not in YYYY-MM-DD format" in validatedUserDOB[1] :
+                messages.error(request, str(validatedUserDOB[1]))
+                return redirect('add_staff')
+            elif validatedUserDOB[1] == "False":
+                return HttpResponse("You are not eligible to register as a Staff")
+        else:
+            messages.error(request, "Please fill all the fields")
+            return redirect('add_staff')
     context = {
+        'name_prefix': name_prefix_list,
+        'gender': gender_list,
+        'groups_list': groups_list,
     }
     return render(request, 'staff/add_staff.html', context)
 
-def editStaff(request, username):
-    staff = UserProfile.objects.get(user__username=username)
-    list_groups = Group.objects.all()
-    if request.method == 'POST':
-        pass
-    else:
-        pass
-    context = {
-        'list_groups':list_groups,
-    }
-    return render(request, 'staff/staff_templates/manage_staff/edit_faculty.html', context)
-
-def viewStaff(request, username):
+def send_staff_reg_email(request, EnUsername):
     try:
-        staff = User.objects.get(username=username)
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(EnUsername)
+        response = requests.get(url)
+        dataUsername = response.json()
     except Exception:
-        messages.error(request, "Staff doesn't exist")
-        return redirect('manageOpenings')
-    user = User.objects.get(username=username)
-    list_groups = Group.objects.all()
-    current_user_group = ', '.join(map(str, user.groups.all()))
-    context = {
-        "staff": staff,
-        "current_user_group": current_user_group,
-        "list_groups": list_groups,
-    }
-    return render(request, "staff/viewStaff.html", context)
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('add_staff')
+    
+    isMailSent = False
+    try:
+        user = User.objects.get(username = dataUsername['DecryptedUsername'])
+    except Exception as e:
+        messages.error(request, str(e))
+        return redirect('add_staff')
 
-from django.views.decorators.csrf import csrf_exempt
+    if User.objects.filter(username = dataUsername['DecryptedUsername'], is_active = False).exists() is True:        
+        ten_minutes_ago = pydt.datetime.now() - pydt.timedelta(minutes=10)
+        if MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your account registration - AkirA", created_at__gte=ten_minutes_ago).exists() is False:
+            try:
+                current_site = get_current_site(request)
+                protocol = request.is_secure() and "https" or "http"
+                mail_subject = "Confirm your account registration - AkirA"
+                message = render_to_string('staff/staffVerification/verify_staff_email.html', {
+                    'user': user,
+                    'protocol': protocol,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(EnUsername)),
+                    'token': account_activation_token.make_token(user),
+                })
+                to_email = user.email
+                send_mail(
+                    subject = mail_subject,
+                    message=None,
+                    html_message = message,
+                    from_email = settings.EMAIL_HOST_USER,
+                    recipient_list = [to_email],
+                    fail_silently = False,
+                )
+                isMailSent = True
+                if isMailSent is True:
+                    MailLog.objects.create(user=user, subject = mail_subject)
+                    messages.success(request, "Confirmation email sent!")
+                else:
+                    messages.error(request, "Unable to send confirmation email!")
+                return redirect("waitingStaffConfirmation", EnUsername = EnUsername)
+            except Exception as e1:
+                isMailSent = False
+                messages.error(request, str(e1))
+                return redirect("waitingStaffConfirmation", EnUsername = EnUsername)
+        else:
+            messages.error(request, "You can't request confirm email within 10 minutes")
+            return redirect("waitingStaffConfirmation", EnUsername = EnUsername)
+    else:
+        messages.info(request, "Your account registration is already confirmed")
+        return redirect('login')
 
-@csrf_exempt
+def waitingStaffConfirmation(request, EnUsername):
+    try:
+        url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(EnUsername)
+        response = requests.get(url)
+        dataUsername = response.json()
+    except Exception:
+        messages.info(request, "Server under maintenance. Please try again later.")
+        return redirect('add_staff')
+    ten_minutes_ago = pydt.datetime.now() - pydt.timedelta(minutes=1000)
+    last_mail_time = ''
+    if MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your account registration - AkirA", created_at__gte=ten_minutes_ago).exists() is True:
+        getlast_mail_time = MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your account registration - AkirA", created_at__gte=ten_minutes_ago)
+        lastObject = getlast_mail_time.last()
+        last_mail_time = lastObject.created_at
+    try:
+        user = User.objects.get(username = dataUsername['DecryptedUsername'])
+    except User.DoesNotExist:
+        messages.error(request, "User doesn't exist")
+        return redirect('add_staff')
+    if user.is_active is False:
+        context = {
+            'EnUsername': EnUsername,
+            'last_mail_time': last_mail_time,
+        }
+        return render(request, 'staff/staffVerification/waitingStaffConfirmation.html', context)
+    else:
+        messages.info(request, "Your account registration is already confirmed")
+        return redirect('login')
+
+def confirm_staff_email(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        try:
+            url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(uid)
+            response = requests.get(url)
+            dataUsername = response.json()
+        except Exception:
+            messages.info(request, "Server under maintenance. Please try again later.")
+            return redirect('login')
+        user = User.objects.get(username=dataUsername['DecryptedUsername'])
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        getSASVS = UserAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'])
+        getSASVS.verificationStatus = True
+        getSASVS.save()
+        messages.success(request, "Thank you for your email confirmation. Now you can login your account.")
+        return redirect('login')
+    else:
+        return HttpResponse(status = 404)
+
+def isStaffRegConfirmed(request):
+    if request.method == 'POST':
+        print(request.POST)
+        try:
+            fingerprintID = request.COOKIES['U53R_876_10']
+        except Exception:
+            fingerprintID = None
+        EnUsername = request.POST.get('EnUsername')
+        try:
+            url = 'http://127.0.0.1:4000/getDecryptionData/{}/?format=json'.format(EnUsername)
+            response = requests.get(url)
+            dataUsername = response.json()
+        except Exception:
+            messages.info(request, "Server under maintenance. Please try again later.")
+
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        dataResponse = {
+                'status': 'failed',
+        }
+        isStaffAccountCreated = User.objects.filter(username = dataUsername['DecryptedUsername'], is_active = True).exists()
+        if isStaffAccountCreated is True:
+            print("Here0")
+            try:
+                getAAVIPAddr = UserAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'], verificationStatus = True)
+                print("Here1")
+            except Exception:
+                getAAVIPAddr = None
+                print("Here2")
+            if str(ip) == str(getAAVIPAddr.ipaddress) or str(fingerprintID) == str(getAAVIPAddr.bfpID):
+                print("Here3")
+                dataResponse = {
+                    'status': 'success',
+                }
+                print("Here4")
+            print("Here5")
+        print("Here6")
+        print(dataResponse)
+        return JsonResponse(dataResponse)
+
 def CreateDesignationAjax(request):
     if request.method == "POST":
         designationName = request.POST.get('designation')
@@ -227,7 +542,6 @@ def CreateDesignationAjax(request):
             status = "error"
     return JsonResponse({'message': message, 'status': status}, safe=False)
 
-@csrf_exempt
 def setUserDesignationAjax(request):
     if request.method == "POST":
         userName = request.POST.get('username')
@@ -259,7 +573,6 @@ def setUserDesignationAjax(request):
             message = "User doesn't exist!"
             status = "error"
     return JsonResponse({'message': message, 'status': status}, safe=False)
-
 
 def staff_info_csv(request):
     response = HttpResponse(content_type='text/csv')
