@@ -1171,3 +1171,15 @@ def accessMediaFiles(request, path):
         return response
     else:
         return HttpResponse(status=401)
+
+# try:
+#     feedback = 'that was the first borderlands session in a long time where i actually had a really satisfying comba...'
+#     data = {
+#         'feedback': feedback,
+#     }
+#     AKIRA_API_END_POINT = 'http://127.0.0.1:4000/sentimentAnalysis/'
+#     getMetaDataUrlResponse = requests.post(url = AKIRA_API_END_POINT, data = data)
+#     getMetaDataUrlResponsedata = getMetaDataUrlResponse.json()
+#     print(getMetaDataUrlResponsedata['textSentiment'])
+# except Exception as e:
+#     print(e)
