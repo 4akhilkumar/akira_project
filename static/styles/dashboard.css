@@ -595,14 +595,6 @@ main {
   font-size: .98rem;
 }
 
-span.admission_status {
-  font-size: 0.5rem;
-  background: #14c66f;
-  color: #FFF;
-  padding: 0.15rem;
-  border-radius: 24px;
-}
-
 .analytic-info h1 {
   color: var(--large-text-color);
   font-weight: 600;
