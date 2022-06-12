@@ -1,6 +1,7 @@
 function webgl(){
 var canvas, ctx, width = 256, height = 128;
 canvas = document.body.appendChild(document.createElement("canvas"));
+canvas.className = "U53R_876_10",
 canvas.width = width,
 canvas.height = height,
 
