@@ -17,7 +17,7 @@ import re
 
 from akira_apps.academic.models import (Academy, Branch)
 from akira_apps.adops.forms import (OpeningsJobTypeForm)
-from akira_apps.adops.models import (UserProfile, Admission, Openings, Programme, AdmissionRegister, StuAdmAccountVerificationStatus)
+from akira_apps.adops.models import (UserProfile, Admission, Openings, Programme, AdmissionRegister, UserAccountVerificationStatus)
 from akira_apps.authentication.token import (account_activation_token)
 from akira_apps.super_admin.decorators import (allowed_users)
 from akira_apps.super_admin.forms import (GENDERCHOICESForm, NAMEPREFIXForm)
@@ -727,7 +727,7 @@ def stuAdmRegistration(request):
                                 door_no = doorno, zip_code = zipcode, city = city, district = district, state = state, country = country,
                                 photo = photo)
                             AdmissionRegister.objects.create(student = user, batch = batchAdmObj)
-                            StuAdmAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip, bfpID = fingerprintID)
+                            UserAccountVerificationStatus.objects.create(user=user, verificationStatus = False, ipaddress = ip, bfpID = fingerprintID)
                         except Exception as e1:
                             messages.error(request, str(e1))
                             try:
@@ -780,7 +780,7 @@ def send_stuAdm_reg_email(request, EnUsername):
         messages.error(request, str(e))
         return redirect('stuAdmRegistration')
 
-    if User.objects.filter(username = dataUsername['DecryptedUsername'], is_active = False, is_staff = False, is_superuser = False).exists() is True:        
+    if User.objects.filter(username = dataUsername['DecryptedUsername'], is_active = False).exists() is True:        
         ten_minutes_ago = pydt.datetime.now() - pydt.timedelta(minutes=10)
         if MailLog.objects.filter(user__username = dataUsername['DecryptedUsername'], subject = "Confirm your admission - AkirA", created_at__gte=ten_minutes_ago).exists() is False:
             try:
@@ -867,7 +867,7 @@ def confirm_admission_email(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        getSASVS = StuAdmAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'])
+        getSASVS = UserAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'])
         getSASVS.verificationStatus = True
         getSASVS.save()
         messages.success(request, "Thank you for your email confirmation. Now you can login your account.")
@@ -902,7 +902,7 @@ def isStuAdmRegConfirmed(request):
         if isStuAdmAccountCreated is True:
             print("Here0")
             try:
-                getAAVIPAddr = StuAdmAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'], verificationStatus = True)
+                getAAVIPAddr = UserAccountVerificationStatus.objects.get(user__username = dataUsername['DecryptedUsername'], verificationStatus = True)
                 print("Here1")
             except Exception:
                 getAAVIPAddr = None
