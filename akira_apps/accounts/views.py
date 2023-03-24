@@ -26,7 +26,9 @@ def ordinal(n):
 @login_required(login_url=settings.LOGIN_URL)
 def fetchLoginDetailsAjax(request):
     if request.method == 'POST':
-        date, year = 1, 2022
+        date = 1
+        # get current year using datetime module
+        year = pydt.datetime.now().year
         month = int(request.POST.get('request_month'))
 
         req_month = pydt.datetime(year, month, date)
